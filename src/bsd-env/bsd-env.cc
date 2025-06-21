@@ -127,13 +127,13 @@ static void getAllExprs(EvalState & state,
             continue; // ignore dangling symlinks in ~/.bsd-defexpr
         }
 
-        if (isBsdExpr(path2, st) && (st.type != SourceAccessor::tRegular || hasSuffix(path2.baseName(), ".bsd"))) {
+        if (isBsdExpr(path2, st) && (st.type != SourceAccessor::tRegular || hasSuffix(path2.baseName(), ".bsd") || hasSuffix(path2.baseName(), ".nix"))) {
             /* Strip off the `.bsd' filename suffix (if applicable),
                otherwise the attribute cannot be selected with the
                `-A' option.  Useful if you want to stick a Bsd
                expression directly in ~/.bsd-defexpr. */
             std::string attrName = i;
-            if (hasSuffix(attrName, ".bsd"))
+            if (hasSuffix(attrName, ".bsd") || hasSuffix(attrName, ".nix"))
                 attrName = std::string(attrName, 0, attrName.size() - 4);
             if (!seen.insert(attrName).second) {
                 std::string suggestionMessage = "";
