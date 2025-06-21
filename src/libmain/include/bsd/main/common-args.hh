@@ -82,7 +82,7 @@ struct MixPrintJSON : virtual Args
      * to avoid mistakenly passing an already serialized JSON to this function.
      *
      * It is not recommended to print a JSON string - see the JSON guidelines
-     * about extensibility, https://bsd.dev/manual/bsd/development/development/json-guideline.html -
+     * about extensibility, https://basedlinux.org/manual/bsd/development/development/json-guideline.html -
      * but you _can_ print a sole JSON string by explicitly coercing it to
      * `nlohmann::json` first.
      */

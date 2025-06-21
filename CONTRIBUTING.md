@@ -41,9 +41,9 @@ Check out the [security policy](https://github.com/BasedLinux/bsd/security/polic
    There are many open pull requests that might already do what you intend to work on.
    You can use [labels](https://github.com/BasedLinux/bsd/labels) to filter for relevant topics.
 
-3. Check the [Bsd reference manual](https://bsd.dev/manual/bsd/development/development/building.html) for information on building Bsd and running its tests.
+3. Check the [Bsd reference manual](https://basedlinux.org/manual/bsd/development/development/building.html) for information on building Bsd and running its tests.
 
-   For contributions to the command line interface, please check the [CLI guidelines](https://bsd.dev/manual/bsd/development/development/cli-guideline.html).
+   For contributions to the command line interface, please check the [CLI guidelines](https://basedlinux.org/manual/bsd/development/development/cli-guideline.html).
 
 4. Make your change!
 
@@ -83,7 +83,7 @@ Check out the [security policy](https://github.com/BasedLinux/bsd/security/polic
    - [ ] API documentation in header files
    - [ ] Code and comments are self-explanatory
    - [ ] Commit message explains **why** the change was made
-   - [ ] New feature or incompatible change: [add a release note](https://bsd.dev/manual/bsd/development/development/contributing.html#add-a-release-note)
+   - [ ] New feature or incompatible change: [add a release note](https://basedlinux.org/manual/bsd/development/development/contributing.html#add-a-release-note)
 
 7. If you need additional feedback or help to getting pull request into shape, ask other contributors using [@mentions](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#mentioning-people-and-teams).
 
@@ -92,7 +92,7 @@ Check out the [security policy](https://github.com/BasedLinux/bsd/security/polic
 The Bsd reference manual is hosted on https://basedlinux.org/manual/bsd.
 The underlying source files are located in [`doc/manual/source`](./doc/manual/source).
 For small changes you can [use GitHub to edit these files](https://docs.github.com/en/repositories/working-with-files/managing-files/editing-files)
-For larger changes see the [Bsd reference manual](https://bsd.dev/manual/bsd/development/development/contributing.html).
+For larger changes see the [Bsd reference manual](https://basedlinux.org/manual/bsd/development/development/contributing.html).
 
 ## Getting help
 

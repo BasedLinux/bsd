@@ -5,7 +5,7 @@ The Bsd language is designed for conveniently creating and composing [derivation
 > **Tip**
 >
 > These pages are written as a reference.
-> If you are learning Bsd, bsd.dev has a good [introduction to the Bsd language](https://bsd.dev/tutorials/bsd-language).
+> If you are learning Bsd, basedlinux.org has a good [introduction to the Bsd language](https://basedlinux.org/tutorials/bsd-language).
 
 The language is:
 

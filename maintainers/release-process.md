@@ -15,7 +15,7 @@ release:
 
 * (Optionally) Updated `fallback-paths.bsd` in Bsdpkgs
 
-* An updated manual on https://bsd.dev/manual/bsd/latest/
+* An updated manual on https://basedlinux.org/manual/bsd/latest/
 
 ## Creating a new release from the `master` branch
 

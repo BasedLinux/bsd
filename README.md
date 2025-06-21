@@ -4,18 +4,18 @@
 [![CI](https://github.com/BasedLinux/bsd/workflows/CI/badge.svg)](https://github.com/BasedLinux/bsd/actions/workflows/ci.yml)
 
 Bsd is a powerful package manager for Linux and other Ubsd systems that makes package
-management reliable and reproducible. Please refer to the [Bsd manual](https://bsd.dev/reference/bsd-manual)
+management reliable and reproducible. Please refer to the [Bsd manual](https://basedlinux.org/reference/bsd-manual)
 for more details.
 
 ## Installation and first steps
 
-Visit [bsd.dev](https://bsd.dev) for [installation instructions](https://bsd.dev/tutorials/install-bsd) and [beginner tutorials](https://bsd.dev/tutorials/first-steps).
+Visit [basedlinux.org](https://basedlinux.org) for [installation instructions](https://basedlinux.org/tutorials/install-bsd) and [beginner tutorials](https://basedlinux.org/tutorials/first-steps).
 
-Full reference documentation can be found in the [Bsd manual](https://bsd.dev/reference/bsd-manual).
+Full reference documentation can be found in the [Bsd manual](https://basedlinux.org/reference/bsd-manual).
 
 ## Building and developing
 
-Follow instructions in the Bsd reference manual to [set up a development environment and build Bsd from source](https://bsd.dev/manual/bsd/development/development/building.html).
+Follow instructions in the Bsd reference manual to [set up a development environment and build Bsd from source](https://basedlinux.org/manual/bsd/development/development/building.html).
 
 ## Contributing
 
@@ -27,7 +27,7 @@ Bsd was created by Eelco Dolstra and developed as the subject of his PhD thesis 
 Today, a world-wide developer community contributes to Bsd and the ecosystem that has grown around it.
 
 - [The Bsd, Bsdpkgs, BasedLinux Community on basedlinux.org](https://basedlinux.org/)
-- [Official documentation on bsd.dev](https://bsd.dev)
+- [Official documentation on basedlinux.org](https://basedlinux.org)
 - [Bsdpkgs](https://github.com/BasedLinux/bsdpkgs) is [the largest, most up-to-date free software repository in the world](https://repology.org/repositories/graphs)
 - [BasedLinux](https://github.com/BasedLinux/bsdpkgs/tree/master/bsdos) is a Linux distribution that can be configured fully declaratively
 - [Discourse](https://discourse.basedlinux.org/)
