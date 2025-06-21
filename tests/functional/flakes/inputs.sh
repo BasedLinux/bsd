@@ -13,14 +13,14 @@ test_subdir_self_path() {
     writeSimpleFlake "$flakeDir"
 
     echo all good > "$flakeDir/message"
-    cat > "$flakeDir"/flake.bsd <<EOF
+    cat > "$flakeDir"/flake.nix <<EOF
 {
   outputs = inputs: rec {
     packages.$system = rec {
       default =
         assert builtins.readFile ./message == "all good\n";
         assert builtins.readFile (inputs.self + "/message") == "all good\n";
-        import ./simple.bsd;
+        import ./simple.nix;
     };
   };
 }
@@ -41,7 +41,7 @@ test_git_subdir_self_path() {
     writeSimpleFlake "$flakeDir"
 
     echo all good > "$flakeDir/message"
-    cat > "$flakeDir"/flake.bsd <<EOF
+    cat > "$flakeDir"/flake.nix <<EOF
 {
   outputs = inputs: rec {
     packages.$system = rec {
@@ -49,7 +49,7 @@ test_git_subdir_self_path() {
         assert builtins.readFile ./message == "all good\n";
         assert builtins.readFile (inputs.self + "/message") == "all good\n";
         assert inputs.self.outPath == inputs.self.sourceInfo.outPath + "/b-low";
-        import ./simple.bsd;
+        import ./simple.nix;
     };
   };
 }
@@ -63,7 +63,7 @@ EOF
 
     clientDir=$TEST_ROOT/client-$RANDOM
     mkdir -p "$clientDir"
-    cat > "$clientDir"/flake.bsd <<EOF
+    cat > "$clientDir"/flake.nix <<EOF
 {
   inputs.inp = {
     type = "git";

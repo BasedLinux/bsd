@@ -1,4 +1,4 @@
-with import ./lib.bsd;
+with import ./lib.nix;
 
 let
   n1 = builtins.floor 23.5;

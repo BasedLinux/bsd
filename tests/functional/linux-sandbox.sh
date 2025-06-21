@@ -25,7 +25,7 @@ rm -rf $TEST_ROOT/store0
 export NIX_STORE_DIR=/my/store
 export NIX_REMOTE=$TEST_ROOT/store0
 
-outPath=$(bsd-sandbox-build dependencies.bsd)
+outPath=$(bsd-sandbox-build dependencies.nix)
 
 [[ $outPath =~ /my/store/.*-dependencies ]]
 
@@ -36,13 +36,13 @@ bsd store ls -R -l $outPath | grep foobar
 bsd store cat $outPath/foobar | grep FOOBAR
 
 # Test --check without hash rewriting.
-bsd-sandbox-build dependencies.bsd --check
+bsd-sandbox-build dependencies.nix --check
 
 # Test that sandboxed builds with --check and -K can move .check directory to store
-bsd-sandbox-build check.bsd -A nondeterministic
+bsd-sandbox-build check.nix -A nondeterministic
 
 # `100 + 4` means non-determinstic, see doc/manual/source/command-ref/status-build-failure.md
-expectStderr 104 bsd-sandbox-build check.bsd -A nondeterministic --check -K > $TEST_ROOT/log
+expectStderr 104 bsd-sandbox-build check.nix -A nondeterministic --check -K > $TEST_ROOT/log
 grepQuietInverse 'error: renaming' $TEST_ROOT/log
 grepQuiet 'may not be deterministic' $TEST_ROOT/log
 
@@ -59,7 +59,7 @@ testCert () {
     certFile=$3    # a string that can be the path to a cert file
     # `100` means build failure without extra info, see doc/manual/source/command-ref/status-build-failure.md
     [ "$mode" == fixed-output ] && ret=1 || ret=100
-    expectStderr $ret bsd-sandbox-build linux-sandbox-cert-test.bsd --argstr mode "$mode" --option ssl-cert-file "$certFile" |
+    expectStderr $ret bsd-sandbox-build linux-sandbox-cert-test.nix --argstr mode "$mode" --option ssl-cert-file "$certFile" |
         grepQuiet "CERT_${expectation}_IN_SANDBOX"
 }
 
@@ -90,8 +90,8 @@ testCert present fixed-output "$symlinkcert"
 testCert present fixed-output "$transitivesymlinkcert"
 
 # Symlinks should be added in the sandbox directly and not followed
-bsd-sandbox-build symlink-derivation.bsd -A depends_on_symlink
-bsd-sandbox-build symlink-derivation.bsd -A test_sandbox_paths \
+bsd-sandbox-build symlink-derivation.nix -A depends_on_symlink
+bsd-sandbox-build symlink-derivation.nix -A test_sandbox_paths \
     --option extra-sandbox-paths "/file=$cert" \
     --option extra-sandbox-paths "/dir=$TEST_ROOT" \
     --option extra-sandbox-paths "/symlinkDir=$symlinkDir" \

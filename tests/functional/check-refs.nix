@@ -1,8 +1,8 @@
-with import ./config.bsd;
+with import ./config.nix;
 
 rec {
 
-  dep = import ./dependencies.bsd { };
+  dep = import ./dependencies.nix { };
 
   makeTest =
     nr: args:

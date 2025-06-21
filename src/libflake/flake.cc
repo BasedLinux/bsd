@@ -221,7 +221,7 @@ static Flake readFlake(
     const InputAttrPath & lockRootAttrPath)
 {
     auto flakeDir = rootDir / CanonPath(resolvedRef.subdir);
-    auto flakePath = flakeDir / "flake.bsd";
+    auto flakePath = flakeDir / "flake.nix";
 
     // NOTE evalFile forces vInfo to be an attrset because mustBeTrivial is true.
     Value vInfo;
@@ -346,7 +346,7 @@ static Flake getFlake(
     auto resolvedRef = FlakeRef(std::move(cachedInput.resolvedInput), originalRef.subdir);
     auto lockedRef = FlakeRef(std::move(cachedInput.lockedInput), originalRef.subdir);
 
-    // Parse/eval flake.bsd to get at the input.self attributes.
+    // Parse/eval flake.nix to get at the input.self attributes.
     auto flake = readFlake(state, originalRef, resolvedRef, lockedRef, {cachedInput.accessor}, lockRootAttrPath);
 
     // Re-fetch the tree if necessary.
@@ -364,7 +364,7 @@ static Flake getFlake(
     // Copy the tree to the store.
     auto storePath = copyInputToStore(state, lockedRef.input, originalRef.input, cachedInput.accessor);
 
-    // Re-parse flake.bsd from the store.
+    // Re-parse flake.nix from the store.
     return readFlake(state, originalRef, resolvedRef, lockedRef, state.storePath(storePath), lockRootAttrPath);
 }
 
@@ -460,7 +460,7 @@ LockedFlake lockFlake(
             computeLocks;
 
         computeLocks = [&](
-            /* The inputs of this node, either from flake.bsd or
+            /* The inputs of this node, either from flake.nix or
                flake.lock. */
             const FlakeInputs & flakeInputs,
             /* The node whose locks are to be updated.*/
@@ -482,7 +482,7 @@ LockedFlake lockFlake(
             debug("computing lock file node '%s'", printInputAttrPath(inputAttrPathPrefix));
 
             /* Get the overrides (i.e. attributes of the form
-               'inputs.bsdops.inputs.bsdpkgs.url = ...'). */
+               'inputs.nixops.inputs.nixpkgs.url = ...'). */
             for (auto & [id, input] : flakeInputs) {
                 for (auto & [idOverride, inputOverride] : input.overrides) {
                     auto inputAttrPath(inputAttrPathPrefix);
@@ -882,8 +882,8 @@ static ref<SourceAccessor> makeInternalFS() {
     auto internalFS = make_ref<MemorySourceAccessor>(MemorySourceAccessor {});
     internalFS->setPathDisplay("«flakes-internal»", "");
     internalFS->addFile(
-        CanonPath("call-flake.bsd"),
-        #include "call-flake.bsd.gen.hh"
+        CanonPath("call-flake.nix"),
+        #include "call-flake.nix.gen.hh"
     );
     return internalFS;
 }
@@ -936,7 +936,7 @@ void callFlake(EvalState & state,
 
     auto & vOverrides = state.allocValue()->mkAttrs(overrides);
 
-    Value * vCallFlake = requireInternalFile(state, CanonPath("call-flake.bsd"));
+    Value * vCallFlake = requireInternalFile(state, CanonPath("call-flake.nix"));
 
     auto vLocks = state.allocValue();
     vLocks->mkString(lockFileStr);

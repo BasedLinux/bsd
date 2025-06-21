@@ -21,7 +21,7 @@ execUnshare <<EOF
     mkdir -p \$NIX_REMOTE
   }
 
-  cmd=(bsd-build ./hermetic.bsd --arg busybox "$busybox" --arg seed 1 --no-out-link)
+  cmd=(bsd-build ./hermetic.nix --arg busybox "$busybox" --arg seed 1 --no-out-link)
 
   # Fails with default setting
   setLocalStore store1

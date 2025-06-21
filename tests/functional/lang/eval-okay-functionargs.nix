@@ -127,7 +127,7 @@ let
   pkgs2 = allPackages {
     overrides = pkgs: pkgsPrev: {
       stdenv = pkgs.stdenv2;
-      bsd = pkgsPrev.bsd.override { aterm = aterm2Fun { inherit (pkgs) stdenv fetchurl; }; };
+      bsd = pkgsPrev.nix.override { aterm = aterm2Fun { inherit (pkgs) stdenv fetchurl; }; };
       xorg = pkgsPrev.xorg // {
         libX11 = libX11_2Fun { inherit (pkgs) stdenv fetchurl; };
       };
@@ -145,6 +145,6 @@ in
   pkgs.xorg.libXv.name
   pkgs.mplayer.name
   pkgs2.mplayer.name
-  pkgs.bsd.name
-  pkgs2.bsd.name
+  pkgs.nix.name
+  pkgs2.nix.name
 ]

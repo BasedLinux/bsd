@@ -29,7 +29,7 @@ expectStderr 1 bsd-store --store local?read-only=true --add dummy | grepQuiet "d
 dummyPath=$(bsd-store --add dummy)
 
 # Try again and make sure we fail when adding a item not already in the store
-expectStderr 1 bsd-store --store local?read-only=true --add eval.bsd | grepQuiet "attempt to write a readonly database"
+expectStderr 1 bsd-store --store local?read-only=true --add eval.nix | grepQuiet "attempt to write a readonly database"
 
 # Test a few operations that should work with the read-only store in its current state
 happy
@@ -42,8 +42,8 @@ chmod -R -w $TEST_ROOT/var
 
 # Make sure we fail on add operations on the read-only store
 # This is only for adding files that are not *already* in the store
-expectStderr 1 bsd-store --add eval.bsd | grepQuiet "error: opening lock file '$(readlink -e $TEST_ROOT)/var/bsd/db/big-lock'"
-expectStderr 1 bsd-store --store local?read-only=true --add eval.bsd | grepQuiet "Permission denied"
+expectStderr 1 bsd-store --add eval.nix | grepQuiet "error: opening lock file '$(readlink -e $TEST_ROOT)/var/bsd/db/big-lock'"
+expectStderr 1 bsd-store --store local?read-only=true --add eval.nix | grepQuiet "Permission denied"
 
 # Test the same operations from before should again succeed
 happy

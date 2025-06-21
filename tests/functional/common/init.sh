@@ -19,7 +19,7 @@ EOF
 
   # When we're doing everything in the same store, we need to bring
   # dependencies into context.
-  sed -i "${_NIX_TEST_BUILD_DIR}/config.bsd" \
+  sed -i "${_NIX_TEST_BUILD_DIR}/config.nix" \
     -e 's^\(shell\) = "/bsd/store/\([^/]*\)/\(.*\)";^\1 = builtins.appendContext "/bsd/store/\2" { "/bsd/store/\2".path = true; } + "/\3";^' \
     -e 's^\(path\) = "/bsd/store/\([^/]*\)/\(.*\)";^\1 = builtins.appendContext "/bsd/store/\2" { "/bsd/store/\2".path = true; } + "/\3";^' \
     ;

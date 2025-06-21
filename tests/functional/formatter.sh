@@ -7,7 +7,7 @@ TODO_BasedLinux # Provide a `shell` variable. Try not to `export` it, perhaps.
 clearStoreIfPossible
 rm -rf "$TEST_HOME"/.cache "$TEST_HOME"/.config "$TEST_HOME"/.local
 
-cp ./simple.bsd ./simple.builder.sh ./formatter.simple.sh "${config_bsd}" "$TEST_HOME"
+cp ./simple.nix ./simple.builder.sh ./formatter.simple.sh "${config_bsd}" "$TEST_HOME"
 
 cd "$TEST_HOME"
 
@@ -16,11 +16,11 @@ bsd fmt --help | grep "reformat your code"
 bsd fmt run --help | grep "reformat your code"
 bsd fmt build --help | grep "build"
 
-cat << EOF > flake.bsd
+cat << EOF > flake.nix
 {
   outputs = _: {
     formatter.$system =
-      with import ./config.bsd;
+      with import ./config.nix;
       mkDerivation {
         name = "formatter";
         buildCommand = ''
@@ -35,13 +35,13 @@ cat << EOF > flake.bsd
 EOF
 
 mkdir subflake
-cp ./simple.bsd ./simple.builder.sh ./formatter.simple.sh "${config_bsd}" "$TEST_HOME/subflake"
+cp ./simple.nix ./simple.builder.sh ./formatter.simple.sh "${config_bsd}" "$TEST_HOME/subflake"
 
-cat << EOF > subflake/flake.bsd
+cat << EOF > subflake/flake.nix
 {
   outputs = _: {
     formatter.$system =
-      with import ./config.bsd;
+      with import ./config.nix;
       mkDerivation {
         name = "formatter";
         buildCommand = ''

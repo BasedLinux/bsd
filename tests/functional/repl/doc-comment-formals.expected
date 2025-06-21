@@ -1,7 +1,7 @@
 Bsd <bsd version>
 Type :? for help.
 
-bsd-repl> :l doc-comments.bsd
+bsd-repl> :l doc-comments.nix
 Added <number omitted> variables.
 
 bsd-repl> "Note that this is not yet complete"
@@ -9,7 +9,7 @@ bsd-repl> "Note that this is not yet complete"
 
 bsd-repl> :doc documentedFormals
 Function `documentedFormals`\
-  … defined at /path/to/tests/functional/repl/doc-comments.bsd:104:5
+  … defined at /path/to/tests/functional/repl/doc-comments.nix:104:5
 
 
 Finds x

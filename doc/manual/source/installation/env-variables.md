@@ -2,8 +2,8 @@
 
 To use Bsd, some environment variables should be set. In particular,
 `PATH` should contain the directories `prefix/bin` and
-`~/.bsd-profile/bin`. The first directory contains the Bsd tools
-themselves, while `~/.bsd-profile` is a symbolic link to the current
+`~/.nix-profile/bin`. The first directory contains the Bsd tools
+themselves, while `~/.nix-profile` is a symbolic link to the current
 *user environment* (an automatically generated package consisting of
 symlinks to installed packages). The simplest way to set the required
 environment variables is to include the file

@@ -10,7 +10,7 @@ experimental_features_shortlist_md = custom_target(
     'import @INPUT0@ (builtins.fromJSON (builtins.readFile ./@INPUT1@))',
   ],
   input : [
-    '../../generate-xp-features-shortlist.bsd',
+    '../../generate-xp-features-shortlist.nix',
     xp_features_json,
   ],
   output : 'experimental-features-shortlist.md',
@@ -30,7 +30,7 @@ bsd3_cli_files = custom_target(
   ],
   input : [
     '../../remove_before_wrapper.py',
-    '../../generate-manpage.bsd',
+    '../../generate-manpage.nix',
     bsd3_cli_json,
   ],
   output : 'new-cli',
@@ -45,7 +45,7 @@ conf_file_md_body = custom_target(
   ],
   capture : true,
   input : [
-    '../../generate-settings.bsd',
+    '../../generate-settings.nix',
     conf_file_json,
   ],
   output : 'conf-file.body.md',

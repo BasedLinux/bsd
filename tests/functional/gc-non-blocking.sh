@@ -20,7 +20,7 @@ mkfifo "$fifo1"
 fifo2=$TEST_ROOT/test.fifo
 mkfifo "$fifo2"
 
-dummy=$(bsd store add-path ./simple.bsd)
+dummy=$(bsd store add-path ./simple.nix)
 
 running=$TEST_ROOT/running
 touch $running

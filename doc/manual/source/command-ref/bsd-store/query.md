@@ -233,7 +233,7 @@ Make a picture of the runtime dependency graph of the current user
 environment:
 
 ```console
-$ bsd-store --query --graph ~/.bsd-profile | dot -Tps > graph.ps
+$ bsd-store --query --graph ~/.nix-profile | dot -Tps > graph.ps
 $ gv graph.ps
 ```
 

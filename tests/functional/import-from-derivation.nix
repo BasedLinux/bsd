@@ -41,7 +41,7 @@ rec {
     inherit step1;
     buildCommand = ''
       mkdir -p $out
-      echo "builtins.path { path = \"$step1\"; sha256 = \"7ptL+pnrZXnSa5hwwB+2SXTLkcSb5264WGGokN8OXto=\"; }" > $out/default.bsd
+      echo "builtins.path { path = \"$step1\"; sha256 = \"7ptL+pnrZXnSa5hwwB+2SXTLkcSb5264WGGokN8OXto=\"; }" > $out/default.nix
     '';
   };
 

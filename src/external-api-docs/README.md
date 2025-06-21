@@ -31,7 +31,7 @@ The following examples, for simplicity, don't include error handling. See the
 
 In this example we programmatically start the Bsd language evaluator with a
 dummy store (that has no store paths and cannot be written to), and evaluate the
-Bsd expression `builtins.bsdVersion`.
+Bsd expression `builtins.nixVersion`.
 
 **main.c:**
 
@@ -59,7 +59,7 @@ int main()
     EvalState * state = bsd_state_create(NULL, NULL, store); // empty search path (NIX_PATH)
     Value * value = bsd_alloc_value(NULL, state);
 
-    bsd_expr_eval_from_string(NULL, state, "builtins.bsdVersion", ".", value);
+    bsd_expr_eval_from_string(NULL, state, "builtins.nixVersion", ".", value);
     bsd_value_force(NULL, state, value);
 
     char * version;

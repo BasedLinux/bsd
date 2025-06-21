@@ -7,19 +7,19 @@ TODO_BasedLinux
 clearStore
 rm -rf $TEST_HOME/.cache $TEST_HOME/.config $TEST_HOME/.local
 
-cp ../shell-hello.bsd "${config_bsd}" $TEST_HOME
+cp ../shell-hello.nix "${config_bsd}" $TEST_HOME
 cd $TEST_HOME
 
-cat <<EOF > flake.bsd
+cat <<EOF > flake.nix
 {
     outputs = {self}: {
-      packages.$system.pkgAsPkg = (import ./shell-hello.bsd).hello;
+      packages.$system.pkgAsPkg = (import ./shell-hello.nix).hello;
       packages.$system.appAsApp = self.packages.$system.appAsApp;
 
       apps.$system.pkgAsApp = self.packages.$system.pkgAsPkg;
       apps.$system.appAsApp = {
         type = "app";
-        program = "\${(import ./shell-hello.bsd).hello}/bin/hello";
+        program = "\${(import ./shell-hello.nix).hello}/bin/hello";
       };
     };
 }
@@ -35,7 +35,7 @@ bsd run --no-write-lock-file .#pkgAsPkg
 # initialization or whatnot, but this must not leak into the environment of the
 # command being run.
 env > $TEST_ROOT/expected-env
-bsd run -f shell-hello.bsd env > $TEST_ROOT/actual-env
+bsd run -f shell-hello.nix env > $TEST_ROOT/actual-env
 # Remove/reset variables we expect to be different.
 # - PATH is modified by bsd shell
 # - we unset TMPDIR on macOS if it contains /var/folders. bad. https://github.com/BasedLinux/bsd/issues/7731

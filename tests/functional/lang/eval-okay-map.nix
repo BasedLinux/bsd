@@ -1,4 +1,4 @@
-with import ./lib.bsd;
+with import ./lib.nix;
 
 concat (
   map (x: x + "bar") [

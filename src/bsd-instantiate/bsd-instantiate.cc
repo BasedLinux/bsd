@@ -187,7 +187,7 @@ static int main_bsd_instantiate(int argc, char * * argv)
             processExpr(*state, attrPaths, parseOnly, strict, autoArgs,
                 evalOnly, outputKind, xmlOutputSourceLocation, e);
         } else if (files.empty() && !fromArgs)
-            files.push_back("./default.bsd");
+            files.push_back("./default.nix");
 
         for (auto & i : files) {
             Expr * e = fromArgs

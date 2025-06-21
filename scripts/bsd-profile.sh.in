@@ -1,4 +1,4 @@
-# This file is tested by tests/installer/default.bsd.
+# This file is tested by tests/installer/default.nix.
 if [ -n "${HOME-}" ] && [ -n "${USER-}" ]; then
 
     # Set up the per-user profile.
@@ -6,7 +6,7 @@ if [ -n "${HOME-}" ] && [ -n "${USER-}" ]; then
     if [ -n "${NIX_STATE_HOME-}" ]; then
         NIX_LINK="$NIX_STATE_HOME/profile"
     else
-        NIX_LINK="$HOME/.bsd-profile"
+        NIX_LINK="$HOME/.nix-profile"
         if [ -n "${XDG_STATE_HOME-}" ]; then
             NIX_LINK_NEW="$XDG_STATE_HOME/bsd/profile"
         else
@@ -21,7 +21,7 @@ if [ -n "${HOME-}" ] && [ -n "${USER-}" ]; then
                 else
                     # This should be an exceptionally rare occasion: the only way to get it would be to
                     # 1. Update to newer Bsd;
-                    # 2. Remove .bsd-profile;
+                    # 2. Remove .nix-profile;
                     # 3. Set the $NIX_LINK_NEW to something other than the default user profile;
                     # 4. Roll back to older Bsd.
                     # If someone did all that, they can probably figure out how to migrate the profile.
@@ -33,7 +33,7 @@ if [ -n "${HOME-}" ] && [ -n "${USER-}" ]; then
     fi
 
     # Set up environment.
-    # This part should be kept in sync with bsdpkgs:bsdos/modules/programs/environment.bsd
+    # This part should be kept in sync with bsdpkgs:bsdos/modules/programs/environment.nix
     export NIX_PROFILES="@localstatedir@/bsd/profiles/default $NIX_LINK"
 
     # Populate bash completions, .desktop files, etc
@@ -60,7 +60,7 @@ if [ -n "${HOME-}" ] && [ -n "${USER-}" ]; then
     fi
 
     # Only use MANPATH if it is already set. In general `man` will just simply
-    # pick up `.bsd-profile/share/man` because is it close to `.bsd-profile/bin`
+    # pick up `.nix-profile/share/man` because is it close to `.nix-profile/bin`
     # which is in the $PATH. For more info, run `manpath -d`.
     if [ -n "${MANPATH-}" ]; then
         export MANPATH="$NIX_LINK/share/man:$MANPATH"

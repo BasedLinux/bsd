@@ -1,5 +1,5 @@
 with builtins;
-with import <bsd/utils.bsd>;
+with import <bsd/utils.nix>;
 
 let
   showExperimentalFeature = name: doc: ''

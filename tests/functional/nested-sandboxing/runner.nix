@@ -1,6 +1,6 @@
 { altitude, storeFun }:
 
-with import ../config.bsd;
+with import ../config.nix;
 
 mkDerivation {
   name = "nested-sandboxing";
@@ -20,7 +20,7 @@ mkDerivation {
         ''
           cp -r ${../common} ./common
           cp ${../common.sh} ./common.sh
-          cp ${../config.bsd} ./config.bsd
+          cp ${../config.nix} ./config.nix
           cp -r ${./.} ./nested-sandboxing
 
           export PATH=${builtins.getEnv "NIX_BIN_DIR"}:$PATH

@@ -1,8 +1,8 @@
 Bsd <bsd version>
 Type :? for help.
 
-bsd-repl> :doc import ./doc-comment-function.bsd
-Function defined at /path/to/tests/functional/repl/doc-comment-function.bsd:4:1
+bsd-repl> :doc import ./doc-comment-function.nix
+Function defined at /path/to/tests/functional/repl/doc-comment-function.nix:4:1
 
  
 A doc comment for a file that only contains a function

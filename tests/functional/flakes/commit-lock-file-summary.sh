@@ -10,7 +10,7 @@ lockfileSummaryFlake=$TEST_ROOT/lockfileSummaryFlake
 createGitRepo "$lockfileSummaryFlake" "--initial-branch=main"
 
 # Test that the --commit-lock-file-summary flag and its alias work
-cat > "$lockfileSummaryFlake/flake.bsd" <<EOF
+cat > "$lockfileSummaryFlake/flake.nix" <<EOF
 {
   inputs = {
     flake1.url = "git+file://$flake1Dir";
@@ -24,7 +24,7 @@ cat > "$lockfileSummaryFlake/flake.bsd" <<EOF
 }
 EOF
 
-git -C "$lockfileSummaryFlake" add flake.bsd
+git -C "$lockfileSummaryFlake" add flake.nix
 git -C "$lockfileSummaryFlake" commit -m 'Add lockfileSummaryFlake'
 
 testSummary="test summary 1"

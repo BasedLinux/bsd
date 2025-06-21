@@ -110,7 +110,7 @@
   - [Files](command-ref/files.md)
     - [bsd.conf](command-ref/conf-file.md)
     - [Profiles](command-ref/files/profiles.md)
-      - [manifest.bsd](command-ref/files/manifest.bsd.md)
+      - [manifest.nix](command-ref/files/manifest.nix.md)
       - [manifest.json](command-ref/files/manifest.json.md)
     - [Channels](command-ref/files/channels.md)
     - [Default Bsd expression](command-ref/files/default-bsd-expression.md)

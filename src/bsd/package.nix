@@ -49,14 +49,14 @@ mkMesonExecutable (finalAttrs: {
       ../../misc
 
       # Doc bsd files for --help
-      ../../doc/manual/generate-manpage.bsd
-      ../../doc/manual/utils.bsd
-      ../../doc/manual/generate-settings.bsd
-      ../../doc/manual/generate-store-info.bsd
+      ../../doc/manual/generate-manpage.nix
+      ../../doc/manual/utils.nix
+      ../../doc/manual/generate-settings.nix
+      ../../doc/manual/generate-store-info.nix
 
       # Other files to be included as string literals
-      ../bsd-channel/unpack-channel.bsd
-      ../bsd-env/buildenv.bsd
+      ../bsd-channel/unpack-channel.nix
+      ../bsd-env/buildenv.nix
       ./get-env.sh
       ./help-stores.md
       ../../doc/manual/source/store/types/index.md.in

@@ -37,7 +37,7 @@ namespace bsd {
 
     TEST(logEI, jsonOutput) {
         SymbolTable testTable;
-        auto problem_file = testTable.create("random.bsd");
+        auto problem_file = testTable.create("random.nix");
         testing::internal::CaptureStderr();
 
         makeJSONLogger(*logger)->logEI({
@@ -49,7 +49,7 @@ namespace bsd {
             });
 
         auto str = testing::internal::GetCapturedStderr();
-        ASSERT_STREQ(str.c_str(), "@bsd {\"action\":\"msg\",\"column\":13,\"file\":\"random.bsd\",\"level\":0,\"line\":2,\"msg\":\"\\u001b[31;1merror:\\u001b[0m\\u001b[34;1m --- error name --- error-unit-test\\u001b[0m\\n\\u001b[34;1mat: \\u001b[33;1m(2:13)\\u001b[34;1m in file: \\u001b[0mrandom.bsd\\n\\nerror without any code lines.\\n\\nthis hint has \\u001b[33;1myellow\\u001b[0m templated \\u001b[33;1mvalues\\u001b[0m!!\",\"raw_msg\":\"this hint has \\u001b[33;1myellow\\u001b[0m templated \\u001b[33;1mvalues\\u001b[0m!!\"}\n");
+        ASSERT_STREQ(str.c_str(), "@bsd {\"action\":\"msg\",\"column\":13,\"file\":\"random.nix\",\"level\":0,\"line\":2,\"msg\":\"\\u001b[31;1merror:\\u001b[0m\\u001b[34;1m --- error name --- error-unit-test\\u001b[0m\\n\\u001b[34;1mat: \\u001b[33;1m(2:13)\\u001b[34;1m in file: \\u001b[0mrandom.nix\\n\\nerror without any code lines.\\n\\nthis hint has \\u001b[33;1myellow\\u001b[0m templated \\u001b[33;1mvalues\\u001b[0m!!\",\"raw_msg\":\"this hint has \\u001b[33;1myellow\\u001b[0m templated \\u001b[33;1mvalues\\u001b[0m!!\"}\n");
     }
 
     TEST(logEI, appendingHintsToPreviousError) {

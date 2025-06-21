@@ -1,3 +1,3 @@
 {
-  outputs = { self }: import ./content-addressed.bsd { };
+  outputs = { self }: import ./content-addressed.nix { };
 }

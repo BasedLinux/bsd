@@ -450,7 +450,7 @@ struct GitInputScheme : InputScheme
         // This allows relative git flake inputs to be resolved against the
         // **current working directory** (as in POSIX), which tends to work out
         // ok in the context of flakes, but is the wrong behavior,
-        // as it should resolve against the flake.bsd base directory instead.
+        // as it should resolve against the flake.nix base directory instead.
         //
         // See: https://discourse.basedlinux.org/t/57783 and #9708
         //

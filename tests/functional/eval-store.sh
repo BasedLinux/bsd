@@ -13,7 +13,7 @@ eval_store=$TEST_ROOT/eval-store
 clearStore
 rm -rf "$eval_store"
 
-bsd build -f dependencies.bsd --eval-store "$eval_store" -o "$TEST_ROOT/result"
+bsd build -f dependencies.nix --eval-store "$eval_store" -o "$TEST_ROOT/result"
 [[ -e $TEST_ROOT/result/foobar ]]
 if [[ ! -n "${NIX_TESTS_CA_BY_DEFAULT:-}" ]]; then
     # Resolved CA derivations are written to store for building
@@ -30,14 +30,14 @@ ls $eval_store/bsd/store/*.drv
 clearStore
 rm -rf "$eval_store"
 
-bsd-instantiate dependencies.bsd --eval-store "$eval_store"
+bsd-instantiate dependencies.nix --eval-store "$eval_store"
 (! ls $NIX_STORE_DIR/*.drv)
 ls $eval_store/bsd/store/*.drv
 
 clearStore
 rm -rf "$eval_store"
 
-bsd-build dependencies.bsd --eval-store "$eval_store" -o "$TEST_ROOT/result"
+bsd-build dependencies.nix --eval-store "$eval_store" -o "$TEST_ROOT/result"
 [[ -e $TEST_ROOT/result/foobar ]]
 if [[ ! -n "${NIX_TESTS_CA_BY_DEFAULT:-}" ]]; then
     # See above
@@ -49,6 +49,6 @@ clearStore
 rm -rf "$eval_store"
 
 # Confirm that import-from-derivation builds on the build store
-[[ $(bsd eval --eval-store "$eval_store?require-sigs=false" --impure --raw --file ./ifd.bsd) = hi ]]
+[[ $(bsd eval --eval-store "$eval_store?require-sigs=false" --impure --raw --file ./ifd.nix) = hi ]]
 ls $NIX_STORE_DIR/*dependencies-top/foobar
 (! ls $eval_store/bsd/store/*dependencies-top/foobar)

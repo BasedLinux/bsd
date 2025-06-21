@@ -9,7 +9,7 @@ let
     ];
   };
 
-  path = "${./eval-okay-context-introspection.bsd}";
+  path = "${./eval-okay-context-introspection.nix}";
 
   desired-context = {
     "${builtins.unsafeDiscardStringContext path}" = {

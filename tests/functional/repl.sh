@@ -8,19 +8,19 @@ cd "$TEST_ROOT"
 
 replCmds="
 simple = 1
-simple = import $testDir/simple.bsd
+simple = import $testDir/simple.nix
 :bl simple
 :log simple
 "
 
 replFailingCmds="
-failing = import $testDir/simple-failing.bsd
+failing = import $testDir/simple-failing.nix
 :b failing
 :log failing
 "
 
 replUndefinedVariable="
-import $testDir/undefined-variable.bsd
+import $testDir/undefined-variable.nix
 "
 
 TODO_BasedLinux
@@ -40,7 +40,7 @@ testRepl () {
     # run it again without checking the output to ensure the previously created symlink gets overwritten
     bsd repl "${bsdArgs[@]}" <<< "$replCmds" || fail "bsd repl does not work twice with the same inputs"
 
-    # simple.bsd prints a PATH during build
+    # simple.nix prints a PATH during build
     echo "$replOutput" | grepQuiet -s 'PATH=' || fail "bsd repl :log doesn't output logs"
     replOutput="$(bsd repl "${bsdArgs[@]}" <<< "$replFailingCmds" 2>&1)"
     echo "$replOutput"
@@ -57,11 +57,11 @@ testRepl () {
       | grep "$(bsd-instantiate --eval -E 'builtins.currentSystem')"
 
     # regression test for #12163
-    replOutput=$(bsd repl "${bsdArgs[@]}" 2>&1 <<< ":sh import $testDir/simple.bsd")
+    replOutput=$(bsd repl "${bsdArgs[@]}" 2>&1 <<< ":sh import $testDir/simple.nix")
     echo "$replOutput" | grepInverse "error: Cannot run 'bsd-shell'"
 
-    expectStderr 1 bsd repl "${testDir}/simple.bsd" \
-      | grepQuiet -s "error: path '$testDir/simple.bsd' is not a flake"
+    expectStderr 1 bsd repl "${testDir}/simple.nix" \
+      | grepQuiet -s "error: path '$testDir/simple.nix' is not a flake"
 }
 
 # Simple test, try building a drv
@@ -135,14 +135,14 @@ testReplResponseNoRegex '
 testReplResponse '
 drvPath
 ' '".*-simple.drv"' \
---file "$testDir/simple.bsd"
+--file "$testDir/simple.nix"
 
 testReplResponse '
 drvPath
 ' '".*-simple.drv"' \
---file "$testDir/simple.bsd" --experimental-features 'ca-derivations'
+--file "$testDir/simple.nix" --experimental-features 'ca-derivations'
 
-mkdir -p flake && cat <<EOF > flake/flake.bsd
+mkdir -p flake && cat <<EOF > flake/flake.nix
 {
     outputs = { self }: {
         foo = 1;
@@ -163,7 +163,7 @@ testReplResponse $'
 a, b, longerName, "with spaces"
 '
 
-cat <<EOF > attribute-set.bsd
+cat <<EOF > attribute-set.nix
 {
     a = 1;
     b = 2;
@@ -172,7 +172,7 @@ cat <<EOF > attribute-set.bsd
 }
 EOF
 testReplResponse '
-:l ./attribute-set.bsd
+:l ./attribute-set.nix
 ' 'Added 4 variables.
 a, b, longerName, "with spaces"
 '
@@ -206,7 +206,7 @@ if [[ "$i" -eq 100 ]]; then
     exit 1
 fi
 
-sed -i 's/beforeChange/afterChange/' flake/flake.bsd
+sed -i 's/beforeChange/afterChange/' flake/flake.nix
 
 # Send reload and second command
 echo ":reload" >&3
@@ -306,7 +306,7 @@ testReplResponseNoRegex '
 
 # Don't prompt for more input when getting unexpected EOF in imported files.
 testReplResponse "
-import $testDir/lang/parse-fail-eof-pos.bsd
+import $testDir/lang/parse-fail-eof-pos.nix
 " \
 '.*error: syntax error, unexpected end of file.*'
 
@@ -314,7 +314,7 @@ import $testDir/lang/parse-fail-eof-pos.bsd
 badDiff=0
 badExitCode=0
 
-bsdVersion="$(bsd eval --impure --raw --expr 'builtins.bsdVersion' --extra-experimental-features bsd-command)"
+bsdVersion="$(bsd eval --impure --raw --expr 'builtins.nixVersion' --extra-experimental-features bsd-command)"
 
 # TODO: write a repl interacter for testing. Papering over the differences between readline / editline and between platforms is a pain.
 

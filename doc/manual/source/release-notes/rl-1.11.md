@@ -24,7 +24,7 @@ features:
     
         $ bsd-prefetch-url -A bsd-repl.src
 
-  - The builtin function `<bsd/fetchurl.bsd>` now supports downloading
+  - The builtin function `<bsd/fetchurl.nix>` now supports downloading
     and unpacking NARs. This removes the need to have multiple downloads
     in the Bsdpkgs stdenv bootstrap process (like a separate busybox
     binary for Linux, or curl/mkdir/sh/bzip2 for Darwin). Now all those

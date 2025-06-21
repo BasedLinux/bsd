@@ -20,7 +20,7 @@ git -C "$nonFlakeDir" commit -m 'Initial'
 flake3Dir=$TEST_ROOT/flake3
 createGitRepo "$flake3Dir" ""
 
-cat > "$flake3Dir/flake.bsd" <<EOF
+cat > "$flake3Dir/flake.nix" <<EOF
 {
   inputs = {
     flake1 = {};
@@ -42,7 +42,7 @@ cat > "$flake3Dir/flake.bsd" <<EOF
       flake = false;
     };
     relativeNonFlakeFile = {
-      url = ./config.bsd;
+      url = ./config.nix;
       flake = false;
     };
   };
@@ -54,12 +54,12 @@ cat > "$flake3Dir/flake.bsd" <<EOF
     packages.$system.xyzzy = inputs.flake2.packages.$system.bar;
     packages.$system.sth = inputs.flake1.packages.$system.foo;
     packages.$system.fnord =
-      with import ./config.bsd;
+      with import ./config.nix;
       mkDerivation {
         inherit system;
         name = "fnord";
-        dummy = builtins.readFile (builtins.path { name = "source"; path = ./.; filter = path: type: baseNameOf path == "config.bsd"; } + "/config.bsd");
-        dummy2 = builtins.readFile (builtins.path { name = "source"; path = inputs.flake1; filter = path: type: baseNameOf path == "simple.bsd"; } + "/simple.bsd");
+        dummy = builtins.readFile (builtins.path { name = "source"; path = ./.; filter = path: type: baseNameOf path == "config.nix"; } + "/config.nix");
+        dummy2 = builtins.readFile (builtins.path { name = "source"; path = inputs.flake1; filter = path: type: baseNameOf path == "simple.nix"; } + "/simple.nix");
         buildCommand = ''
           cat \${inputs.nonFlake}/README.md > \$out
           [[ \$(cat \${inputs.nonFlake}/README.md) = \$(cat \${inputs.nonFlakeFile}) ]]
@@ -72,7 +72,7 @@ EOF
 
 cp "${config_bsd}" "$flake3Dir"
 
-git -C "$flake3Dir" add flake.bsd config.bsd
+git -C "$flake3Dir" add flake.nix config.nix
 git -C "$flake3Dir" commit -m 'Add nonFlakeInputs'
 
 # Check whether `bsd build` works with a lockfile which is missing a
@@ -131,14 +131,14 @@ bsd eval --raw flake3#inputs.relativeNonFlakeFile.sourceInfo.outPath
 ]]
 [[
   $(bsd eval --raw flake3#inputs.relativeNonFlakeFile.outPath) \
-  = $(bsd eval --raw flake3#inputs.relativeNonFlakeFile.sourceInfo.outPath)/config.bsd
+  = $(bsd eval --raw flake3#inputs.relativeNonFlakeFile.sourceInfo.outPath)/config.nix
 ]]
 
 # Make branch "removeXyzzy" where flake3 doesn't have xyzzy anymore
 git -C "$flake3Dir" checkout -b removeXyzzy
-rm "$flake3Dir/flake.bsd"
+rm "$flake3Dir/flake.nix"
 
-cat > "$flake3Dir/flake.bsd" <<EOF
+cat > "$flake3Dir/flake.nix" <<EOF
 {
   inputs = {
     nonFlake = {
@@ -152,7 +152,7 @@ cat > "$flake3Dir/flake.bsd" <<EOF
   outputs = { self, flake1, flake2, nonFlake }: rec {
     packages.$system.sth = flake1.packages.$system.foo;
     packages.$system.fnord =
-      with import ./config.bsd;
+      with import ./config.nix;
       mkDerivation {
         inherit system;
         name = "fnord";
@@ -164,7 +164,7 @@ cat > "$flake3Dir/flake.bsd" <<EOF
 }
 EOF
 bsd flake lock "$flake3Dir"
-git -C "$flake3Dir" add flake.bsd flake.lock
+git -C "$flake3Dir" add flake.nix flake.lock
 git -C "$flake3Dir" commit -m 'Remove packages.xyzzy'
 git -C "$flake3Dir" checkout master
 

@@ -57,7 +57,7 @@
 
   [`bsd profile`](@docroot@/command-ref/new-cli/bsd3-profile.md) now uses names to refer to installed packages when running [`list`](@docroot@/command-ref/new-cli/bsd3-profile-list.md), [`remove`](@docroot@/command-ref/new-cli/bsd3-profile-remove.md) or [`upgrade`](@docroot@/command-ref/new-cli/bsd3-profile-upgrade.md) as opposed to indices. Profile element names are generated when a package is installed and remain the same until the package is removed.
 
-  **Warning**: The `manifest.bsd` file used to record the contents of profiles has changed. Bsd will automatically upgrade profiles to the new version when you modify the profile. After that, the profile can no longer be used by older versions of Bsd.
+  **Warning**: The `manifest.nix` file used to record the contents of profiles has changed. Bsd will automatically upgrade profiles to the new version when you modify the profile. After that, the profile can no longer be used by older versions of Bsd.
 
 - Give `bsd store add` a `--hash-algo` flag [#9809](https://github.com/BasedLinux/bsd/pull/9809)
 
@@ -134,7 +134,7 @@
   error:
          … while evaluating an attribute name
 
-           at bad.bsd:4:11:
+           at bad.nix:4:11:
 
               3|   key = {};
               4| in attr.${key}
@@ -182,7 +182,7 @@
   «partially applied primop map»
 
   bsd-repl> builtins.trace lib.id "my-value"
-  trace: «lambda id @ /bsd/store/8rrzq23h2zq7sv5l2vhw44kls5w0f654-source/lib/trivial.bsd:26:5»
+  trace: «lambda id @ /bsd/store/8rrzq23h2zq7sv5l2vhw44kls5w0f654-source/lib/trivial.nix:26:5»
   "my-value"
   ```
 

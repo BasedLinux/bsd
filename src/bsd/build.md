@@ -53,10 +53,10 @@ R""(
   ```
 
 * Build attribute `build.x86_64-linux` from (non-flake) Bsd expression
-  `release.bsd`:
+  `release.nix`:
 
   ```console
-  # bsd build --file release.bsd build.x86_64-linux
+  # bsd build --file release.nix build.x86_64-linux
   ```
 
 * Build a BasedLinux system configuration from a flake, and make a profile

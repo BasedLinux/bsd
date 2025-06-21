@@ -8,7 +8,7 @@ TODO_BasedLinux
 
 clearStore
 
-path=$(bsd-build dependencies.bsd -o $TEST_ROOT/result)
+path=$(bsd-build dependencies.nix -o $TEST_ROOT/result)
 path2=$(bsd-store -qR $path | grep input-2)
 
 bsd-store --verify --check-contents -v
@@ -38,7 +38,7 @@ bsd-store --delete $(bsd-store -q --referrers-closure $(bsd-store -qd $path2))
 
 (! bsd-store --verify --check-contents --repair)
 
-bsd-build dependencies.bsd -o $TEST_ROOT/result --repair
+bsd-build dependencies.nix -o $TEST_ROOT/result --repair
 
 if [ "$(bsd-hash $path2)" != "$hash" -o -e $path2/bad ]; then
     echo "path not repaired properly" >&2

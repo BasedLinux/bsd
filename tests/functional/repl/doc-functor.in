@@ -1,4 +1,4 @@
-:l doc-functor.bsd
+:l doc-functor.nix
 :doc multiplier
 :doc doubler
 :doc recursive

@@ -19,7 +19,7 @@ R""(
 This command upgrades Bsd to the stable version.
 
 By default, the latest stable version is defined by Bsdpkgs, in
-[bsd-fallback-paths.bsd](https://github.com/BasedLinux/bsdpkgs/raw/master/bsdos/modules/installer/tools/bsd-fallback-paths.bsd)
+[bsd-fallback-paths.nix](https://github.com/BasedLinux/bsdpkgs/raw/master/bsdos/modules/installer/tools/bsd-fallback-paths.nix)
 and updated manually. It may not always be the latest tagged release.
 
 By default, it locates the directory containing the `bsd` binary in the `$PATH`

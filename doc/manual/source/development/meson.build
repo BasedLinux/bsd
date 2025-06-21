@@ -4,7 +4,7 @@ experimental_feature_descriptions_md = custom_target(
     'import @INPUT0@ (builtins.fromJSON (builtins.readFile @INPUT1@))',
   ],
   input : [
-    '../../generate-xp-features.bsd',
+    '../../generate-xp-features.nix',
     xp_features_json,
   ],
   capture : true,

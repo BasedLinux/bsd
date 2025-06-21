@@ -214,7 +214,7 @@ void printSkippedTracesMaybe(
             // - 1 entry of A
             // - (9 duplicate frames omitted)
             //
-            // See: `tests/functional/lang/eval-fail-mutual-recursion.bsd`
+            // See: `tests/functional/lang/eval-fail-mutual-recursion.nix`
             tracesSeen.clear();
         }
     }

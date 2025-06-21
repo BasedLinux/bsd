@@ -100,7 +100,7 @@ Path getBsdDefExpr()
 {
     return settings.useXDGBaseDirectories
         ? getStateDir() + "/defexpr"
-        : getHome() + "/.bsd-defexpr";
+        : getHome() + "/.nix-defexpr";
 }
 
 } // namespace bsd

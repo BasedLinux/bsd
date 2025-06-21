@@ -1,4 +1,4 @@
-with import ./config.bsd;
+with import ./config.nix;
 let
   dep = mkDerivation {
     name = "dep";
@@ -6,7 +6,7 @@ let
       mkdir $out; echo bla > $out/bla
     '';
   };
-  inherit (import ./shell.bsd { inBsdShell = true; }) stdenv;
+  inherit (import ./shell.nix { inBsdShell = true; }) stdenv;
 in
 mkDerivation {
   name = "structured2";

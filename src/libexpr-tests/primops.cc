@@ -166,9 +166,9 @@ namespace bsd {
     }
 
     TEST_F(PrimOpTest, unsafeGetAttrPos) {
-        state.corepkgsFS->addFile(CanonPath("foo.bsd"), "\n\r\n\r{ y = \"x\"; }");
+        state.corepkgsFS->addFile(CanonPath("foo.nix"), "\n\r\n\r{ y = \"x\"; }");
 
-        auto expr = "builtins.unsafeGetAttrPos \"y\" (import <bsd/foo.bsd>)";
+        auto expr = "builtins.unsafeGetAttrPos \"y\" (import <bsd/foo.nix>)";
         auto v = eval(expr);
         ASSERT_THAT(v, IsAttrsOfSize(3));
 
@@ -176,7 +176,7 @@ namespace bsd {
         ASSERT_NE(file, nullptr);
         ASSERT_THAT(*file->value, IsString());
         auto s = baseNameOf(file->value->string_view());
-        ASSERT_EQ(s, "foo.bsd");
+        ASSERT_EQ(s, "foo.nix");
 
         auto line = v.attrs()->find(createSymbol("line"));
         ASSERT_NE(line, nullptr);
@@ -637,7 +637,7 @@ namespace bsd {
     }
 
     TEST_F(PrimOpTest, bsdPath) {
-        auto v = eval("builtins.bsdPath");
+        auto v = eval("builtins.nixPath");
         ASSERT_EQ(v.type(), nList);
         // We can't test much more as currently the EvalSettings are a global
         // that we can't easily swap / replace

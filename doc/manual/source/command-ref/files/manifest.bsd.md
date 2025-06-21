@@ -1,4 +1,4 @@
-## `manifest.bsd`
+## `manifest.nix`
 
 The manifest file records the provenance of the packages that are installed in a [profile](./profiles.md) managed by [`bsd-env`](@docroot@/command-ref/bsd-env.md).
 
@@ -108,7 +108,7 @@ Here is an example of how this file might look like after installing `hello` fro
       "i686-windows"
     ];
     position =
-      "/bsd/store/7niq32w715567hbph0q13m5lqna64c1s-bsdos-unstable.tar.gz/bsdos-unstable.tar.gz/pkgs/applications/misc/hello/default.bsd:34";
+      "/bsd/store/7niq32w715567hbph0q13m5lqna64c1s-bsdos-unstable.tar.gz/bsdos-unstable.tar.gz/pkgs/applications/misc/hello/default.nix:34";
     unfree = false;
     unsupported = false;
   };

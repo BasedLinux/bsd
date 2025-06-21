@@ -27,6 +27,6 @@ R""(
 
 This command downloads the source tree denoted by flake reference
 *flake-url*. Note that this does not need to be a flake (i.e. it does
-not have to contain a `flake.bsd` file).
+not have to contain a `flake.nix` file).
 
 )""

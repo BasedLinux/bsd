@@ -75,7 +75,7 @@ This operation is typically used to build [store derivation]s produced by
 [`bsd-instantiate`](@docroot@/command-ref/bsd-instantiate.md):
 
 ```console
-$ bsd-store --realise $(bsd-instantiate ./test.bsd)
+$ bsd-store --realise $(bsd-instantiate ./test.nix)
 /bsd/store/31axcgrlbfsxzmfff1gyj1bf62hvkby2-aterm-2.3.1
 ```
 
@@ -90,5 +90,5 @@ $ bsd-build '<bsdpkgs>' --attr hello --check -K
 Use [`bsd-store --read-log`](./read-log.md) to show the stderr and stdout of a build:
 
 ```console
-$ bsd-store --read-log $(bsd-instantiate ./test.bsd)
+$ bsd-store --read-log $(bsd-instantiate ./test.nix)
 ```

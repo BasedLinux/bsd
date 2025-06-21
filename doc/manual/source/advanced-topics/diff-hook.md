@@ -5,7 +5,7 @@ that this hook is only executed if the results differ; it is not used
 for determining if the results are the same.
 
 For purposes of demonstration, we'll use the following Bsd file,
-`deterministic.bsd` for testing:
+`deterministic.nix` for testing:
 
 ```bsd
 let
@@ -48,13 +48,13 @@ If the build passes and is deterministic, Bsd will exit with a status
 code of 0:
 
 ```console
-$ bsd-build ./deterministic.bsd --attr stable
+$ bsd-build ./deterministic.nix --attr stable
 this derivation will be built:
   /bsd/store/z98fasz2jqy9gs0xbvdj939p27jwda38-stable.drv
 building '/bsd/store/z98fasz2jqy9gs0xbvdj939p27jwda38-stable.drv'...
 /bsd/store/yyxlzw3vqaas7wfp04g0b1xg51f2czgq-stable
 
-$ bsd-build ./deterministic.bsd --attr stable --check
+$ bsd-build ./deterministic.nix --attr stable --check
 checking outputs of '/bsd/store/z98fasz2jqy9gs0xbvdj939p27jwda38-stable.drv'...
 /bsd/store/yyxlzw3vqaas7wfp04g0b1xg51f2czgq-stable
 ```
@@ -63,13 +63,13 @@ If the build is not deterministic, Bsd will exit with a status code of
 1:
 
 ```console
-$ bsd-build ./deterministic.bsd --attr unstable
+$ bsd-build ./deterministic.nix --attr unstable
 this derivation will be built:
   /bsd/store/cgl13lbj1w368r5z8gywipl1ifli7dhk-unstable.drv
 building '/bsd/store/cgl13lbj1w368r5z8gywipl1ifli7dhk-unstable.drv'...
 /bsd/store/krpqk0l9ib0ibi1d2w52z293zw455cap-unstable
 
-$ bsd-build ./deterministic.bsd --attr unstable --check
+$ bsd-build ./deterministic.nix --attr unstable --check
 checking outputs of '/bsd/store/cgl13lbj1w368r5z8gywipl1ifli7dhk-unstable.drv'...
 error: derivation '/bsd/store/cgl13lbj1w368r5z8gywipl1ifli7dhk-unstable.drv' may
 not be deterministic: output '/bsd/store/krpqk0l9ib0ibi1d2w52z293zw455cap-unstable' differs
@@ -89,7 +89,7 @@ Using `--check` with `--keep-failed` will cause Bsd to keep the second
 build's output in a special, `.check` path:
 
 ```console
-$ bsd-build ./deterministic.bsd --attr unstable --check --keep-failed
+$ bsd-build ./deterministic.nix --attr unstable --check --keep-failed
 checking outputs of '/bsd/store/cgl13lbj1w368r5z8gywipl1ifli7dhk-unstable.drv'...
 note: keeping build directory '/tmp/bsd-build-unstable.drv-0'
 error: derivation '/bsd/store/cgl13lbj1w368r5z8gywipl1ifli7dhk-unstable.drv' may

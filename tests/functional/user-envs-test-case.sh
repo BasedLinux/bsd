@@ -6,28 +6,28 @@ test "$(bsd-env -p $profiles/test -q '*' | wc -l)" -eq 0
 bsd-env --switch-profile $profiles/test
 
 # Query available: should contain several.
-test "$(bsd-env -f ./user-envs.bsd -qa '*' | wc -l)" -eq 6
-outPath10=$(bsd-env -f ./user-envs.bsd -qa --out-path --no-name '*' | grep foo-1.0)
-drvPath10=$(bsd-env -f ./user-envs.bsd -qa --drv-path --no-name '*' | grep foo-1.0)
+test "$(bsd-env -f ./user-envs.nix -qa '*' | wc -l)" -eq 6
+outPath10=$(bsd-env -f ./user-envs.nix -qa --out-path --no-name '*' | grep foo-1.0)
+drvPath10=$(bsd-env -f ./user-envs.nix -qa --drv-path --no-name '*' | grep foo-1.0)
 [ -n "$outPath10" -a -n "$drvPath10" ]
 
 TODO_BasedLinux
 
 # Query with json
-bsd-env -f ./user-envs.bsd -qa --json | jq -e '.[] | select(.name == "bar-0.1") | [
+bsd-env -f ./user-envs.nix -qa --json | jq -e '.[] | select(.name == "bar-0.1") | [
     .outputName == "out",
     .outputs.out == null
 ] | all'
-bsd-env -f ./user-envs.bsd -qa --json --out-path | jq -e '.[] | select(.name == "bar-0.1") | [
+bsd-env -f ./user-envs.nix -qa --json --out-path | jq -e '.[] | select(.name == "bar-0.1") | [
     .outputName == "out",
     (.outputs.out | test("'$NIX_STORE_DIR'.*-0\\.1"))
 ] | all'
-bsd-env -f ./user-envs.bsd -qa --json --drv-path | jq -e '.[] | select(.name == "bar-0.1") | (.drvPath | test("'$NIX_STORE_DIR'.*-0\\.1\\.drv"))'
+bsd-env -f ./user-envs.nix -qa --json --drv-path | jq -e '.[] | select(.name == "bar-0.1") | (.drvPath | test("'$NIX_STORE_DIR'.*-0\\.1\\.drv"))'
 
 # Query descriptions.
-bsd-env -f ./user-envs.bsd -qa '*' --description | grepQuiet silly
-rm -rf $HOME/.bsd-defexpr
-ln -s $(pwd)/user-envs.bsd $HOME/.bsd-defexpr
+bsd-env -f ./user-envs.nix -qa '*' --description | grepQuiet silly
+rm -rf $HOME/.nix-defexpr
+ln -s $(pwd)/user-envs.nix $HOME/.nix-defexpr
 bsd-env -qa '*' --description | grepQuiet silly
 
 # Query the system.
@@ -75,7 +75,7 @@ bsd-env -q '*' | grepQuiet foo-2.0pre1
 test "$($profiles/test/bin/foo)" = "foo-2.0pre1"
 
 # Upgrade "foo": should install foo-2.0.
-NIX_PATH=bsdpkgs=./user-envs.bsd:${NIX_PATH-} bsd-env -f '<bsdpkgs>' -u foo
+NIX_PATH=bsdpkgs=./user-envs.nix:${NIX_PATH-} bsd-env -f '<bsdpkgs>' -u foo
 
 # Query installed: should contain foo-2.0 now.
 test "$(bsd-env -q '*' | wc -l)" -eq 1
@@ -195,7 +195,7 @@ bsd-env --set $drvPath10
 [ "$(bsd-store -q --resolve $profiles/test)" = $outPath10 ]
 
 # Test the case where $HOME contains a symlink.
-mkdir -p $TEST_ROOT/real-home/alice/.bsd-defexpr/channels
+mkdir -p $TEST_ROOT/real-home/alice/.nix-defexpr/channels
 ln -sfn $TEST_ROOT/real-home $TEST_ROOT/home
-ln -sfn $(pwd)/user-envs.bsd $TEST_ROOT/home/alice/.bsd-defexpr/channels/foo
+ln -sfn $(pwd)/user-envs.nix $TEST_ROOT/home/alice/.nix-defexpr/channels/foo
 HOME=$TEST_ROOT/home/alice bsd-env -i foo-0.1

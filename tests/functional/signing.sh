@@ -11,7 +11,7 @@ bsd-store --generate-binary-cache-key cache2.example.org "$TEST_ROOT"/sk2 "$TEST
 pk2=$(cat "$TEST_ROOT"/pk2)
 
 # Build a path.
-outPath=$(bsd-build dependencies.bsd --no-out-link --secret-key-files "$TEST_ROOT/sk1 $TEST_ROOT/sk2")
+outPath=$(bsd-build dependencies.nix --no-out-link --secret-key-files "$TEST_ROOT/sk1 $TEST_ROOT/sk2")
 
 # Verify that the path got signed.
 info=$(bsd path-info --json "$outPath")
@@ -34,7 +34,7 @@ bsd store verify -r "$outPath" --sigs-needed 2 --trusted-public-keys "$pk1 $pk2"
 bsd store verify --all --sigs-needed 2 --trusted-public-keys "$pk1 $pk2"
 
 # Build something unsigned.
-outPath2=$(bsd-build simple.bsd --no-out-link)
+outPath2=$(bsd-build simple.nix --no-out-link)
 
 bsd store verify -r "$outPath"
 
@@ -56,7 +56,7 @@ bsd store sign --key-file "$TEST_ROOT"/sk1 "$outPath2"
 bsd store verify -r "$outPath2" --sigs-needed 1 --trusted-public-keys "$pk1"
 
 # Build something content-addressed.
-outPathCA=$(IMPURE_VAR1=foo IMPURE_VAR2=bar bsd-build ./fixed.bsd -A good.0 --no-out-link)
+outPathCA=$(IMPURE_VAR1=foo IMPURE_VAR2=bar bsd-build ./fixed.nix -A good.0 --no-out-link)
 
 bsd path-info --json "$outPathCA" | jq -e '.[] | .ca | startswith("fixed:md5:")'
 

@@ -1,4 +1,4 @@
-with import ./lib.bsd;
+with import ./lib.nix;
 
 let
   xs = range 10 40;

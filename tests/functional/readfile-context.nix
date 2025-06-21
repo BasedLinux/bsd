@@ -1,8 +1,8 @@
-with import ./config.bsd;
+with import ./config.nix;
 
 let
 
-  input = import ./simple.bsd;
+  input = import ./simple.nix;
 
   dependent = mkDerivation {
     name = "dependent";

@@ -38,7 +38,7 @@ This command has the following operations:
   > Use `--update` explicitly.
 
   A channel URL must point to a directory containing a file `bsdexprs.tar.gz`.
-  At the top level, that tarball must contain a single directory with a `default.bsd` file that serves as the channel’s entry point.
+  At the top level, that tarball must contain a single directory with a `default.nix` file that serves as the channel’s entry point.
 
 - `--remove` *name*
 

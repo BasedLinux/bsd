@@ -184,7 +184,7 @@ fi
 # shellcheck source=./bsd-profile.sh.in
 . "$bsd/etc/profile.d/bsd.sh"
 
-NIX_LINK="$HOME/.bsd-profile"
+NIX_LINK="$HOME/.nix-profile"
 
 if ! "$bsd/bin/bsd-env" -i "$bsd"; then
     echo "$0: unable to install Bsd into your default profile" >&2

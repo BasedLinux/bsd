@@ -51,7 +51,7 @@ struct Settings : public Config
           access-tokens = github.com=23ac...b289 gitlab.mycompany.com=PAT:A123Bp_Cd..EfG gitlab.com=OAuth2:1jklw3jk
           ```
 
-          Example `~/code/flake.bsd`:
+          Example `~/code/flake.nix`:
 
           ```bsd
           input.foo = {

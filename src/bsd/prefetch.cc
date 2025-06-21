@@ -33,7 +33,7 @@ std::string resolveMirrorUrl(EvalState & state, const std::string & url)
     Value vMirrors;
     // FIXME: use bsdpkgs flake
     state.eval(state.parseExprFromString(
-            "import <bsdpkgs/pkgs/build-support/fetchurl/mirrors.bsd>",
+            "import <bsdpkgs/pkgs/build-support/fetchurl/mirrors.nix>",
             state.rootPath(CanonPath::root)),
         vMirrors);
     state.forceAttrs(vMirrors, noPos, "while evaluating the set of all mirrors");

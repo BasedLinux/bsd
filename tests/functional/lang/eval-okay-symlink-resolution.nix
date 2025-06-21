@@ -1,1 +1,1 @@
-import symlink-resolution/foo/overlays/overlay.bsd
+import symlink-resolution/foo/overlays/overlay.nix

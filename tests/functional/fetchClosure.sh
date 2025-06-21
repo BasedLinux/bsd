@@ -16,7 +16,7 @@ clearCacheCache
 requireDaemonNewerThan "2.16.0pre20230524"
 
 # Initialize binary cache.
-nonCaPath=$(bsd build --json --file ./dependencies.bsd --no-link | jq -r .[].outputs.out)
+nonCaPath=$(bsd build --json --file ./dependencies.nix --no-link | jq -r .[].outputs.out)
 caPath=$(bsd store make-content-addressed --json $nonCaPath | jq -r '.rewrites | map(.) | .[]')
 bsd copy --to file://$cacheDir $nonCaPath
 

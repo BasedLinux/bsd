@@ -30,13 +30,13 @@ derivation *path* have been set to their corresponding values, and the
 script `$stdenv/setup` has been sourced. This is useful for reproducing
 the environment of a derivation for development.
 
-If *path* is not given, `bsd-shell` defaults to `shell.bsd` if it
-exists, and `default.bsd` otherwise.
+If *path* is not given, `bsd-shell` defaults to `shell.nix` if it
+exists, and `default.nix` otherwise.
 
 If *path* starts with `http://` or `https://`, it is interpreted as the
 URL of a tarball that will be downloaded and unpacked to a temporary
 location. The tarball must include a single top-level directory
-containing at least a file named `default.bsd`.
+containing at least a file named `default.nix`.
 
 If the derivation defines the variable `shellHook`, it will be run
 after `$stdenv/setup` has been sourced. Since this hook is not executed
@@ -312,10 +312,10 @@ example, the Python example could have been written as:
 
 ```python
 #! /usr/bin/env bsd-shell
-#! bsd-shell deps.bsd -i python
+#! bsd-shell deps.nix -i python
 ```
 
-where the file `deps.bsd` in the same directory as the `#!`-script
+where the file `deps.nix` in the same directory as the `#!`-script
 contains:
 
 ```bsd

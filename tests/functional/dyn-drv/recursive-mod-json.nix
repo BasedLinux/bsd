@@ -1,4 +1,4 @@
-with import ./config.bsd;
+with import ./config.nix;
 
 let
   innerName = "foo";
@@ -10,7 +10,7 @@ mkDerivation rec {
 
   requiredSystemFeatures = [ "recursive-bsd" ];
 
-  drv = builtins.unsafeDiscardOutputDependency (import ./text-hashed-output.bsd).hello.drvPath;
+  drv = builtins.unsafeDiscardOutputDependency (import ./text-hashed-output.nix).hello.drvPath;
 
   buildCommand = ''
     export NIX_CONFIG='experimental-features = bsd-command ca-derivations'

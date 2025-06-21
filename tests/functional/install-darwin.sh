@@ -3,13 +3,13 @@
 set -eux
 
 cleanup() {
-    PLIST="/Library/LaunchDaemons/org.bsdos.bsd-daemon.plist"
+    PLIST="/Library/LaunchDaemons/org.nixos.nix-daemon.plist"
     if sudo launchctl list | grepQuiet bsd-daemon; then
         sudo launchctl unload "$PLIST"
     fi
 
     if [ -f "$PLIST" ]; then
-        sudo rm /Library/LaunchDaemons/org.bsdos.bsd-daemon.plist
+        sudo rm /Library/LaunchDaemons/org.nixos.nix-daemon.plist
     fi
 
     profiles=(/etc/profile /etc/bashrc /etc/zshrc)
@@ -33,8 +33,8 @@ cleanup() {
 
     sudo rm -rf /etc/bsd \
          /bsd \
-         /var/root/.bsd-profile /var/root/.bsd-defexpr /var/root/.bsd-channels \
-         "$HOME/.bsd-profile" "$HOME/.bsd-defexpr" "$HOME/.bsd-channels"
+         /var/root/.nix-profile /var/root/.nix-defexpr /var/root/.nix-channels \
+         "$HOME/.nix-profile" "$HOME/.nix-defexpr" "$HOME/.nix-channels"
 }
 
 verify() {
@@ -62,7 +62,7 @@ verify
     set +e
     (
         echo "cd $(pwd)"
-        echo bsd-build ./release.bsd -A binaryTarball.x86_64-darwin
+        echo bsd-build ./release.nix -A binaryTarball.x86_64-darwin
     ) | bash -l
     set -e
     cp ./result/bsd-*.tar.bz2 $scratch/bsd.tar.bz2

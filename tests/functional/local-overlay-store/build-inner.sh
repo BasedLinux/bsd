@@ -18,7 +18,7 @@ mountOverlayfs
 
 ### Do a build in overlay store
 
-path=$(bsd-build ../hermetic.bsd --arg busybox $busybox --arg seed 2 --store "$storeB" --no-out-link)
+path=$(bsd-build ../hermetic.nix --arg busybox $busybox --arg seed 2 --store "$storeB" --no-out-link)
 
 # Checking for path in lower layer (should fail)
 expect 1 stat $(toRealPath "$storeA/bsd/store" "$path")

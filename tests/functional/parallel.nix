@@ -2,7 +2,7 @@
   sleepTime ? 3,
 }:
 
-with import ./config.bsd;
+with import ./config.nix;
 
 let
 

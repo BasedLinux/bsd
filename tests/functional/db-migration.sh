@@ -18,10 +18,10 @@ killDaemon
 PATH_WITH_NEW_NIX="$PATH"
 export PATH="${NIX_DAEMON_PACKAGE}/bin:$PATH"
 clearStore
-bsd-build simple.bsd --no-out-link
+bsd-build simple.nix --no-out-link
 bsd-store --generate-binary-cache-key cache1.example.org $TEST_ROOT/sk1 $TEST_ROOT/pk1
-dependenciesOutPath=$(bsd-build dependencies.bsd --no-out-link --secret-key-files "$TEST_ROOT/sk1")
-fixedOutPath=$(IMPURE_VAR1=foo IMPURE_VAR2=bar bsd-build fixed.bsd -A good.0 --no-out-link)
+dependenciesOutPath=$(bsd-build dependencies.nix --no-out-link --secret-key-files "$TEST_ROOT/sk1")
+fixedOutPath=$(IMPURE_VAR1=foo IMPURE_VAR2=bar bsd-build fixed.nix -A good.0 --no-out-link)
 
 # Migrate to the new schema and ensure that everything's there
 export PATH="$PATH_WITH_NEW_NIX"

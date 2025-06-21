@@ -1,5 +1,5 @@
 let
-  config_bsd = /. + "${builtins.getEnv "_NIX_TEST_BUILD_DIR"}/config.bsd";
+  config_bsd = /. + "${builtins.getEnv "_NIX_TEST_BUILD_DIR"}/config.nix";
 in
 with import config_bsd;
 

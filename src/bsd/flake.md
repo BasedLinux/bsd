@@ -8,8 +8,8 @@ reproducible and discoverable way. They can have dependencies on other
 flakes, making it possible to have multi-repository Bsd projects.
 
 A flake is a filesystem tree (typically fetched from a Git repository
-or a tarball) that contains a file named `flake.bsd` in the root
-directory. `flake.bsd` specifies some metadata about the flake such as
+or a tarball) that contains a file named `flake.nix` in the root
+directory. `flake.nix` specifies some metadata about the flake such as
 dependencies (called *inputs*), as well as its *outputs* (the Bsd
 values such as packages or BasedLinux modules provided by the flake).
 
@@ -54,13 +54,13 @@ output attribute). They are also allowed in the `inputs` attribute
 of a flake, e.g.
 
 ```bsd
-inputs.bsdpkgs.url = "github:BasedLinux/bsdpkgs";
+inputs.nixpkgs.url = "github:BasedLinux/bsdpkgs";
 ```
 
 is equivalent to
 
 ```bsd
-inputs.bsdpkgs = {
+inputs.nixpkgs = {
   type = "github";
   owner = "BasedLinux";
   repo = "bsdpkgs";
@@ -113,7 +113,7 @@ error: cannot find flake 'flake:relative/path/to/the/flake' in the flake registr
 The semantic of such a path is as follows:
 
 * If the directory is part of a Git repository, then the input will be treated as a `git+file:` URL, otherwise it will be treated as a `path:` url;
-* If the directory doesn't contain a `flake.bsd` file, then Bsd will search for such a file upwards in the file system hierarchy until it finds any of:
+* If the directory doesn't contain a `flake.nix` file, then Bsd will search for such a file upwards in the file system hierarchy until it finds any of:
     1. The Git repository root, or
     2. The filesystem root (/), or
     3. A folder on a different mount point.
@@ -131,7 +131,7 @@ Contrary to URL-like references, path-like flake references can contain arbitrar
 
 The following generic flake reference attributes are supported:
 
-* `dir`: The subdirectory of the flake in which `flake.bsd` is
+* `dir`: The subdirectory of the flake in which `flake.nix` is
   located. This parameter enables having multiple flakes in a
   repository or tarball. The default is the root directory of the
   flake.
@@ -195,7 +195,7 @@ Currently the `type` attribute can be one of the following:
   ```
 
   where *path* is an absolute path to a directory in the file system
-  containing a file named `flake.bsd`.
+  containing a file named `flake.nix`.
 
   If the flake at *path* is not inside a git repository, the `path:`
   prefix is implied and can be omitted.
@@ -206,16 +206,16 @@ Currently the `type` attribute can be one of the following:
   - If *path* is a command line argument, it is interpreted relative
     to the current directory.
 
-  - If *path* is used in a `flake.bsd`, it is interpreted relative to
-    the directory containing that `flake.bsd`. However, the resolved
-    path must be in the same tree. For instance, a `flake.bsd` in the
+  - If *path* is used in a `flake.nix`, it is interpreted relative to
+    the directory containing that `flake.nix`. However, the resolved
+    path must be in the same tree. For instance, a `flake.nix` in the
     root of a tree can use `path:./foo` to access the flake in
     subdirectory `foo`, but `path:../bar` is illegal. On the other
     hand, a flake in the `/foo` directory of a tree can use
     `path:../bar` to refer to the flake in `/bar`.
 
-  Path inputs can be specified with path values in `flake.bsd`. Path values are a syntax for `path` inputs, and they are converted by
-  1. resolving them into relative paths, relative to the base directory of `flake.bsd`
+  Path inputs can be specified with path values in `flake.nix`. Path values are a syntax for `path` inputs, and they are converted by
+  1. resolving them into relative paths, relative to the base directory of `flake.nix`
   2. escaping URL characters (refer to IETF RFC?)
   3. prepending `path:`
 
@@ -228,7 +228,7 @@ Currently the `type` attribute can be one of the following:
   For example, these are valid path flake references:
 
   * `path:/home/user/sub/dir`
-  * `/home/user/sub/dir` (if `dir/flake.bsd` is *not* in a git repository)
+  * `/home/user/sub/dir` (if `dir/flake.nix` is *not* in a git repository)
   * `path:sub/dir`
   * `./sub/dir`
   * `path:../parent`
@@ -262,8 +262,8 @@ Currently the `type` attribute can be one of the following:
   For example, the following are valid Git flake references:
 
   * `git:/home/user/sub/dir`
-  * `/home/user/sub/dir` (if `dir/flake.bsd` is in a git repository)
-  * `./sub/dir` (when used on the command line and `dir/flake.bsd` is in a git repository)
+  * `/home/user/sub/dir` (if `dir/flake.nix` is in a git repository)
+  * `./sub/dir` (when used on the command line and `dir/flake.nix` is in a git repository)
   * `git+https://example.org/my/repo`
   * `git+https://example.org/my/repo?dir=flake1`
   * `git+https://example.org/my/repo?shallow=1` A shallow clone of the repository.
@@ -392,7 +392,7 @@ Currently the `type` attribute can be one of the following:
 
 # Flake format
 
-As an example, here is a simple `flake.bsd` that depends on the
+As an example, here is a simple `flake.nix` that depends on the
 Bsdpkgs flake and provides a single package (i.e. an
 [installable](./bsd.md#installables) derivation):
 
@@ -400,7 +400,7 @@ Bsdpkgs flake and provides a single package (i.e. an
 {
   description = "A flake for building Hello World";
 
-  inputs.bsdpkgs.url = "github:BasedLinux/bsdpkgs/bsdos-20.03";
+  inputs.nixpkgs.url = "github:BasedLinux/bsdpkgs/bsdos-20.03";
 
   outputs = { self, bsdpkgs }: {
 
@@ -418,7 +418,7 @@ Bsdpkgs flake and provides a single package (i.e. an
 }
 ```
 
-The following attributes are supported in `flake.bsd`:
+The following attributes are supported in `flake.nix`:
 
 * `description`: A short, one-line description of the flake.
 
@@ -428,7 +428,7 @@ The following attributes are supported in `flake.bsd`:
 * `outputs`: A function that, given an attribute set containing the
   outputs of each of the input flakes keyed by their identifier,
   yields the Bsd values provided by this flake. Thus, in the example
-  above, `inputs.bsdpkgs` contains the result of the call to the
+  above, `inputs.nixpkgs` contains the result of the call to the
   `outputs` function of the `bsdpkgs` flake.
 
   In addition to the outputs of each input, each input in `inputs`
@@ -488,7 +488,7 @@ inputs.import-cargo = {
 };
 
 # An indirection through the flake registry.
-inputs.bsdpkgs = {
+inputs.nixpkgs = {
   type = "indirect";
   id = "bsdpkgs";
 };
@@ -498,7 +498,7 @@ Alternatively, you can use the URL-like syntax:
 
 ```bsd
 inputs.import-cargo.url = "github:edolstra/import-cargo";
-inputs.bsdpkgs.url = "bsdpkgs";
+inputs.nixpkgs.url = "bsdpkgs";
 ```
 
 Each input is fetched, evaluated and passed to the `outputs` function
@@ -520,16 +520,16 @@ expected function argument to `outputs`. Thus,
 outputs = { self, bsdpkgs }: ...;
 ```
 
-without an `inputs.bsdpkgs` attribute is equivalent to
+without an `inputs.nixpkgs` attribute is equivalent to
 
 ```bsd
-inputs.bsdpkgs = {
+inputs.nixpkgs = {
   type = "indirect";
   id = "bsdpkgs";
 };
 ```
 
-Repositories that don't contain a `flake.bsd` can also be used as
+Repositories that don't contain a `flake.nix` can also be used as
 inputs, by setting the input's `flake` attribute to `false`:
 
 ```bsd
@@ -548,12 +548,12 @@ outputs = { self, bsdpkgs, grcov }: {
 };
 ```
 
-Transitive inputs can be overridden from a `flake.bsd` file. For
+Transitive inputs can be overridden from a `flake.nix` file. For
 example, the following overrides the `bsdpkgs` input of the `bsdops`
 input:
 
 ```bsd
-inputs.bsdops.inputs.bsdpkgs = {
+inputs.nixops.inputs.nixpkgs = {
   type = "github";
   owner = "my-org";
   repo = "bsdpkgs";
@@ -566,7 +566,7 @@ the `bsdpkgs` input of the top-level flake to be equal to the
 `bsdpkgs` input of the `dwarffs` input of the top-level flake:
 
 ```bsd
-inputs.bsdpkgs.follows = "dwarffs/bsdpkgs";
+inputs.nixpkgs.follows = "dwarffs/bsdpkgs";
 ```
 
 The value of the `follows` attribute is a `/`-separated sequence of
@@ -576,7 +576,7 @@ flake.
 Overrides and `follows` can be combined, e.g.
 
 ```bsd
-inputs.bsdops.inputs.bsdpkgs.follows = "dwarffs/bsdpkgs";
+inputs.nixops.inputs.nixpkgs.follows = "dwarffs/bsdpkgs";
 ```
 
 sets the `bsdpkgs` input of `bsdops` to be the same as the `bsdpkgs`
@@ -588,18 +588,18 @@ or BasedLinux modules, which are composed into the top-level flake's
 
 # Lock files
 
-Inputs specified in `flake.bsd` are typically "unlocked" in the sense
+Inputs specified in `flake.nix` are typically "unlocked" in the sense
 that they don't specify an exact revision. To ensure reproducibility,
 Bsd will automatically generate and use a *lock file* called
 `flake.lock` in the flake's directory.
 The lock file is a UTF-8 JSON file.
 It contains a graph structure isomorphic to the graph of dependencies of the root
 flake. Each node in the graph (except the root node) maps the
-(usually) unlocked input specifications in `flake.bsd` to locked input
+(usually) unlocked input specifications in `flake.nix` to locked input
 specifications. Each node also contains some metadata, such as the
 dependencies (outgoing edges) of the node.
 
-For example, if `flake.bsd` has the inputs in the example above, then
+For example, if `flake.nix` has the inputs in the example above, then
 the resulting lock file might be:
 
 ```json
@@ -674,7 +674,7 @@ following fields:
 * `inputs`: The dependencies of this node, as a mapping from input
   names (e.g. `bsdpkgs`) to node labels (e.g. `n2`).
 
-* `original`: The original input specification from `flake.bsd`, as a
+* `original`: The original input specification from `flake.nix`, as a
   set of `builtins.fetchTree` arguments.
 
 * `locked`: The locked input specification, as a set of
@@ -699,7 +699,7 @@ following fields:
 
 * `flake`: A Boolean denoting whether this is a flake or non-flake
   dependency. Corresponds to the `flake` attribute in the `inputs`
-  attribute in `flake.bsd`.
+  attribute in `flake.nix`.
 
 The `original` and `locked` attributes are omitted for the root
 node. This is because we cannot record the commit hash or content hash

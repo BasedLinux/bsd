@@ -2,7 +2,7 @@
 
 source common.sh
 
-drvPath=$(bsd-instantiate simple.bsd)
+drvPath=$(bsd-instantiate simple.nix)
 
 bsd derivation show "$drvPath" | jq .[] > "$TEST_HOME"/simple.json
 

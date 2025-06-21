@@ -1,5 +1,5 @@
 builtins.fetchTree {
   type = "file";
-  url = "file://eval-fail-fetchTree-negative.bsd";
+  url = "file://eval-fail-fetchTree-negative.nix";
   owner = -1;
 }

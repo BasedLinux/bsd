@@ -12,7 +12,7 @@ subflake2="$rootFlake/sub2"
 rm -rf "$rootFlake"
 mkdir -p "$rootFlake" "$subflake0" "$subflake1" "$subflake2"
 
-cat > "$rootFlake/flake.bsd" <<EOF
+cat > "$rootFlake/flake.nix" <<EOF
 {
   inputs.sub0.url = ./sub0;
   outputs = { self, sub0 }: {
@@ -22,7 +22,7 @@ cat > "$rootFlake/flake.bsd" <<EOF
 }
 EOF
 
-cat > "$subflake0/flake.bsd" <<EOF
+cat > "$subflake0/flake.nix" <<EOF
 {
   outputs = { self }: {
     x = 7;
@@ -33,7 +33,7 @@ EOF
 [[ $(bsd eval "$rootFlake#x") = 2 ]]
 [[ $(bsd eval "$rootFlake#y") = 14 ]]
 
-cat > "$subflake1/flake.bsd" <<EOF
+cat > "$subflake1/flake.nix" <<EOF
 {
   inputs.root.url = "../";
   outputs = { self, root }: {
@@ -46,11 +46,11 @@ EOF
 [[ $(bsd eval "$rootFlake?dir=sub1#y") = 6 ]]
 
 initGitRepo "$rootFlake"
-git -C "$rootFlake" add flake.bsd sub0/flake.bsd sub1/flake.bsd
+git -C "$rootFlake" add flake.nix sub0/flake.nix sub1/flake.nix
 
 [[ $(bsd eval "$subflake1#y") = 6 ]]
 
-cat > "$subflake2/flake.bsd" <<EOF
+cat > "$subflake2/flake.nix" <<EOF
 {
   inputs.root.url = ./..;
   inputs.sub1.url = "../sub1";
@@ -61,7 +61,7 @@ cat > "$subflake2/flake.bsd" <<EOF
 }
 EOF
 
-git -C "$rootFlake" add flake.bsd sub2/flake.bsd
+git -C "$rootFlake" add flake.nix sub2/flake.nix
 
 [[ $(bsd eval "$subflake2#y") = 15 ]]
 
@@ -94,7 +94,7 @@ outPath=$(readlink "$TEST_ROOT/result")
 # Test circular relative path flakes. FIXME: doesn't work at the moment.
 if false; then
 
-cat > "$rootFlake/flake.bsd" <<EOF
+cat > "$rootFlake/flake.nix" <<EOF
 {
   inputs.sub1.url = "./sub1";
   inputs.sub2.url = "./sub1";
@@ -117,8 +117,8 @@ mkdir -p "$TEST_ROOT/issue-13018/example"
 (
   cd "$TEST_ROOT/issue-13018"
   git init
-  echo '{ outputs = _: { }; }' >flake.bsd
-  cat >example/flake.bsd <<EOF
+  echo '{ outputs = _: { }; }' >flake.nix
+  cat >example/flake.nix <<EOF
 {
   inputs.parent.url = ../.;
   outputs = { parent, ... }: builtins.seq parent { ok = null; };
@@ -139,7 +139,7 @@ mkdir -p "$TEST_ROOT/issue-13164/nested-flake1/nested-flake2"
   git init
   git config --global user.email "you@example.com"
   git config --global user.name "Your Name"
-  cat >flake.bsd <<EOF
+  cat >flake.nix <<EOF
 {
   inputs.nestedFlake1.url = "path:./nested-flake1";
   outputs = { self, nestedFlake1 }: {
@@ -148,7 +148,7 @@ mkdir -p "$TEST_ROOT/issue-13164/nested-flake1/nested-flake2"
 }
 EOF
 
-  cat >nested-flake1/flake.bsd <<EOF
+  cat >nested-flake1/flake.nix <<EOF
 {
   inputs.nestedFlake2.url = "path:./nested-flake2";
 
@@ -159,7 +159,7 @@ EOF
 }
 EOF
 
-  cat >nested-flake1/nested-flake2/flake.bsd <<EOF
+  cat >nested-flake1/nested-flake2/flake.nix <<EOF
 {
   outputs = { self }: {
     name = "nestedFlake2";

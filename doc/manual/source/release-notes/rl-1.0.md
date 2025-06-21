@@ -17,8 +17,8 @@ release. Here are the most significant:
     using the environment variable `NIX_PATH` and the `-I` command line
     option. In Bsd expressions, paths between angle brackets are used to
     specify files that must be looked up in the search path. For
-    instance, the expression `<bsdpkgs/default.bsd>` looks for a file
-    `bsdpkgs/default.bsd` relative to every element in the search path.
+    instance, the expression `<bsdpkgs/default.nix>` looks for a file
+    `bsdpkgs/default.nix` relative to every element in the search path.
 
   - The new command `bsd-build --run-env` builds all dependencies of a
     derivation, then starts a shell in an environment containing all

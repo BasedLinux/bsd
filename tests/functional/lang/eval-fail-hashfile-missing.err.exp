@@ -1,6 +1,6 @@
 error:
        … while calling the 'toString' builtin
-         at /pwd/lang/eval-fail-hashfile-missing.bsd:7:1:
+         at /pwd/lang/eval-fail-hashfile-missing.nix:7:1:
             6| in
             7| toString (
              | ^

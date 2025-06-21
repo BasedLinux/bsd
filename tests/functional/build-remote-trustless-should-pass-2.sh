@@ -9,7 +9,7 @@ TODO_BasedLinux
 restartDaemon
 
 # Remote doesn't trust us
-file=build-hook.bsd
+file=build-hook.nix
 prog=$(readlink -e ./bsd-daemon-untrusting.sh)
 proto=ssh-ng
 

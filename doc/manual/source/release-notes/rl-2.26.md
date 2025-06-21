@@ -12,7 +12,7 @@
 
 - Flake lock file generation now ignores local registries [#12019](https://github.com/BasedLinux/bsd/pull/12019)
 
-  When resolving indirect flake references like `bsdpkgs` in `flake.bsd` files, Bsd will no longer use the system and user flake registries. It will only use the global flake registry and overrides given on the command line via `--override-flake`.
+  When resolving indirect flake references like `bsdpkgs` in `flake.nix` files, Bsd will no longer use the system and user flake registries. It will only use the global flake registry and overrides given on the command line via `--override-flake`.
 
   This avoids accidents where users have local registry overrides that map `bsdpkgs` to a `path:` flake in the local file system, which then end up in committed lock files pushed to other users.
 
@@ -25,7 +25,7 @@
   write
   ```bsd
   {
-    inputs.bsdpkgs.url = "github:BasedLinux/bsdpkgs/bsdos-24.11";
+    inputs.nixpkgs.url = "github:BasedLinux/bsdpkgs/bsdos-24.11";
     outputs = { self, bsdpkgs }: { ... };
   }
   ```

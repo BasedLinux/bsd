@@ -3,7 +3,7 @@
   contentAddressed ? false,
 }:
 
-with import ./config.bsd;
+with import ./config.nix;
 
 let
 

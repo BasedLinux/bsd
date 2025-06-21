@@ -1,4 +1,4 @@
-with import ./config.bsd;
+with import ./config.nix;
 
 rec {
 
@@ -18,7 +18,7 @@ rec {
     builder = builtins.toFile "build-graph-builder" "${printRefs}";
     exportReferencesGraph = [
       "refs"
-      (import ./dependencies.bsd { })
+      (import ./dependencies.nix { })
     ];
   };
 
@@ -27,7 +27,7 @@ rec {
     builder = builtins.toFile "build-graph-builder" "${printRefs}";
     exportReferencesGraph = [
       "refs"
-      (import ./dependencies.bsd { }).drvPath
+      (import ./dependencies.nix { }).drvPath
     ];
   };
 

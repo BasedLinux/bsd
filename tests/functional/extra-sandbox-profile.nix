@@ -1,6 +1,6 @@
 { destFile, seed }:
 
-with import ./config.bsd;
+with import ./config.nix;
 
 mkDerivation {
   name = "simple";

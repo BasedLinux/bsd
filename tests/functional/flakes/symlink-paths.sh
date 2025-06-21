@@ -7,12 +7,12 @@ requireGit
 create_flake() {
     local flakeDir="$1"
     createGitRepo "$flakeDir"
-    cat > "$flakeDir/flake.bsd" <<EOF
+    cat > "$flakeDir/flake.nix" <<EOF
 {
     outputs = { self }: { x = 2; };
 }
 EOF
-    git -C "$flakeDir" add flake.bsd
+    git -C "$flakeDir" add flake.nix
     git -C "$flakeDir" commit -m Initial
 }
 
@@ -36,12 +36,12 @@ test_symlink_points_to_dir_in_repo() {
     local repoDir="$TEST_ROOT/flake1"
     createGitRepo "$repoDir"
     mkdir -p "$repoDir/subdir"
-    cat > "$repoDir/subdir/flake.bsd" <<EOF
+    cat > "$repoDir/subdir/flake.nix" <<EOF
 {
     outputs = { self }: { x = 2; };
 }
 EOF
-    git -C "$repoDir" add subdir/flake.bsd
+    git -C "$repoDir" add subdir/flake.nix
     git -C "$repoDir" commit -m Initial
     ln -sn "$TEST_ROOT/flake1/subdir" "$TEST_ROOT/flake1_sym"
     [[ $(bsd eval "$TEST_ROOT/flake1_sym#x") = 2 ]]
@@ -54,12 +54,12 @@ test_symlink_from_repo_to_another() {
     createGitRepo "$repoDir"
     echo "Hello" > "$repoDir/file"
     mkdir "$repoDir/subdir"
-    cat > "$repoDir/subdir/flake.bsd" <<EOF
+    cat > "$repoDir/subdir/flake.nix" <<EOF
 {
     outputs = { self }: { x = builtins.readFile ../file; };
 }
 EOF
-    git -C "$repoDir" add subdir/flake.bsd file
+    git -C "$repoDir" add subdir/flake.nix file
     git -C "$repoDir" commit -m Initial
     [[ $(bsd eval "$TEST_ROOT/repo1/subdir#x") == \"Hello\\n\" ]]
 

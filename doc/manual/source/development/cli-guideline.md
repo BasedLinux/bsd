@@ -293,7 +293,7 @@ Initializing Bsd project at `/path/to/here`.
 
 Another great place to add prompts are **confirmation dialogues for dangerous
 actions**. For example when adding new substitutor via `OPTIONS` or via
-`flake.bsd` we should prompt - for the first time - and let user review what is
+`flake.nix` we should prompt - for the first time - and let user review what is
 going to happen.
 
 

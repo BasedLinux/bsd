@@ -19,11 +19,11 @@ echo "$missingImpureErrorMsg" | grepQuiet -- --impure || \
 (! bsd eval --expr builtins.currentTime)
 (! bsd eval --expr builtins.currentSystem)
 
-(! bsd-instantiate --pure-eval ./simple.bsd)
+(! bsd-instantiate --pure-eval ./simple.nix)
 
-[[ $(bsd eval --impure --expr "(import (builtins.fetchurl { url = file://$(pwd)/pure-eval.bsd; })).x") == 123 ]]
-(! bsd eval --expr "(import (builtins.fetchurl { url = file://$(pwd)/pure-eval.bsd; })).x")
-bsd eval --expr "(import (builtins.fetchurl { url = file://$(pwd)/pure-eval.bsd; sha256 = \"$(bsd hash file pure-eval.bsd --type sha256)\"; })).x"
+[[ $(bsd eval --impure --expr "(import (builtins.fetchurl { url = file://$(pwd)/pure-eval.nix; })).x") == 123 ]]
+(! bsd eval --expr "(import (builtins.fetchurl { url = file://$(pwd)/pure-eval.nix; })).x")
+bsd eval --expr "(import (builtins.fetchurl { url = file://$(pwd)/pure-eval.nix; sha256 = \"$(bsd hash file pure-eval.nix --type sha256)\"; })).x"
 
 rm -rf $TEST_ROOT/eval-out
 bsd eval --store dummy:// --write-to $TEST_ROOT/eval-out --expr '{ x = "foo" + "bar"; y = { z = "bla"; }; }'

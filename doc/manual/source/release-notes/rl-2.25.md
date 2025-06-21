@@ -70,11 +70,11 @@
 
   Author: [**@zimbatm**](https://github.com/zimbatm)
 
-- `<bsd/fetchurl.bsd>` uses TLS verification [#11585](https://github.com/BasedLinux/bsd/pull/11585)
+- `<bsd/fetchurl.nix>` uses TLS verification [#11585](https://github.com/BasedLinux/bsd/pull/11585)
 
-  Previously `<bsd/fetchurl.bsd>` did not do TLS verification. This was because the Bsd sandbox in the past did not have access to TLS certificates, and Bsd checks the hash of the fetched file anyway. However, this can expose authentication data from `netrc` and URLs to man-in-the-middle attackers. In addition, Bsd now in some cases (such as when using impure derivations) does *not* check the hash. Therefore we have now enabled TLS verification. This means that downloads by `<bsd/fetchurl.bsd>` will now fail if you're fetching from a HTTPS server that does not have a valid certificate.
+  Previously `<bsd/fetchurl.nix>` did not do TLS verification. This was because the Bsd sandbox in the past did not have access to TLS certificates, and Bsd checks the hash of the fetched file anyway. However, this can expose authentication data from `netrc` and URLs to man-in-the-middle attackers. In addition, Bsd now in some cases (such as when using impure derivations) does *not* check the hash. Therefore we have now enabled TLS verification. This means that downloads by `<bsd/fetchurl.nix>` will now fail if you're fetching from a HTTPS server that does not have a valid certificate.
 
-  `<bsd/fetchurl.bsd>` is also known as the builtin derivation builder `builtin:fetchurl`. It's not to be confused with the evaluation-time function `builtins.fetchurl`, which was not affected by this issue.
+  `<bsd/fetchurl.nix>` is also known as the builtin derivation builder `builtin:fetchurl`. It's not to be confused with the evaluation-time function `builtins.fetchurl`, which was not affected by this issue.
 
 
 # Contributors

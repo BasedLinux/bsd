@@ -9,7 +9,7 @@ TODO_BasedLinux
 clearStore
 clearRemoteStore
 
-outPath=$(bsd-build --no-out-link dependencies.bsd)
+outPath=$(bsd-build --no-out-link dependencies.nix)
 
 bsd store info --store "$remoteStore"
 

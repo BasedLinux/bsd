@@ -1,6 +1,6 @@
 { mode }:
 
-with import ./config.bsd;
+with import ./config.nix;
 
 mkDerivation (
   {

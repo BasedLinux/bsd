@@ -1,4 +1,4 @@
-:l pretty-print-idempotent.bsd
+:l pretty-print-idempotent.nix
 oneDeep
 oneDeep
 twoDeep

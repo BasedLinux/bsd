@@ -76,7 +76,7 @@ bsd log --store "$TEST_ROOT/machine0" --file "$file" --arg busybox "$busybox" "p
 done
 
 # Behavior of keep-failed
-out="$(bsd-build 2>&1 failing.bsd \
+out="$(bsd-build 2>&1 failing.nix \
   --no-out-link \
   --builders "$(join_by '; ' "${builders[@]}")"  \
   --keep-failed \

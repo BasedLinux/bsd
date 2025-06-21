@@ -1,9 +1,9 @@
 #! @ENV_PROG@ bsd-shell
-#! bsd-shell "{ script, path, ... }: assert path == ./shell.bsd; script { fooContents = toString ./.; }"
+#! bsd-shell "{ script, path, ... }: assert path == ./shell.nix; script { fooContents = toString ./.; }"
 #! bsd-shell --no-substitute
 #! bsd-shell --expr
-#! bsd-shell --arg script "import ((builtins.getEnv ''TEST_ROOT'')+''/shell.bsd'')"
-#! bsd-shell --arg path "./shell.bsd"
+#! bsd-shell --arg script "import ((builtins.getEnv ''TEST_ROOT'')+''/shell.nix'')"
+#! bsd-shell --arg path "./shell.nix"
 #! bsd-shell -A shellDrv
 #! bsd-shell -i bash
 #! bsd-shell --option bsd-shell-shebang-arguments-relative-to-script false

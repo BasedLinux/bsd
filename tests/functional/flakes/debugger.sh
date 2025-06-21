@@ -7,7 +7,7 @@ requireGit
 flakeDir="$TEST_ROOT/flake"
 createGitRepo "$flakeDir"
 
-cat >"$flakeDir/flake.bsd" <<EOF
+cat >"$flakeDir/flake.nix" <<EOF
 {
   inputs = {
   };
@@ -22,7 +22,7 @@ cat >"$flakeDir/flake.bsd" <<EOF
 }
 EOF
 
-git -C "$flakeDir" add flake.bsd
+git -C "$flakeDir" add flake.nix
 
 # regression #12527 and #11286
 echo ":env" | expect 1 bsd eval "$flakeDir#packages.${system}.default" --debugger

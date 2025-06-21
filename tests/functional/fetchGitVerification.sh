@@ -50,7 +50,7 @@ git -C $repo -c "user.signingkey=$key2File" commit -S -m 'second commit'
 # Flake input test
 flakeDir="$TEST_ROOT/flake"
 mkdir -p "$flakeDir"
-cat > "$flakeDir/flake.bsd" <<EOF
+cat > "$flakeDir/flake.nix" <<EOF
 {
   inputs.test = {
     type = "git";
@@ -67,7 +67,7 @@ EOF
 bsd build --out-link "$flakeDir/result" "$flakeDir#test"
 [[ $(cat "$flakeDir/result/text") = 'hello world' ]]
 
-cat > "$flakeDir/flake.bsd" <<EOF
+cat > "$flakeDir/flake.nix" <<EOF
 {
   inputs.test = {
     type = "git";

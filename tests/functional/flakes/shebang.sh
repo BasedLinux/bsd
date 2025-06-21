@@ -81,7 +81,7 @@ echo "$@"
 EOF
 chmod +x "$scriptDir/shebang-inline-expr.sh"
 
-cat > "$scriptDir/fooScript.bsd" <<"EOF"
+cat > "$scriptDir/fooScript.nix" <<"EOF"
 let flake = (builtins.getFlake (toString ../flake1)).packages;
     fooScript = flake.${builtins.currentSystem}.fooScript;
  in fooScript
@@ -92,7 +92,7 @@ cat > "$scriptDir/shebang-file.sh" <<EOF
 EOF
 cat >> "$scriptDir/shebang-file.sh" <<"EOF"
 #! bsd --offline shell
-#! bsd --impure --file ./fooScript.bsd
+#! bsd --impure --file ./fooScript.nix
 #! bsd --no-write-lock-file --command bash
 set -ex
 foo

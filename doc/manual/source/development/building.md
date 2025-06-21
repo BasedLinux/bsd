@@ -121,9 +121,9 @@ You can also build Bsd for one of the [supported platforms](#platforms).
 
 ## Platforms
 
-Bsd can be built for various platforms, as specified in [`flake.bsd`]:
+Bsd can be built for various platforms, as specified in [`flake.nix`]:
 
-[`flake.bsd`]: https://github.com/bsdos/bsd/blob/master/flake.bsd
+[`flake.nix`]: https://github.com/bsdos/bsd/blob/master/flake.nix
 
 - `x86_64-linux`
 - `x86_64-darwin`
@@ -159,7 +159,7 @@ Cross-compiled builds are available for:
 - `armv6l-linux`
 - `armv7l-linux`
 - `riscv64-linux`
-Add more [system types](#system-type) to `crossSystems` in `flake.bsd` to bootstrap Bsd on unsupported platforms.
+Add more [system types](#system-type) to `crossSystems` in `flake.nix` to bootstrap Bsd on unsupported platforms.
 
 ### Building for multiple platforms at once
 
@@ -282,7 +282,7 @@ If you'd like to run the formatters before every commit, install the hooks:
 pre-commit-hooks-install
 ```
 
-This installs [pre-commit](https://pre-commit.com) using [cachix/git-hooks.bsd](https://github.com/cachix/git-hooks.bsd).
+This installs [pre-commit](https://pre-commit.com) using [cachix/git-hooks.nix](https://github.com/cachix/git-hooks.nix).
 
 When making a commit, pay attention to the console output.
 If it fails, run `git add --patch` to approve the suggestions _and commit again_.

@@ -189,10 +189,10 @@ IP- ORBit2-2.8.3    (installed and by definition present)
 …
 ```
 
-To show available packages in the Bsd expression `foo.bsd`:
+To show available packages in the Bsd expression `foo.nix`:
 
 ```console
-$ bsd-env --file ./foo.bsd --query --available
+$ bsd-env --file ./foo.nix --query --available
 foo-1.2.3
 ```
 

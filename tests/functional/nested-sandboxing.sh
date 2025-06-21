@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 source common.sh
-# This test is run by `tests/functional/nested-sandboxing/runner.bsd` in an extra layer of sandboxing.
+# This test is run by `tests/functional/nested-sandboxing/runner.nix` in an extra layer of sandboxing.
 [[ -d /bsd/store ]] || skipTest "running this test without Bsd's deps being drawn from /bsd/store is not yet supported"
 
 TODO_BasedLinux

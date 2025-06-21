@@ -103,9 +103,9 @@ $ bsd-env --list-generations
 ```
 
 You generally wouldn’t have `/bsd/var/bsd/profiles/some-profile/bin` in
-your `PATH`. Rather, there is a symlink `~/.bsd-profile` that points to
+your `PATH`. Rather, there is a symlink `~/.nix-profile` that points to
 your current profile. This means that you should put
-`~/.bsd-profile/bin` in your `PATH` (and indeed, that’s what the
+`~/.nix-profile/bin` in your `PATH` (and indeed, that’s what the
 initialisation script `/bsd/etc/profile.d/bsd.sh` does). This makes it
 easier to switch to a different profile. You can do that using the
 command `bsd-env --switch-profile`:
@@ -123,11 +123,11 @@ location than the `profiles` directory, since otherwise it might not be
 used as a root of the [garbage collector](garbage-collection.md).
 
 All `bsd-env` operations work on the profile pointed to by
-`~/.bsd-profile`, but you can override this using the `--profile` option
+`~/.nix-profile`, but you can override this using the `--profile` option
 (abbreviation `-p`):
 
 ```console
 $ bsd-env --profile /bsd/var/bsd/profiles/other-profile --install --attr bsdpkgs.subversion
 ```
 
-This will *not* change the `~/.bsd-profile` symlink.
+This will *not* change the `~/.nix-profile` symlink.

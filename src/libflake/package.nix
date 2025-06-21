@@ -29,7 +29,7 @@ mkMesonLibrary (finalAttrs: {
     ./.version
     ./meson.build
     ./include/bsd/flake/meson.build
-    ./call-flake.bsd
+    ./call-flake.nix
     (fileset.fileFilter (file: file.hasExt "cc") ./.)
     (fileset.fileFilter (file: file.hasExt "hh") ./.)
   ];

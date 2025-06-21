@@ -108,7 +108,7 @@
     (Unlike symbolic package names such as `subversion-1.4.0`, attribute
     names in an attribute set are unique.) For instance, a quick way to
     perform a test build of a package in Bsdpkgs is `bsd-build
-            pkgs/top-level/all-packages.bsd -A
+            pkgs/top-level/all-packages.nix -A
             foo`. `bsd-env -q
             --attr` shows the attribute names corresponding to each derivation.
 

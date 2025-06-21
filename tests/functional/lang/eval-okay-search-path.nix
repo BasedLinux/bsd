@@ -1,15 +1,15 @@
-with import ./lib.bsd;
+with import ./lib.nix;
 with builtins;
 
-assert isFunction (import <bsd/fetchurl.bsd>);
+assert isFunction (import <bsd/fetchurl.nix>);
 
 assert length __bsdPath == 5;
 assert length (filter (x: baseNameOf x.path == "dir4") __bsdPath) == 1;
 
-import <a.bsd>
-+ import <b.bsd>
-+ import <c.bsd>
-+ import <dir5/c.bsd>
+import <a.nix>
++ import <b.nix>
++ import <c.nix>
++ import <dir5/c.nix>
 + (
   let
     __bsdPath = [
@@ -17,5 +17,5 @@ import <a.bsd>
       { path = ./dir1; }
     ];
   in
-  import <a.bsd>
+  import <a.nix>
 )

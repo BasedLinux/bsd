@@ -94,27 +94,27 @@ static std::vector<std::string> shellwords(std::string_view s)
 }
 
 /**
- * Like `resolveExprPath`, but prefers `shell.bsd` instead of `default.bsd`,
- * and if `path` was a directory, it checks eagerly whether `shell.bsd` or
- * `default.bsd` exist, throwing an error if they don't.
+ * Like `resolveExprPath`, but prefers `shell.nix` instead of `default.nix`,
+ * and if `path` was a directory, it checks eagerly whether `shell.nix` or
+ * `default.nix` exist, throwing an error if they don't.
  */
 static SourcePath resolveShellExprPath(SourcePath path)
 {
     auto resolvedOrDir = resolveExprPath(path, false);
     if (resolvedOrDir.resolveSymlinks().lstat().type == SourceAccessor::tDirectory) {
-        if ((resolvedOrDir / "shell.bsd").pathExists()) {
+        if ((resolvedOrDir / "shell.nix").pathExists()) {
             if (compatibilitySettings.bsdShellAlwaysLooksForShellBsd) {
-                return resolvedOrDir / "shell.bsd";
+                return resolvedOrDir / "shell.nix";
             } else {
                 warn("Skipping '%1%', because the setting '%2%' is disabled. This is a deprecated behavior. Consider enabling '%2%'.",
-                    resolvedOrDir / "shell.bsd",
+                    resolvedOrDir / "shell.nix",
                     "bsd-shell-always-looks-for-shell-bsd");
             }
         }
-        if ((resolvedOrDir / "default.bsd").pathExists()) {
-            return resolvedOrDir / "default.bsd";
+        if ((resolvedOrDir / "default.nix").pathExists()) {
+            return resolvedOrDir / "default.nix";
         }
-        throw Error("neither '%s' nor '%s' found in '%s'", "shell.bsd", "default.bsd", resolvedOrDir);
+        throw Error("neither '%s' nor '%s' found in '%s'", "shell.nix", "default.nix", resolvedOrDir);
     }
     return resolvedOrDir;
 }
@@ -317,16 +317,16 @@ static void main_bsd_build(int argc, char * * argv)
         fromArgs = true;
         remainingArgs = {joined.str()};
     } else if (!fromArgs && remainingArgs.empty()) {
-        if (isBsdShell && !compatibilitySettings.bsdShellAlwaysLooksForShellBsd && std::filesystem::exists("shell.bsd")) {
-            // If we're in 2.3 compatibility mode, we need to look for shell.bsd
+        if (isBsdShell && !compatibilitySettings.bsdShellAlwaysLooksForShellBsd && std::filesystem::exists("shell.nix")) {
+            // If we're in 2.3 compatibility mode, we need to look for shell.nix
             // now, because it won't be done later.
-            remainingArgs = {"shell.bsd"};
+            remainingArgs = {"shell.nix"};
         } else {
             remainingArgs = {"."};
 
             // Instead of letting it throw later, we throw here to give a more relevant error message
-            if (isBsdShell && !std::filesystem::exists("shell.bsd") && !std::filesystem::exists("default.bsd"))
-                throw Error("no argument specified and no '%s' or '%s' file found in the working directory", "shell.bsd", "default.bsd");
+            if (isBsdShell && !std::filesystem::exists("shell.nix") && !std::filesystem::exists("default.nix"))
+                throw Error("no argument specified and no '%s' or '%s' file found in the working directory", "shell.nix", "default.nix");
         }
     }
 

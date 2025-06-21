@@ -54,7 +54,7 @@ TEST_F(bsd_api_store_test, bsd_eval_state_lookup_path)
 
 TEST_F(bsd_api_expr_test, bsd_expr_eval_from_string)
 {
-    bsd_expr_eval_from_string(nullptr, state, "builtins.bsdVersion", ".", value);
+    bsd_expr_eval_from_string(nullptr, state, "builtins.nixVersion", ".", value);
     bsd_value_force(nullptr, state, value);
     std::string result;
     bsd_get_string(nullptr, value, OBSERVE_STRING(result));

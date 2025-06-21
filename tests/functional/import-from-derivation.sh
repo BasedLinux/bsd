@@ -8,17 +8,17 @@ clearStoreIfPossible
 
 export NIX_PATH=config="${config_bsd}"
 
-if bsd-instantiate --readonly-mode ./import-from-derivation.bsd -A result; then
+if bsd-instantiate --readonly-mode ./import-from-derivation.nix -A result; then
     echo "read-only evaluation of an imported derivation unexpectedly failed"
     exit 1
 fi
 
-outPath=$(bsd-build ./import-from-derivation.bsd -A result --no-out-link)
+outPath=$(bsd-build ./import-from-derivation.nix -A result --no-out-link)
 
 [ "$(cat "$outPath")" = FOO579 ]
 
 # Check that we can have access to the entire closure of a derivation output.
-bsd build --no-link --restrict-eval -I src=. -f ./import-from-derivation.bsd importAddPathExpr -v
+bsd build --no-link --restrict-eval -I src=. -f ./import-from-derivation.nix importAddPathExpr -v
 
 # FIXME: the next tests are broken on CA.
 if [[ -n "${NIX_TESTS_CA_BY_DEFAULT:-}" ]]; then
@@ -26,7 +26,7 @@ if [[ -n "${NIX_TESTS_CA_BY_DEFAULT:-}" ]]; then
 fi
 
 # Test filterSource on the result of a derivation.
-outPath2=$(bsd-build ./import-from-derivation.bsd -A addPath --no-out-link)
+outPath2=$(bsd-build ./import-from-derivation.nix -A addPath --no-out-link)
 [[ "$(cat "$outPath2")" = BLAFOO579 ]]
 
 # Test that IFD works with a chroot store.
@@ -40,16 +40,16 @@ if canUseSandbox; then
     # of a shell in the sandbox. We only care about testing the IFD
     # semantics.
     for i in bar result addPath; do
-        bsd copy --to "$store2_url" --no-check-sigs "$(bsd-build ./import-from-derivation.bsd -A "$i" --no-out-link)"
+        bsd copy --to "$store2_url" --no-check-sigs "$(bsd-build ./import-from-derivation.nix -A "$i" --no-out-link)"
     done
 
     clearStore
 
-    outPath_check=$(bsd-build ./import-from-derivation.bsd -A result --no-out-link --store "$store2_url")
+    outPath_check=$(bsd-build ./import-from-derivation.nix -A result --no-out-link --store "$store2_url")
     [[ "$outPath" = "$outPath_check" ]]
     [[ ! -e "$outPath" ]]
     [[ -e "$store2/bsd/store/$(basename "$outPath")" ]]
 
-    outPath2_check=$(bsd-build ./import-from-derivation.bsd -A addPath --no-out-link --store "$store2_url")
+    outPath2_check=$(bsd-build ./import-from-derivation.nix -A addPath --no-out-link --store "$store2_url")
     [[ "$outPath2" = "$outPath2_check" ]]
 fi

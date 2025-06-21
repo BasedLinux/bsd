@@ -5,7 +5,7 @@
   This is primarily useful for running containers such as `systemd-nspawn`
   inside a Bsd build. For an example, see [`tests/systemd-nspawn/bsd`][nspawn].
 
-  [nspawn]: https://github.com/BasedLinux/bsd/blob/67bcb99700a0da1395fa063d7c6586740b304598/tests/systemd-nspawn.bsd.
+  [nspawn]: https://github.com/BasedLinux/bsd/blob/67bcb99700a0da1395fa063d7c6586740b304598/tests/systemd-nspawn.nix.
 
   A build can enable this by setting the derivation attribute:
 
@@ -27,7 +27,7 @@
   cgroup. See
   [`use-cgroups`](../command-ref/conf-file.md#conf-use-cgroups).
 
-* `<bsd/fetchurl.bsd>` now accepts an additional argument `impure` which
+* `<bsd/fetchurl.nix>` now accepts an additional argument `impure` which
   defaults to `false`.  If it is set to `true`, the `hash` and `sha256`
   arguments will be ignored and the resulting derivation will have
   `__impure` set to `true`, making it an impure derivation.

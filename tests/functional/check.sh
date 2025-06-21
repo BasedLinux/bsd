@@ -19,13 +19,13 @@ TODO_BasedLinux
 
 clearStore
 
-bsd-build dependencies.bsd --no-out-link
-bsd-build dependencies.bsd --no-out-link --check
+bsd-build dependencies.nix --no-out-link
+bsd-build dependencies.nix --no-out-link --check
 
 # Make sure checking just one output works (#13293)
-bsd-build multiple-outputs.bsd -A a --no-out-link
-bsd-store --delete "$(bsd-build multiple-outputs.bsd -A a.second --no-out-link)"
-bsd-build multiple-outputs.bsd -A a.first --no-out-link --check
+bsd-build multiple-outputs.nix -A a --no-out-link
+bsd-store --delete "$(bsd-build multiple-outputs.nix -A a.second --no-out-link)"
+bsd-build multiple-outputs.nix -A a.first --no-out-link --check
 
 # Build failure exit codes (100, 104, etc.) are from
 # doc/manual/source/command-ref/status-build-failure.md
@@ -33,12 +33,12 @@ bsd-build multiple-outputs.bsd -A a.first --no-out-link --check
 # check for dangling temporary build directories
 # only retain if build fails and --keep-failed is specified, or...
 # ...build is non-deterministic and --check and --keep-failed are both specified
-bsd-build check.bsd -A failed --argstr checkBuildId "$checkBuildId" \
+bsd-build check.nix -A failed --argstr checkBuildId "$checkBuildId" \
     --no-out-link 2> "$TEST_ROOT/log" || status=$?
 [ "$status" = "100" ]
 checkBuildTempDirRemoved "$TEST_ROOT/log"
 
-bsd-build check.bsd -A failed --argstr checkBuildId "$checkBuildId" \
+bsd-build check.nix -A failed --argstr checkBuildId "$checkBuildId" \
     --no-out-link --keep-failed 2> "$TEST_ROOT/log" || status=$?
 [ "$status" = "100" ]
 if checkBuildTempDirRemoved "$TEST_ROOT/log"; then false; fi
@@ -49,7 +49,7 @@ test_custom_build_dir() {
   # Bsd does not create the parent directories, and perhaps it shouldn't try to
   # decide the permissions of build-dir.
   mkdir "$customBuildDir"
-  bsd-build check.bsd -A failed --argstr checkBuildId "$checkBuildId" \
+  bsd-build check.nix -A failed --argstr checkBuildId "$checkBuildId" \
       --no-out-link --keep-failed --option build-dir "$TEST_ROOT/custom-build-dir" 2> "$TEST_ROOT/log" || status=$?
   [ "$status" = "100" ]
   [[ 1 == "$(count "$customBuildDir/bsd-build-"*)" ]]
@@ -65,26 +65,26 @@ test_custom_build_dir() {
 }
 test_custom_build_dir
 
-bsd-build check.bsd -A deterministic --argstr checkBuildId "$checkBuildId" \
+bsd-build check.nix -A deterministic --argstr checkBuildId "$checkBuildId" \
     --no-out-link 2> "$TEST_ROOT/log"
 checkBuildTempDirRemoved "$TEST_ROOT/log"
 
-bsd-build check.bsd -A deterministic --argstr checkBuildId "$checkBuildId" \
+bsd-build check.nix -A deterministic --argstr checkBuildId "$checkBuildId" \
     --no-out-link --check --keep-failed 2> "$TEST_ROOT/log"
 if grepQuiet 'may not be deterministic' "$TEST_ROOT/log"; then false; fi
 checkBuildTempDirRemoved "$TEST_ROOT/log"
 
-bsd-build check.bsd -A nondeterministic --argstr checkBuildId "$checkBuildId" \
+bsd-build check.nix -A nondeterministic --argstr checkBuildId "$checkBuildId" \
     --no-out-link 2> "$TEST_ROOT/log"
 checkBuildTempDirRemoved "$TEST_ROOT/log"
 
-bsd-build check.bsd -A nondeterministic --argstr checkBuildId "$checkBuildId" \
+bsd-build check.nix -A nondeterministic --argstr checkBuildId "$checkBuildId" \
     --no-out-link --check 2> "$TEST_ROOT/log" || status=$?
 grep 'may not be deterministic' "$TEST_ROOT/log"
 [ "$status" = "104" ]
 checkBuildTempDirRemoved "$TEST_ROOT/log"
 
-bsd-build check.bsd -A nondeterministic --argstr checkBuildId "$checkBuildId" \
+bsd-build check.nix -A nondeterministic --argstr checkBuildId "$checkBuildId" \
     --no-out-link --check --keep-failed 2> "$TEST_ROOT/log" || status=$?
 grep 'may not be deterministic' "$TEST_ROOT/log"
 [ "$status" = "104" ]
@@ -94,31 +94,31 @@ TODO_BasedLinux
 
 clearStore
 
-path=$(bsd-build check.bsd -A fetchurl --no-out-link)
+path=$(bsd-build check.nix -A fetchurl --no-out-link)
 
 chmod +w "$path"
 echo foo > "$path"
 chmod -w "$path"
 
-bsd-build check.bsd -A fetchurl --no-out-link --check
+bsd-build check.nix -A fetchurl --no-out-link --check
 # Note: "check" doesn't repair anything, it just compares to the hash stored in the database.
 [[ $(cat "$path") = foo ]]
 
-bsd-build check.bsd -A fetchurl --no-out-link --repair
+bsd-build check.nix -A fetchurl --no-out-link --repair
 [[ $(cat "$path") != foo ]]
 
 echo 'Hello World' > "$TEST_ROOT/dummy"
-bsd-build check.bsd -A hashmismatch --no-out-link || status=$?
+bsd-build check.nix -A hashmismatch --no-out-link || status=$?
 [ "$status" = "102" ]
 
 echo -n > "$TEST_ROOT/dummy"
-bsd-build check.bsd -A hashmismatch --no-out-link
+bsd-build check.nix -A hashmismatch --no-out-link
 echo 'Hello World' > "$TEST_ROOT/dummy"
 
-bsd-build check.bsd -A hashmismatch --no-out-link --check || status=$?
+bsd-build check.nix -A hashmismatch --no-out-link --check || status=$?
 [ "$status" = "102" ]
 
 # Multiple failures with --keep-going
-bsd-build check.bsd -A nondeterministic --no-out-link
-bsd-build check.bsd -A nondeterministic -A hashmismatch --no-out-link --check --keep-going || status=$?
+bsd-build check.nix -A nondeterministic --no-out-link
+bsd-build check.nix -A nondeterministic -A hashmismatch --no-out-link --check --keep-going || status=$?
 [ "$status" = "110" ]

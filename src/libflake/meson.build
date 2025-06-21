@@ -33,7 +33,7 @@ subdir('bsd-meson-build-support/generate-header')
 
 generated_headers = []
 foreach header : [
-  'call-flake.bsd',
+  'call-flake.nix',
 ]
   generated_headers += gen_header.process(header)
 endforeach

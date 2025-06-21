@@ -9,7 +9,7 @@ rm -rf "$TEST_HOME"
 tarroot=$TEST_ROOT/tarball
 rm -rf "$tarroot"
 mkdir -p "$tarroot"
-cp dependencies.bsd "$tarroot/default.bsd"
+cp dependencies.nix "$tarroot/default.nix"
 cp "${config_bsd}" dependencies.builder*.sh "$tarroot/"
 touch -d '@1000000000' "$tarroot" "$tarroot"/*
 
@@ -20,7 +20,7 @@ test_tarball() {
     local compressor="$2"
 
     tarball=$TEST_ROOT/tarball.tar$ext
-    (cd "$TEST_ROOT" && GNUTAR_REPRODUCIBLE=1 tar --mtime="$tarroot"/default.bsd --owner=0 --group=0 --numeric-owner --sort=name -c -f - tarball) | $compressor > "$tarball"
+    (cd "$TEST_ROOT" && GNUTAR_REPRODUCIBLE=1 tar --mtime="$tarroot"/default.nix --owner=0 --group=0 --numeric-owner --sort=name -c -f - tarball) | $compressor > "$tarball"
 
     bsd-env -f file://"$tarball" -qa --out-path | grepQuiet dependencies
 
@@ -45,7 +45,7 @@ test_tarball() {
     bsd-instantiate --eval -E 'with <fnord/xyzzy>; 1 + 2' -I fnord=file:///no-such-tarball"$ext"
     (! bsd-instantiate --eval -E '<fnord/xyzzy> 1' -I fnord=file:///no-such-tarball"$ext")
 
-    bsd-instantiate --eval -E '<fnord/config.bsd>' -I fnord=file:///no-such-tarball"$ext" -I fnord="${_NIX_TEST_BUILD_DIR}"
+    bsd-instantiate --eval -E '<fnord/config.nix>' -I fnord=file:///no-such-tarball"$ext" -I fnord="${_NIX_TEST_BUILD_DIR}"
 
     # Ensure that the `name` attribute isn’t accepted as that would mess
     # with the content-addressing

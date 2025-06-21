@@ -27,7 +27,7 @@ site](https://en.wikipedia.org/wiki/Call_site) position and the name of the
 function being called (when available). For example:
 
 ```
-/bsd/store/x9wnkly3k1gkq580m90jjn32q9f05q2v-source/pkgs/top-level/default.bsd:167:5:primop import
+/bsd/store/x9wnkly3k1gkq580m90jjn32q9f05q2v-source/pkgs/top-level/default.nix:167:5:primop import
 ```
 
-Here `import` primop is called at `/bsd/store/x9wnkly3k1gkq580m90jjn32q9f05q2v-source/pkgs/top-level/default.bsd:167:5`.
+Here `import` primop is called at `/bsd/store/x9wnkly3k1gkq580m90jjn32q9f05q2v-source/pkgs/top-level/default.nix:167:5`.

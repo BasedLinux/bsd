@@ -5,7 +5,7 @@ source common.sh
 flakeDir=$TEST_ROOT/flake3
 mkdir -p $flakeDir
 
-cat > $flakeDir/flake.bsd <<EOF
+cat > $flakeDir/flake.nix <<EOF
 {
   outputs = { self }: {
     overlay = final: prev: {
@@ -16,7 +16,7 @@ EOF
 
 bsd flake check $flakeDir
 
-cat > $flakeDir/flake.bsd <<EOF
+cat > $flakeDir/flake.nix <<EOF
 {
   outputs = { self }: {
     overlay = finalll: prev: {
@@ -27,7 +27,7 @@ EOF
 
 (! bsd flake check $flakeDir)
 
-cat > $flakeDir/flake.bsd <<EOF
+cat > $flakeDir/flake.nix <<EOF
 {
   outputs = { self, ... }: {
     overlays.x86_64-linux.foo = final: prev: {
@@ -39,7 +39,7 @@ EOF
 checkRes=$(bsd flake check $flakeDir 2>&1 && fail "bsd flake check --all-systems should have failed" || true)
 echo "$checkRes" | grepQuiet "error: overlay is not a function, but a set instead"
 
-cat > $flakeDir/flake.bsd <<EOF
+cat > $flakeDir/flake.nix <<EOF
 {
   outputs = { self }: {
     bsdosModules.foo = {
@@ -52,7 +52,7 @@ EOF
 
 bsd flake check $flakeDir
 
-cat > $flakeDir/flake.bsd <<EOF
+cat > $flakeDir/flake.nix <<EOF
 {
   outputs = { self }: {
     bsdosModules.foo = assert false; {
@@ -65,7 +65,7 @@ EOF
 
 (! bsd flake check $flakeDir)
 
-cat > $flakeDir/flake.bsd <<EOF
+cat > $flakeDir/flake.nix <<EOF
 {
   outputs = { self }: {
     bsdosModule = { config, pkgs, ... }: {
@@ -77,7 +77,7 @@ EOF
 
 bsd flake check $flakeDir
 
-cat > $flakeDir/flake.bsd <<EOF
+cat > $flakeDir/flake.nix <<EOF
 {
   outputs = { self }: {
     packages.system-1.default = "foo";
@@ -92,7 +92,7 @@ checkRes=$(bsd flake check --all-systems --keep-going $flakeDir 2>&1 && fail "bs
 echo "$checkRes" | grepQuiet "packages.system-1.default"
 echo "$checkRes" | grepQuiet "packages.system-2.default"
 
-cat > $flakeDir/flake.bsd <<EOF
+cat > $flakeDir/flake.nix <<EOF
 {
   outputs = { self }: {
     apps.system-1.default = {
@@ -110,7 +110,7 @@ EOF
 
 bsd flake check --all-systems $flakeDir
 
-cat > $flakeDir/flake.bsd <<EOF
+cat > $flakeDir/flake.nix <<EOF
 {
   outputs = { self }: {
     apps.system-1.default = {
@@ -125,7 +125,7 @@ EOF
 checkRes=$(bsd flake check --all-systems $flakeDir 2>&1 && fail "bsd flake check --all-systems should have failed" || true)
 echo "$checkRes" | grepQuiet "unknown-attr"
 
-cat > $flakeDir/flake.bsd <<EOF
+cat > $flakeDir/flake.nix <<EOF
 {
   outputs = { self }: {
     formatter.system-1 = "foo";

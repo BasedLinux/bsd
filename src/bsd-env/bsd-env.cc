@@ -99,7 +99,7 @@ static bool isBsdExpr(const SourcePath & path, struct SourceAccessor::Stat & st)
 {
     return
         st.type == SourceAccessor::tRegular
-        || (st.type == SourceAccessor::tDirectory && (path / "default.bsd").resolveSymlinks().pathExists());
+        || (st.type == SourceAccessor::tDirectory && (path / "default.nix").resolveSymlinks().pathExists());
 }
 
 
@@ -113,10 +113,10 @@ static void getAllExprs(EvalState & state,
     for (auto & [name, _] : path.resolveSymlinks().readDirectory()) namesSorted.insert(name);
 
     for (auto & i : namesSorted) {
-        /* Ignore the manifest.bsd used by profiles.  This is
+        /* Ignore the manifest.nix used by profiles.  This is
            necessary to prevent it from showing up in channels (which
            are implemented using profiles). */
-        if (i == "manifest.bsd") continue;
+        if (i == "manifest.nix") continue;
 
         auto path2 = (path / i).resolveSymlinks();
 
@@ -124,16 +124,16 @@ static void getAllExprs(EvalState & state,
         try {
             st = path2.lstat();
         } catch (Error &) {
-            continue; // ignore dangling symlinks in ~/.bsd-defexpr
+            continue; // ignore dangling symlinks in ~/.nix-defexpr
         }
 
-        if (isBsdExpr(path2, st) && (st.type != SourceAccessor::tRegular || hasSuffix(path2.baseName(), ".bsd") || hasSuffix(path2.baseName(), ".nix"))) {
-            /* Strip off the `.bsd' filename suffix (if applicable),
+        if (isBsdExpr(path2, st) && (st.type != SourceAccessor::tRegular || hasSuffix(path2.baseName(), ".nix") || hasSuffix(path2.baseName(), ".nix"))) {
+            /* Strip off the `.nix' filename suffix (if applicable),
                otherwise the attribute cannot be selected with the
                `-A' option.  Useful if you want to stick a Bsd
-               expression directly in ~/.bsd-defexpr. */
+               expression directly in ~/.nix-defexpr. */
             std::string attrName = i;
-            if (hasSuffix(attrName, ".bsd") || hasSuffix(attrName, ".nix"))
+            if (hasSuffix(attrName, ".nix") || hasSuffix(attrName, ".nix"))
                 attrName = std::string(attrName, 0, attrName.size() - 4);
             if (!seen.insert(attrName).second) {
                 std::string suggestionMessage = "";
@@ -151,7 +151,7 @@ static void getAllExprs(EvalState & state,
             attrs.alloc(attrName).mkApp(&state.getBuiltin("import"), vArg);
         }
         else if (st.type == SourceAccessor::tDirectory)
-            /* `path2' is a directory (with no default.bsd in it);
+            /* `path2' is a directory (with no default.nix in it);
                recurse into it. */
             getAllExprs(state, path2, seen, attrs);
     }
@@ -170,7 +170,7 @@ static void loadSourceExpr(EvalState & state, const SourcePath & path, Value & v
        directory in a set, with the file name of each expression as
        the attribute name.  Recurse into subdirectories (but keep the
        set flat, not nested, to make it easier for a user to have a
-       ~/.bsd-defexpr directory that includes some system-wide
+       ~/.nix-defexpr directory that includes some system-wide
        directory). */
     else if (st.type == SourceAccessor::tDirectory) {
         auto attrs = state.buildBindings(maxAttrs);
@@ -406,9 +406,9 @@ static void queryInstSources(EvalState & state,
         /* Get the available user environment elements from the Bsd
            expressions specified on the command line; these should be
            functions that take the default Bsd expression file as
-           argument, e.g., if the file is `./foo.bsd', then the
+           argument, e.g., if the file is `./foo.nix', then the
            argument `x: x.bar' is equivalent to `(x: x.bar)
-           (import ./foo.bsd)' = `(import ./foo.bsd).bar'. */
+           (import ./foo.nix)' = `(import ./foo.nix).bar'. */
         case srcBsdExprs: {
 
             Value vArg;

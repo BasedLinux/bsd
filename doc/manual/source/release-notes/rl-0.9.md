@@ -50,7 +50,7 @@ first.
     
     Previously, this would yield a black hole (infinite recursion).
 
-  - `bsd-build` now defaults to using `./default.bsd` if no Bsd
+  - `bsd-build` now defaults to using `./default.nix` if no Bsd
     expression is specified.
 
   - `bsd-instantiate`, when applied to a Bsd expression that evaluates

@@ -9,9 +9,9 @@ flake1Dir="$TEST_ROOT/flake"
 createGitRepo "$flake1Dir"
 createSimpleGitFlake "$flake1Dir"
 
-cat > "$flake1Dir/flake.bsd" <<'EOF'
+cat > "$flake1Dir/flake.nix" <<'EOF'
 {
-  outputs = { self }: let inherit (import ./config.bsd) mkDerivation; in {
+  outputs = { self }: let inherit (import ./config.nix) mkDerivation; in {
     drv = mkDerivation {
       name = "drv";
       buildCommand = ''

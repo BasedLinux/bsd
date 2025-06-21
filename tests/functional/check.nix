@@ -2,7 +2,7 @@
   checkBuildId ? 0,
 }:
 
-with import ./config.bsd;
+with import ./config.nix;
 
 {
   nondeterministic = mkDerivation {
@@ -42,12 +42,12 @@ with import ./config.bsd;
     '';
   };
 
-  hashmismatch = import <bsd/fetchurl.bsd> {
+  hashmismatch = import <bsd/fetchurl.nix> {
     url = "file://" + builtins.getEnv "TEST_ROOT" + "/dummy";
     sha256 = "0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73";
   };
 
-  fetchurl = import <bsd/fetchurl.bsd> {
+  fetchurl = import <bsd/fetchurl.nix> {
     url = "file://" + toString ./lang/eval-okay-xml.exp.xml;
     sha256 = "sha256-behBlX+DQK/Pjvkuc8Tx68Jwi4E5v86wDq+ZLaHyhQE=";
   };

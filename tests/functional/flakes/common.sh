@@ -7,23 +7,23 @@ registry=$TEST_ROOT/registry.json
 
 writeSimpleFlake() {
     local flakeDir="$1"
-    cat > "$flakeDir/flake.bsd" <<EOF
+    cat > "$flakeDir/flake.nix" <<EOF
 {
   description = "Bla bla";
 
   outputs = inputs: rec {
     packages.$system = rec {
-      foo = import ./simple.bsd;
-      fooScript = (import ./shell.bsd {}).foo;
+      foo = import ./simple.nix;
+      fooScript = (import ./shell.nix {}).foo;
       default = foo;
     };
     packages.someOtherSystem = rec {
-      foo = import ./simple.bsd;
+      foo = import ./simple.nix;
       default = foo;
     };
 
     # To test "bsd flake init".
-    legacyPackages.$system.hello = import ./simple.bsd;
+    legacyPackages.$system.hello = import ./simple.nix;
 
     parent = builtins.dirOf ./.;
 
@@ -34,14 +34,14 @@ writeSimpleFlake() {
 }
 EOF
 
-    cp ../simple.bsd ../shell.bsd ../simple.builder.sh "${config_bsd}" "$flakeDir/"
+    cp ../simple.nix ../shell.nix ../simple.builder.sh "${config_bsd}" "$flakeDir/"
 }
 
 createSimpleGitFlake() {
     requireGit
     local flakeDir="$1"
     writeSimpleFlake "$flakeDir"
-    git -C "$flakeDir" add flake.bsd simple.bsd shell.bsd simple.builder.sh config.bsd
+    git -C "$flakeDir" add flake.nix simple.nix shell.nix simple.builder.sh config.nix
     git -C "$flakeDir" commit -m 'Initial'
 }
 
@@ -60,7 +60,7 @@ createFlake2() {
     # Give one repo a non-main initial branch.
     createGitRepo "$flake2Dir" "--initial-branch=main"
 
-    cat > "$flake2Dir/flake.bsd" <<EOF
+    cat > "$flake2Dir/flake.nix" <<EOF
 {
   description = "Fnord";
 
@@ -70,7 +70,7 @@ createFlake2() {
 }
 EOF
 
-    git -C "$flake2Dir" add flake.bsd
+    git -C "$flake2Dir" add flake.nix
     git -C "$flake2Dir" commit -m 'Initial'
 
     bsd registry add --registry "$registry" flake2 "git+file://$percentEncodedFlake2Dir"
@@ -78,7 +78,7 @@ EOF
 
 writeDependentFlake() {
     local flakeDir="$1"
-    cat > "$flakeDir/flake.bsd" <<EOF
+    cat > "$flakeDir/flake.nix" <<EOF
 {
   outputs = { self, flake1 }: {
     packages.$system.default = flake1.packages.$system.default;
@@ -90,20 +90,20 @@ EOF
 
 writeIfdFlake() {
     local flakeDir="$1"
-    cat > "$flakeDir/flake.bsd" <<EOF
+    cat > "$flakeDir/flake.nix" <<EOF
 {
   outputs = { self }: {
-    packages.$system.default = import ./ifd.bsd;
+    packages.$system.default = import ./ifd.nix;
   };
 }
 EOF
 
-    cp -n ../ifd.bsd ../dependencies.bsd ../dependencies.builder0.sh "${config_bsd}" "$flakeDir/"
+    cp -n ../ifd.nix ../dependencies.nix ../dependencies.builder0.sh "${config_bsd}" "$flakeDir/"
 }
 
 writeTrivialFlake() {
     local flakeDir="$1"
-    cat > "$flakeDir/flake.bsd" <<EOF
+    cat > "$flakeDir/flake.nix" <<EOF
 {
   outputs = { self }: {
     expr = 123;

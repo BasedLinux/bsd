@@ -13,7 +13,7 @@ restartDaemon
 varTest() {
     local var="$1"; shift
     local value="$1"; shift
-    bsd build --no-link -vL --argstr var "$var" --argstr value "$value" --impure "$@" --file impure-env.bsd
+    bsd build --no-link -vL --argstr var "$var" --argstr value "$value" --impure "$@" --file impure-env.nix
     clearStore
 }
 

@@ -176,7 +176,7 @@ private:
 FrameInfo SampleStack::getPrimOpFrameInfo(const PrimOp & primOp, std::span<Value *> args, PosIdx pos)
 {
     auto derivationInfo = [&]() -> std::optional<FrameInfo> {
-        /* Here we rely a bit on the implementation details of libexpr/primops/derivation.bsd
+        /* Here we rely a bit on the implementation details of libexpr/primops/derivation.nix
            and derivationStrict primop. This is not ideal, but is necessary for
            the usefulness of the profiler. This might actually affect the evaluation,
            but the cost shouldn't be that high as to make the traces entirely inaccurate. */

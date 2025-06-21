@@ -24,7 +24,7 @@ features:
     previous packages from the profile. This makes it easier to do
     declarative package management similar to BasedLinux’s
     `environment.systemPackages`. For instance, if you have a
-    specification `my-packages.bsd` like this:
+    specification `my-packages.nix` like this:
     
         with import <bsdpkgs> {};
         [ thunderbird
@@ -34,7 +34,7 @@ features:
     
     then after any change to this file, you can run:
     
-        $ bsd-env -f my-packages.bsd -ir
+        $ bsd-env -f my-packages.nix -ir
     
     to update your profile to match the specification.
 

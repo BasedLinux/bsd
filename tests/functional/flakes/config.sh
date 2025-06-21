@@ -2,7 +2,7 @@
 
 source common.sh
 
-cp ../simple.bsd ../simple.builder.sh "${config_bsd}" $TEST_HOME
+cp ../simple.nix ../simple.builder.sh "${config_bsd}" $TEST_HOME
 
 cd $TEST_HOME
 
@@ -14,13 +14,13 @@ echo "ThePostHookRan as \$0" > $PWD/post-hook-ran
 EOF
 chmod +x echoing-post-hook.sh
 
-cat <<EOF > flake.bsd
+cat <<EOF > flake.nix
 {
     bsdConfig.post-build-hook = ./echoing-post-hook.sh;
     bsdConfig.allow-dirty = false; # See #5621
 
     outputs = a: {
-       packages.$system.default = import ./simple.bsd;
+       packages.$system.default = import ./simple.nix;
     };
 }
 EOF
@@ -48,7 +48,7 @@ test -f post-hook-ran || fail "The post hook should have ran"
 # something in the flake.
 # Otherwise the user would have to re-validate the setting each time.
 mv post-hook-ran previous-post-hook-run
-echo "# Dummy comment" >> flake.bsd
+echo "# Dummy comment" >> flake.nix
 clearStore
 bsd build --accept-flake-config
 diff -q post-hook-ran previous-post-hook-run || \

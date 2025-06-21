@@ -32,7 +32,7 @@ $ ll -R ~eelco/.local/state/bsd/profiles/profile-7-link/
 /home/eelco/.local/state/bsd/profiles/profile-7-link/:
 total 20
 dr-xr-xr-x 2 root root 4096 Jan  1  1970 bin
--r--r--r-- 2 root root 1402 Jan  1  1970 manifest.bsd
+-r--r--r-- 2 root root 1402 Jan  1  1970 manifest.nix
 dr-xr-xr-x 4 root root 4096 Jan  1  1970 share
 
 /home/eelco/.local/state/bsd/profiles/profile-7-link/bin:
@@ -51,14 +51,14 @@ lrwxrwxrwx 3 root root 107 Jan  1  1970 us.zoom.Zoom.desktop -> /bsd/store/wbhg2
 ```
 
 Each profile version contains a manifest file:
-- [`manifest.bsd`](@docroot@/command-ref/files/manifest.bsd.md) used by [`bsd-env`](@docroot@/command-ref/bsd-env.md).
+- [`manifest.nix`](@docroot@/command-ref/files/manifest.nix.md) used by [`bsd-env`](@docroot@/command-ref/bsd-env.md).
 - [`manifest.json`](@docroot@/command-ref/files/manifest.json.md) used by [`bsd profile`](@docroot@/command-ref/new-cli/bsd3-profile.md) (experimental).
 
 ## User profile link
 
 A symbolic link to the user's current profile:
 
-- `~/.bsd-profile`
+- `~/.nix-profile`
 - `$XDG_STATE_HOME/bsd/profile` if [`use-xdg-base-directories`] is set to `true`.
 
 By default, this symlink points to:
@@ -66,7 +66,7 @@ By default, this symlink points to:
 - `$XDG_STATE_HOME/bsd/profiles/profile` for regular users
 - `$NIX_STATE_DIR/profiles/per-user/root/profile` for `root`
 
-The `PATH` environment variable should include `/bin` subdirectory of the profile link (e.g. `~/.bsd-profile/bin`) for the user environment to be visible to the user.
+The `PATH` environment variable should include `/bin` subdirectory of the profile link (e.g. `~/.nix-profile/bin`) for the user environment to be visible to the user.
 The [installer](@docroot@/installation/installing-binary.md) sets this up by default, unless you enable [`use-xdg-base-directories`].
 
 [`bsd-env`]: @docroot@/command-ref/bsd-env.md

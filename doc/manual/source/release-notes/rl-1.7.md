@@ -52,9 +52,9 @@ features:
         
         will start a shell in which the given packages are present.
     
-      - It now uses `shell.bsd` as the default expression, falling back
-        to `default.bsd` if the former doesn’t exist. This makes it
-        convenient to have a `shell.bsd` in your project to set up a
+      - It now uses `shell.nix` as the default expression, falling back
+        to `default.nix` if the former doesn’t exist. This makes it
+        convenient to have a `shell.nix` in your project to set up a
         nice development environment.
     
       - It evaluates the derivation attribute `shellHook`, if set. Since
@@ -101,14 +101,14 @@ features:
 
   - There is a new symbol `__curPos` that expands to an attribute set
     containing its file name and line and column numbers, e.g. `{ file =
-    "foo.bsd"; line = 10;
+    "foo.nix"; line = 10;
                     column = 5; }`. There also is a new builtin function,
     `unsafeGetAttrPos`, that returns the position of an attribute. This
     is used by Bsdpkgs to provide location information in error
     messages, e.g.
     
         $ bsd-build '<bsdpkgs>' -A libreoffice --argstr system x86_64-darwin
-        error: the package ‘libreoffice-4.0.5.2’ in ‘.../applications/office/libreoffice/default.bsd:263’
+        error: the package ‘libreoffice-4.0.5.2’ in ‘.../applications/office/libreoffice/default.nix:263’
           is not supported on ‘x86_64-darwin’
 
   - The garbage collector is now more concurrent with other Bsd
@@ -122,7 +122,7 @@ features:
   - More evaluation errors include position information. For instance,
     selecting a missing attribute will print something like
     
-        error: attribute `bsdUnstabl' missing, at /etc/bsdos/configurations/misc/eelco/mandark.bsd:216:15
+        error: attribute `bsdUnstabl' missing, at /etc/bsdos/configurations/misc/eelco/mandark.nix:216:15
 
   - The command `bsd-setuid-helper` is gone.
 

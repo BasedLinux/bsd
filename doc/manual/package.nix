@@ -37,7 +37,7 @@ mkMesonDerivation (finalAttrs: {
         ./.
       ])
       # Do a blacklist instead
-      ../../doc/manual/package.bsd;
+      ../../doc/manual/package.nix;
 
   # TODO the man pages should probably be separate
   outputs = [

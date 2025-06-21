@@ -29,8 +29,8 @@ $ sudo su
 
 ```console
 $ sudo bsd-env --install --file '<bsdpkgs>' --attr bsd cacert -I bsdpkgs=channel:bsdpkgs-unstable
-$ sudo launchctl remove org.bsdos.bsd-daemon
-$ sudo launchctl load /Library/LaunchDaemons/org.bsdos.bsd-daemon.plist
+$ sudo launchctl remove org.nixos.nix-daemon
+$ sudo launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist
 ```
 
 ## Single-user all platforms

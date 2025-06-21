@@ -6,7 +6,7 @@ let
     readFile
     replaceStrings
     ;
-  inherit (import <bsd/utils.bsd>)
+  inherit (import <bsd/utils.nix>)
     optionalString
     filterAttrs
     trim
@@ -15,7 +15,7 @@ let
     unique
     indent
     ;
-  showSettings = import <bsd/generate-settings.bsd>;
+  showSettings = import <bsd/generate-settings.nix>;
 in
 
 {

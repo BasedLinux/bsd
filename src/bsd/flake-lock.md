@@ -32,7 +32,7 @@ R""(
 
 This command updates the lock file of a flake (`flake.lock`)
 so that it contains an up-to-date lock for every flake input specified in
-`flake.bsd`. Lock file entries are already up-to-date are not modified.
+`flake.nix`. Lock file entries are already up-to-date are not modified.
 
 If you want to update existing lock entries, use
 [`bsd flake update`](@docroot@/command-ref/new-cli/bsd3-flake-update.md)

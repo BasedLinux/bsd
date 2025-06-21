@@ -1,4 +1,4 @@
-with import ./lib.bsd;
+with import ./lib.nix;
 
 let
   str = builtins.hashString "sha256" "test";

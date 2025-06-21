@@ -152,7 +152,7 @@ Most Bsd commands accept the following command-line options:
   With `--arg`, you can also call functions that have arguments without a default value (or override a default value).
   That is, if the evaluator encounters a function with an argument named *name*, it will call it with value *value*.
 
-  For instance, the top-level `default.bsd` in Bsdpkgs is actually a function:
+  For instance, the top-level `default.nix` in Bsdpkgs is actually a function:
 
   ```bsd
   { # The system (e.g., `i686-linux') for which to build the packages.

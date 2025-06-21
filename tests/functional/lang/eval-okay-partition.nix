@@ -1,4 +1,4 @@
-with import ./lib.bsd;
+with import ./lib.nix;
 
 builtins.partition (x: x / 2 * 2 == x) (
   builtins.concatLists [

@@ -7,14 +7,14 @@ requireGit
 flake1Dir="$TEST_ROOT/eval-cache-flake"
 
 createGitRepo "$flake1Dir" ""
-cp ../simple.bsd ../simple.builder.sh "${config_bsd}" "$flake1Dir/"
-git -C "$flake1Dir" add simple.bsd simple.builder.sh config.bsd
-git -C "$flake1Dir" commit -m "config.bsd"
+cp ../simple.nix ../simple.builder.sh "${config_bsd}" "$flake1Dir/"
+git -C "$flake1Dir" add simple.nix simple.builder.sh config.nix
+git -C "$flake1Dir" commit -m "config.nix"
 
-cat >"$flake1Dir/flake.bsd" <<EOF
+cat >"$flake1Dir/flake.nix" <<EOF
 {
   description = "Fnord";
-  outputs = { self }: let inherit (import ./config.bsd) mkDerivation; in {
+  outputs = { self }: let inherit (import ./config.nix) mkDerivation; in {
     foo.bar = throw "breaks";
     drv = mkDerivation {
       name = "build";
@@ -32,7 +32,7 @@ cat >"$flake1Dir/flake.bsd" <<EOF
 }
 EOF
 
-git -C "$flake1Dir" add flake.bsd
+git -C "$flake1Dir" add flake.nix
 git -C "$flake1Dir" commit -m "Init"
 
 expect 1 bsd build "$flake1Dir#foo.bar" 2>&1 | grepQuiet 'error: breaks'

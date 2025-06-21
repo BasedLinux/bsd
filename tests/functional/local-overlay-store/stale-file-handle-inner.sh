@@ -17,7 +17,7 @@ initLowerStore
 mountOverlayfs
 
 buildInStore () {
-    bsd-build --store "$1" ../hermetic.bsd --arg busybox "$busybox" --arg seed 1 --no-out-link
+    bsd-build --store "$1" ../hermetic.nix --arg busybox "$busybox" --arg seed 1 --no-out-link
 }
 
 triggerStaleFileHandle () {

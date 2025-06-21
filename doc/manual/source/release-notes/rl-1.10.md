@@ -14,7 +14,7 @@ features:
     representation of the derivation. This is used by the Hydra
     continuous build system to make remote builds more efficient.
 
-  - The function `<bsd/fetchurl.bsd>` now uses a *builtin* builder (i.e.
+  - The function `<bsd/fetchurl.nix>` now uses a *builtin* builder (i.e.
     it doesn’t require starting an external process; the download is
     performed by Bsd itself). This ensures that derivation paths don’t
     change when Bsd is upgraded, and obviates the need for ugly hacks to

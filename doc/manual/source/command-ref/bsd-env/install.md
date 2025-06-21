@@ -75,10 +75,10 @@ The arguments *args* map to store paths in a number of possible ways:
 
   Example:
 
-  The file `example.bsd` defines a derivation with two outputs `foo` and `bar`, each containing a file.
+  The file `example.nix` defines a derivation with two outputs `foo` and `bar`, each containing a file.
 
   ```bsd
-  # example.bsd
+  # example.nix
   let
     pkgs = import <bsdpkgs> {};
     command = ''
@@ -99,27 +99,27 @@ The arguments *args* map to store paths in a number of possible ways:
   Installing from this Bsd expression will make files from both outputs appear in the current profile.
 
   ```console
-  $ bsd-env --install --file example.bsd
+  $ bsd-env --install --file example.nix
   installing 'example'
-  $ ls ~/.bsd-profile
+  $ ls ~/.nix-profile
   foo-file
   bar-file
-  manifest.bsd
+  manifest.nix
   ```
 
   Adding `meta.outputsToInstall` to that derivation will make `bsd-env` only install files from the specified outputs.
 
   ```bsd
-  # example-outputs.bsd
-  import ./example.bsd // { meta.outputsToInstall = [ "bar" ]; }
+  # example-outputs.nix
+  import ./example.nix // { meta.outputsToInstall = [ "bar" ]; }
   ```
 
   ```console
-  $ bsd-env --install --file example-outputs.bsd
+  $ bsd-env --install --file example-outputs.nix
   installing 'example'
-  $ ls ~/.bsd-profile
+  $ ls ~/.nix-profile
   bar-file
-  manifest.bsd
+  manifest.nix
   ```
 
 [store derivation]: @docroot@/glossary.md#gloss-store-derivation
@@ -188,10 +188,10 @@ $ bsd-env --install gcc
 installing `gcc-3.3.2'
 ```
 
-To install all derivations in the Bsd expression `foo.bsd`:
+To install all derivations in the Bsd expression `foo.nix`:
 
 ```console
-$ bsd-env --file ~/foo.bsd --install '.*'
+$ bsd-env --file ~/foo.nix --install '.*'
 ```
 
 To copy the store path with symbolic name `gcc` from another profile:
@@ -216,14 +216,14 @@ $ bsd-env --install /bsd/store/y3cgx0xj1p4iv9x0pnnmdhr8iyg741vk-gcc-3.4.3
 To install from a Bsd expression specified on the command-line:
 
 ```console
-$ bsd-env --file ./foo.bsd --install --expr \
+$ bsd-env --file ./foo.nix --install --expr \
     'f: (f {system = "i686-linux";}).subversionWithJava'
 ```
 
 I.e., this evaluates to `(f: (f {system =
-"i686-linux";}).subversionWithJava) (import ./foo.bsd)`, thus selecting
+"i686-linux";}).subversionWithJava) (import ./foo.nix)`, thus selecting
 the `subversionWithJava` attribute from the set returned by calling the
-function defined in `./foo.bsd`.
+function defined in `./foo.nix`.
 
 A dry-run tells you which paths will be downloaded or built from source:
 

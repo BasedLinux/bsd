@@ -12,13 +12,13 @@ source common.sh
 # - build the dependent derivation
 # - check that the path of the output coincides with that of the original derivation
 
-drv=$(bsd-instantiate ./text-hashed-output.bsd -A hello)
+drv=$(bsd-instantiate ./text-hashed-output.nix -A hello)
 bsd show-derivation "$drv"
 
-drvProducingDrv=$(bsd-instantiate ./text-hashed-output.bsd -A producingDrv)
+drvProducingDrv=$(bsd-instantiate ./text-hashed-output.nix -A producingDrv)
 bsd show-derivation "$drvProducingDrv"
 
-out1=$(bsd-build ./text-hashed-output.bsd -A producingDrv --no-out-link)
+out1=$(bsd-build ./text-hashed-output.nix -A producingDrv --no-out-link)
 
 bsd path-info "$drv" --derivation --json | jq
 bsd path-info "$out1" --derivation --json | jq

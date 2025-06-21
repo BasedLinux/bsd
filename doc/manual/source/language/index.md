@@ -612,7 +612,7 @@ This is an incomplete overview of language features, by example.
  <tr>
   <td>
 
-   `import ./foo.bsd`
+   `import ./foo.nix`
 
   </td>
   <td>

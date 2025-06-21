@@ -23,7 +23,7 @@ for repo in "$flake3Dir" "$flake7Dir"; do
     createGitRepo "$repo" ""
 done
 
-cat > "$flake3Dir/flake.bsd" <<EOF
+cat > "$flake3Dir/flake.nix" <<EOF
 {
   description = "Fnord";
 
@@ -37,11 +37,11 @@ cat > "$flake3Dir/flake.bsd" <<EOF
 }
 EOF
 
-cat > "$flake3Dir/default.bsd" <<EOF
+cat > "$flake3Dir/default.nix" <<EOF
 { x = 123; }
 EOF
 
-git -C "$flake3Dir" add flake.bsd default.bsd
+git -C "$flake3Dir" add flake.nix default.nix
 git -C "$flake3Dir" commit -m 'Initial'
 
 # Construct a custom registry, additionally test the --registry flag
@@ -79,7 +79,7 @@ git -C "$flake1Dir" add $flake1Dir/foo
 [[ $(bsd flake metadata flake1 --json --refresh | jq -r .dirtyRevision) == "$hash1-dirty" ]]
 [[ "$(bsd flake metadata flake1 --json | jq -r .fingerprint)" != null ]]
 
-echo -n '# foo' >> "$flake1Dir/flake.bsd"
+echo -n '# foo' >> "$flake1Dir/flake.nix"
 flake1OriginalCommit=$(git -C "$flake1Dir" rev-parse HEAD)
 git -C "$flake1Dir" commit -a -m 'Foo'
 flake1NewCommit=$(git -C "$flake1Dir" rev-parse HEAD)
@@ -187,9 +187,9 @@ bsd build -o "$TEST_ROOT/result" "$flake3Dir#xyzzy"
 git -C "$flake3Dir" add flake.lock
 
 # Add dependency to flake3.
-rm "$flake3Dir/flake.bsd"
+rm "$flake3Dir/flake.nix"
 
-cat > "$flake3Dir/flake.bsd" <<EOF
+cat > "$flake3Dir/flake.nix" <<EOF
 {
   description = "Fnord";
 
@@ -200,8 +200,8 @@ cat > "$flake3Dir/flake.bsd" <<EOF
 }
 EOF
 
-git -C "$flake3Dir" add flake.bsd
-git -C "$flake3Dir" commit -m 'Update flake.bsd'
+git -C "$flake3Dir" add flake.nix
+git -C "$flake3Dir" commit -m 'Update flake.nix'
 
 # Check whether `bsd build` works with an incomplete lockfile
 bsd build -o $TEST_ROOT/result "$flake3Dir#sth sth"
@@ -275,10 +275,10 @@ bsd registry remove user-flake2
 # Test 'bsd flake clone'.
 rm -rf $TEST_ROOT/flake1-v2
 bsd flake clone flake1 --dest $TEST_ROOT/flake1-v2
-[ -e $TEST_ROOT/flake1-v2/flake.bsd ]
+[ -e $TEST_ROOT/flake1-v2/flake.nix ]
 
 # Test 'follows' inputs.
-cat > "$flake3Dir/flake.bsd" <<EOF
+cat > "$flake3Dir/flake.nix" <<EOF
 {
   inputs.foo = {
     type = "indirect";
@@ -294,7 +294,7 @@ EOF
 bsd flake lock "$flake3Dir"
 [[ $(jq -c .nodes.root.inputs.bar "$flake3Dir/flake.lock") = '["foo"]' ]]
 
-cat > "$flake3Dir/flake.bsd" <<EOF
+cat > "$flake3Dir/flake.nix" <<EOF
 {
   inputs.bar.follows = "flake2/flake1";
 
@@ -306,7 +306,7 @@ EOF
 bsd flake lock "$flake3Dir"
 [[ $(jq -c .nodes.root.inputs.bar "$flake3Dir/flake.lock") = '["flake2","flake1"]' ]]
 
-cat > "$flake3Dir/flake.bsd" <<EOF
+cat > "$flake3Dir/flake.nix" <<EOF
 {
   inputs.bar.follows = "flake2";
 
@@ -320,10 +320,10 @@ bsd flake lock "$flake3Dir"
 
 # Test overriding inputs of inputs.
 writeTrivialFlake $flake7Dir
-git -C $flake7Dir add flake.bsd
+git -C $flake7Dir add flake.nix
 git -C $flake7Dir commit -m 'Initial'
 
-cat > "$flake3Dir/flake.bsd" <<EOF
+cat > "$flake3Dir/flake.nix" <<EOF
 {
   inputs.flake2.inputs.flake1 = {
     type = "git";
@@ -338,7 +338,7 @@ EOF
 bsd flake lock "$flake3Dir"
 [[ $(jq .nodes.flake1.locked.url "$flake3Dir/flake.lock") =~ flake7 ]]
 
-cat > "$flake3Dir/flake.bsd" <<EOF
+cat > "$flake3Dir/flake.nix" <<EOF
 {
   inputs.flake2.inputs.flake1.follows = "foo";
   inputs.foo.url = git+file://$flake7Dir;
@@ -410,7 +410,7 @@ bsd flake metadata "$flake3Dir" --json | jq .
 # Test flake in store does not evaluate.
 rm -rf $badFlakeDir
 mkdir $badFlakeDir
-echo INVALID > $badFlakeDir/flake.bsd
+echo INVALID > $badFlakeDir/flake.nix
 bsd store delete $(bsd store add-path $badFlakeDir)
 
 [[ $(bsd path-info      $(bsd store add-path $flake1Dir)) =~ flake1 ]]

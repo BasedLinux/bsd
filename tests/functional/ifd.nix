@@ -1,7 +1,7 @@
-with import ./config.bsd;
+with import ./config.nix;
 import (mkDerivation {
   name = "foo";
-  bla = import ./dependencies.bsd { };
+  bla = import ./dependencies.nix { };
   buildCommand = "
       echo \\\"hi\\\" > $out
     ";

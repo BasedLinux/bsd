@@ -226,7 +226,7 @@
 
   > **Example**
   >
-  > The contents of a `.bsd` file form a Bsd expression.
+  > The contents of a `.nix` file form a Bsd expression.
 
   Bsd expressions specify [derivation expressions][derivation expression], which are [instantiated][instantiate] into the Bsd store as [store derivations][store derivation].
   These derivations can then be [realised][realise] to produce [outputs][output].

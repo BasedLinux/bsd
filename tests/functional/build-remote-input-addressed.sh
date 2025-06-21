@@ -2,7 +2,7 @@
 
 source common.sh
 
-file=build-hook.bsd
+file=build-hook.nix
 
 source build-remote.sh
 
@@ -29,7 +29,7 @@ EOF
 registerBuildHook
 source build-remote.sh
 
-# `build-hook.bsd` has four derivations to build, and the hook runs twice for
+# `build-hook.nix` has four derivations to build, and the hook runs twice for
 # each derivation (once on the builder and once on the host), so the counter
 # should contain eight lines now
 [[ $(wc -l < "$TEST_ROOT/post-hook-counter") -eq 8 ]]

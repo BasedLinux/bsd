@@ -7,7 +7,7 @@ registries*. Flake registries are a convenience feature that allows
 you to refer to flakes using symbolic identifiers such as `bsdpkgs`,
 rather than full URLs such as `git://github.com/BasedLinux/bsdpkgs`. You
 can use these identifiers on the command line (e.g. when you do `bsd
-run bsdpkgs#hello`) or in flake input specifications in `flake.bsd`
+run bsdpkgs#hello`) or in flake input specifications in `flake.nix`
 files. The latter are automatically resolved to full URLs and recorded
 in the flake's `flake.lock` file.
 
@@ -34,7 +34,7 @@ highest precedence:
 * Overrides specified on the command line using the option
   `--override-flake`.
 
-Note that the system and user registries are not used to resolve flake references in `flake.bsd`. They are only used to resolve flake references on the command line.
+Note that the system and user registries are not used to resolve flake references in `flake.nix`. They are only used to resolve flake references on the command line.
 
 # Registry format
 

@@ -11,9 +11,9 @@
   Credit: [**@alois31**](https://github.com/alois31), [**Linus Heckemann (@lheckemann)**](https://github.com/lheckemann)
   Co-authors: [**@edolstra**](https://github.com/edolstra)
 
-- `bsd-shell <directory>` looks for `shell.bsd` [#496](https://github.com/BasedLinux/bsd/issues/496) [#2279](https://github.com/BasedLinux/bsd/issues/2279) [#4529](https://github.com/BasedLinux/bsd/issues/4529) [#5431](https://github.com/BasedLinux/bsd/issues/5431) [#11053](https://github.com/BasedLinux/bsd/issues/11053) [#11057](https://github.com/BasedLinux/bsd/pull/11057)
+- `bsd-shell <directory>` looks for `shell.nix` [#496](https://github.com/BasedLinux/bsd/issues/496) [#2279](https://github.com/BasedLinux/bsd/issues/2279) [#4529](https://github.com/BasedLinux/bsd/issues/4529) [#5431](https://github.com/BasedLinux/bsd/issues/5431) [#11053](https://github.com/BasedLinux/bsd/issues/11053) [#11057](https://github.com/BasedLinux/bsd/pull/11057)
 
-  `bsd-shell $x` now looks for `$x/shell.bsd` when `$x` resolves to a directory.
+  `bsd-shell $x` now looks for `$x/shell.nix` when `$x` resolves to a directory.
 
   Although this might be seen as a breaking change, its primarily interactive usage makes it a minor issue.
   This adjustment addresses a commonly reported problem.
@@ -25,7 +25,7 @@
   #!bsd-shell -i bash
   ```
 
-  This will now load `shell.bsd` from the script's directory, if it exists; `default.bsd` otherwise.
+  This will now load `shell.nix` from the script's directory, if it exists; `default.nix` otherwise.
 
   The old behavior can be opted into by setting the option [`bsd-shell-always-looks-for-shell-bsd`](@docroot@/command-ref/conf-file.md#conf-bsd-shell-always-looks-for-shell-bsd) to `false`.
 
@@ -41,7 +41,7 @@
   ```
   bsd-repl> :doc lib.toFunction
   Function toFunction
-      … defined at /home/user/h/bsdpkgs/lib/trivial.bsd:1072:5
+      … defined at /home/user/h/bsdpkgs/lib/trivial.nix:1072:5
 
       Turns any non-callable values into constant functions. Returns
       callable values as is.
@@ -150,7 +150,7 @@
 
   ```
   0: while evaluating the attribute 'python311.pythonForBuild.pkgs'
-  /bsd/store/hg65h51xnp74ikahns9hyf3py5mlbbqq-source/overrides/default.bsd:132:27
+  /bsd/store/hg65h51xnp74ikahns9hyf3py5mlbbqq-source/overrides/default.nix:132:27
 
      131|
      132|       bootstrappingBase = pkgs.${self.python.pythonAttr}.pythonForBuild.pkgs;
@@ -221,26 +221,26 @@
 
   ```shell
   #!/usr/bin/env bsd-shell
-  #!bsd-shell --expr 'import ./shell.bsd'
-  #!bsd-shell --arg toolset './greeting-tools.bsd'
+  #!bsd-shell --expr 'import ./shell.nix'
+  #!bsd-shell --arg toolset './greeting-tools.nix'
   #!bsd-shell -i bash
   hello
   ```
 
-  Older versions of `bsd-shell` would resolve `shell.bsd` relative to the current working directory, such as the user's home directory in this example:
+  Older versions of `bsd-shell` would resolve `shell.nix` relative to the current working directory, such as the user's home directory in this example:
 
   ```console
   [hostname:~]$ ./myproject/say-hi
   error:
          … while calling the 'import' builtin
            at «string»:1:2:
-              1| (import ./shell.bsd)
+              1| (import ./shell.nix)
                |  ^
 
-         error: path '/home/user/shell.bsd' does not exist
+         error: path '/home/user/shell.nix' does not exist
   ```
 
-  Since this release, `bsd-shell` resolves `shell.bsd` relative to the script's location, and `~/myproject/shell.bsd` is used.
+  Since this release, `bsd-shell` resolves `shell.nix` relative to the script's location, and `~/myproject/shell.nix` is used.
 
   ```console
   $ ./myproject/say-hi

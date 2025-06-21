@@ -19,7 +19,7 @@
 
 The command `bsd-instantiate` produces [store derivation]s from (high-level) Bsd expressions.
 It evaluates the Bsd expressions in each of *files* (which defaults to
-*./default.bsd*). Each top-level expression should evaluate to a
+*./default.nix*). Each top-level expression should evaluate to a
 derivation, a list of derivations, or a set of derivations. The paths
 of the resulting store derivations are printed on standard output.
 
@@ -89,7 +89,7 @@ standard input.
   `NIX_PATH` environment variable). If found, print the corresponding
   absolute paths on standard output. For instance, if `NIX_PATH` is
   `bsdpkgs=/home/alice/bsdpkgs`, then `bsd-instantiate --find-file
-  bsdpkgs/default.bsd` will print `/home/alice/bsdpkgs/default.bsd`.
+  bsdpkgs/default.nix` will print `/home/alice/bsdpkgs/default.nix`.
 
 - `--strict`
 
@@ -136,10 +136,10 @@ standard input.
 Instantiate [store derivation]s from a Bsd expression, and build them using `bsd-store`:
 
 ```console
-$ bsd-instantiate test.bsd (instantiate)
+$ bsd-instantiate test.nix (instantiate)
 /bsd/store/cigxbmvy6dzix98dxxh9b6shg7ar5bvs-perl-BerkeleyDB-0.26.drv
 
-$ bsd-store --realise $(bsd-instantiate test.bsd) (build)
+$ bsd-store --realise $(bsd-instantiate test.nix) (build)
 ...
 /bsd/store/qhqk4n8ci095g3sdp93x7rgwyh9rdvgk-perl-BerkeleyDB-0.26 (output path)
 

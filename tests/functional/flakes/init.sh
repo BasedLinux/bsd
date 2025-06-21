@@ -17,7 +17,7 @@ createSimpleGitFlake "$bsdpkgsDir"
 # Test 'bsd flake init'.
 createGitRepo "$templatesDir"
 
-cat > "$templatesDir"/flake.bsd <<EOF
+cat > "$templatesDir"/flake.nix <<EOF
 {
   description = "Some templates";
 
@@ -38,7 +38,7 @@ EOF
 
 mkdir "$templatesDir/trivial"
 
-cat > "$templatesDir"/trivial/flake.bsd <<EOF
+cat > "$templatesDir"/trivial/flake.nix <<EOF
 {
   description = "A flake for building Hello World";
 
@@ -53,7 +53,7 @@ EOF
 echo a > "$templatesDir/trivial/a"
 echo b > "$templatesDir/trivial/b"
 
-git -C "$templatesDir" add flake.bsd trivial/
+git -C "$templatesDir" add flake.nix trivial/
 git -C "$templatesDir" commit -m 'Initial'
 
 bsd flake check templates
@@ -63,7 +63,7 @@ bsd flake show templates --json | jq
 createGitRepo "$flakeDir"
 (cd "$flakeDir" && bsd flake init)
 (cd "$flakeDir" && bsd flake init) # check idempotence
-git -C "$flakeDir" add flake.bsd
+git -C "$flakeDir" add flake.nix
 bsd flake check "$flakeDir"
 bsd flake show "$flakeDir"
 bsd flake show "$flakeDir" --json | jq

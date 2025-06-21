@@ -12,7 +12,7 @@ more than 2800 commits from 195 contributors since release 2.3.
   $ bsd build
   error: undefined variable 'bzip3'
 
-         at /bsd/store/449lv242z0zsgwv95a8124xi11sp419f-source/flake.bsd:88:13:
+         at /bsd/store/449lv242z0zsgwv95a8124xi11sp419f-source/flake.nix:88:13:
 
              87|           [ curl
              88|             bzip3 xz brotli editline
@@ -29,7 +29,7 @@ more than 2800 commits from 195 contributors since release 2.3.
 
 * **Flakes** are a new format to package Bsd-based projects in a more
   discoverable, composable, consistent and reproducible way. A flake
-  is just a repository or tarball containing a file named `flake.bsd`
+  is just a repository or tarball containing a file named `flake.nix`
   that specifies dependencies on other flakes and returns any Bsd
   assets such as packages, Bsdpkgs overlays, BasedLinux modules or CI
   tests. The new `bsd` CLI is primarily based around flakes; for
@@ -338,8 +338,8 @@ more than 2800 commits from 195 contributors since release 2.3.
 * It is now an error to modify the `plugin-files` setting via a
   command-line flag that appears after the first non-flag argument to
   any command, including a subcommand to `bsd`. For example,
-  `bsd-instantiate default.bsd --plugin-files ""` must now become
-  `bsd-instantiate --plugin-files "" default.bsd`.
+  `bsd-instantiate default.nix --plugin-files ""` must now become
+  `bsd-instantiate --plugin-files "" default.nix`.
 
 * We no longer release source tarballs. If you want to build from
   source, please build from the tags in the Git repository.

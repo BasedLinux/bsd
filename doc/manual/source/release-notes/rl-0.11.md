@@ -136,11 +136,11 @@ on Bsd. Here is an (incomplete) list:
     files in the store and hard-linking them to each other. It typically
     reduces the size of the store by something like 25-35%.
 
-  - `~/.bsd-defexpr` can now be a directory, in which case the Bsd
+  - `~/.nix-defexpr` can now be a directory, in which case the Bsd
     expressions in that directory are combined into an attribute set,
     with the file names used as the names of the attributes. The command
     `bsd-env
-            --import` (which set the `~/.bsd-defexpr` symlink) is removed.
+            --import` (which set the `~/.nix-defexpr` symlink) is removed.
 
   - Derivations can specify the new special attribute
     `allowedReferences` to enforce that the references in the output of

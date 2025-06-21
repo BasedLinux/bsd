@@ -90,7 +90,7 @@ initLowerStore () {
   bsd-store --store "$storeA" --add ../dummy
 
   # Build something in lower store
-  drvPath=$(bsd-instantiate --store $storeA ../hermetic.bsd --arg withFinalRefs true --arg busybox "$busybox" --arg seed 1)
+  drvPath=$(bsd-instantiate --store $storeA ../hermetic.nix --arg withFinalRefs true --arg busybox "$busybox" --arg seed 1)
   pathInLowerStore=$(bsd-store --store "$storeA" --realise $drvPath)
 }
 

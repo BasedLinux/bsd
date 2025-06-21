@@ -155,10 +155,10 @@ the Python example could have been written as:
 
 ```python
 #! /usr/bin/env bsd
-#! bsd shell --impure --file deps.bsd -i python
+#! bsd shell --impure --file deps.nix -i python
 ```
 
-where the file `deps.bsd` in the same directory as the `#!`-script
+where the file `deps.nix` in the same directory as the `#!`-script
 contains:
 
 ```bsd

@@ -1,5 +1,5 @@
 # Run:
-# GC_INITIAL_HEAP_SIZE=$[1024 * 1024] NIX_SHOW_STATS=1 bsd eval -f gc-coroutine-test.bsd  -vvvv
+# GC_INITIAL_HEAP_SIZE=$[1024 * 1024] NIX_SHOW_STATS=1 bsd eval -f gc-coroutine-test.nix  -vvvv
 
 let
   inherit (builtins)

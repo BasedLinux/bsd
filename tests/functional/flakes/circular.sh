@@ -11,7 +11,7 @@ flakeB=$TEST_ROOT/flakeB
 createGitRepo "$flakeA"
 createGitRepo "$flakeB"
 
-cat > "$flakeA"/flake.bsd <<EOF
+cat > "$flakeA"/flake.nix <<EOF
 {
   inputs.b.url = git+file://$flakeB;
   inputs.b.inputs.a.follows = "/";
@@ -23,9 +23,9 @@ cat > "$flakeA"/flake.bsd <<EOF
 }
 EOF
 
-git -C "$flakeA" add flake.bsd
+git -C "$flakeA" add flake.nix
 
-cat > "$flakeB"/flake.bsd <<EOF
+cat > "$flakeB"/flake.nix <<EOF
 {
   inputs.a.url = git+file://$flakeA;
 
@@ -35,13 +35,13 @@ cat > "$flakeB"/flake.bsd <<EOF
 }
 EOF
 
-git -C "$flakeB" add flake.bsd
+git -C "$flakeB" add flake.nix
 git -C "$flakeB" commit -a -m 'Foo'
 
 [[ $(bsd eval "$flakeA#foo") = 1579 ]]
 [[ $(bsd eval "$flakeA#foo") = 1579 ]]
 
-sed -i "$flakeB"/flake.bsd -e 's/456/789/'
+sed -i "$flakeB"/flake.nix -e 's/456/789/'
 git -C "$flakeB" commit -a -m 'Foo'
 
 bsd flake update b --flake "$flakeA"

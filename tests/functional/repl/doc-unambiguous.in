@@ -1,2 +1,2 @@
-:l doc-comments.bsd
+:l doc-comments.nix
 :doc unambiguous

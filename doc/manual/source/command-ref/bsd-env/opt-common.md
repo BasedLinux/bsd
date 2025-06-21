@@ -7,12 +7,12 @@ The following options are allowed for all `bsd-env` operations, but may not alwa
   Specifies the Bsd expression (designated below as the *active Bsd
   expression*) used by the `--install`, `--upgrade`, and `--query
   --available` operations to obtain derivations. The default is
-  `~/.bsd-defexpr`.
+  `~/.nix-defexpr`.
 
   If the argument starts with `http://` or `https://`, it is
   interpreted as the URL of a tarball that will be downloaded and
   unpacked to a temporary location. The tarball must include a single
-  top-level directory containing at least a file named `default.bsd`.
+  top-level directory containing at least a file named `default.nix`.
 
 - `--profile` / `-p` *path*
 

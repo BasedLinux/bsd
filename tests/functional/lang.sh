@@ -14,7 +14,7 @@ function diffAndAccept() {
     diffAndAcceptInner "$testName" "$got" "$expected"
 }
 
-export TEST_VAR=foo # for eval-okay-getenv.bsd
+export TEST_VAR=foo # for eval-okay-getenv.nix
 export NIX_REMOTE=dummy://
 export NIX_STORE_DIR=/bsd/store
 
@@ -27,7 +27,7 @@ bsd-instantiate --show-trace --eval -E 'builtins.addErrorContext "Hello" 123' 2>
 expectStderr 1 bsd-instantiate --show-trace --eval -E 'builtins.addErrorContext "Hello" (throw "Foo")' | grepQuiet Hello
 expectStderr 1 bsd-instantiate --show-trace --eval -E 'builtins.addErrorContext "Hello %" (throw "Foo")' | grepQuiet 'Hello %'
 # Relies on parsing the expression derivation as a derivation, can't use --eval
-expectStderr 1 bsd-instantiate --show-trace lang/non-eval-fail-bad-drvPath.bsd | grepQuiet "store path '8qlfcic10lw5304gqm8q45nr7g7jl62b-cachix-1.7.3-bin' is not a valid derivation path"
+expectStderr 1 bsd-instantiate --show-trace lang/non-eval-fail-bad-drvPath.nix | grepQuiet "store path '8qlfcic10lw5304gqm8q45nr7g7jl62b-cachix-1.7.3-bin' is not a valid derivation path"
 
 
 bsd-instantiate --eval -E 'let x = builtins.trace { x = x; } true; in x' \
@@ -65,10 +65,10 @@ postprocess() {
     fi
 }
 
-for i in lang/parse-fail-*.bsd; do
+for i in lang/parse-fail-*.nix; do
     echo "parsing $i (should fail)";
-    i=$(basename "$i" .bsd)
-    if expectStderr 1 bsd-instantiate --parse - < "lang/$i.bsd" > "lang/$i.err"
+    i=$(basename "$i" .nix)
+    if expectStderr 1 bsd-instantiate --parse - < "lang/$i.nix" > "lang/$i.err"
     then
         postprocess "$i"
         diffAndAccept "$i" err err.exp
@@ -78,11 +78,11 @@ for i in lang/parse-fail-*.bsd; do
     fi
 done
 
-for i in lang/parse-okay-*.bsd; do
+for i in lang/parse-okay-*.nix; do
     echo "parsing $i (should succeed)";
-    i=$(basename "$i" .bsd)
+    i=$(basename "$i" .nix)
     if
-        expect 0 bsd-instantiate --parse - < "lang/$i.bsd" \
+        expect 0 bsd-instantiate --parse - < "lang/$i.nix" \
             1> "lang/$i.out" \
             2> "lang/$i.err"
     then
@@ -96,9 +96,9 @@ for i in lang/parse-okay-*.bsd; do
     fi
 done
 
-for i in lang/eval-fail-*.bsd; do
+for i in lang/eval-fail-*.nix; do
     echo "evaluating $i (should fail)";
-    i=$(basename "$i" .bsd)
+    i=$(basename "$i" .nix)
     flags="$(
         if [[ -e "lang/$i.flags" ]]; then
             sed -e 's/#.*//' < "lang/$i.flags"
@@ -109,7 +109,7 @@ for i in lang/eval-fail-*.bsd; do
     )"
     if
         # shellcheck disable=SC2086 # word splitting of flags is intended
-        expectStderr 1 bsd-instantiate $flags "lang/$i.bsd" \
+        expectStderr 1 bsd-instantiate $flags "lang/$i.nix" \
             | sed "s!$(pwd)!/pwd!g" > "lang/$i.err"
     then
         postprocess "$i"
@@ -120,13 +120,13 @@ for i in lang/eval-fail-*.bsd; do
     fi
 done
 
-for i in lang/eval-okay-*.bsd; do
+for i in lang/eval-okay-*.nix; do
     echo "evaluating $i (should succeed)";
-    i=$(basename "$i" .bsd)
+    i=$(basename "$i" .nix)
 
     if test -e "lang/$i.exp.xml"; then
         if expect 0 bsd-instantiate --eval --xml --no-location --strict \
-                "lang/$i.bsd" > "lang/$i.out.xml"
+                "lang/$i.nix" > "lang/$i.out.xml"
         then
             postprocess "$i"
             diffAndAccept "$i" out.xml exp.xml
@@ -144,7 +144,7 @@ for i in lang/eval-okay-*.bsd; do
             expect 0 env \
                 NIX_PATH=lang/dir3:lang/dir4 \
                 HOME=/fake-home \
-                bsd-instantiate "${flags[@]}" --eval --strict "lang/$i.bsd" \
+                bsd-instantiate "${flags[@]}" --eval --strict "lang/$i.nix" \
                 1> "lang/$i.out" \
                 2> "lang/$i.err"
         then

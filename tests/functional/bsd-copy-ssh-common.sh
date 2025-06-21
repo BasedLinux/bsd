@@ -10,7 +10,7 @@ clearCache
 mkdir -p $TEST_ROOT/stores
 
 # Create path to copy back and forth
-outPath=$(bsd-build --no-out-link dependencies.bsd)
+outPath=$(bsd-build --no-out-link dependencies.nix)
 
 storeQueryParam="store=${NIX_STORE_DIR}"
 

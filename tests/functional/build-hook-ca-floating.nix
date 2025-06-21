@@ -1,6 +1,6 @@
 { busybox }:
 
-import ./build-hook.bsd {
+import ./build-hook.nix {
   inherit busybox;
   contentAddressed = true;
 }

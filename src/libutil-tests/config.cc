@@ -283,7 +283,7 @@ namespace bsd {
         ASSERT_THROW(config.applyConfig(
             "name-of-the-setting = value-from-file\n"
             "# name-of-the-setting = foo\n"
-            "include /bsd/store/does/not/exist.bsd"
+            "include /bsd/store/does/not/exist.nix"
         ), Error);
     }
 

@@ -6,7 +6,7 @@ TODO_BasedLinux
 
 clearStore
 
-drvPath=$(bsd-instantiate dependencies.bsd)
+drvPath=$(bsd-instantiate dependencies.nix)
 outPath=$(bsd-store -rvv "$drvPath")
 
 # Set a GC root.

@@ -7,7 +7,7 @@ the URL always produces the same tarball contents.
 
 An HTTP server can return an "immutable" HTTP URL appropriate for lock
 files. This allows users to specify a tarball flake input in
-`flake.bsd` that requests the latest version of a flake
+`flake.nix` that requests the latest version of a flake
 (e.g. `https://example.org/hello/latest.tar.gz`), while `flake.lock`
 will record a URL whose contents will not change
 (e.g. `https://example.org/hello/<revision>.tar.gz`). To do so, the
@@ -53,7 +53,7 @@ https://<domain name>/<owner>/<repo>/archive/<reference or revision>.tar.gz
 >
 >
 > ```bsd
-> # flake.bsd
+> # flake.nix
 > {
 >    inputs = {
 >      foo.url = "https://gitea.example.org/some-person/some-flake/archive/main.tar.gz";

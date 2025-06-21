@@ -12,7 +12,7 @@ export NIX_TESTS_CA_BY_DEFAULT=1
 clearStore
 
 for i in {0..5}; do
-    bsd build --no-link --file ./racy.bsd &
+    bsd build --no-link --file ./racy.nix &
 done
 
 wait

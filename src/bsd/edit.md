@@ -12,7 +12,7 @@ R""(
 
   ```console
   # bsd eval --raw bsdpkgs#hello.meta.position
-  /bsd/store/fvafw0gvwayzdan642wrv84pzm5bgpmy-source/pkgs/applications/misc/hello/default.bsd:15
+  /bsd/store/fvafw0gvwayzdan642wrv84pzm5bgpmy-source/pkgs/applications/misc/hello/default.nix:15
   ```
 
 # Description

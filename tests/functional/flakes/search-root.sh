@@ -8,13 +8,13 @@ writeSimpleFlake "$TEST_HOME"
 cd "$TEST_HOME"
 mkdir -p foo/subdir
 
-echo '{ outputs = _: {}; }' > foo/flake.bsd
-cat <<EOF > flake.bsd
+echo '{ outputs = _: {}; }' > foo/flake.nix
+cat <<EOF > flake.nix
 {
     inputs.foo.url = "$PWD/foo";
     outputs = a: {
        packages.$system = rec {
-         test = import ./simple.bsd;
+         test = import ./simple.nix;
          default = test;
        };
     };
@@ -24,7 +24,7 @@ mkdir subdir
 pushd subdir
 
 success=("" . .# .#test ../subdir ../subdir#test "$PWD")
-failure=("path:$PWD" "../simple.bsd")
+failure=("path:$PWD" "../simple.nix")
 
 for i in "${success[@]}"; do
     bsd build "$i" || fail "flake should be found by searching up directories"
@@ -38,7 +38,7 @@ popd
 
 bsd build --override-input foo . || fail "flake should search up directories when not an installable"
 
-sed "s,$PWD/foo,$PWD/foo/subdir,g" -i flake.bsd
+sed "s,$PWD/foo,$PWD/foo/subdir,g" -i flake.nix
 ! bsd build || fail "flake should not search upwards when part of inputs"
 
 if [[ -n $(type -p git) ]]; then

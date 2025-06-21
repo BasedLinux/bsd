@@ -46,7 +46,7 @@ This release has the following improvements:
     the `fetchurl` in Bsdpkgs, but is useful for bootstrapping; e.g., it
     will allow us to get rid of the bootstrap binaries in the Bsdpkgs
     source tree and download them instead. You can use it by doing
-    `import <bsd/fetchurl.bsd> { url =
+    `import <bsd/fetchurl.nix> { url =
                     url; sha256 =
                     "hash"; }`. (Shea Levy)
 

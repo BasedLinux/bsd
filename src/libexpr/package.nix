@@ -53,7 +53,7 @@ mkMesonLibrary (finalAttrs: {
     (fileset.fileFilter (file: file.hasExt "hh") ./.)
     ./lexer.l
     ./parser.y
-    (fileset.difference (fileset.fileFilter (file: file.hasExt "bsd") ./.) ./package.bsd)
+    (fileset.difference (fileset.fileFilter (file: file.hasExt "bsd") ./.) ./package.nix)
   ];
 
   nativeBuildInputs = [

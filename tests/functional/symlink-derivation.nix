@@ -1,4 +1,4 @@
-with import ./config.bsd;
+with import ./config.nix;
 
 let
   foo_in_store = builtins.toFile "foo" "foo";

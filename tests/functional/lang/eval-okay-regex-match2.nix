@@ -159,7 +159,7 @@ builtins.map
     ]
     [
       ''(.*/)?\.\.(/.*)?''
-      ''package.bsd''
+      ''package.nix''
     ]
     [
       ''/bin/([^/]+)''
@@ -215,7 +215,7 @@ builtins.map
     ]
     [
       ''(.*/)?\.\.(/.*)?''
-      ''package.bsd''
+      ''package.nix''
     ]
     [
       ''[[:alnum:]+_?=-][[:alnum:]+._?=-]*''
@@ -737,11 +737,11 @@ builtins.map
     ]
     [
       ''^\.sw[a-z]$''
-      ''package.bsd''
+      ''package.nix''
     ]
     [
       ''^\..*\.sw[a-z]$''
-      ''package.bsd''
+      ''package.nix''
     ]
     [
       ''^\.sw[a-z]$''

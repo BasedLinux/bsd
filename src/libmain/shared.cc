@@ -297,7 +297,7 @@ void printVersion(const std::string & programName)
         std::cout << "System type: " << settings.thisSystem << "\n";
         std::cout << "Additional system types: " << concatStringsSep(", ", settings.extraPlatforms.get()) << "\n";
         std::cout << "Features: " << concatStringsSep(", ", cfg) << "\n";
-        std::cout << "System configuration file: " << settings.bsdConfDir + "/bsd.conf" << "\n";
+        std::cout << "System configuration file: " << settings.bsdConfDir + "/nix.conf" << "\n";
         std::cout << "User configuration files: " <<
             concatStringsSep(":", settings.bsdUserConfFiles)
             << "\n";

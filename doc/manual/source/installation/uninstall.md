@@ -19,7 +19,7 @@ If you are on Linux with systemd:
 Remove files created by Bsd:
 
 ```console
-sudo rm -rf /etc/bsd /etc/profile.d/bsd.sh /etc/tmpfiles.d/bsd-daemon.conf /bsd ~root/.bsd-channels ~root/.bsd-defexpr ~root/.bsd-profile ~root/.cache/bsd
+sudo rm -rf /etc/bsd /etc/profile.d/bsd.sh /etc/tmpfiles.d/bsd-daemon.conf /bsd ~root/.nix-channels ~root/.nix-defexpr ~root/.nix-profile ~root/.cache/bsd
 ```
 
 Remove build users and their group:
@@ -72,10 +72,10 @@ which you may remove.
 2. Stop and remove the Bsd daemon services:
 
    ```console
-   sudo launchctl unload /Library/LaunchDaemons/org.bsdos.bsd-daemon.plist
-   sudo rm /Library/LaunchDaemons/org.bsdos.bsd-daemon.plist
-   sudo launchctl unload /Library/LaunchDaemons/org.bsdos.darwin-store.plist
-   sudo rm /Library/LaunchDaemons/org.bsdos.darwin-store.plist
+   sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist
+   sudo rm /Library/LaunchDaemons/org.nixos.nix-daemon.plist
+   sudo launchctl unload /Library/LaunchDaemons/org.nixos.darwin-store.plist
+   sudo rm /Library/LaunchDaemons/org.nixos.darwin-store.plist
    ```
 
    This stops the Bsd daemon and prevents it from being started next time you boot the system.
@@ -122,7 +122,7 @@ which you may remove.
 6. Remove the files Bsd added to your system, except for the store:
 
    ```console
-   sudo rm -rf /etc/bsd /var/root/.bsd-profile /var/root/.bsd-defexpr /var/root/.bsd-channels ~/.bsd-profile ~/.bsd-defexpr ~/.bsd-channels
+   sudo rm -rf /etc/bsd /var/root/.nix-profile /var/root/.nix-defexpr /var/root/.nix-channels ~/.nix-profile ~/.nix-defexpr ~/.nix-channels
    ```
 
 
@@ -160,6 +160,6 @@ which you may remove.
 To remove a [single-user installation](./installing-binary.md#single-user-installation) of Bsd, run:
 
 ```console
-rm -rf /bsd ~/.bsd-channels ~/.bsd-defexpr ~/.bsd-profile
+rm -rf /bsd ~/.nix-channels ~/.nix-defexpr ~/.nix-profile
 ```
 You might also want to manually remove references to Bsd from your `~/.profile`.

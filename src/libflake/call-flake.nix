@@ -62,7 +62,7 @@ let
         else
           sourceInfo.outPath + (if subdir == "" then "" else "/" + subdir);
 
-      flake = import (outPath + "/flake.bsd");
+      flake = import (outPath + "/flake.nix");
 
       inputs = mapAttrs (inputName: inputSpec: allNodes.${resolveInput inputSpec}.result) (
         node.inputs or { }

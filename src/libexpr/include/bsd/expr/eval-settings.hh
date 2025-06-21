@@ -78,7 +78,7 @@ struct EvalSettings : Config
         R"(
           List of search paths to use for [lookup path](@docroot@/language/constructs/lookup-path.md) resolution.
           This setting determines the value of
-          [`builtins.bsdPath`](@docroot@/language/builtins.md#builtins-bsdPath) and can be used with [`builtins.findFile`](@docroot@/language/builtins.md#builtins-findFile).
+          [`builtins.nixPath`](@docroot@/language/builtins.md#builtins-bsdPath) and can be used with [`builtins.findFile`](@docroot@/language/builtins.md#builtins-findFile).
 
           - The configuration setting is overridden by the [`NIX_PATH`](@docroot@/command-ref/env-common.md#env-NIX_PATH)
           environment variable.
@@ -87,7 +87,7 @@ struct EvalSettings : Config
 
           If the respective paths are accessible, the default values are:
 
-          - `$HOME/.bsd-defexpr/channels`
+          - `$HOME/.nix-defexpr/channels`
 
             The [user channel link](@docroot@/command-ref/files/default-bsd-expression.md#user-channel-link), pointing to the current state of [channels](@docroot@/command-ref/files/channels.md) for the current user.
 
@@ -106,7 +106,7 @@ struct EvalSettings : Config
           >
           > If [restricted evaluation](@docroot@/command-ref/conf-file.md#conf-restrict-eval) is enabled, the default value is empty.
           >
-          > If [pure evaluation](#conf-pure-eval) is enabled, `builtins.bsdPath` *always* evaluates to the empty list `[ ]`.
+          > If [pure evaluation](#conf-pure-eval) is enabled, `builtins.nixPath` *always* evaluates to the empty list `[ ]`.
         )", {}, false};
 
     Setting<std::string> currentSystem{
@@ -134,7 +134,7 @@ struct EvalSettings : Config
         R"(
           If set to `true`, the Bsd evaluator doesn't allow access to any
           files outside of
-          [`builtins.bsdPath`](@docroot@/language/builtins.md#builtins-bsdPath),
+          [`builtins.nixPath`](@docroot@/language/builtins.md#builtins-bsdPath),
           or to URIs outside of
           [`allowed-uris`](@docroot@/command-ref/conf-file.md#conf-allowed-uris).
         )"};
@@ -147,7 +147,7 @@ struct EvalSettings : Config
           - Disable impure constants:
             - [`builtins.currentSystem`](@docroot@/language/builtins.md#builtins-currentSystem)
             - [`builtins.currentTime`](@docroot@/language/builtins.md#builtins-currentTime)
-            - [`builtins.bsdPath`](@docroot@/language/builtins.md#builtins-bsdPath)
+            - [`builtins.nixPath`](@docroot@/language/builtins.md#builtins-bsdPath)
             - [`builtins.storePath`](@docroot@/language/builtins.md#builtins-storePath)
         )"
         };
@@ -194,8 +194,8 @@ struct EvalSettings : Config
 
               function-trace entered undefined position at 1565795816999559622
               function-trace exited undefined position at 1565795816999581277
-              function-trace entered /bsd/store/.../example.bsd:226:41 at 1565795253249935150
-              function-trace exited /bsd/store/.../example.bsd:226:41 at 1565795253249941684
+              function-trace entered /bsd/store/.../example.nix:226:41 at 1565795253249935150
+              function-trace exited /bsd/store/.../example.nix:226:41 at 1565795253249941684
 
           The `undefined position` means the function call is a builtin.
 

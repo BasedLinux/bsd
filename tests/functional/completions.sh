@@ -5,13 +5,13 @@ source common.sh
 cd "$TEST_ROOT"
 
 mkdir -p dep
-cat <<EOF > dep/flake.bsd
+cat <<EOF > dep/flake.nix
 {
     outputs = i: { };
 }
 EOF
 mkdir -p foo
-cat <<EOF > foo/flake.bsd
+cat <<EOF > foo/flake.nix
 {
     inputs.a.url = "path:$(realpath dep)";
 
@@ -21,7 +21,7 @@ cat <<EOF > foo/flake.bsd
 }
 EOF
 mkdir -p bar
-cat <<EOF > bar/flake.bsd
+cat <<EOF > bar/flake.nix
 {
     inputs.b.url = "path:$(realpath dep)";
 
@@ -31,7 +31,7 @@ cat <<EOF > bar/flake.bsd
 }
 EOF
 mkdir -p err
-cat <<EOF > err/flake.bsd
+cat <<EOF > err/flake.nix
 throw "error"
 EOF
 
@@ -70,6 +70,6 @@ NIX_GET_COMPLETIONS=3 bsd build --option allow-import-from | grep -- "allow-impo
 
 # Attr path completions
 [[ "$(NIX_GET_COMPLETIONS=2 bsd eval ./foo\#sam)" == $'attrs\n./foo#sampleOutput\t' ]]
-[[ "$(NIX_GET_COMPLETIONS=4 bsd eval --file ./foo/flake.bsd outp)" == $'attrs\noutputs\t' ]]
-[[ "$(NIX_GET_COMPLETIONS=4 bsd eval --file ./err/flake.bsd outp 2>&1)" == $'attrs' ]]
+[[ "$(NIX_GET_COMPLETIONS=4 bsd eval --file ./foo/flake.nix outp)" == $'attrs\noutputs\t' ]]
+[[ "$(NIX_GET_COMPLETIONS=4 bsd eval --file ./err/flake.nix outp 2>&1)" == $'attrs' ]]
 [[ "$(NIX_GET_COMPLETIONS=2 bsd eval ./err\# 2>&1)" == $'attrs' ]]

@@ -38,8 +38,8 @@ test_confdata = {
 subdir('common')
 
 configure_file(
-  input : 'config.bsd.in',
-  output : 'config.bsd',
+  input : 'config.nix.in',
+  output : 'config.nix',
   configuration : test_confdata,
 )
 

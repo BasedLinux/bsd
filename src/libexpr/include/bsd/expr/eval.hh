@@ -286,7 +286,7 @@ public:
 
     /**
      * In-memory filesystem for internal, non-user-callable Bsd
-     * expressions like `derivation.bsd`.
+     * expressions like `derivation.nix`.
      */
     const ref<MemorySourceAccessor> internalFS;
 
@@ -953,9 +953,9 @@ std::string_view showType(ValueType type, bool withArticle = true);
 std::string showType(const Value & v);
 
 /**
- * If `path` refers to a directory, then append "/default.bsd".
+ * If `path` refers to a directory, then append "/default.nix".
  *
- * @param addDefaultBsd Whether to append "/default.bsd" after resolving symlinks.
+ * @param addDefaultBsd Whether to append "/default.nix" after resolving symlinks.
  */
 SourcePath resolveExprPath(SourcePath path, bool addDefaultBsd = true);
 

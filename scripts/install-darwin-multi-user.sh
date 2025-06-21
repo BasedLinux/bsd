@@ -17,7 +17,7 @@ export NIX_FIRST_BUILD_UID="${NIX_FIRST_BUILD_UID:-351}"
 export NIX_BUILD_GROUP_ID="${NIX_BUILD_GROUP_ID:-350}"
 export NIX_BUILD_USER_NAME_TEMPLATE="_bsdbld%d"
 
-readonly NIX_DAEMON_DEST=/Library/LaunchDaemons/org.bsdos.bsd-daemon.plist
+readonly NIX_DAEMON_DEST=/Library/LaunchDaemons/org.nixos.nix-daemon.plist
 # create by default; set 0 to DIY, use a symlink, etc.
 readonly NIX_VOLUME_CREATE=${NIX_VOLUME_CREATE:-1} # now default
 
@@ -115,10 +115,10 @@ poly_configure_bsd_daemon_service() {
           /usr/bin/install -m "u=rw,go=r" "/bsd/var/bsd/profiles/default$NIX_DAEMON_DEST" "$NIX_DAEMON_DEST"
 
     _sudo "to load the LaunchDaemon plist for bsd-daemon" \
-          launchctl load /Library/LaunchDaemons/org.bsdos.bsd-daemon.plist
+          launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist
 
     _sudo "to start the bsd-daemon" \
-          launchctl kickstart -k system/org.bsdos.bsd-daemon
+          launchctl kickstart -k system/org.nixos.nix-daemon
 }
 
 poly_group_exists() {

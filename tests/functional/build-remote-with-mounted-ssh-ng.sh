@@ -7,12 +7,12 @@ requireSandboxSupport
 
 enableFeatures mounted-ssh-store
 
-bsd build -Lvf simple.bsd \
+bsd build -Lvf simple.nix \
   --arg busybox "$busybox" \
   --out-link "$TEST_ROOT/result-from-remote" \
   --store mounted-ssh-ng://localhost
 
-bsd build -Lvf simple.bsd \
+bsd build -Lvf simple.nix \
   --arg busybox "$busybox" \
   --out-link "$TEST_ROOT/result-from-remote-new-cli" \
   --store 'mounted-ssh-ng://localhost?remote-program=bsd daemon'

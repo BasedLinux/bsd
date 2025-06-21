@@ -1,5 +1,5 @@
 # this test shows how to use listToAttrs and that evaluation is still lazy (throw isn't called)
-with import ./lib.bsd;
+with import ./lib.nix;
 
 let
   asi = name: value: { inherit name value; };

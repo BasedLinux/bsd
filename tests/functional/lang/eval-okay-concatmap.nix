@@ -1,4 +1,4 @@
-with import ./lib.bsd;
+with import ./lib.nix;
 
 [
   (builtins.concatMap (x: if x / 2 * 2 == x then [ ] else [ x ]) (range 0 10))

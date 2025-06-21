@@ -1,4 +1,4 @@
-with import ./config.bsd;
+with import ./config.nix;
 rec {
   x1 = mkDerivation {
     name = "x1";

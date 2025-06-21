@@ -4,15 +4,15 @@ source common.sh
 
 clearStoreIfPossible
 
-cp ./dependencies.bsd ./dependencies.builder0.sh "${config_bsd}" $TEST_HOME
+cp ./dependencies.nix ./dependencies.builder0.sh "${config_bsd}" $TEST_HOME
 
 cd $TEST_HOME
 
-bsd why-depends --derivation --file ./dependencies.bsd input2_drv input1_drv
-bsd why-depends --file ./dependencies.bsd input2_drv input1_drv
+bsd why-depends --derivation --file ./dependencies.nix input2_drv input1_drv
+bsd why-depends --file ./dependencies.nix input2_drv input1_drv
 
-bsd-build ./dependencies.bsd -A input0_drv -o dep
-bsd-build ./dependencies.bsd -o toplevel
+bsd-build ./dependencies.nix -A input0_drv -o dep
+bsd-build ./dependencies.nix -o toplevel
 
 FAST_WHY_DEPENDS_OUTPUT=$(bsd why-depends ./toplevel ./dep)
 PRECISE_WHY_DEPENDS_OUTPUT=$(bsd why-depends ./toplevel ./dep --precise)

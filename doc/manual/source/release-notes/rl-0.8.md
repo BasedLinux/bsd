@@ -79,7 +79,7 @@ Bsd 0.8 has the following improvements:
     top-level component in Bsdpkgs directly, through the web — see,
     e.g., <http://catamaran.labs.cs.uu.nl/dist/bsdpkgs-0.8/>. All you
     have to do is associate `/bsd/bin/bsd-install-package` with the MIME
-    type `application/bsd-package` (or the extension `.bsdpkg`), and
+    type `application/bsd-package` (or the extension `.nixpkg`), and
     clicking on a package link will cause it to be installed, with all
     appropriate dependencies. If you just want to install some specific
     application, this is easier than subscribing to a channel.
@@ -112,7 +112,7 @@ Bsd 0.8 has the following improvements:
       - Install the result of a Bsd expression specified as a
         command-line argument:
 
-            $ bsd-env -f .../i686-linux.bsd -i -E 'x: x.firefoxWrapper'
+            $ bsd-env -f .../i686-linux.nix -i -E 'x: x.firefoxWrapper'
 
         The difference with the normal installation mode is that `-E`
         does not use the `name` attributes of derivations. Therefore,

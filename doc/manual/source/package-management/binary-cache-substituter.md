@@ -9,7 +9,7 @@ The daemon that handles binary cache requests via HTTP, `bsd-serve`, is
 not part of the Bsd distribution, but you can install it from Bsdpkgs:
 
 ```console
-$ bsd-env --install --attr bsdpkgs.bsd-serve
+$ bsd-env --install --attr bsdpkgs.nix-serve
 ```
 
 You can then start the server, listening for HTTP connections on

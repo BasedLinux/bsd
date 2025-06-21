@@ -26,7 +26,7 @@ image.
 The Docker image is also not based on any other image and includes minimal set
 of runtime dependencies that are required to use Bsd:
 
- - pkgs.bsd
+ - pkgs.nix
  - pkgs.bashInteractive
  - pkgs.coreutils-full
  - pkgs.gnutar
@@ -62,10 +62,10 @@ $ docker run -ti bsd:2.5pre20211105
 
 If you would like to run Bsd in a container under a user other than `root`,
 you can build an image with a non-root single-user installation of Bsd
-by specifying the `uid`, `gid`, `uname`, and `gname` arguments to `docker.bsd`:
+by specifying the `uid`, `gid`, `uname`, and `gname` arguments to `docker.nix`:
 
 ```console
-$ bsd build --file docker.bsd \
+$ bsd build --file docker.nix \
     --arg uid 1000 \
     --arg gid 1000 \
     --argstr uname user \

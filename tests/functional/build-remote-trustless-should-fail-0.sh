@@ -16,7 +16,7 @@ unset NIX_STATE_DIR
 
 # We first build a dependency of the derivation we eventually want to
 # build.
-bsd-build build-hook.bsd -A passthru.input2 \
+bsd-build build-hook.nix -A passthru.input2 \
   -o "$TEST_ROOT/input2" \
   --arg busybox "$busybox" \
   --store "$TEST_ROOT/local" \
@@ -28,7 +28,7 @@ bsd-build build-hook.bsd -A passthru.input2 \
 
 # For script below
 # shellcheck disable=SC2034
-file=build-hook.bsd
+file=build-hook.nix
 # shellcheck disable=SC2034
 prog=$(readlink -e ./bsd-daemon-untrusting.sh)
 # shellcheck disable=SC2034

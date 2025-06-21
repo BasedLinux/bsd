@@ -223,13 +223,13 @@ void derivationToValue(EvalState & state, const PosIdx pos, const SourcePath & p
     if (!state.vImportedDrvToDerivation) {
         state.vImportedDrvToDerivation = allocRootValue(state.allocValue());
         state.eval(state.parseExprFromString(
-            #include "imported-drv-to-derivation.bsd.gen.hh"
+            #include "imported-drv-to-derivation.nix.gen.hh"
             , state.rootPath(CanonPath::root)), **state.vImportedDrvToDerivation);
     }
 
-    state.forceFunction(**state.vImportedDrvToDerivation, pos, "while evaluating imported-drv-to-derivation.bsd.gen.hh");
+    state.forceFunction(**state.vImportedDrvToDerivation, pos, "while evaluating imported-drv-to-derivation.nix.gen.hh");
     v.mkApp(*state.vImportedDrvToDerivation, w);
-    state.forceAttrs(v, pos, "while calling imported-drv-to-derivation.bsd.gen.hh");
+    state.forceAttrs(v, pos, "while calling imported-drv-to-derivation.nix.gen.hh");
 }
 
 /**
@@ -314,15 +314,15 @@ static RegisterPrimOp primop_import({
 
       The *path* argument must meet the same criteria as an [interpolated expression](@docroot@/language/string-interpolation.md#interpolated-expression).
 
-      If *path* is a directory, the file `default.bsd` in that directory is used if it exists.
+      If *path* is a directory, the file `default.nix` in that directory is used if it exists.
 
       > **Example**
       >
       > ```console
-      > $ echo 123 > default.bsd
+      > $ echo 123 > default.nix
       > ```
       >
-      > Import `default.bsd` from the current directory.
+      > Import `default.nix` from the current directory.
       >
       > ```bsd
       > import ./.
@@ -342,35 +342,35 @@ static RegisterPrimOp primop_import({
       > ```bsd
       > rec {
       >   x = 123;
-      >   y = import ./foo.bsd;
+      >   y = import ./foo.nix;
       > }
       > ```
       >
-      >  then the following `foo.bsd` throws an error:
+      >  then the following `foo.nix` throws an error:
       >
       >  ```bsd
-      >  # foo.bsd
+      >  # foo.nix
       >  x + 456
       >  ```
       >
-      >  since `x` is not in scope in `foo.bsd`.
-      > If you want `x` to be available in `foo.bsd`, pass it as a function argument:
+      >  since `x` is not in scope in `foo.nix`.
+      > If you want `x` to be available in `foo.nix`, pass it as a function argument:
       >
       >  ```bsd
       >  rec {
       >    x = 123;
-      >    y = import ./foo.bsd x;
+      >    y = import ./foo.nix;
       >  }
       >  ```
       >
       >  and
       >
       >  ```bsd
-      >  # foo.bsd
+      >  # foo.nix
       >  x: x + 456
       >  ```
       >
-      >  The function argument doesn’t have to be called `x` in `foo.bsd`; any name would work.
+      >  The function argument doesn’t have to be called `x` in `foo.nix`; any name would work.
     )",
     .fun = [](EvalState & state, const PosIdx pos, Value * * args, Value & v)
     {
@@ -1037,7 +1037,7 @@ static RegisterPrimOp primop_getEnv({
       dependencies in your Bsd expression.
 
       `getEnv` is used in Bsd Packages to locate the file
-      `~/.bsdpkgs/config.bsd`, which contains user-local settings for Bsd
+      `~/.nixpkgs/config.nix`, which contains user-local settings for Bsd
       Packages. (That is, it does a `getEnv "HOME"` to locate the user’s
       home directory.)
     )",
@@ -1925,7 +1925,7 @@ static RegisterPrimOp primop_findFile(PrimOp {
     .doc = R"(
       Find *lookup-path* in *search-path*.
 
-      [Lookup path](@docroot@/language/constructs/lookup-path.md) expressions are [desugared](https://en.wikipedia.org/wiki/Syntactic_sugar) using this and [`builtins.bsdPath`](#builtins-bsdPath):
+      [Lookup path](@docroot@/language/constructs/lookup-path.md) expressions are [desugared](https://en.wikipedia.org/wiki/Syntactic_sugar) using this and [`builtins.nixPath`](#builtins-bsdPath):
 
       ```bsd
       <bsdpkgs>
@@ -1934,7 +1934,7 @@ static RegisterPrimOp primop_findFile(PrimOp {
       is equivalent to:
 
       ```bsd
-      builtins.findFile builtins.bsdPath "bsdpkgs"
+      builtins.findFile builtins.nixPath "bsdpkgs"
       ```
 
       A search path is represented as a list of [attribute sets](./types.md#attribute-set) with two attributes:
@@ -1952,7 +1952,7 @@ static RegisterPrimOp primop_findFile(PrimOp {
       - ```
         {
           prefix = "bsdos-config";
-          path = "/etc/bsdos/configuration.bsd";
+          path = "/etc/bsdos/configuration.nix";
         }
         ```
       - ```
@@ -4903,7 +4903,7 @@ void EvalState::createBaseEnv(const EvalSettings & evalSettings)
           the Bsd language evaluator returns the same value:
 
           ```bsd-repl
-          bsd-repl> builtins.bsdVersion
+          bsd-repl> builtins.nixVersion
           "2.16.0"
           ```
         )",
@@ -4984,7 +4984,7 @@ void EvalState::createBaseEnv(const EvalSettings & evalSettings)
           > **Example**
           >
           > ```bash
-          > $ NIX_PATH= bsd-instantiate --eval --expr "builtins.bsdPath" -I foo=bar --no-pure-eval
+          > $ NIX_PATH= bsd-instantiate --eval --expr "builtins.nixPath" -I foo=bar --no-pure-eval
           > [ { path = "bar"; prefix = "foo"; } ]
           > ```
 
@@ -4998,7 +4998,7 @@ void EvalState::createBaseEnv(const EvalSettings & evalSettings)
           is equivalent to:
 
           ```bsd
-          builtins.findFile builtins.bsdPath "bsdpkgs"
+          builtins.findFile builtins.nixPath "bsdpkgs"
           ```
         )",
     });

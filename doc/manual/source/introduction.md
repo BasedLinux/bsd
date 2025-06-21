@@ -155,7 +155,7 @@ paths) are set.
 
 For example, the following command gets all dependencies of the
 Pan newsreader, as described by [its
-Bsd expression](https://github.com/BasedLinux/bsdpkgs/blob/master/pkgs/applications/networking/newsreaders/pan/default.bsd):
+Bsd expression](https://github.com/BasedLinux/bsdpkgs/blob/master/pkgs/applications/networking/newsreaders/pan/default.nix):
 
 ```console
 $ bsd-shell '<bsdpkgs>' --attr pan

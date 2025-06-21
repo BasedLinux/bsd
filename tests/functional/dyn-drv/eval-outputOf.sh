@@ -13,20 +13,20 @@ bsd --experimental-features 'bsd-command' eval --impure  --expr \
 # the future so it does work, but there are some design questions to
 # resolve first. Adding a test so we don't liberalise it by accident.
 expectStderr 1 bsd --experimental-features 'bsd-command dynamic-derivations' eval --impure --expr \
-    'builtins.outputOf (import ../dependencies.bsd {}) "out"' \
+    'builtins.outputOf (import ../dependencies.nix {}) "out"' \
     | grepQuiet "expected a string but found a set"
 
 # Test that "DrvDeep" string contexts are not supported at this time
 #
 # Like the above, this is a restriction we could relax later.
 expectStderr 1 bsd --experimental-features 'bsd-command dynamic-derivations' eval --impure --expr \
-    'builtins.outputOf (import ../dependencies.bsd {}).drvPath "out"' \
+    'builtins.outputOf (import ../dependencies.nix {}).drvPath "out"' \
     | grepQuiet "has a context which refers to a complete source and binary closure. This is not supported at this time"
 
 # Test using `builtins.outputOf` with static derivations
 testStaticHello () {
     bsd eval --impure --expr \
-        'with (import ./text-hashed-output.bsd); let
+        'with (import ./text-hashed-output.nix); let
            a = hello.outPath;
            b = builtins.outputOf (builtins.unsafeDiscardOutputDependency hello.drvPath) "out";
          in builtins.trace a
@@ -51,7 +51,7 @@ NIX_TESTS_CA_BY_DEFAULT=1 testStaticHello
 # testing here. The other `outputOf` that we're not testing here is the
 # use of _dynamic_ derivations.
 bsd eval --impure --expr \
-    'with (import ./text-hashed-output.bsd); let
+    'with (import ./text-hashed-output.nix); let
        a = producingDrv.outPath;
        b = builtins.outputOf (builtins.builtins.unsafeDiscardOutputDependency producingDrv.drvPath) "out";
      in builtins.trace a
@@ -65,7 +65,7 @@ bsd eval --impure --expr \
 # derivation that's from another derivation's output (outPath).
 testDynamicHello () {
     bsd eval --impure --expr \
-        'with (import ./text-hashed-output.bsd); let
+        'with (import ./text-hashed-output.nix); let
            a = builtins.outputOf producingDrv.outPath "out";
            b = builtins.outputOf (builtins.outputOf (builtins.unsafeDiscardOutputDependency producingDrv.drvPath) "out") "out";
          in builtins.trace a

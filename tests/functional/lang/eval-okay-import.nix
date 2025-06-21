@@ -6,7 +6,7 @@ let
     scopedImport = attrs: fn: scopedImport (overrides // attrs) fn;
 
     builtins = builtins // overrides;
-  } // import ./lib.bsd;
+  } // import ./lib.nix;
 
 in
-scopedImport overrides ./imported.bsd
+scopedImport overrides ./imported.nix

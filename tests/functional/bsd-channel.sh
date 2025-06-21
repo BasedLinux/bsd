@@ -4,7 +4,7 @@ source common.sh
 
 clearProfiles
 
-rm -f $TEST_HOME/.bsd-channels $TEST_HOME/.bsd-profile
+rm -f $TEST_HOME/.nix-channels $TEST_HOME/.nix-profile
 
 # Test add/list/remove.
 bsd-channel --add http://foo/bar xyzzy
@@ -12,8 +12,8 @@ bsd-channel --list | grepQuiet http://foo/bar
 bsd-channel --remove xyzzy
 [[ $(bsd-channel --list-generations | wc -l) == 1 ]]
 
-[ -e $TEST_HOME/.bsd-channels ]
-[ "$(cat $TEST_HOME/.bsd-channels)" = '' ]
+[ -e $TEST_HOME/.nix-channels ]
+[ "$(cat $TEST_HOME/.nix-channels)" = '' ]
 
 # Test the XDG Base Directories support
 
@@ -31,12 +31,12 @@ unset NIX_CONFIG
 # Create a channel.
 rm -rf $TEST_ROOT/foo
 mkdir -p $TEST_ROOT/foo
-drvPath=$(bsd-instantiate dependencies.bsd)
+drvPath=$(bsd-instantiate dependencies.nix)
 bsd copy --to file://$TEST_ROOT/foo?compression="bzip2" $(bsd-store -r "$drvPath")
 rm -rf $TEST_ROOT/bsdexprs
 mkdir -p $TEST_ROOT/bsdexprs
-cp "${config_bsd}" dependencies.bsd dependencies.builder*.sh $TEST_ROOT/bsdexprs/
-ln -s dependencies.bsd $TEST_ROOT/bsdexprs/default.bsd
+cp "${config_bsd}" dependencies.nix dependencies.builder*.sh $TEST_ROOT/bsdexprs/
+ln -s dependencies.nix $TEST_ROOT/bsdexprs/default.nix
 (cd $TEST_ROOT && tar cvf - bsdexprs) | bzip2 > $TEST_ROOT/foo/bsdexprs.tar.bz2
 
 # Test the update action.
@@ -51,7 +51,7 @@ grepQuiet 'item.*attrPath="foo".*name="dependencies-top"' $TEST_ROOT/meta.xml
 
 # Do an install.
 bsd-env -i dependencies-top
-[ -e $TEST_HOME/.bsd-profile/foobar ]
+[ -e $TEST_HOME/.nix-profile/foobar ]
 
 # Test updating from a tarball
 bsd-channel --add file://$TEST_ROOT/foo/bsdexprs.tar.bz2 bar
@@ -65,10 +65,10 @@ grepQuiet 'item.*attrPath="foo".*name="dependencies-top"' $TEST_ROOT/meta.xml
 
 # Do an install.
 bsd-env -i dependencies-top
-[ -e $TEST_HOME/.bsd-profile/foobar ]
+[ -e $TEST_HOME/.nix-profile/foobar ]
 
 # Test evaluation through a channel symlink (#9882).
-drvPath=$(bsd-instantiate '<foo/dependencies.bsd>')
+drvPath=$(bsd-instantiate '<foo/dependencies.nix>')
 
 # Add a test for the special case behaviour of 'bsdpkgs' in the
 # channels for root (see EvalSettings::getDefaultBsdPath()).

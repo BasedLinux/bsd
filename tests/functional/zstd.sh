@@ -9,7 +9,7 @@ clearCache
 
 cacheURI="file://$cacheDir?compression=zstd"
 
-outPath=$(bsd-build dependencies.bsd --no-out-link)
+outPath=$(bsd-build dependencies.nix --no-out-link)
 
 bsd copy --to "$cacheURI" "$outPath"
 

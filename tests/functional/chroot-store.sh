@@ -4,7 +4,7 @@ source common.sh
 
 # Regression test for #11503.
 mkdir -p "$TEST_ROOT/directory"
-cat > "$TEST_ROOT/directory/default.bsd" <<EOF
+cat > "$TEST_ROOT/directory/default.nix" <<EOF
   let
     root = ./.;
     filter = path: type:
@@ -51,15 +51,15 @@ if canUseSandbox; then
     flakeDir=$TEST_ROOT/flake
     mkdir -p "$flakeDir"
 
-    cat > "$flakeDir"/flake.bsd <<EOF
+    cat > "$flakeDir"/flake.nix <<EOF
 {
   outputs = inputs: rec {
-    packages.$system.default = import ./simple.bsd;
+    packages.$system.default = import ./simple.nix;
   };
 }
 EOF
 
-    cp simple.bsd shell.bsd simple.builder.sh "${config_bsd}" "$flakeDir/"
+    cp simple.nix shell.nix simple.builder.sh "${config_bsd}" "$flakeDir/"
 
     TODO_BasedLinux
     requiresUnprivilegedUserNamespaces

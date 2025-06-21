@@ -1,12 +1,12 @@
 Bsd <bsd version>
 Type :? for help.
 
-bsd-repl> :l doc-comments.bsd
+bsd-repl> :l doc-comments.nix
 Added <number omitted> variables.
 
 bsd-repl> :doc curriedArgs
 Function `curriedArgs`\
-  … defined at /path/to/tests/functional/repl/doc-comments.bsd:87:5
+  … defined at /path/to/tests/functional/repl/doc-comments.nix:87:5
 
 
 A documented function.
@@ -18,7 +18,7 @@ bsd-repl> "Note that users may not expect this to behave as it currently does"
 
 bsd-repl> :doc x
 Function `curriedArgs`\
-  … defined at /path/to/tests/functional/repl/doc-comments.bsd:91:5
+  … defined at /path/to/tests/functional/repl/doc-comments.nix:91:5
 
 
 The function returned by applying once

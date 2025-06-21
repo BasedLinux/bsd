@@ -8,7 +8,7 @@ needLocalStore "--dump-db requires a local store"
 
 clearStore
 
-path=$(bsd-build dependencies.bsd -o $TEST_ROOT/result)
+path=$(bsd-build dependencies.nix -o $TEST_ROOT/result)
 
 deps="$(bsd-store -qR $TEST_ROOT/result)"
 

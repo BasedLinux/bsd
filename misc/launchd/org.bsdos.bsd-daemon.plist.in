@@ -3,7 +3,7 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>org.bsdos.bsd-daemon</string>
+    <string>org.nixos.nix-daemon</string>
     <key>KeepAlive</key>
     <true/>
     <key>RunAtLoad</key>

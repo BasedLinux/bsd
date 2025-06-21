@@ -12,11 +12,11 @@ source common.sh
 # - build `producingDrv`
 # - check that the path of the output coincides with that of the original derivation
 
-out1=$(bsd build -f ./text-hashed-output.bsd hello --no-link)
+out1=$(bsd build -f ./text-hashed-output.nix hello --no-link)
 
 clearStore
 
-drvDep=$(bsd-instantiate ./text-hashed-output.bsd -A producingDrv)
+drvDep=$(bsd-instantiate ./text-hashed-output.nix -A producingDrv)
 
 # Store layer needs bugfix
 requireDaemonNewerThan "2.30pre20250515"

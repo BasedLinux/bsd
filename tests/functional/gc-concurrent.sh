@@ -9,13 +9,13 @@ clearStore
 lockFifo1=$TEST_ROOT/test1.fifo
 mkfifo "$lockFifo1"
 
-drvPath1=$(bsd-instantiate gc-concurrent.bsd -A test1 --argstr lockFifo "$lockFifo1")
+drvPath1=$(bsd-instantiate gc-concurrent.nix -A test1 --argstr lockFifo "$lockFifo1")
 outPath1=$(bsd-store -q $drvPath1)
 
-drvPath2=$(bsd-instantiate gc-concurrent.bsd -A test2)
+drvPath2=$(bsd-instantiate gc-concurrent.nix -A test2)
 outPath2=$(bsd-store -q $drvPath2)
 
-drvPath3=$(bsd-instantiate simple.bsd)
+drvPath3=$(bsd-instantiate simple.nix)
 outPath3=$(bsd-store -r $drvPath3)
 
 (! test -e $outPath3.lock)

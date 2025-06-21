@@ -14,7 +14,7 @@ let
     replaceStrings
     sort
     ;
-  inherit (import <bsd/utils.bsd>)
+  inherit (import <bsd/utils.nix>)
     attrsToList
     concatStrings
     filterAttrs
@@ -23,7 +23,7 @@ let
     trim
     unique
     ;
-  showStoreDocs = import <bsd/generate-store-info.bsd>;
+  showStoreDocs = import <bsd/generate-store-info.nix>;
 in
 
 inlineHTML: commandDump:

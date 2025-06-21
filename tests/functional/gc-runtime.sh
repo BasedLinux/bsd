@@ -16,7 +16,7 @@ TODO_BasedLinux
 profiles="$NIX_STATE_DIR"/profiles
 rm -rf "$profiles"
 
-bsd-env -p "$profiles/test" -f ./gc-runtime.bsd -i gc-runtime
+bsd-env -p "$profiles/test" -f ./gc-runtime.nix -i gc-runtime
 
 outPath=$(bsd-env -p "$profiles/test" -q --no-name --out-path gc-runtime)
 echo "$outPath"

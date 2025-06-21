@@ -4,7 +4,7 @@ source common.sh
 
 export NIX_TESTS_CA_BY_DEFAULT=1
 
-drvPath=$(bsd-instantiate ../simple.bsd)
+drvPath=$(bsd-instantiate ../simple.nix)
 
 bsd derivation show "$drvPath" | jq .[] > "$TEST_HOME"/simple.json
 

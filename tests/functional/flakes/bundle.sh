@@ -2,11 +2,11 @@
 
 source common.sh
 
-cp ../simple.bsd ../simple.builder.sh "${config_bsd}" "$TEST_HOME"
+cp ../simple.nix ../simple.builder.sh "${config_bsd}" "$TEST_HOME"
 
 cd "$TEST_HOME"
 
-cat <<EOF > flake.bsd
+cat <<EOF > flake.nix
 {
     outputs = {self}: {
       bundlers.$system = rec {
@@ -16,10 +16,10 @@ cat <<EOF > flake.bsd
           else self.packages.$system.default;
         default = simple;
       };
-      packages.$system.default = import ./simple.bsd;
+      packages.$system.default = import ./simple.nix;
       apps.$system.default = {
         type = "app";
-        program = "\${import ./simple.bsd}/hello";
+        program = "\${import ./simple.nix}/hello";
       };
     };
 }

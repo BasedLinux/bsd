@@ -2,4 +2,4 @@
   inBsdShell ? false,
   ...
 }@args:
-import ./shell.bsd (args // { contentAddressed = true; })
+import ./shell.nix (args // { contentAddressed = true; })

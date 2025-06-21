@@ -13,7 +13,7 @@ hash=$(bsd hash path "$flake2Dir")
 
 dep=$(bsd store add-path ./common.sh)
 
-cat > "$flake1Dir"/flake.bsd <<EOF
+cat > "$flake1Dir"/flake.nix <<EOF
 {
   inputs.flake2.url = "file://$TEST_ROOT/flake.tar.gz";
 
@@ -37,14 +37,14 @@ cat > "$flake1Dir"/flake.bsd <<EOF
     a6 = flake2.outPath;
 
     # FIXME
-    a7 = "\${flake2}/config.bsd";
+    a7 = "\${flake2}/config.nix";
 
     # This is only allowed in impure mode.
     a8 = builtins.storePath $dep;
 
     a9 = "$dep";
 
-    drvCall = with import ./config.bsd; mkDerivation {
+    drvCall = with import ./config.nix; mkDerivation {
       name = "simple";
       builder = ./simple.builder.sh;
       PATH = "";
@@ -59,7 +59,7 @@ cat > "$flake1Dir"/flake.bsd <<EOF
 
     a13 = "\${self.drvCall.drvPath}\${self.drvCall.outPath}";
 
-    a14 = with import ./config.bsd; let
+    a14 = with import ./config.nix; let
       top = mkDerivation {
         name = "dot-installable";
         outputs = [ "foo" "out" ];
@@ -79,12 +79,12 @@ cat > "$flake1Dir"/flake.bsd <<EOF
 }
 EOF
 
-cp ../simple.bsd ../simple.builder.sh "${config_bsd}" "$flake1Dir/"
+cp ../simple.nix ../simple.builder.sh "${config_bsd}" "$flake1Dir/"
 
 echo bar > "$flake1Dir/foo"
 
 bsd build --json --out-link "$TEST_ROOT/result" "$flake1Dir#a1"
-[[ -e $TEST_ROOT/result/simple.bsd ]]
+[[ -e $TEST_ROOT/result/simple.nix ]]
 
 bsd build --json --out-link "$TEST_ROOT/result" "$flake1Dir#a2"
 [[ $(cat "$TEST_ROOT/result") = bar ]]
@@ -94,7 +94,7 @@ bsd build --json --out-link "$TEST_ROOT/result" "$flake1Dir#a3"
 bsd build --json --out-link "$TEST_ROOT/result" "$flake1Dir#a4"
 
 bsd build --json --out-link "$TEST_ROOT/result" "$flake1Dir#a6"
-[[ -e $TEST_ROOT/result/simple.bsd ]]
+[[ -e $TEST_ROOT/result/simple.nix ]]
 
 bsd build --impure --json --out-link "$TEST_ROOT/result" "$flake1Dir#a8"
 diff common.sh "$TEST_ROOT/result"

@@ -18,7 +18,7 @@ depFlakeB="$TEST_ROOT/depFlakeB"
 rm -rf "$rootFlake"
 mkdir -p "$rootFlake" "$subflake" "$depFlakeA" "$depFlakeB"
 
-cat > "$depFlakeA/flake.bsd" <<EOF
+cat > "$depFlakeA/flake.nix" <<EOF
 {
   outputs = { self }: {
     x = 11;
@@ -26,7 +26,7 @@ cat > "$depFlakeA/flake.bsd" <<EOF
 }
 EOF
 
-cat > "$depFlakeB/flake.bsd" <<EOF
+cat > "$depFlakeB/flake.nix" <<EOF
 {
   outputs = { self }: {
     x = 13;
@@ -37,7 +37,7 @@ EOF
 [[ $(bsd eval "$depFlakeA#x") = 11 ]]
 [[ $(bsd eval "$depFlakeB#x") = 13 ]]
 
-cat > "$subflake/flake.bsd" <<EOF
+cat > "$subflake/flake.nix" <<EOF
 {
   inputs.dep.url = "path:$depFlakeA";
   outputs = { self, dep }: {
@@ -47,7 +47,7 @@ cat > "$subflake/flake.bsd" <<EOF
 }
 EOF
 
-cat > "$rootFlake/flake.bsd" <<EOF
+cat > "$rootFlake/flake.nix" <<EOF
 {
   inputs.sub.url = ./sub;
   outputs = { self, sub }: {

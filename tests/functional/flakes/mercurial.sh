@@ -19,7 +19,7 @@ hg init "$flake2Dir"
 hg add "$flake1Dir"/*
 hg commit --config ui.username=foobar@example.org "$flake1Dir" -m 'Initial commit'
 
-hg add "$flake2Dir"/flake.bsd
+hg add "$flake2Dir"/flake.nix
 hg commit --config ui.username=foobar@example.org "$flake2Dir" -m 'Initial commit'
 
 bsd build -o "$TEST_ROOT/result" "hg+file://$flake2Dir"

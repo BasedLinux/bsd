@@ -4,7 +4,7 @@ source common.sh
 
 clearStoreIfPossible
 
-drvPath=$(bsd-instantiate dependencies.bsd)
+drvPath=$(bsd-instantiate dependencies.nix)
 
 echo "derivation is $drvPath"
 
@@ -60,7 +60,7 @@ bsd-store -q --deriver "$input2OutPath" | grepQuiet -- "-input-2.drv"
 test "$(bsd-store -q --valid-derivers "$outPath")" = "$drvPath"
 
 # instantiate a different drv with the same output
-drvPath2=$(bsd-instantiate dependencies.bsd --argstr hashInvalidator yay)
+drvPath2=$(bsd-instantiate dependencies.nix --argstr hashInvalidator yay)
 
 # now --valid-derivers returns both
 test "$(bsd-store -q --valid-derivers "$outPath" | sort)" = "$(sort <<< "$drvPath"$'\n'"$drvPath2")"

@@ -85,7 +85,7 @@ static void update(const StringSet & channelNames)
 
     auto [fd, unpackChannelPath] = createTempFile();
     writeFull(fd.get(),
-        #include "unpack-channel.bsd.gen.hh"
+        #include "unpack-channel.nix.gen.hh"
         );
     fd = -1;
     AutoDelete del(unpackChannelPath, false);
@@ -153,7 +153,7 @@ static void update(const StringSet & channelNames)
     struct stat st;
     if (lstat(bsdDefExpr.c_str(), &st) == 0) {
         if (S_ISLNK(st.st_mode))
-            // old-skool ~/.bsd-defexpr
+            // old-skool ~/.nix-defexpr
             if (unlink(bsdDefExpr.c_str()) == -1)
                 throw SysError("unlinking %1%", bsdDefExpr);
     } else if (errno != ENOENT) {
@@ -167,9 +167,9 @@ static void update(const StringSet & channelNames)
 static int main_bsd_channel(int argc, char ** argv)
 {
     {
-        // Figure out the name of the `.bsd-channels' file to use
+        // Figure out the name of the `.nix-channels' file to use
         auto home = getHome();
-        channelsList = settings.useXDGBaseDirectories ? createBsdStateDir() + "/channels" : home + "/.bsd-channels";
+        channelsList = settings.useXDGBaseDirectories ? createBsdStateDir() + "/channels" : home + "/.nix-channels";
         bsdDefExpr = getBsdDefExpr();
 
         // Figure out the name of the channels profile.

@@ -2,14 +2,14 @@
 
 source common.sh
 
-drv=$(bsd-instantiate ./content-addressed.bsd -A rootCA --arg seed 1)^out
+drv=$(bsd-instantiate ./content-addressed.nix -A rootCA --arg seed 1)^out
 bsd derivation show "$drv" --arg seed 1
 
 buildAttr () {
     local derivationPath=$1
     local seedValue=$2
     shift; shift
-    local args=("./content-addressed.bsd" "-A" "$derivationPath" --arg seed "$seedValue" "--no-out-link")
+    local args=("./content-addressed.nix" "-A" "$derivationPath" --arg seed "$seedValue" "--no-out-link")
     args+=("$@")
     bsd-build "${args[@]}"
 }
@@ -38,7 +38,7 @@ testCutoff () {
 }
 
 testGC () {
-    bsd-instantiate ./content-addressed.bsd -A rootCA --arg seed 5
+    bsd-instantiate ./content-addressed.nix -A rootCA --arg seed 5
     bsd-collect-garbage --option keep-derivations true
     clearStore
     buildAttr rootCA 1 --out-link "$TEST_ROOT"/rootCA
@@ -48,7 +48,7 @@ testGC () {
 
 testBsdCommand () {
     clearStore
-    bsd build --file ./content-addressed.bsd --no-link
+    bsd build --file ./content-addressed.nix --no-link
 }
 
 # Regression test for https://github.com/BasedLinux/bsd/issues/4775

@@ -18,7 +18,7 @@ skipTest "Too memory instensive for CI. Attempt to reduce memory usage was unsuc
 # https://github.com/BasedLinux/bsd/issues/11141
 test_issue_11141() {
   mkdir -p "$TEST_ROOT/issue-11141/src"
-  cp lang-gc/issue-11141-gc-coroutine-test.bsd "$TEST_ROOT/issue-11141/"
+  cp lang-gc/issue-11141-gc-coroutine-test.nix "$TEST_ROOT/issue-11141/"
   (
     set +x;
     n=10
@@ -31,6 +31,6 @@ test_issue_11141() {
   GC_INITIAL_HEAP_SIZE=$((1024 * 1024)) \
   NIX_SHOW_STATS=1 \
   bsd eval -vvv\
-    -f "$TEST_ROOT/issue-11141/issue-11141-gc-coroutine-test.bsd"
+    -f "$TEST_ROOT/issue-11141/issue-11141-gc-coroutine-test.nix"
 }
 test_issue_11141

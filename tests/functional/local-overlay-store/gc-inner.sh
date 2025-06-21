@@ -16,7 +16,7 @@ mountOverlayfs
 
 export NIX_REMOTE="$storeB"
 stateB="$storeBRoot/bsd/var/bsd"
-outPath=$(bsd-build ../hermetic.bsd --no-out-link --arg busybox "$busybox" --arg seed 2)
+outPath=$(bsd-build ../hermetic.nix --no-out-link --arg busybox "$busybox" --arg seed 2)
 
 # Set a GC root.
 mkdir -p "$stateB"

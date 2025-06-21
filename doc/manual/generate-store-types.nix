@@ -6,8 +6,8 @@ let
     readFile
     replaceStrings
     ;
-  showSettings = import <bsd/generate-settings.bsd>;
-  showStoreDocs = import <bsd/generate-store-info.bsd>;
+  showSettings = import <bsd/generate-settings.nix>;
+  showStoreDocs = import <bsd/generate-store-info.nix>;
 in
 
 storeInfo:

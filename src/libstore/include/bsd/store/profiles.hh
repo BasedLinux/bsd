@@ -231,7 +231,7 @@ Path defaultChannelsDir();
 Path rootChannelsDir();
 
 /**
- * Resolve the default profile (~/.bsd-profile by default,
+ * Resolve the default profile (~/.nix-profile by default,
  * $XDG_STATE_HOME/bsd/profile if XDG Base Directory Support is enabled),
  * and create if doesn't exist
  */

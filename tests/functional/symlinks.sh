@@ -6,7 +6,7 @@ source common.sh
 # symlink, we copy the symlink, not its target.
 # shellcheck disable=SC2016
 bsd build --impure --no-link --expr '
-  with import ./config.bsd;
+  with import ./config.nix;
 
   mkDerivation {
     name = "simple";

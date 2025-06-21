@@ -3,7 +3,7 @@
 source common.sh
 
 # Remote trusts us
-file=build-hook.bsd
+file=build-hook.nix
 prog=bsd-daemon
 proto=ssh-ng
 

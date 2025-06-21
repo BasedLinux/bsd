@@ -304,8 +304,8 @@ EvalState::EvalState(
     , corepkgsFS(make_ref<MemorySourceAccessor>())
     , internalFS(make_ref<MemorySourceAccessor>())
     , derivationInternal{corepkgsFS->addFile(
-        CanonPath("derivation-internal.bsd"),
-        #include "primops/derivation.bsd.gen.hh"
+        CanonPath("derivation-internal.nix"),
+        #include "primops/derivation.nix.gen.hh"
     )}
     , store(store)
     , buildStore(buildStore ? buildStore : store)
@@ -365,8 +365,8 @@ EvalState::EvalState(
             resolveLookupPathPath(i.path, true);
 
     corepkgsFS->addFile(
-        CanonPath("fetchurl.bsd"),
-        #include "fetchurl.bsd.gen.hh"
+        CanonPath("fetchurl.nix"),
+        #include "fetchurl.nix.gen.hh"
     );
 
     createBaseEnv(settings);
@@ -1146,7 +1146,7 @@ void EvalState::evalFile(const SourcePath & path, Value & v, bool mustBeTrivial)
                 "while evaluating the file '%1%':", resolvedPath.to_string())
             : nullptr;
 
-        // Enforce that 'flake.bsd' is a direct attrset, not a
+        // Enforce that 'flake.nix' is a direct attrset, not a
         // computation.
         if (mustBeTrivial &&
             !(dynamic_cast<ExprAttrs *>(e)))
@@ -3044,9 +3044,9 @@ SourcePath resolveExprPath(SourcePath path, bool addDefaultBsd)
         path = {path.accessor, CanonPath(p.readLink(), path.path.parent().value_or(CanonPath::root))};
     }
 
-    /* If `path' refers to a directory, append `/default.bsd'. */
+    /* If `path' refers to a directory, append `/default.nix'. */
     if (addDefaultBsd && path.resolveSymlinks().lstat().type == SourceAccessor::tDirectory)
-        return path / "default.bsd";
+        return path / "default.nix";
 
     return path;
 }

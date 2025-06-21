@@ -44,4 +44,4 @@ let
   ];
 
 in
-(import ./lib.bsd).and tests
+(import ./lib.nix).and tests

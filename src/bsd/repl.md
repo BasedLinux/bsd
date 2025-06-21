@@ -24,7 +24,7 @@ R""(
 * Interact with Bsdpkgs in the REPL:
 
   ```console
-  # bsd repl --file example.bsd
+  # bsd repl --file example.nix
   Loading Installable ''...
   Added 3 variables.
 

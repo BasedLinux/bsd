@@ -1,9 +1,9 @@
 #! @ENV_PROG@ bsd-shell
-#! bsd-shell "{ script, path, ... }: assert path == ./shell.bsd; script { }"
+#! bsd-shell "{ script, path, ... }: assert path == ./shell.nix; script { }"
 #! bsd-shell --no-substitute
 #! bsd-shell --expr 
-#! bsd-shell --arg script "import ./shell.bsd"
-#! bsd-shell --arg path "./shell.bsd"
+#! bsd-shell --arg script "import ./shell.nix"
+#! bsd-shell --arg path "./shell.nix"
 #! bsd-shell -A shellDrv
 #! bsd-shell -i bash
 echo "$FOO"

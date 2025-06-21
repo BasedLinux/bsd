@@ -83,7 +83,7 @@ struct Flake
     FlakeRef lockedRef;
 
     /**
-     * The path of `flake.bsd`.
+     * The path of `flake.nix`.
      */
     SourcePath path;
 
@@ -150,7 +150,7 @@ struct LockFlags
     /**
      * Whether to update the lock file at all. If set to false, if any
      * change to the lock file is needed (e.g. when an input has been
-     * added to flake.bsd), you get a fatal error.
+     * added to flake.nix), you get a fatal error.
      */
     bool updateLockFile = true;
 

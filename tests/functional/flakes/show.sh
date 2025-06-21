@@ -41,7 +41,7 @@ true
 '
 
 # Test that attributes are only reported when they have actual content
-cat >flake.bsd <<EOF
+cat >flake.nix <<EOF
 {
   description = "Bla bla";
 
@@ -69,12 +69,12 @@ true
 
 # Test that attributes with errors are handled correctly.
 # bsdpkgs.legacyPackages is a particularly prominent instance of this.
-cat >flake.bsd <<EOF
+cat >flake.nix <<EOF
 {
   outputs = inputs: {
     legacyPackages.$system = {
       AAAAAASomeThingsFailToEvaluate = throw "nooo";
-      simple = import ./simple.bsd;
+      simple = import ./simple.nix;
     };
   };
 }

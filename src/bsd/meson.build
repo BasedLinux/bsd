@@ -115,10 +115,10 @@ if host_machine.system() != 'windows'
 endif
 
 bsd_sources += [
-  gen_header.process('doc/manual/generate-manpage.bsd'),
-  gen_header.process('doc/manual/generate-settings.bsd'),
-  gen_header.process('doc/manual/generate-store-info.bsd'),
-  gen_header.process('doc/manual/utils.bsd'),
+  gen_header.process('doc/manual/generate-manpage.nix'),
+  gen_header.process('doc/manual/generate-settings.nix'),
+  gen_header.process('doc/manual/generate-store-info.nix'),
+  gen_header.process('doc/manual/utils.nix'),
   gen_header.process('get-env.sh'),
   gen_header.process('profiles.md'),
   gen_header.process('help-stores.md'),
@@ -136,14 +136,14 @@ bsd_build_sources = files(
 bsd_channel_sources = files(
   'bsd-channel/bsd-channel.cc',
 )
-unpack_channel_gen = gen_header.process('bsd-channel/unpack-channel.bsd')
+unpack_channel_gen = gen_header.process('bsd-channel/unpack-channel.nix')
 bsd_collect_garbage_sources = files(
   'bsd-collect-garbage/bsd-collect-garbage.cc',
 )
 bsd_copy_closure_sources = files(
   'bsd-copy-closure/bsd-copy-closure.cc',
 )
-bsd_env_buildenv_gen = gen_header.process('bsd-env/buildenv.bsd')
+bsd_env_buildenv_gen = gen_header.process('bsd-env/buildenv.nix')
 bsd_env_sources = files(
   'bsd-env/bsd-env.cc',
   'bsd-env/user-env.cc',

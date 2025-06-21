@@ -10,7 +10,7 @@ builtins_md = custom_target(
   ],
   input : [
     '../../remove_before_wrapper.py',
-    '../../generate-builtins.bsd',
+    '../../generate-builtins.nix',
     language_json,
     'builtins-prefix.md',
     'builtins-suffix.md'

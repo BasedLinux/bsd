@@ -11,9 +11,9 @@ git -C "$TEST_ROOT/shallow-parent" config user.email "foobar@example.com"
 git -C "$TEST_ROOT/shallow-parent" config user.name "Foobar"
 
 # Add several commits to have history
-echo "{ outputs = _: {}; }" > "$TEST_ROOT/shallow-parent/flake.bsd"
+echo "{ outputs = _: {}; }" > "$TEST_ROOT/shallow-parent/flake.nix"
 echo "" > "$TEST_ROOT/shallow-parent/file.txt"
-git -C "$TEST_ROOT/shallow-parent" add file.txt flake.bsd
+git -C "$TEST_ROOT/shallow-parent" add file.txt flake.nix
 git -C "$TEST_ROOT/shallow-parent" commit -m "First commit"
 
 echo "second" > "$TEST_ROOT/shallow-parent/file.txt"

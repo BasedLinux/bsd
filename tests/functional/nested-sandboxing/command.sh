@@ -25,7 +25,7 @@ runBsdBuild () {
         --no-substitute --no-out-link \
         --store "$("$storeFun" "$altitude")" \
         --extra-sandbox-paths "$EXTRA_SANDBOX" \
-        ./nested-sandboxing/runner.bsd \
+        ./nested-sandboxing/runner.nix \
         --arg altitude "$((altitude - 1))" \
         --argstr storeFun "$storeFun" \
         --sandbox-build-dir /build-non-standard

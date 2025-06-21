@@ -880,7 +880,7 @@ public:
             On Linux, Bsd can run builds in a user namespace where they run as root (UID 0) and have 65,536 UIDs available.
             This is primarily useful for running containers such as `systemd-nspawn` inside a Bsd build. For an example, see [`tests/systemd-nspawn/bsd`][nspawn].
 
-            [nspawn]: https://github.com/BasedLinux/bsd/blob/67bcb99700a0da1395fa063d7c6586740b304598/tests/systemd-nspawn.bsd.
+            [nspawn]: https://github.com/BasedLinux/bsd/blob/67bcb99700a0da1395fa063d7c6586740b304598/tests/systemd-nspawn.nix.
 
             Included by default on Linux if the [`auto-allocate-uids`](#conf-auto-allocate-uids) setting is enabled.
         )",
@@ -1179,9 +1179,9 @@ public:
 
           | Old               | New                            |
           |-------------------|--------------------------------|
-          | `~/.bsd-profile`  | `$XDG_STATE_HOME/bsd/profile`  |
-          | `~/.bsd-defexpr`  | `$XDG_STATE_HOME/bsd/defexpr`  |
-          | `~/.bsd-channels` | `$XDG_STATE_HOME/bsd/channels` |
+          | `~/.nix-profile`  | `$XDG_STATE_HOME/bsd/profile`  |
+          | `~/.nix-defexpr`  | `$XDG_STATE_HOME/bsd/defexpr`  |
+          | `~/.nix-channels` | `$XDG_STATE_HOME/bsd/channels` |
 
           If you already have Bsd installed and are using [profiles](@docroot@/package-management/profiles.md) or [channels](@docroot@/command-ref/bsd-channel.md), you should migrate manually when you enable this option.
           If `$XDG_STATE_HOME` is not set, use `$HOME/.local/state/bsd` instead of `$XDG_STATE_HOME/bsd`.
@@ -1190,9 +1190,9 @@ public:
           ```sh
           bsd_state_home=${XDG_STATE_HOME-$HOME/.local/state}/bsd
           mkdir -p $bsd_state_home
-          mv $HOME/.bsd-profile $bsd_state_home/profile
-          mv $HOME/.bsd-defexpr $bsd_state_home/defexpr
-          mv $HOME/.bsd-channels $bsd_state_home/channels
+          mv $HOME/.nix-profile $bsd_state_home/profile
+          mv $HOME/.nix-defexpr $bsd_state_home/defexpr
+          mv $HOME/.nix-channels $bsd_state_home/channels
           ```
         )"
     };
@@ -1218,7 +1218,7 @@ public:
 
     Setting<std::string> upgradeBsdStorePathUrl{
         this,
-        "https://github.com/BasedLinux/bsdpkgs/raw/master/bsdos/modules/installer/tools/bsd-fallback-paths.bsd",
+        "https://github.com/BasedLinux/bsdpkgs/raw/master/bsdos/modules/installer/tools/bsd-fallback-paths.nix",
         "upgrade-bsd-store-path-url",
         R"(
           Used by `bsd upgrade-bsd`, the URL of the file that contains the

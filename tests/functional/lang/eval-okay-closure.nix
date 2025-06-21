@@ -19,7 +19,7 @@ let
         ];
   };
 
-  sort = (import ./lib.bsd).sortBy (a: b: builtins.lessThan a.key b.key);
+  sort = (import ./lib.nix).sortBy (a: b: builtins.lessThan a.key b.key);
 
 in
 sort closure

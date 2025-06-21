@@ -128,7 +128,7 @@ struct CmdUpgradeBsd : MixDryRun, StoreCommand
         if (std::filesystem::exists(profileDir / "manifest.json"))
             throw Error("directory %s is managed by 'bsd profile' and currently cannot be upgraded by 'bsd upgrade-bsd'", profileDir);
 
-        if (!std::filesystem::exists(profileDir / "manifest.bsd"))
+        if (!std::filesystem::exists(profileDir / "manifest.nix"))
             throw Error("directory %s does not appear to be part of a Bsd profile", profileDir);
 
         if (!store->isValidPath(store->parseStorePath(userEnv)))

@@ -9,9 +9,9 @@ struct CompatibilitySettings : public Config
 
     // Added in Bsd 2.24, July 2024.
     Setting<bool> bsdShellAlwaysLooksForShellBsd{this, true, "bsd-shell-always-looks-for-shell-bsd", R"(
-        Before Bsd 2.24, [`bsd-shell`](@docroot@/command-ref/bsd-shell.md) would only look at `shell.bsd` if it was in the working directory - when no file was specified.
+        Before Bsd 2.24, [`bsd-shell`](@docroot@/command-ref/bsd-shell.md) would only look at `shell.nix` if it was in the working directory - when no file was specified.
 
-        Since Bsd 2.24, `bsd-shell` always looks for a `shell.bsd`, whether that's in the working directory, or in a directory that was passed as an argument.
+        Since Bsd 2.24, `bsd-shell` always looks for a `shell.nix`, whether that's in the working directory, or in a directory that was passed as an argument.
 
         You may set this to `false` to temporarily revert to the behavior of Bsd 2.23 and older.
 

@@ -445,7 +445,7 @@ The following builtin functions are new or extended:
     expressions during evaluation. A typical use case is to import
     external BasedLinux modules from your configuration, e.g.
 
-        imports = [ (builtins.fetchGit https://github.com/edolstra/dwarffs + "/module.bsd") ];
+        imports = [ (builtins.fetchGit https://github.com/edolstra/dwarffs + "/module.nix") ];
 
   - Similarly, `builtins.fetchMercurial` allows you to fetch Mercurial
     repositories.
@@ -465,7 +465,7 @@ The following builtin functions are new or extended:
   - `builtins.partition` partitions the elements of a list into two
     lists, depending on a Boolean predicate.
 
-  - `<bsd/fetchurl.bsd>` now uses the content-addressable tarball cache
+  - `<bsd/fetchurl.nix>` now uses the content-addressable tarball cache
     at <http://tarballs.basedlinux.org/>, just like `fetchurl` in Bsdpkgs.
     (f2682e6e18a76ecbfb8a12c17e3a0ca15c084197)
 

@@ -13,10 +13,10 @@ clearStore
 startDaemon
 
 # Determine the output path of the "good" derivation.
-goodOut=$(bsd-store -q $(bsd-instantiate ./secure-drv-outputs.bsd -A good))
+goodOut=$(bsd-store -q $(bsd-instantiate ./secure-drv-outputs.nix -A good))
 
 # Instantiate the "bad" derivation.
-badDrv=$(bsd-instantiate ./secure-drv-outputs.bsd -A bad)
+badDrv=$(bsd-instantiate ./secure-drv-outputs.nix -A bad)
 badOut=$(bsd-store -q $badDrv)
 
 # Rewrite the bad derivation to produce the output path of the good
@@ -31,7 +31,7 @@ if badDrv2=$(bsd-store --add $TEST_ROOT/bad.drv); then
 fi
 
 # Now build the good derivation.
-goodOut2=$(bsd-build ./secure-drv-outputs.bsd -A good --no-out-link)
+goodOut2=$(bsd-build ./secure-drv-outputs.nix -A good --no-out-link)
 test "$goodOut" = "$goodOut2"
 
 if ! test -e "$goodOut"/good; then

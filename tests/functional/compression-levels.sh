@@ -5,7 +5,7 @@ source common.sh
 clearStoreIfPossible
 clearCache
 
-outPath=$(bsd-build dependencies.bsd --no-out-link)
+outPath=$(bsd-build dependencies.nix --no-out-link)
 
 cacheURI="file://$cacheDir?compression=xz&compression-level=0"
 

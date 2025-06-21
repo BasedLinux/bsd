@@ -1,7 +1,7 @@
 Bsd <bsd version>
 Type :? for help.
 
-bsd-repl> :l pretty-print-idempotent.bsd
+bsd-repl> :l pretty-print-idempotent.nix
 Added <number omitted> variables.
 
 bsd-repl> oneDeep

@@ -8,12 +8,12 @@ clearStore
 rm -rf "$TEST_HOME/.cache" "$TEST_HOME/.config" "$TEST_HOME/.local"
 
 # Create flake under test.
-cp ../shell-hello.bsd "$config_bsd" "$TEST_HOME/"
-cat <<EOF >"$TEST_HOME/flake.bsd"
+cp ../shell-hello.nix "$config_bsd" "$TEST_HOME/"
+cat <<EOF >"$TEST_HOME/flake.nix"
 {
-    inputs.bsdpkgs.url = "$TEST_HOME/bsdpkgs";
+    inputs.nixpkgs.url = "$TEST_HOME/bsdpkgs";
     outputs = {self, bsdpkgs}: {
-      packages.$system.hello = (import ./config.bsd).mkDerivation {
+      packages.$system.hello = (import ./config.nix).mkDerivation {
         name = "hello";
         outputs = [ "out" "dev" ];
         meta.outputsToInstall = [ "out" ];
@@ -25,12 +25,12 @@ EOF
 
 # Create fake bsdpkgs flake.
 mkdir -p "$TEST_HOME/bsdpkgs"
-cp "${config_bsd}" ../shell.bsd "$TEST_HOME/bsdpkgs"
+cp "${config_bsd}" ../shell.nix "$TEST_HOME/bsdpkgs"
 
-cat <<EOF >"$TEST_HOME/bsdpkgs/flake.bsd"
+cat <<EOF >"$TEST_HOME/bsdpkgs/flake.nix"
 {
     outputs = {self}: {
-      legacyPackages.$system.bashInteractive = (import ./shell.bsd {}).bashInteractive;
+      legacyPackages.$system.bashInteractive = (import ./shell.nix {}).bashInteractive;
     };
 }
 EOF

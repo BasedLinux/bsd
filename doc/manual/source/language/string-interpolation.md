@@ -93,19 +93,19 @@ See the [documentation on strings][string] for details.
 Rather than writing
 
 ```bsd
-./. + "/" + foo + "-" + bar + ".bsd"
+./. + "/" + foo + "-" + bar + ".nix"
 ```
 
 or
 
 ```bsd
-./. + "/${foo}-${bar}.bsd"
+./. + "/${foo}-${bar}.nix"
 ```
 
 you can instead write
 
 ```bsd
-./${foo}-${bar}.bsd
+./${foo}-${bar}.nix
 ```
 
 ### Attribute name

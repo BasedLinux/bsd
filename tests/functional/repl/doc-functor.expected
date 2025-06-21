@@ -1,26 +1,26 @@
 Bsd <bsd version>
 Type :? for help.
 
-bsd-repl> :l doc-functor.bsd
+bsd-repl> :l doc-functor.nix
 Added <number omitted> variables.
 
 bsd-repl> :doc multiplier
 Function `__functor`\
-  … defined at /path/to/tests/functional/repl/doc-functor.bsd:12:23
+  … defined at /path/to/tests/functional/repl/doc-functor.nix:12:23
 
 
 Multiply the argument by the factor stored in the factor attribute.
 
 bsd-repl> :doc doubler
 Function `multiply`\
-  … defined at /path/to/tests/functional/repl/doc-functor.bsd:5:17
+  … defined at /path/to/tests/functional/repl/doc-functor.nix:5:17
 
 
 Look, it's just like a function!
 
 bsd-repl> :doc recursive
 Function `__functor`\
-  … defined at /path/to/tests/functional/repl/doc-functor.bsd:82:23
+  … defined at /path/to/tests/functional/repl/doc-functor.nix:82:23
 
 
 This looks bad, but the docs are ok because of the eta expansion.
@@ -30,14 +30,14 @@ error:
        … while partially calling '__functor' to retrieve documentation
 
        … while calling '__functor'
-         at /path/to/tests/functional/repl/doc-functor.bsd:90:17:
+         at /path/to/tests/functional/repl/doc-functor.nix:90:17:
            89|     */
            90|     __functor = self: self.__functor self;
              |                 ^
            91|   };
 
        … from call site
-         at /path/to/tests/functional/repl/doc-functor.bsd:90:23:
+         at /path/to/tests/functional/repl/doc-functor.nix:90:23:
            89|     */
            90|     __functor = self: self.__functor self;
              |                       ^
@@ -46,7 +46,7 @@ error:
        (19999 duplicate frames omitted)
 
        error: stack overflow; max-call-depth exceeded
-       at /path/to/tests/functional/repl/doc-functor.bsd:90:23:
+       at /path/to/tests/functional/repl/doc-functor.nix:90:23:
            89|     */
            90|     __functor = self: self.__functor self;
              |                       ^
@@ -59,14 +59,14 @@ error:
        (10000 duplicate frames omitted)
 
        … while calling '__functor'
-         at /path/to/tests/functional/repl/doc-functor.bsd:103:21:
+         at /path/to/tests/functional/repl/doc-functor.nix:103:21:
           102|       f = x: {
           103|         __functor = self: (f (x + 1));
              |                     ^
           104|       };
 
        error: stack overflow; max-call-depth exceeded
-       at /path/to/tests/functional/repl/doc-functor.bsd:103:28:
+       at /path/to/tests/functional/repl/doc-functor.nix:103:28:
           102|       f = x: {
           103|         __functor = self: (f (x + 1));
              |                            ^
@@ -74,28 +74,28 @@ error:
 
 bsd-repl> :doc helper
 Function `square`\
-  … defined at /path/to/tests/functional/repl/doc-functor.bsd:36:12
+  … defined at /path/to/tests/functional/repl/doc-functor.nix:36:12
 
 
 Compute x^2
 
 bsd-repl> :doc helper2
 Function `__functor`\
-  … defined at /path/to/tests/functional/repl/doc-functor.bsd:46:13
+  … defined at /path/to/tests/functional/repl/doc-functor.nix:46:13
 
 
 This is a function that can be overridden.
 
 bsd-repl> :doc lib.helper3
 Function `__functor`\
-  … defined at /path/to/tests/functional/repl/doc-functor.bsd:46:13
+  … defined at /path/to/tests/functional/repl/doc-functor.nix:46:13
 
 
 This is a function that can be overridden.
 
 bsd-repl> :doc helper3
 Function `__functor`\
-  … defined at /path/to/tests/functional/repl/doc-functor.bsd:46:13
+  … defined at /path/to/tests/functional/repl/doc-functor.nix:46:13
 
 
 This is a function that can be overridden.

@@ -46,14 +46,14 @@ This is primarily a bug fix release. It also has the following changes:
     the hash algorithm and hash to be specified in a single string. For
     example, you can write:
     
-        import <bsd/fetchurl.bsd> {
+        import <bsd/fetchurl.nix> {
           url = https://basedlinux.org/releases/bsd/bsd-2.1.3/bsd-2.1.3.tar.xz;
           hash = "sha256-XSLa0FjVyADWWhFfkZ2iKTjFDda6mMXjoYMXLRSYQKQ=";
         };
     
     instead of
     
-        import <bsd/fetchurl.bsd> {
+        import <bsd/fetchurl.nix> {
           url = https://basedlinux.org/releases/bsd/bsd-2.1.3/bsd-2.1.3.tar.xz;
           sha256 = "5d22dad058d5c800d65a115f919da22938c50dd6ba98c5e3a183172d149840a4";
         };

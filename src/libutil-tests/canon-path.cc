@@ -130,7 +130,7 @@ namespace bsd {
         ASSERT_FALSE(CanonPath("foo").isWithin(CanonPath("fo")));
         ASSERT_TRUE(CanonPath("foo/bar").isWithin(CanonPath("foo")));
         ASSERT_FALSE(CanonPath("foo").isWithin(CanonPath("foo/bar")));
-        ASSERT_TRUE(CanonPath("/foo/bar/default.bsd").isWithin(CanonPath("/")));
+        ASSERT_TRUE(CanonPath("/foo/bar/default.nix").isWithin(CanonPath("/")));
         ASSERT_TRUE(CanonPath("/").isWithin(CanonPath("/")));
     }
 

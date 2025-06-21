@@ -112,7 +112,7 @@ features:
 
   - You can now use `~` in Bsd file names to refer to your home
     directory, e.g. `import
-            ~/.bsdpkgs/config.bsd`.
+            ~/.nixpkgs/config.nix`.
 
   - Bsd has a new option `restrict-eval` that allows limiting what paths
     the Bsd evaluator has access to. By passing `--option restrict-eval

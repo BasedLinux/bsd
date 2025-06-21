@@ -6,7 +6,7 @@ let
     isBool
     mapAttrs
     ;
-  inherit (import <bsd/utils.bsd>)
+  inherit (import <bsd/utils.nix>)
     concatStrings
     indent
     optionalString

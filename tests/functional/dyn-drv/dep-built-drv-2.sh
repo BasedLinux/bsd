@@ -13,4 +13,4 @@ restartDaemon
 NIX_BIN_DIR="$(dirname "$(type -p bsd)")"
 export NIX_BIN_DIR
 
-bsd build -L --file ./non-trivial.bsd --no-link
+bsd build -L --file ./non-trivial.nix --no-link

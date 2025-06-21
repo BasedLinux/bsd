@@ -13,7 +13,7 @@ Incremental refactorings of the documentation build setup to make it faster or e
 Build the manual from scratch:
 
 ```console
-bsd-build -E '(import ./.).packages.${builtins.currentSystem}.bsd.doc'
+bsd-build -E '(import ./.).packages.${builtins.currentSystem}.nix.doc'
 ```
 
 or
@@ -132,7 +132,7 @@ The manual is written in markdown, and rendered with [mdBook](https://github.com
 
 For supported markdown features, refer to:
 - [mdBook documentation](https://rust-lang.github.io/mdBook/format/markdown.html)
-- [lowdown documentation](https://kristaps.bsd.lv/lowdown/)
+- [lowdown documentation](https://kristaps.nix.lv/lowdown/)
 
 Please observe these guidelines to ease reviews:
 

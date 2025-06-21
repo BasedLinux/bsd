@@ -6,7 +6,7 @@
   withFinalRefs ? false,
 }:
 
-with import ./config.bsd;
+with import ./config.nix;
 
 let
   contentAddressedByDefault = builtins.getEnv "NIX_TESTS_CA_BY_DEFAULT" == "1";

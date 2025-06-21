@@ -12,7 +12,7 @@ This profile contains symlinks to the contents of those channels.
 
 The list of subscribed channels is stored in
 
-- `~/.bsd-channels`
+- `~/.nix-channels`
 - `$XDG_STATE_HOME/bsd/channels` if [`use-xdg-base-directories`] is set to `true`
 
 in the following format:

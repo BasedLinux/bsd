@@ -1,5 +1,5 @@
 let
-  inherit (import ../config.bsd) mkDerivation;
+  inherit (import ../config.nix) mkDerivation;
 in
 mkDerivation {
   name = "unusual-logging";

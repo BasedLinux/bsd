@@ -15,37 +15,37 @@ EOF
 
 bsd eval --expr 'assert 1 + 2 == 3; true'
 
-[[ $(bsd eval int -f "./eval.bsd") == 123 ]]
-[[ $(bsd eval str -f "./eval.bsd") == '"foo\nbar"' ]]
-[[ $(bsd eval str --raw -f "./eval.bsd") == $'foo\nbar' ]]
-[[ "$(bsd eval attr -f "./eval.bsd")" == '{ foo = "bar"; }' ]]
-[[ $(bsd eval attr --json -f "./eval.bsd") == '{"foo":"bar"}' ]]
-[[ $(bsd eval int -f - < "./eval.bsd") == 123 ]]
+[[ $(bsd eval int -f "./eval.nix") == 123 ]]
+[[ $(bsd eval str -f "./eval.nix") == '"foo\nbar"' ]]
+[[ $(bsd eval str --raw -f "./eval.nix") == $'foo\nbar' ]]
+[[ "$(bsd eval attr -f "./eval.nix")" == '{ foo = "bar"; }' ]]
+[[ $(bsd eval attr --json -f "./eval.nix") == '{"foo":"bar"}' ]]
+[[ $(bsd eval int -f - < "./eval.nix") == 123 ]]
 [[ "$(bsd eval --expr '{"assert"=1;bar=2;}')" == '{ "assert" = 1; bar = 2; }' ]]
 
 # Check if toFile can be utilized during restricted eval
 [[ $(bsd eval --restrict-eval --expr 'import (builtins.toFile "source" "42")') == 42 ]]
 
 bsd-instantiate --eval -E 'assert 1 + 2 == 3; true'
-[[ $(bsd-instantiate -A int --eval "./eval.bsd") == 123 ]]
-[[ $(bsd-instantiate -A str --eval "./eval.bsd") == '"foo\nbar"' ]]
-[[ $(bsd-instantiate -A str --raw --eval "./eval.bsd") == $'foo\nbar' ]]
-[[ "$(bsd-instantiate -A attr --eval "./eval.bsd")" == '{ foo = "bar"; }' ]]
-[[ $(bsd-instantiate -A attr --eval --json "./eval.bsd") == '{"foo":"bar"}' ]]
-[[ $(bsd-instantiate -A int --eval - < "./eval.bsd") == 123 ]]
+[[ $(bsd-instantiate -A int --eval "./eval.nix") == 123 ]]
+[[ $(bsd-instantiate -A str --eval "./eval.nix") == '"foo\nbar"' ]]
+[[ $(bsd-instantiate -A str --raw --eval "./eval.nix") == $'foo\nbar' ]]
+[[ "$(bsd-instantiate -A attr --eval "./eval.nix")" == '{ foo = "bar"; }' ]]
+[[ $(bsd-instantiate -A attr --eval --json "./eval.nix") == '{"foo":"bar"}' ]]
+[[ $(bsd-instantiate -A int --eval - < "./eval.nix") == 123 ]]
 [[ "$(bsd-instantiate --eval -E '{"assert"=1;bar=2;}')" == '{ "assert" = 1; bar = 2; }' ]]
 
 # Check that symlink cycles don't cause a hang.
-ln -sfn cycle.bsd "$TEST_ROOT/cycle.bsd"
-(! bsd eval --file "$TEST_ROOT/cycle.bsd")
+ln -sfn cycle.nix "$TEST_ROOT/cycle.nix"
+(! bsd eval --file "$TEST_ROOT/cycle.nix")
 
 # --file and --pure-eval don't mix.
-expectStderr 1 bsd eval --pure-eval --file "$TEST_ROOT/cycle.bsd" | grepQuiet "not compatible"
+expectStderr 1 bsd eval --pure-eval --file "$TEST_ROOT/cycle.nix" | grepQuiet "not compatible"
 
 # Check that relative symlinks are resolved correctly.
 mkdir -p "$TEST_ROOT/xyzzy" "$TEST_ROOT/foo"
 ln -sfn ../xyzzy "$TEST_ROOT/foo/bar"
-printf 123 > "$TEST_ROOT/xyzzy/default.bsd"
+printf 123 > "$TEST_ROOT/xyzzy/default.nix"
 [[ $(bsd eval --impure --expr "import $TEST_ROOT/foo/bar") = 123 ]]
 
 # Test --arg-from-file.

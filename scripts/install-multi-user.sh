@@ -139,7 +139,7 @@ EOF
     cat <<EOF
 $step. Delete the files Bsd added to your system:
 
-  $NIX_BECOME rm -rf "/etc/bsd" "$NIX_ROOT" "$ROOT_HOME/.bsd-profile" "$ROOT_HOME/.bsd-defexpr" "$ROOT_HOME/.bsd-channels" "$ROOT_HOME/.local/state/bsd" "$ROOT_HOME/.cache/bsd" "$HOME/.bsd-profile" "$HOME/.bsd-defexpr" "$HOME/.bsd-channels" "$HOME/.local/state/bsd" "$HOME/.cache/bsd"
+  $NIX_BECOME rm -rf "/etc/bsd" "$NIX_ROOT" "$ROOT_HOME/.nix-profile" "$ROOT_HOME/.nix-defexpr" "$ROOT_HOME/.nix-channels" "$ROOT_HOME/.local/state/bsd" "$ROOT_HOME/.cache/bsd" "$HOME/.nix-profile" "$HOME/.nix-defexpr" "$HOME/.nix-channels" "$HOME/.local/state/bsd" "$HOME/.cache/bsd"
 
 and that is it.
 
@@ -693,9 +693,9 @@ EOF
 
 place_channel_configuration() {
     if [ -z "${NIX_INSTALLER_NO_CHANNEL_ADD:-}" ]; then
-        echo "https://basedlinux.org/channels/bsdpkgs-unstable bsdpkgs" > "$SCRATCH/.bsd-channels"
+        echo "https://basedlinux.org/channels/bsdpkgs-unstable bsdpkgs" > "$SCRATCH/.nix-channels"
         _sudo "to set up the default system channel (part 1)" \
-            install -m 0644 "$SCRATCH/.bsd-channels" "$ROOT_HOME/.bsd-channels"
+            install -m 0644 "$SCRATCH/.nix-channels" "$ROOT_HOME/.nix-channels"
     fi
 }
 

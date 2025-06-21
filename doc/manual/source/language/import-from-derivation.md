@@ -33,7 +33,7 @@ Without IFD it is ensured that evaluation is complete and Bsd can produce a buil
 In the following Bsd expression, the inner derivation `drv` produces a file with contents `hello`.
 
 ```bsd
-# IFD.bsd
+# IFD.nix
 let
   drv = derivation {
     name = "hello";
@@ -45,7 +45,7 @@ in "${builtins.readFile drv} world"
 ```
 
 ```shellSession
-bsd-instantiate IFD.bsd --eval --read-write-mode
+bsd-instantiate IFD.nix --eval --read-write-mode
 ```
 
 ```
@@ -99,7 +99,7 @@ In more detail, the following sequence diagram shows how the expression is evalu
 |Bsd CLI|     |Bsd evaluator|                        |Bsd store|
 '-------'     '-------------'                        '---------'
     |                |                                    |
-    |evaluate IFD.bsd|                                    |
+    |evaluate IFD.nix|                                    |
     |--------------->|                                    |
     |                |                                    |
     |  evaluate `"${readFile drv} world"`                 |

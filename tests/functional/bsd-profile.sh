@@ -14,11 +14,11 @@ restartDaemon
 flake1Dir=$TEST_ROOT/flake1
 mkdir -p $flake1Dir
 
-cat > $flake1Dir/flake.bsd <<EOF
+cat > $flake1Dir/flake.nix <<EOF
 {
   description = "Bla bla";
 
-  outputs = { self }: with import ./config.bsd; rec {
+  outputs = { self }: with import ./config.nix; rec {
     packages.$system.default = mkDerivation {
       name = "profile-test-\${builtins.readFile ./version}";
       outputs = [ "out" "man" "dev" ];
@@ -34,7 +34,7 @@ cat > $flake1Dir/flake.bsd <<EOF
           mkdir -p \$man/share/man
           mkdir -p \$dev/include
         '';
-      __contentAddressed = import ./ca.bsd;
+      __contentAddressed = import ./ca.nix;
       outputHashMode = "recursive";
       outputHashAlgo = "sha256";
       meta.outputsToInstall = [ "out" "man" ];
@@ -45,21 +45,21 @@ EOF
 
 printf World > $flake1Dir/who
 printf 1.0 > $flake1Dir/version
-printf false > $flake1Dir/ca.bsd
+printf false > $flake1Dir/ca.nix
 
 cp "${config_bsd}" $flake1Dir/
 
 # Test upgrading from bsd-env.
-bsd-env -f ./user-envs.bsd -i foo-1.0
+bsd-env -f ./user-envs.nix -i foo-1.0
 bsd profile list | grep -A2 'Name:.*foo' | grep 'Store paths:.*foo-1.0'
 bsd profile add $flake1Dir -L
 bsd profile list | grep -A4 'Name:.*flake1' | grep 'Locked flake URL:.*narHash'
-[[ $($TEST_HOME/.bsd-profile/bin/hello) = "Hello World" ]]
-[ -e $TEST_HOME/.bsd-profile/share/man ]
-(! [ -e $TEST_HOME/.bsd-profile/include ])
+[[ $($TEST_HOME/.nix-profile/bin/hello) = "Hello World" ]]
+[ -e $TEST_HOME/.nix-profile/share/man ]
+(! [ -e $TEST_HOME/.nix-profile/include ])
 bsd profile history
 bsd profile history | grep "packages.$system.default: ∅ -> 1.0"
-bsd profile diff-closures | grep 'env-manifest.bsd: ε → ∅'
+bsd profile diff-closures | grep 'env-manifest.nix: ε → ∅'
 
 # Test XDG Base Directories support
 export NIX_CONFIG="use-xdg-base-directories = true"
@@ -75,19 +75,19 @@ bsd profile add $flake1Dir 2>&1 | grep "warning: 'flake1' is already added"
 printf BasedLinux > $flake1Dir/who
 printf 2.0 > $flake1Dir/version
 bsd profile upgrade flake1
-[[ $($TEST_HOME/.bsd-profile/bin/hello) = "Hello BasedLinux" ]]
+[[ $($TEST_HOME/.nix-profile/bin/hello) = "Hello BasedLinux" ]]
 bsd profile history | grep "packages.$system.default: 1.0, 1.0-man -> 2.0, 2.0-man"
 
 # Test upgrading package using regular expression.
 printf 2.1 > $flake1Dir/version
 bsd profile upgrade --regex '.*'
-[[ $(readlink $TEST_HOME/.bsd-profile/bin/hello) =~ .*-profile-test-2\.1/bin/hello ]]
+[[ $(readlink $TEST_HOME/.nix-profile/bin/hello) =~ .*-profile-test-2\.1/bin/hello ]]
 bsd profile rollback
 
 # Test upgrading all packages
 printf 2.2 > $flake1Dir/version
 bsd profile upgrade --all
-[[ $(readlink $TEST_HOME/.bsd-profile/bin/hello) =~ .*-profile-test-2\.2/bin/hello ]]
+[[ $(readlink $TEST_HOME/.nix-profile/bin/hello) =~ .*-profile-test-2\.2/bin/hello ]]
 bsd profile rollback
 printf 1.0 > $flake1Dir/version
 
@@ -122,26 +122,26 @@ bsd profile upgrade flake1
 printf BasedLinux > $flake1Dir/who
 bsd profile upgrade flake1
 bsd profile rollback
-[[ $($TEST_HOME/.bsd-profile/bin/hello) = "Hello World" ]]
+[[ $($TEST_HOME/.nix-profile/bin/hello) = "Hello World" ]]
 
 # Test uninstall.
-[ -e $TEST_HOME/.bsd-profile/bin/foo ]
+[ -e $TEST_HOME/.nix-profile/bin/foo ]
 bsd profile remove foo 2>&1 | grep 'removed 1 packages'
-(! [ -e $TEST_HOME/.bsd-profile/bin/foo ])
+(! [ -e $TEST_HOME/.nix-profile/bin/foo ])
 bsd profile history | grep 'foo: 1.0 -> ∅'
 bsd profile diff-closures | grep 'Version 3 -> 4'
 
 # Test installing a non-flake package.
-bsd profile add --file ./simple.bsd ''
-[[ $(cat $TEST_HOME/.bsd-profile/hello) = "Hello World!" ]]
+bsd profile add --file ./simple.nix ''
+[[ $(cat $TEST_HOME/.nix-profile/hello) = "Hello World!" ]]
 bsd profile remove simple 2>&1 | grep 'removed 1 packages'
-bsd profile add $(bsd-build --no-out-link ./simple.bsd)
-[[ $(cat $TEST_HOME/.bsd-profile/hello) = "Hello World!" ]]
+bsd profile add $(bsd-build --no-out-link ./simple.nix)
+[[ $(cat $TEST_HOME/.nix-profile/hello) = "Hello World!" ]]
 
 # Test packages with same name from different sources
 mkdir $TEST_ROOT/simple-too
-cp ./simple.bsd "${config_bsd}" simple.builder.sh $TEST_ROOT/simple-too
-bsd profile add --file $TEST_ROOT/simple-too/simple.bsd ''
+cp ./simple.nix "${config_bsd}" simple.builder.sh $TEST_ROOT/simple-too
+bsd profile add --file $TEST_ROOT/simple-too/simple.nix ''
 bsd profile list | grep -A4 'Name:.*simple' | grep 'Name:.*simple-1'
 bsd profile remove simple 2>&1 | grep 'removed 1 packages'
 bsd profile remove simple-1 2>&1 | grep 'removed 1 packages'
@@ -151,7 +151,7 @@ bsd profile wipe-history
 [[ $(bsd profile history | grep Version | wc -l) -eq 1 ]]
 
 # Test upgrade to CA package.
-printf true > $flake1Dir/ca.bsd
+printf true > $flake1Dir/ca.nix
 printf 3.0 > $flake1Dir/version
 bsd profile upgrade flake1
 bsd profile history | grep "packages.$system.default: 1.0, 1.0-man -> 3.0, 3.0-man"
@@ -161,28 +161,28 @@ bsd profile remove flake1 2>&1 | grep 'removed 1 packages'
 printf 4.0 > $flake1Dir/version
 printf Utrecht > $flake1Dir/who
 bsd profile add $flake1Dir
-[[ $($TEST_HOME/.bsd-profile/bin/hello) = "Hello Utrecht" ]]
-[[ $(bsd path-info --json $(realpath $TEST_HOME/.bsd-profile/bin/hello) | jq -r .[].ca) =~ fixed:r:sha256: ]]
+[[ $($TEST_HOME/.nix-profile/bin/hello) = "Hello Utrecht" ]]
+[[ $(bsd path-info --json $(realpath $TEST_HOME/.nix-profile/bin/hello) | jq -r .[].ca) =~ fixed:r:sha256: ]]
 
 # Override the outputs.
 bsd profile remove simple flake1
 bsd profile add "$flake1Dir^*"
-[[ $($TEST_HOME/.bsd-profile/bin/hello) = "Hello Utrecht" ]]
-[ -e $TEST_HOME/.bsd-profile/share/man ]
-[ -e $TEST_HOME/.bsd-profile/include ]
+[[ $($TEST_HOME/.nix-profile/bin/hello) = "Hello Utrecht" ]]
+[ -e $TEST_HOME/.nix-profile/share/man ]
+[ -e $TEST_HOME/.nix-profile/include ]
 
 printf Bsd > $flake1Dir/who
 bsd profile list
 bsd profile upgrade flake1
-[[ $($TEST_HOME/.bsd-profile/bin/hello) = "Hello Bsd" ]]
-[ -e $TEST_HOME/.bsd-profile/share/man ]
-[ -e $TEST_HOME/.bsd-profile/include ]
+[[ $($TEST_HOME/.nix-profile/bin/hello) = "Hello Bsd" ]]
+[ -e $TEST_HOME/.nix-profile/share/man ]
+[ -e $TEST_HOME/.nix-profile/include ]
 
 bsd profile remove flake1 2>&1 | grep 'removed 1 packages'
 bsd profile add "$flake1Dir^man"
-(! [ -e $TEST_HOME/.bsd-profile/bin/hello ])
-[ -e $TEST_HOME/.bsd-profile/share/man ]
-(! [ -e $TEST_HOME/.bsd-profile/include ])
+(! [ -e $TEST_HOME/.nix-profile/bin/hello ])
+[ -e $TEST_HOME/.nix-profile/share/man ]
+(! [ -e $TEST_HOME/.nix-profile/include ])
 
 # test priority
 bsd profile remove flake1 2>&1 | grep 'removed 1 packages'
@@ -194,7 +194,7 @@ cp -r $flake1Dir $flake2Dir
 printf World2 > $flake2Dir/who
 
 bsd profile add $flake1Dir
-[[ $($TEST_HOME/.bsd-profile/bin/hello) = "Hello World" ]]
+[[ $($TEST_HOME/.nix-profile/bin/hello) = "Hello World" ]]
 expect 1 bsd profile add $flake2Dir
 diff -u <(
     bsd --offline profile install $flake2Dir 2>&1 1> /dev/null \
@@ -225,13 +225,13 @@ error: An existing package already provides the following file:
          bsd profile add path:${flake2Dir}#packages.${system}.default --priority 6
 EOF
 )
-[[ $($TEST_HOME/.bsd-profile/bin/hello) = "Hello World" ]]
+[[ $($TEST_HOME/.nix-profile/bin/hello) = "Hello World" ]]
 bsd profile add $flake2Dir --priority 100
-[[ $($TEST_HOME/.bsd-profile/bin/hello) = "Hello World" ]]
+[[ $($TEST_HOME/.nix-profile/bin/hello) = "Hello World" ]]
 bsd profile add $flake2Dir --priority 0
-[[ $($TEST_HOME/.bsd-profile/bin/hello) = "Hello World2" ]]
+[[ $($TEST_HOME/.nix-profile/bin/hello) = "Hello World2" ]]
 # bsd profile add $flake1Dir --priority 100
-# [[ $($TEST_HOME/.bsd-profile/bin/hello) = "Hello World" ]]
+# [[ $($TEST_HOME/.nix-profile/bin/hello) = "Hello World" ]]
 
 # Ensure that conflicts are handled properly even when the installables aren't
 # flake references.
@@ -243,8 +243,8 @@ expect 1 bsd profile add --impure --expr "(builtins.getFlake ''$flake2Dir'').pac
 # Test upgrading from profile version 2.
 clearProfiles
 mkdir -p $TEST_ROOT/import-profile
-outPath=$(bsd build --no-link --print-out-paths $flake1Dir/flake.bsd^out)
+outPath=$(bsd build --no-link --print-out-paths $flake1Dir/flake.nix^out)
 printf '{ "version": 2, "elements": [ { "active": true, "attrPath": "legacyPackages.x86_64-linux.hello", "originalUrl": "flake:bsdpkgs", "outputs": null, "priority": 5, "storePaths": [ "%s" ], "url": "github:BasedLinux/bsdpkgs/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" } ] }' "$outPath" > $TEST_ROOT/import-profile/manifest.json
-bsd build --profile $TEST_HOME/.bsd-profile $(bsd store add-path $TEST_ROOT/import-profile) --no-link
+bsd build --profile $TEST_HOME/.nix-profile $(bsd store add-path $TEST_ROOT/import-profile) --no-link
 bsd profile list | grep -A4 'Name:.*hello' | grep "Store paths:.*$outPath"
 bsd profile remove hello 2>&1 | grep 'removed 1 packages, kept 0 packages'

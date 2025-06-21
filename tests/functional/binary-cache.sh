@@ -9,12 +9,12 @@ needLocalStore "'--no-require-sigs' can’t be used with the daemon"
 # We can produce drvs directly into the binary cache
 clearStore
 clearCacheCache
-bsd-instantiate --store "file://$cacheDir" dependencies.bsd
+bsd-instantiate --store "file://$cacheDir" dependencies.nix
 
 # Create the binary cache.
 clearStore
 clearCache
-outPath=$(bsd-build dependencies.bsd --no-out-link)
+outPath=$(bsd-build dependencies.nix --no-out-link)
 
 bsd copy --to "file://$cacheDir" "$outPath"
 
@@ -46,7 +46,7 @@ basicDownloadTests() {
     clearStore
     clearCacheCache
 
-    bsd-env --substituters "file://$cacheDir" -f dependencies.bsd -qas \* | grep -- "---"
+    bsd-env --substituters "file://$cacheDir" -f dependencies.nix -qas \* | grep -- "---"
 
     bsd-store --substituters "file://$cacheDir" --no-require-sigs -r "$outPath"
 
@@ -58,10 +58,10 @@ basicDownloadTests() {
     clearCacheCache
     echo "WantMassQuery: 1" >> "$cacheDir/bsd-cache-info"
 
-    bsd-env --substituters "file://$cacheDir" -f dependencies.bsd -qas \* | grep -- "--S"
-    bsd-env --substituters "file://$cacheDir" -f dependencies.bsd -qas \* | grep -- "--S"
+    bsd-env --substituters "file://$cacheDir" -f dependencies.nix -qas \* | grep -- "--S"
+    bsd-env --substituters "file://$cacheDir" -f dependencies.nix -qas \* | grep -- "--S"
 
-    x=$(bsd-env -f dependencies.bsd -qas \* --prebuilt-only)
+    x=$(bsd-env -f dependencies.nix -qas \* --prebuilt-only)
     [ -z "$x" ]
 
     bsd-store --substituters "file://$cacheDir" --no-require-sigs -r "$outPath"
@@ -90,7 +90,7 @@ mv "$nar" "$nar".good
 mkdir -p "$TEST_ROOT/empty"
 bsd-store --dump "$TEST_ROOT/empty" | xz > "$nar"
 
-expect 1 bsd-build --substituters "file://$cacheDir" --no-require-sigs dependencies.bsd -o "$TEST_ROOT/result" 2>&1 | tee "$TEST_ROOT/log"
+expect 1 bsd-build --substituters "file://$cacheDir" --no-require-sigs dependencies.nix -o "$TEST_ROOT/result" 2>&1 | tee "$TEST_ROOT/log"
 grepQuiet "hash mismatch" "$TEST_ROOT/log"
 
 mv "$nar".good "$nar"
@@ -111,7 +111,7 @@ clearStore
 
 mv "$cacheDir/nar" "$cacheDir/nar2"
 
-bsd-build --substituters "file://$cacheDir" --no-require-sigs dependencies.bsd -o "$TEST_ROOT/result"
+bsd-build --substituters "file://$cacheDir" --no-require-sigs dependencies.nix -o "$TEST_ROOT/result"
 
 mv "$cacheDir/nar2" "$cacheDir/nar"
 
@@ -123,9 +123,9 @@ mv "$cacheDir/nar" "$cacheDir/nar2"
 mkdir "$cacheDir/nar"
 for i in $(cd "$cacheDir/nar2" && echo *); do touch "$cacheDir"/nar/"$i"; done
 
-(! bsd-build --substituters "file://$cacheDir" --no-require-sigs dependencies.bsd -o "$TEST_ROOT/result")
+(! bsd-build --substituters "file://$cacheDir" --no-require-sigs dependencies.nix -o "$TEST_ROOT/result")
 
-bsd-build --substituters "file://$cacheDir" --no-require-sigs dependencies.bsd -o "$TEST_ROOT/result" --fallback
+bsd-build --substituters "file://$cacheDir" --no-require-sigs dependencies.nix -o "$TEST_ROOT/result" --fallback
 
 rm -rf "$cacheDir/nar"
 mv "$cacheDir/nar2" "$cacheDir/nar"
@@ -137,7 +137,7 @@ clearStore
 
 rm -v "$(grep -l "StorePath:.*dependencies-input-2" "$cacheDir"/*.narinfo)"
 
-bsd-build --substituters "file://$cacheDir" --no-require-sigs dependencies.bsd -o "$TEST_ROOT/result" 2>&1 | tee "$TEST_ROOT/log"
+bsd-build --substituters "file://$cacheDir" --no-require-sigs dependencies.nix -o "$TEST_ROOT/result" 2>&1 | tee "$TEST_ROOT/log"
 grepQuiet "copying path.*input-0" "$TEST_ROOT/log"
 grepQuiet "copying path.*input-2" "$TEST_ROOT/log"
 grepQuiet "copying path.*top" "$TEST_ROOT/log"
@@ -147,7 +147,7 @@ grepQuiet "copying path.*top" "$TEST_ROOT/log"
 clearStore
 clearCacheCache
 
-bsd-build --substituters "file://$cacheDir" --no-require-sigs dependencies.bsd -o "$TEST_ROOT/result" 2>&1 | tee "$TEST_ROOT/log"
+bsd-build --substituters "file://$cacheDir" --no-require-sigs dependencies.nix -o "$TEST_ROOT/result" 2>&1 | tee "$TEST_ROOT/log"
 grepQuiet "don't know how to build" "$TEST_ROOT/log"
 grepQuiet "building.*input-1" "$TEST_ROOT/log"
 grepQuiet "building.*input-2" "$TEST_ROOT/log"

@@ -3,7 +3,7 @@
 source common.sh
 
 echo "building test path"
-storePath="$(bsd-build nar-access.bsd -A a --no-out-link)"
+storePath="$(bsd-build nar-access.nix -A a --no-out-link)"
 
 cd "$TEST_ROOT"
 

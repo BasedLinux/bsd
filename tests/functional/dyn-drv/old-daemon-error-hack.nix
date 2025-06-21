@@ -1,4 +1,4 @@
-with import ./config.bsd;
+with import ./config.nix;
 
 # A simple content-addressing derivation.
 # The derivation can be arbitrarily modified by passing a different `seed`,

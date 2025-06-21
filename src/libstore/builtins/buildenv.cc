@@ -63,7 +63,7 @@ static void createLinks(State & state, const Path & srcDir, const Path & dstDir,
             hasSuffix(srcFile, "/perllocal.pod") ||
             hasSuffix(srcFile, "/info/dir") ||
             hasSuffix(srcFile, "/log") ||
-            hasSuffix(srcFile, "/manifest.bsd") ||
+            hasSuffix(srcFile, "/manifest.nix") ||
             hasSuffix(srcFile, "/manifest.json"))
             continue;
 
@@ -199,7 +199,7 @@ static void builtinBuildenv(const BuiltinBuilderContext & ctx)
 
     buildProfile(out, std::move(pkgs));
 
-    createSymlink(getAttr("manifest"), out + "/manifest.bsd");
+    createSymlink(getAttr("manifest"), out + "/manifest.nix");
 }
 
 static RegisterBuiltinBuilder registerBuildenv("buildenv", builtinBuildenv);

@@ -220,22 +220,22 @@ static void showHelp(std::vector<std::string> subcommand, BsdArgs & toplevel)
 
     auto vGenerateManpage = state.allocValue();
     state.eval(state.parseExprFromString(
-        #include "generate-manpage.bsd.gen.hh"
+        #include "generate-manpage.nix.gen.hh"
         , state.rootPath(CanonPath::root)), *vGenerateManpage);
 
     state.corepkgsFS->addFile(
-        CanonPath("utils.bsd"),
-        #include "utils.bsd.gen.hh"
+        CanonPath("utils.nix"),
+        #include "utils.nix.gen.hh"
         );
 
     state.corepkgsFS->addFile(
-        CanonPath("/generate-settings.bsd"),
-        #include "generate-settings.bsd.gen.hh"
+        CanonPath("/generate-settings.nix"),
+        #include "generate-settings.nix.gen.hh"
         );
 
     state.corepkgsFS->addFile(
-        CanonPath("/generate-store-info.bsd"),
-        #include "generate-store-info.bsd.gen.hh"
+        CanonPath("/generate-store-info.nix"),
+        #include "generate-store-info.nix.gen.hh"
         );
 
     auto vDump = state.allocValue();

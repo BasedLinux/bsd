@@ -1,6 +1,6 @@
 # Release 2.6 (2022-01-24)
 
-* The Bsd CLI now searches for a `flake.bsd` up until the root of the current
+* The Bsd CLI now searches for a `flake.nix` up until the root of the current
   Git repository or a filesystem boundary rather than just in the current
   directory.
 * The TOML parser used by `builtins.fromTOML` has been replaced by [a
@@ -15,7 +15,7 @@
 * The `commit-lockfile-summary` option can be set to a non-empty
   string to override the commit summary used when committing an updated
   lockfile.  This may be used in conjunction with the `bsdConfig`
-  attribute in `flake.bsd` to better conform to repository
+  attribute in `flake.nix` to better conform to repository
   conventions.
 * `docker run -ti bsdos/bsd:master` will place you in the Docker
   container with the latest version of Bsd from the `master` branch.

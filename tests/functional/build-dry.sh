@@ -12,23 +12,23 @@ clearStore
 clearCache
 
 # Ensure this builds successfully first
-bsd build --no-link -f dependencies.bsd
+bsd build --no-link -f dependencies.nix
 
 clearStore
 clearCache
 
 # Try --dry-run using old command first
-bsd-build --no-out-link dependencies.bsd --dry-run 2>&1 | grep "will be built"
+bsd-build --no-out-link dependencies.nix --dry-run 2>&1 | grep "will be built"
 # Now new command:
-bsd build -f dependencies.bsd --dry-run 2>&1 | grep "will be built"
+bsd build -f dependencies.nix --dry-run 2>&1 | grep "will be built"
 
 clearStore
 clearCache
 
 # Try --dry-run using new command first
-bsd build -f dependencies.bsd --dry-run 2>&1 | grep "will be built"
+bsd build -f dependencies.nix --dry-run 2>&1 | grep "will be built"
 # Now old command:
-bsd-build --no-out-link dependencies.bsd --dry-run 2>&1 | grep "will be built"
+bsd-build --no-out-link dependencies.nix --dry-run 2>&1 | grep "will be built"
 
 ###################################################
 # Check --dry-run doesn't create links with --dry-run
@@ -39,15 +39,15 @@ clearCache
 RESULT=$TEST_ROOT/result-link
 rm -f "$RESULT"
 
-bsd-build dependencies.bsd -o "$RESULT" --dry-run
+bsd-build dependencies.nix -o "$RESULT" --dry-run
 
 [[ ! -h $RESULT ]] || fail "bsd-build --dry-run created output link"
 
-bsd build -f dependencies.bsd -o "$RESULT" --dry-run
+bsd build -f dependencies.nix -o "$RESULT" --dry-run
 
 [[ ! -h $RESULT ]] || fail "bsd build --dry-run created output link"
 
-bsd build -f dependencies.bsd -o "$RESULT"
+bsd build -f dependencies.nix -o "$RESULT"
 
 [[ -h $RESULT ]]
 
@@ -56,7 +56,7 @@ bsd build -f dependencies.bsd -o "$RESULT"
 clearStore
 clearCache
 
-RES=$(bsd build -f dependencies.bsd --dry-run --json)
+RES=$(bsd build -f dependencies.nix --dry-run --json)
 
 if [[ -z "${NIX_TESTS_CA_BY_DEFAULT-}" ]]; then
     echo "$RES" | jq '.[0] | [

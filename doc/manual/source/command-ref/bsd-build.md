@@ -27,13 +27,13 @@ there are multiple Bsd expressions, or the Bsd expressions evaluate to
 multiple derivations, multiple sequentially numbered symlinks are
 created (`result`, `result-2`, and so on).
 
-If no *paths* are specified, then `bsd-build` will use `default.bsd` in
+If no *paths* are specified, then `bsd-build` will use `default.nix` in
 the current directory, if it exists.
 
 If an element of *paths* starts with `http://` or `https://`, it is
 interpreted as the URL of a tarball that will be downloaded and unpacked
 to a temporary location. The tarball must include a single top-level
-directory containing at least a file named `default.bsd`.
+directory containing at least a file named `default.nix`.
 
 `bsd-build` is essentially a wrapper around
 [`bsd-instantiate`](bsd-instantiate.md) (to translate a high-level Bsd

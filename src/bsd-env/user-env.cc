@@ -21,7 +21,7 @@ PackageInfos queryInstalled(EvalState & state, const Path & userEnv)
     PackageInfos elems;
     if (pathExists(userEnv + "/manifest.json"))
         throw Error("profile '%s' is incompatible with 'bsd-env'; please use 'bsd profile' instead", userEnv);
-    auto manifestFile = userEnv + "/manifest.bsd";
+    auto manifestFile = userEnv + "/manifest.nix";
     if (pathExists(manifestFile)) {
         Value v;
         state.evalFile(state.rootPath(CanonPath(manifestFile)).resolveSymlinks(), v);
@@ -113,13 +113,13 @@ bool createUserEnv(EvalState & state, PackageInfos & elems,
         printAmbiguous(manifest, state.symbols, str, nullptr, std::numeric_limits<int>::max());
         StringSource source { toView(str) };
         state.store->addToStoreFromDump(
-            source, "env-manifest.bsd", FileSerialisationMethod::Flat, ContentAddressMethod::Raw::Text, HashAlgorithm::SHA256, references);
+            source, "env-manifest.nix", FileSerialisationMethod::Flat, ContentAddressMethod::Raw::Text, HashAlgorithm::SHA256, references);
     });
 
     /* Get the environment builder expression. */
     Value envBuilder;
     state.eval(state.parseExprFromString(
-        #include "buildenv.bsd.gen.hh"
+        #include "buildenv.nix.gen.hh"
             , state.rootPath(CanonPath::root)), envBuilder);
 
     /* Construct a Bsd expression that calls the user environment

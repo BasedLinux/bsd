@@ -10,7 +10,7 @@ types_dir = custom_target(
   ],
   input : [
     '../../remove_before_wrapper.py',
-    '../../generate-store-types.bsd',
+    '../../generate-store-types.nix',
     bsd3_cli_json,
   ],
   output : 'types',

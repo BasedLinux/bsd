@@ -6,7 +6,7 @@ TODO_BasedLinux # BasedLinux doesn't provide $NIX_STATE_DIR (and shouldn't)
 
 clearStore
 
-outPath=$(bsd-build --no-out-link readfile-context.bsd)
+outPath=$(bsd-build --no-out-link readfile-context.nix)
 
 # Set a GC root.
 ln -s $outPath "$NIX_STATE_DIR/gcroots/foo"

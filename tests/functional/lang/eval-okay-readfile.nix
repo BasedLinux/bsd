@@ -1,1 +1,1 @@
-builtins.readFile ./eval-okay-readfile.bsd
+builtins.readFile ./eval-okay-readfile.nix

@@ -20,11 +20,11 @@ assert !matches "fo*" "foobar";
 assert matches "[[:space:]]+([^[:space:]]+)[[:space:]]+" "  foo   ";
 assert !matches "[[:space:]]+([[:upper:]]+)[[:space:]]+" "  foo   ";
 
-assert match "(.*)\\.bsd" "foobar.bsd" == [ "foobar" ];
+assert match "(.*)\\.nix" "foobar.nix" == [ "foobar" ];
 assert match "[[:space:]]+([[:upper:]]+)[[:space:]]+" "  FOO   " == [ "FOO" ];
 
 assert
-  splitFN "/path/to/foobar.bsd" == [
+  splitFN "/path/to/foobar.nix" == [
     "/path/to/"
     "/path/to"
     "foobar"

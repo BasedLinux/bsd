@@ -34,7 +34,7 @@ struct UDSRemoteStoreConfig :
     /**
      * The path to the ubsd domain socket.
      *
-     * The default is `settings.bsdDaemonSocketFile`, but we don't write
+     * The default is `settings.nixDaemonSocketFile`, but we don't write
      * that below, instead putting in the constructor.
      */
     Path path;

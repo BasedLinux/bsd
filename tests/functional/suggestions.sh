@@ -6,7 +6,7 @@ clearStoreIfPossible
 
 cd "$TEST_HOME"
 
-cat <<EOF > flake.bsd
+cat <<EOF > flake.nix
 {
     outputs = a: {
        packages.$system = {

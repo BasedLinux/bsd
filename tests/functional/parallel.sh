@@ -10,7 +10,7 @@ clearStore
 
 rm -f $_NIX_TEST_SHARED.cur $_NIX_TEST_SHARED.max
 
-outPath=$(bsd-build -j10000 parallel.bsd --no-out-link)
+outPath=$(bsd-build -j10000 parallel.nix --no-out-link)
 
 echo "output path is $outPath"
 
@@ -29,7 +29,7 @@ clearStore
 
 rm -f $_NIX_TEST_SHARED.cur $_NIX_TEST_SHARED.max
 
-drvPath=$(bsd-instantiate parallel.bsd --argstr sleepTime 15)
+drvPath=$(bsd-instantiate parallel.nix --argstr sleepTime 15)
 
 cmd="bsd-store -j1 -r $drvPath"
 

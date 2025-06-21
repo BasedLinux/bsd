@@ -25,7 +25,7 @@ else
 fi
 
 # Test import-from-derivation through the daemon.
-[[ $(bsd eval --impure --raw --file ./ifd.bsd) = hi ]]
+[[ $(bsd eval --impure --raw --file ./ifd.nix) = hi ]]
 
 NIX_REMOTE_=$NIX_REMOTE $SHELL ./user-envs-test-case.sh
 

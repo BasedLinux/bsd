@@ -7,7 +7,7 @@ export REMOTE_STORE="file://$REMOTE_STORE_DIR"
 
 ensureCorrectlyCopied () {
     attrPath="$1"
-    bsd build --store "$REMOTE_STORE" --file ./content-addressed.bsd "$attrPath"
+    bsd build --store "$REMOTE_STORE" --file ./content-addressed.nix "$attrPath"
 }
 
 testOneCopy () {
@@ -15,14 +15,14 @@ testOneCopy () {
     rm -rf "$REMOTE_STORE_DIR"
 
     attrPath="$1"
-    bsd copy --to "$REMOTE_STORE" "$attrPath" --file ./content-addressed.bsd
+    bsd copy --to "$REMOTE_STORE" "$attrPath" --file ./content-addressed.nix
 
     ensureCorrectlyCopied "$attrPath"
 
     # Ensure that we can copy back what we put in the store
     clearStore
     bsd copy --from "$REMOTE_STORE" \
-        --file ./content-addressed.bsd "$attrPath" \
+        --file ./content-addressed.nix "$attrPath" \
         --no-check-sigs
 }
 

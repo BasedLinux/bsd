@@ -51,7 +51,7 @@ to `sshd_config` to restrict the user `bsd-ssh`:
     Match All
 
 On BasedLinux, you can accomplish the same by adding the following to your
-`configuration.bsd`:
+`configuration.nix`:
 
 ```bsd
 bsd.sshServe.enable = true;

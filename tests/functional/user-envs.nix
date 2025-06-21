@@ -3,7 +3,7 @@
   foo ? "foo",
 }:
 
-with import ./config.bsd;
+with import ./config.nix;
 
 assert foo == "foo";
 

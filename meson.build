@@ -58,4 +58,4 @@ if get_option('unit-tests')
   subproject('libexpr-tests')
   subproject('libflake-tests')
 endif
-subproject('bsd-functional-tests')
+subproject('nix-functional-tests')

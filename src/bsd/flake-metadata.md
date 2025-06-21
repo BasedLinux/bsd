@@ -67,7 +67,7 @@ data. This includes:
   hash and thus uniquely identifies a specific flake version.
 
 * `Description`: A one-line description of the flake, taken from the
-  `description` field in `flake.bsd`.
+  `description` field in `flake.nix`.
 
 * `Path`: The store path containing the source code of the flake.
 

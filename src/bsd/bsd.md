@@ -97,7 +97,7 @@ way:
   `git+file://[GIT_REPO_ROOT]?dir=[RELATIVE_FLAKE_DIR_PATH]`
   where `GIT_REPO_ROOT` is the path to the root of the git repository,
   and `RELATIVE_FLAKE_DIR_PATH` is the path (relative to the directory
-  root) of the closest parent of the given path that contains a `flake.bsd` within
+  root) of the closest parent of the given path that contains a `flake.nix` within
   the git repository.
   If no such directory exists, then Bsd will error-out.
 
@@ -112,17 +112,17 @@ way:
   └── baz
       ├── blah
       │   └── file.txt
-      └── flake.bsd
+      └── flake.nix
   ```
 
   Then `/foo/bar/baz/blah` will resolve to `git+file:///foo/bar?dir=baz`
 
 - If the supplied path is not a git repository, then the url will have the form
   `path:FLAKE_DIR_PATH` where `FLAKE_DIR_PATH` is the closest parent
-  of the supplied path that contains a `flake.bsd` file (within the same file-system).
+  of the supplied path that contains a `flake.nix` file (within the same file-system).
   If no such directory exists, then Bsd will error-out.
 
-  For example, if `/foo/bar/flake.bsd` exists, then `/foo/bar/baz/` will resolve to
+  For example, if `/foo/bar/flake.nix` exists, then `/foo/bar/baz/` will resolve to
  `path:/foo/bar`
 
 If *attrpath* is omitted, Bsd tries some default values; for most

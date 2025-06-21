@@ -128,8 +128,8 @@ subdir('bsd-meson-build-support/generate-header')
 
 generated_headers = []
 foreach header : [
-  'imported-drv-to-derivation.bsd',
-  'fetchurl.bsd',
+  'imported-drv-to-derivation.nix',
+  'fetchurl.nix',
 ]
   generated_headers += gen_header.process(header)
 endforeach

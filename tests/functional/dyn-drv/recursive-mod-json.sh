@@ -16,7 +16,7 @@ EXTRA_PATH=$(dirname $(type -p bsd)):$(dirname $(type -p jq))
 export EXTRA_PATH
 
 # Will produce a drv
-metaDrv=$(bsd-instantiate ./recursive-mod-json.bsd)
+metaDrv=$(bsd-instantiate ./recursive-mod-json.nix)
 
 # computed "dynamic" derivation
 drv=$(bsd-store -r $metaDrv)

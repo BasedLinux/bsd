@@ -69,7 +69,7 @@ readonly NIX_VOLUME_LABEL="${NIX_VOLUME_LABEL:-Bsd Store}"
 readonly NIX_VOLUME_USE_DISK="${NIX_VOLUME_USE_DISK:-$(root_disk_identifier)}"
 NIX_VOLUME_USE_SPECIAL="${NIX_VOLUME_USE_SPECIAL:-}"
 NIX_VOLUME_USE_UUID="${NIX_VOLUME_USE_UUID:-}"
-readonly NIX_VOLUME_MOUNTD_DEST="${NIX_VOLUME_MOUNTD_DEST:-/Library/LaunchDaemons/org.bsdos.darwin-store.plist}"
+readonly NIX_VOLUME_MOUNTD_DEST="${NIX_VOLUME_MOUNTD_DEST:-/Library/LaunchDaemons/org.nixos.darwin-store.plist}"
 
 if /usr/bin/fdesetup isactive >/dev/null; then
     test_filevault_in_use() { return 0; }
@@ -307,7 +307,7 @@ generate_mount_daemon() {
   <key>RunAtLoad</key>
   <true/>
   <key>Label</key>
-  <string>org.bsdos.darwin-store</string>
+  <string>org.nixos.darwin-store</string>
   <key>ProgramArguments</key>
   <array>
 $(generate_mount_command "$cmd_type" "$volume_uuid")
@@ -323,7 +323,7 @@ _eat_bootout_err() {
 
 # TODO: remove with --uninstall?
 uninstall_launch_daemon_directions() {
-    local daemon_label="$1" # i.e., org.bsdos.blah-blah
+    local daemon_label="$1" # i.e., org.nixos.blah-blah
     local daemon_plist="$2" # abspath
     substep "Uninstall LaunchDaemon $daemon_label" \
       "  sudo launchctl bootout system/$daemon_label" \
@@ -331,7 +331,7 @@ uninstall_launch_daemon_directions() {
 }
 
 uninstall_launch_daemon_prompt() {
-    local daemon_label="$1" # i.e., org.bsdos.blah-blah
+    local daemon_label="$1" # i.e., org.nixos.blah-blah
     local daemon_plist="$2" # abspath
     local reason_for_daemon="$3"
     cat <<EOF
@@ -348,26 +348,26 @@ EOF
 }
 
 bsd_volume_mountd_uninstall_directions() {
-    uninstall_launch_daemon_directions "org.bsdos.darwin-store" \
+    uninstall_launch_daemon_directions "org.nixos.darwin-store" \
         "$NIX_VOLUME_MOUNTD_DEST"
 }
 
 bsd_volume_mountd_uninstall_prompt() {
-    uninstall_launch_daemon_prompt "org.bsdos.darwin-store" \
+    uninstall_launch_daemon_prompt "org.nixos.darwin-store" \
         "$NIX_VOLUME_MOUNTD_DEST" \
         "mount your Bsd volume"
 }
 
 # TODO: move bsd_daemon to install-darwin-multi-user if/when uninstall_launch_daemon_prompt moves up to install-multi-user
 bsd_daemon_uninstall_prompt() {
-    uninstall_launch_daemon_prompt "org.bsdos.bsd-daemon" \
+    uninstall_launch_daemon_prompt "org.nixos.nix-daemon" \
         "$NIX_DAEMON_DEST" \
         "run the bsd-daemon"
 }
 
 # TODO: remove with --uninstall?
 bsd_daemon_uninstall_directions() {
-    uninstall_launch_daemon_directions "org.bsdos.bsd-daemon" \
+    uninstall_launch_daemon_directions "org.nixos.nix-daemon" \
         "$NIX_DAEMON_DEST"
 }
 
@@ -837,7 +837,7 @@ EOF
         # against multiple problems (doesn't start, old
         # version still running for some reason...)
         _sudo "to launch the Bsd volume mounter" \
-            launchctl kickstart -k system/org.bsdos.darwin-store
+            launchctl kickstart -k system/org.nixos.darwin-store
     fi
 }
 
@@ -861,7 +861,7 @@ else
             echo "     ------------------------------------------------------------------ "
             echo ""
             echo "  1. Remove the entry from fstab using 'sudo /usr/sbin/vifs'"
-            echo "  2. Run 'sudo launchctl bootout system/org.bsdos.darwin-store'"
+            echo "  2. Run 'sudo launchctl bootout system/org.nixos.darwin-store'"
             echo "  3. Remove $NIX_VOLUME_MOUNTD_DEST"
             echo "  4. Destroy the data volume using '/usr/sbin/diskutil apfs deleteVolume'"
             echo "  5. Remove the 'bsd' line from /etc/synthetic.conf (or the file)"

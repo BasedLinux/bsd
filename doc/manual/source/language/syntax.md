@@ -66,7 +66,7 @@ Lists are formed by enclosing a whitespace-separated list of values
 between square brackets. For example,
 
 ```bsd
-[ 123 ./foo.bsd "abc" (f { x = y; }) ]
+[ 123 ./foo.nix "abc" (f { x = y; }) ]
 ```
 
 defines a list of four elements, the last being the result of a call to
@@ -74,7 +74,7 @@ the function `f`. Note that function calls have to be enclosed in
 parentheses. If they had been omitted, e.g.,
 
 ```bsd
-[ 123 ./foo.bsd "abc" f { x = y; } ]
+[ 123 ./foo.nix "abc" f { x = y; } ]
 ```
 
 the result would be a list of five elements, the fourth one being a
@@ -320,7 +320,7 @@ It is also possible to inherit attributes from another attribute set.
 
 Example:
 
-In this fragment from `all-packages.bsd`,
+In this fragment from `all-packages.nix`,
 
 ```bsd
 graphviz = (import ../tools/graphics/graphviz) {
@@ -655,10 +655,10 @@ of `as` to the lexical scope in the expression `x + y`. The most common
 use of `with` is in conjunction with the `import` function. E.g.,
 
 ```bsd
-with (import ./definitions.bsd); ...
+with (import ./definitions.nix); ...
 ```
 
-makes all attributes defined in the file `definitions.bsd` available as
+makes all attributes defined in the file `definitions.nix` available as
 if they were defined locally in a `let`-expression.
 
 The bindings introduced by `with` do not shadow bindings introduced by

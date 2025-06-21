@@ -5,7 +5,7 @@
 }:
 
 let
-  cfg = import ./config.bsd;
+  cfg = import ./config.nix;
 in
 with cfg;
 

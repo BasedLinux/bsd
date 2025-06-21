@@ -4,8 +4,8 @@
   `builtins.readDir` but acts on a single file or directory.
 
 * In flakes, the `.outPath` attribute of a flake now always refers to
-  the directory containing the `flake.bsd`. This was not the case for
-  when `flake.bsd` was in a subdirectory of e.g. a Git repository.
+  the directory containing the `flake.nix`. This was not the case for
+  when `flake.nix` was in a subdirectory of e.g. a Git repository.
   The root of the source of a flake in a subdirectory is still
   available in `.sourceInfo.outPath`.
 

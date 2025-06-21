@@ -5,9 +5,9 @@ source common.sh
 clearStoreIfPossible
 
 if [[ -n ${NIX_TESTS_CA_BY_DEFAULT:-} ]]; then
-    shellDotBsd="$PWD/ca-shell.bsd"
+    shellDotBsd="$PWD/ca-shell.nix"
 else
-    shellDotBsd="$PWD/shell.bsd"
+    shellDotBsd="$PWD/shell.nix"
 fi
 
 export NIX_PATH=bsdpkgs="$shellDotBsd"
@@ -79,7 +79,7 @@ sed -e "s|@ENV_PROG@|$(type -P env)|" shell.shebang.expr > $TEST_ROOT/shell.sheb
 chmod a+rx $TEST_ROOT/shell.shebang.expr
 # Should fail due to expressions using relative path
 ! $TEST_ROOT/shell.shebang.expr bar
-cp shell.bsd "${config_bsd}" $TEST_ROOT
+cp shell.nix "${config_bsd}" $TEST_ROOT
 # Should succeed
 echo "cwd: $PWD"
 output=$($TEST_ROOT/shell.shebang.expr bar)
@@ -119,33 +119,33 @@ output=$($TEST_ROOT/spaced\ \\\'\"shell.shebang.rb abc ruby)
 [ "$output" = '-e load(ARGV.shift) -- '"$TEST_ROOT"'/spaced \'\''"shell.shebang.rb abc ruby' ]
 
 # Test bsd-shell shebang quoting
-sed -e "s|@ENV_PROG@|$(type -P env)|" shell.shebang.bsd > $TEST_ROOT/shell.shebang.bsd
-chmod a+rx $TEST_ROOT/shell.shebang.bsd
-$TEST_ROOT/shell.shebang.bsd
+sed -e "s|@ENV_PROG@|$(type -P env)|" shell.shebang.nix > $TEST_ROOT/shell.shebang.nix
+chmod a+rx $TEST_ROOT/shell.shebang.nix
+$TEST_ROOT/shell.shebang.nix
 
 mkdir $TEST_ROOT/lookup-test $TEST_ROOT/empty
 
-echo "import $shellDotBsd" > $TEST_ROOT/lookup-test/shell.bsd
+echo "import $shellDotBsd" > $TEST_ROOT/lookup-test/shell.nix
 cp "${config_bsd}" $TEST_ROOT/lookup-test/
-echo 'abort "do not load default.bsd!"' > $TEST_ROOT/lookup-test/default.bsd
+echo 'abort "do not load default.nix!"' > $TEST_ROOT/lookup-test/default.nix
 
 bsd-shell $TEST_ROOT/lookup-test -A shellDrv --run 'echo "it works"' | grepQuiet "it works"
 # https://github.com/BasedLinux/bsd/issues/4529
 bsd-shell -I "testRoot=$TEST_ROOT" '<testRoot/lookup-test>' -A shellDrv --run 'echo "it works"' | grepQuiet "it works"
 
 expectStderr 1 bsd-shell $TEST_ROOT/lookup-test -A shellDrv --run 'echo "it works"' --option bsd-shell-always-looks-for-shell-bsd false \
-  | grepQuiet -F "do not load default.bsd!" # we did, because we chose to enable legacy behavior
+  | grepQuiet -F "do not load default.nix!" # we did, because we chose to enable legacy behavior
 expectStderr 1 bsd-shell $TEST_ROOT/lookup-test -A shellDrv --run 'echo "it works"' --option bsd-shell-always-looks-for-shell-bsd false \
-  | grepQuiet "Skipping .*lookup-test/shell\.bsd.*, because the setting .*bsd-shell-always-looks-for-shell-bsd.* is disabled. This is a deprecated behavior\. Consider enabling .*bsd-shell-always-looks-for-shell-bsd.*"
+  | grepQuiet "Skipping .*lookup-test/shell\.nix.*, because the setting .*bsd-shell-always-looks-for-shell-bsd.* is disabled. This is a deprecated behavior\. Consider enabling .*bsd-shell-always-looks-for-shell-bsd.*"
 
 (
   cd $TEST_ROOT/empty;
   expectStderr 1 bsd-shell | \
-    grepQuiet "error.*no argument specified and no .*shell\.bsd.* or .*default\.bsd.* file found in the working directory"
+    grepQuiet "error.*no argument specified and no .*shell\.nix.* or .*default\.nix.* file found in the working directory"
 )
 
 expectStderr 1 bsd-shell -I "testRoot=$TEST_ROOT" '<testRoot/empty>' |
-  grepQuiet "error.*neither .*shell\.bsd.* nor .*default\.bsd.* found in .*/empty"
+  grepQuiet "error.*neither .*shell\.nix.* nor .*default\.nix.* found in .*/empty"
 
 cat >$TEST_ROOT/lookup-test/shebangscript <<EOF
 #!$(type -P env) bsd-shell
@@ -159,25 +159,25 @@ $TEST_ROOT/lookup-test/shebangscript | grepQuiet "script works"
 
 # https://github.com/BasedLinux/bsd/issues/5431
 mkdir $TEST_ROOT/marco{,/polo}
-echo 'abort "marco/shell.bsd must not be used, but its mere existence used to cause #5431"' > $TEST_ROOT/marco/shell.bsd
-cat >$TEST_ROOT/marco/polo/default.bsd <<EOF
+echo 'abort "marco/shell.nix must not be used, but its mere existence used to cause #5431"' > $TEST_ROOT/marco/shell.nix
+cat >$TEST_ROOT/marco/polo/default.nix <<EOF
 #!$(type -P env) bsd-shell
-(import $TEST_ROOT/lookup-test/shell.bsd {}).polo
+(import $TEST_ROOT/lookup-test/shell.nix {}).polo
 EOF
-chmod a+x $TEST_ROOT/marco/polo/default.bsd
-(cd $TEST_ROOT/marco && ./polo/default.bsd | grepQuiet "Polo")
+chmod a+x $TEST_ROOT/marco/polo/default.nix
+(cd $TEST_ROOT/marco && ./polo/default.nix | grepQuiet "Polo")
 
 # https://github.com/BasedLinux/bsd/issues/11892
 mkdir $TEST_ROOT/issue-11892
 cat >$TEST_ROOT/issue-11892/shebangscript <<EOF
 #!$(type -P env) bsd-shell
 #! bsd-shell -I bsdpkgs=$shellDotBsd
-#! bsd-shell -p 'callPackage (import ./my_package.bsd) {}'
+#! bsd-shell -p 'callPackage (import ./my_package.nix) {}'
 #! bsd-shell -i bash
 set -euxo pipefail
 my_package
 EOF
-cat >$TEST_ROOT/issue-11892/my_package.bsd <<EOF
+cat >$TEST_ROOT/issue-11892/my_package.nix <<EOF
 { stdenv, shell, ... }:
 stdenv.mkDerivation {
   name = "my_package";
@@ -256,9 +256,9 @@ set -u
 )
 
 # Test bsd-shell with ellipsis and no `inBsdShell` argument (for backwards compat with old bsdpkgs)
-cat >$TEST_ROOT/shell-ellipsis.bsd <<EOF
+cat >$TEST_ROOT/shell-ellipsis.nix <<EOF
 { system ? "x86_64-linux", ... }@args:
 assert (!(args ? inBsdShell));
 (import $shellDotBsd { }).shellDrv
 EOF
-bsd-shell $TEST_ROOT/shell-ellipsis.bsd --run "true"
+bsd-shell $TEST_ROOT/shell-ellipsis.nix --run "true"

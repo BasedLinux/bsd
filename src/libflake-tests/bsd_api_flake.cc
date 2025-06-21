@@ -84,7 +84,7 @@ TEST_F(bsd_api_store_test, bsd_api_load_flake)
     auto tmpDir = bsd::createTempDir();
     bsd::AutoDelete delTmpDir(tmpDir, true);
 
-    bsd::writeFile(tmpDir + "/flake.bsd", R"(
+    bsd::writeFile(tmpDir + "/flake.nix", R"(
         {
             outputs = { ... }: {
                 hello = "potato";
@@ -176,7 +176,7 @@ TEST_F(bsd_api_store_test, bsd_api_load_flake_with_flags)
     bsd::AutoDelete delTmpDir(tmpDir, true);
 
     bsd::createDirs(tmpDir + "/b");
-    bsd::writeFile(tmpDir + "/b/flake.bsd", R"(
+    bsd::writeFile(tmpDir + "/b/flake.nix", R"(
         {
             outputs = { ... }: {
                 hello = "BOB";
@@ -185,7 +185,7 @@ TEST_F(bsd_api_store_test, bsd_api_load_flake_with_flags)
     )");
 
     bsd::createDirs(tmpDir + "/a");
-    bsd::writeFile(tmpDir + "/a/flake.bsd", R"(
+    bsd::writeFile(tmpDir + "/a/flake.nix", R"(
         {
             inputs.b.url = ")" + tmpDir + R"(/b";
             outputs = { b, ... }: {
@@ -195,7 +195,7 @@ TEST_F(bsd_api_store_test, bsd_api_load_flake_with_flags)
     )");
 
     bsd::createDirs(tmpDir + "/c");
-    bsd::writeFile(tmpDir + "/c/flake.bsd", R"(
+    bsd::writeFile(tmpDir + "/c/flake.nix", R"(
         {
             outputs = { ... }: {
                 hello = "Claire";

@@ -1,4 +1,4 @@
-with import ./config.bsd;
+with import ./config.nix;
 
 mkDerivation {
   name = "filter";
@@ -9,6 +9,6 @@ mkDerivation {
       path: type:
       type != "symlink"
       && baseNameOf path != "foo"
-      && !((import ./lang/lib.bsd).hasSuffix ".bak" (baseNameOf path));
+      && !((import ./lang/lib.nix).hasSuffix ".bak" (baseNameOf path));
   };
 }
