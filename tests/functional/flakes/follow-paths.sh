@@ -17,7 +17,7 @@ mkdir -p $flakeFollowsC
 mkdir -p $flakeFollowsD
 mkdir -p $flakeFollowsE
 
-cat > $flakeFollowsA/flake.nix <<EOF
+cat > $flakeFollowsA/flake.bsd <<EOF
 {
     description = "Flake A";
     inputs = {
@@ -32,7 +32,7 @@ cat > $flakeFollowsA/flake.nix <<EOF
 }
 EOF
 
-cat > $flakeFollowsB/flake.nix <<EOF
+cat > $flakeFollowsB/flake.bsd <<EOF
 {
     description = "Flake B";
     inputs = {
@@ -47,7 +47,7 @@ cat > $flakeFollowsB/flake.nix <<EOF
 }
 EOF
 
-cat > $flakeFollowsC/flake.nix <<EOF
+cat > $flakeFollowsC/flake.bsd <<EOF
 {
     description = "Flake C";
     inputs = {
@@ -58,7 +58,7 @@ cat > $flakeFollowsC/flake.nix <<EOF
 }
 EOF
 
-cat > $flakeFollowsD/flake.nix <<EOF
+cat > $flakeFollowsD/flake.bsd <<EOF
 {
     description = "Flake D";
     inputs = {};
@@ -66,7 +66,7 @@ cat > $flakeFollowsD/flake.nix <<EOF
 }
 EOF
 
-cat > $flakeFollowsE/flake.nix <<EOF
+cat > $flakeFollowsE/flake.bsd <<EOF
 {
     description = "Flake E";
     inputs = {};
@@ -74,20 +74,20 @@ cat > $flakeFollowsE/flake.nix <<EOF
 }
 EOF
 
-git -C $flakeFollowsA add flake.nix flakeB/flake.nix \
-  flakeB/flakeC/flake.nix flakeD/flake.nix flakeE/flake.nix
+git -C $flakeFollowsA add flake.bsd flakeB/flake.bsd \
+  flakeB/flakeC/flake.bsd flakeD/flake.bsd flakeE/flake.bsd
 
-nix flake metadata $flakeFollowsA
+bsd flake metadata $flakeFollowsA
 
-nix flake update --flake $flakeFollowsA
+bsd flake update --flake $flakeFollowsA
 
-nix flake lock $flakeFollowsA
+bsd flake lock $flakeFollowsA
 
 oldLock="$(cat "$flakeFollowsA/flake.lock")"
 
 # Ensure that locking twice doesn't change anything
 
-nix flake lock $flakeFollowsA
+bsd flake lock $flakeFollowsA
 
 newLock="$(cat "$flakeFollowsA/flake.lock")"
 
@@ -97,9 +97,9 @@ diff <(echo "$newLock") <(echo "$oldLock")
 [[ $(jq -c .nodes.B.inputs.foobar $flakeFollowsA/flake.lock) = '["foobar"]' ]]
 [[ $(jq -c .nodes.C.inputs.foobar $flakeFollowsA/flake.lock) = '["B","foobar"]' ]]
 
-# Ensure removing follows from flake.nix removes them from the lockfile
+# Ensure removing follows from flake.bsd removes them from the lockfile
 
-cat > $flakeFollowsA/flake.nix <<EOF
+cat > $flakeFollowsA/flake.bsd <<EOF
 {
     description = "Flake A";
     inputs = {
@@ -112,13 +112,13 @@ cat > $flakeFollowsA/flake.nix <<EOF
 }
 EOF
 
-nix flake lock $flakeFollowsA
+bsd flake lock $flakeFollowsA
 
 [[ $(jq -c .nodes.B.inputs.foobar $flakeFollowsA/flake.lock) = '"foobar"' ]]
 jq -r -c '.nodes | keys | .[]' $flakeFollowsA/flake.lock | grep "^foobar$"
 
 # Check that path: inputs cannot escape from their root.
-cat > $flakeFollowsA/flake.nix <<EOF
+cat > $flakeFollowsA/flake.bsd <<EOF
 {
     description = "Flake A";
     inputs = {
@@ -128,33 +128,33 @@ cat > $flakeFollowsA/flake.nix <<EOF
 }
 EOF
 
-git -C $flakeFollowsA add flake.nix
+git -C $flakeFollowsA add flake.bsd
 
-expect 1 nix flake lock $flakeFollowsA 2>&1 | grep '/flakeB.*is forbidden in pure evaluation mode'
-expect 1 nix flake lock --impure $flakeFollowsA 2>&1 | grep '/flakeB.*does not exist'
+expect 1 bsd flake lock $flakeFollowsA 2>&1 | grep '/flakeB.*is forbidden in pure evaluation mode'
+expect 1 bsd flake lock --impure $flakeFollowsA 2>&1 | grep '/flakeB.*does not exist'
 
 # Test relative non-flake inputs.
-cat > $flakeFollowsA/flake.nix <<EOF
+cat > $flakeFollowsA/flake.bsd <<EOF
 {
     description = "Flake A";
     inputs = {
         E.flake = false;
-        E.url = "./foo.nix"; # test relative paths without 'path:'
+        E.url = "./foo.bsd"; # test relative paths without 'path:'
     };
     outputs = { E, ... }: { e = import E; };
 }
 EOF
 
-echo 123 > $flakeFollowsA/foo.nix
+echo 123 > $flakeFollowsA/foo.bsd
 
-git -C $flakeFollowsA add flake.nix foo.nix
+git -C $flakeFollowsA add flake.bsd foo.bsd
 
-nix flake lock $flakeFollowsA
+bsd flake lock $flakeFollowsA
 
-[[ $(nix eval --json $flakeFollowsA#e) = 123 ]]
+[[ $(bsd eval --json $flakeFollowsA#e) = 123 ]]
 
 # Non-existant follows should print a warning.
-cat >$flakeFollowsA/flake.nix <<EOF
+cat >$flakeFollowsA/flake.bsd <<EOF
 {
     description = "Flake A";
     inputs.B = {
@@ -167,13 +167,13 @@ cat >$flakeFollowsA/flake.nix <<EOF
 }
 EOF
 
-git -C $flakeFollowsA add flake.nix
+git -C $flakeFollowsA add flake.bsd
 
-nix flake lock "$flakeFollowsA" 2>&1 | grep "warning: input 'B' has an override for a non-existent input 'invalid'"
-nix flake lock "$flakeFollowsA" 2>&1 | grep "warning: input 'B' has an override for a non-existent input 'invalid2'"
+bsd flake lock "$flakeFollowsA" 2>&1 | grep "warning: input 'B' has an override for a non-existent input 'invalid'"
+bsd flake lock "$flakeFollowsA" 2>&1 | grep "warning: input 'B' has an override for a non-existent input 'invalid2'"
 
 # Now test follow path overloading
-# This tests a lockfile checking regression https://github.com/NixOS/nix/pull/8819
+# This tests a lockfile checking regression https://github.com/BasedLinux/bsd/pull/8819
 #
 # We construct the following graph, where p->q means p has input q.
 # A double edge means that the edge gets overridden using `follows`.
@@ -203,7 +203,7 @@ mkdir -p "$flakeFollowsOverloadB"
 mkdir -p "$flakeFollowsOverloadC"
 mkdir -p "$flakeFollowsOverloadD"
 
-cat > "$flakeFollowsOverloadD/flake.nix" <<EOF
+cat > "$flakeFollowsOverloadD/flake.bsd" <<EOF
 {
     description = "Flake D";
     inputs = {};
@@ -211,7 +211,7 @@ cat > "$flakeFollowsOverloadD/flake.nix" <<EOF
 }
 EOF
 
-cat > "$flakeFollowsOverloadC/flake.nix" <<EOF
+cat > "$flakeFollowsOverloadC/flake.bsd" <<EOF
 {
     description = "Flake C";
     inputs.D.url = "path:./flakeD";
@@ -219,7 +219,7 @@ cat > "$flakeFollowsOverloadC/flake.nix" <<EOF
 }
 EOF
 
-cat > "$flakeFollowsOverloadB/flake.nix" <<EOF
+cat > "$flakeFollowsOverloadB/flake.bsd" <<EOF
 {
     description = "Flake B";
     inputs = {
@@ -233,7 +233,7 @@ cat > "$flakeFollowsOverloadB/flake.nix" <<EOF
 EOF
 
 # input B/D should be able to be found...
-cat > "$flakeFollowsOverloadA/flake.nix" <<EOF
+cat > "$flakeFollowsOverloadA/flake.bsd" <<EOF
 {
     description = "Flake A";
     inputs = {
@@ -247,12 +247,12 @@ cat > "$flakeFollowsOverloadA/flake.nix" <<EOF
 }
 EOF
 
-git -C "$flakeFollowsOverloadA" add flake.nix flakeB/flake.nix \
-  flakeB/flakeC/flake.nix flakeB/flakeC/flakeD/flake.nix
+git -C "$flakeFollowsOverloadA" add flake.bsd flakeB/flake.bsd \
+  flakeB/flakeC/flake.bsd flakeB/flakeC/flakeD/flake.bsd
 
-nix flake metadata "$flakeFollowsOverloadA"
-nix flake update --flake "$flakeFollowsOverloadA"
-nix flake lock "$flakeFollowsOverloadA"
+bsd flake metadata "$flakeFollowsOverloadA"
+bsd flake update --flake "$flakeFollowsOverloadA"
+bsd flake lock "$flakeFollowsOverloadA"
 
 # Now test follow cycle detection
 # We construct the following follows graph:
@@ -269,7 +269,7 @@ flakeFollowCycle="$TEST_ROOT/follows/followCycle"
 # Test following path flakerefs.
 mkdir -p "$flakeFollowCycle"
 
-cat > $flakeFollowCycle/flake.nix <<EOF
+cat > $flakeFollowCycle/flake.bsd <<EOF
 {
     description = "Flake A";
     inputs = {
@@ -281,18 +281,18 @@ cat > $flakeFollowCycle/flake.nix <<EOF
 }
 EOF
 
-checkRes=$(nix flake lock "$flakeFollowCycle" 2>&1 && fail "nix flake lock should have failed." || true)
+checkRes=$(bsd flake lock "$flakeFollowCycle" 2>&1 && fail "bsd flake lock should have failed." || true)
 echo $checkRes | grep -F "error: follow cycle detected: [baz -> foo -> bar -> baz]"
 
 
 # Test transitive input url locking
-# This tests the following lockfile issue: https://github.com/NixOS/nix/issues/9143
+# This tests the following lockfile issue: https://github.com/BasedLinux/bsd/issues/9143
 #
 # We construct the following graph, where p->q means p has input q.
 #
 # A -> B -> C
 #
-# And override B/C to flake D, first in A's flake.nix and then with --override-input.
+# And override B/C to flake D, first in A's flake.bsd and then with --override-input.
 #
 # A -> B -> D
 flakeFollowsCustomUrlA="$TEST_ROOT/follows/custom-url/flakeA"
@@ -306,7 +306,7 @@ mkdir -p "$flakeFollowsCustomUrlB"
 mkdir -p "$flakeFollowsCustomUrlC"
 mkdir -p "$flakeFollowsCustomUrlD"
 
-cat > "$flakeFollowsCustomUrlD/flake.nix" <<EOF
+cat > "$flakeFollowsCustomUrlD/flake.bsd" <<EOF
 {
     description = "Flake D";
     inputs = {};
@@ -314,7 +314,7 @@ cat > "$flakeFollowsCustomUrlD/flake.nix" <<EOF
 }
 EOF
 
-cat > "$flakeFollowsCustomUrlC/flake.nix" <<EOF
+cat > "$flakeFollowsCustomUrlC/flake.bsd" <<EOF
 {
     description = "Flake C";
     inputs = {};
@@ -322,7 +322,7 @@ cat > "$flakeFollowsCustomUrlC/flake.nix" <<EOF
 }
 EOF
 
-cat > "$flakeFollowsCustomUrlB/flake.nix" <<EOF
+cat > "$flakeFollowsCustomUrlB/flake.bsd" <<EOF
 {
     description = "Flake B";
     inputs = {
@@ -334,7 +334,7 @@ cat > "$flakeFollowsCustomUrlB/flake.nix" <<EOF
 }
 EOF
 
-cat > "$flakeFollowsCustomUrlA/flake.nix" <<EOF
+cat > "$flakeFollowsCustomUrlA/flake.bsd" <<EOF
 {
     description = "Flake A";
     inputs = {
@@ -347,15 +347,15 @@ cat > "$flakeFollowsCustomUrlA/flake.nix" <<EOF
 }
 EOF
 
-git -C "$flakeFollowsCustomUrlA" add flake.nix flakeB/flake.nix \
-  flakeB/flakeC/flake.nix flakeB/flakeD/flake.nix
+git -C "$flakeFollowsCustomUrlA" add flake.bsd flakeB/flake.bsd \
+  flakeB/flakeC/flake.bsd flakeB/flakeD/flake.bsd
 
 # lock "original" entry should contain overridden url
-json=$(nix flake metadata "$flakeFollowsCustomUrlA" --json)
+json=$(bsd flake metadata "$flakeFollowsCustomUrlA" --json)
 [[ $(echo "$json" | jq -r .locks.nodes.C.original.path) = './flakeB/flakeD' ]]
 rm "$flakeFollowsCustomUrlA"/flake.lock
 
 # if override-input is specified, lock "original" entry should contain original url
-json=$(nix flake metadata "$flakeFollowsCustomUrlA" --override-input B/C "$flakeFollowsCustomUrlD" --json)
+json=$(bsd flake metadata "$flakeFollowsCustomUrlA" --override-input B/C "$flakeFollowsCustomUrlD" --json)
 echo "$json" | jq .locks.nodes.C.original
 [[ $(echo "$json" | jq -r .locks.nodes.C.original.path) = './flakeC' ]]

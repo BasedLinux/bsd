@@ -1,4 +1,4 @@
-project('nix-fetchers-tests', 'cpp',
+project('bsd-fetchers-tests', 'cpp',
   version : files('.version'),
   default_options : [
     'cpp_std=c++2a',
@@ -12,19 +12,19 @@ project('nix-fetchers-tests', 'cpp',
 
 cxx = meson.get_compiler('cpp')
 
-subdir('nix-meson-build-support/deps-lists')
+subdir('bsd-meson-build-support/deps-lists')
 
 deps_private_maybe_subproject = [
-  dependency('nix-store-test-support'),
-  dependency('nix-fetchers'),
-  dependency('nix-fetchers-c'),
+  dependency('bsd-store-test-support'),
+  dependency('bsd-fetchers'),
+  dependency('bsd-fetchers-c'),
 ]
 deps_public_maybe_subproject = [
 ]
-subdir('nix-meson-build-support/subprojects')
+subdir('bsd-meson-build-support/subprojects')
 
-subdir('nix-meson-build-support/export-all-symbols')
-subdir('nix-meson-build-support/windows-version')
+subdir('bsd-meson-build-support/export-all-symbols')
+subdir('bsd-meson-build-support/windows-version')
 
 rapidcheck = dependency('rapidcheck')
 deps_private += rapidcheck
@@ -35,12 +35,12 @@ deps_private += gtest
 libgit2 = dependency('libgit2')
 deps_private += libgit2
 
-subdir('nix-meson-build-support/common')
+subdir('bsd-meson-build-support/common')
 
 sources = files(
   'access-tokens.cc',
   'git-utils.cc',
-  'nix_api_fetchers.cc',
+  'bsd_api_fetchers.cc',
   'public-key.cc',
 )
 

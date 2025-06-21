@@ -1,12 +1,12 @@
-#include "nix/store/nar-accessor.hh"
-#include "nix/util/archive.hh"
+#include "bsd/store/nar-accessor.hh"
+#include "bsd/util/archive.hh"
 
 #include <map>
 #include <stack>
 
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
 struct NarMember
 {

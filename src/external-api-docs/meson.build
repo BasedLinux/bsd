@@ -1,4 +1,4 @@
-project('nix-external-api-docs',
+project('bsd-external-api-docs',
   version : files('.version'),
   meson_version : '>= 1.1',
   license : 'LGPL-2.1-or-later',
@@ -26,6 +26,6 @@ custom_target(
   ],
   output : 'html',
   install : true,
-  install_dir : get_option('datadir') / 'doc/nix/external-api',
+  install_dir : get_option('datadir') / 'doc/bsd/external-api',
   build_always_stale : true,
 )

@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "nix/store/downstream-placeholder.hh"
+#include "bsd/store/downstream-placeholder.hh"
 
-namespace nix {
+namespace bsd {
 
 TEST(DownstreamPlaceholder, unknownCaOutput) {
     /**

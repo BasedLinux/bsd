@@ -1,20 +1,20 @@
-#include "nix/store/legacy-ssh-store.hh"
-#include "nix/store/common-ssh-store-config.hh"
-#include "nix/util/archive.hh"
-#include "nix/util/pool.hh"
-#include "nix/store/remote-store.hh"
-#include "nix/store/serve-protocol.hh"
-#include "nix/store/serve-protocol-connection.hh"
-#include "nix/store/serve-protocol-impl.hh"
-#include "nix/store/build-result.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/path-with-outputs.hh"
-#include "nix/store/ssh.hh"
-#include "nix/store/derivations.hh"
-#include "nix/util/callback.hh"
-#include "nix/store/store-registration.hh"
+#include "bsd/store/legacy-ssh-store.hh"
+#include "bsd/store/common-ssh-store-config.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/util/pool.hh"
+#include "bsd/store/remote-store.hh"
+#include "bsd/store/serve-protocol.hh"
+#include "bsd/store/serve-protocol-connection.hh"
+#include "bsd/store/serve-protocol-impl.hh"
+#include "bsd/store/build-result.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/path-with-outputs.hh"
+#include "bsd/store/ssh.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/util/callback.hh"
+#include "bsd/store/store-registration.hh"
 
-namespace nix {
+namespace bsd {
 
 LegacySSHStoreConfig::LegacySSHStoreConfig(
     std::string_view scheme,
@@ -85,7 +85,7 @@ ref<LegacySSHStore::Connection> LegacySSHStore::openConnection()
             NullSink nullSink;
             tee.drainInto(nullSink);
         }
-        throw Error("'nix-store --serve' protocol mismatch from '%s', got '%s'",
+        throw Error("'bsd-store --serve' protocol mismatch from '%s', got '%s'",
             config->host, chomp(saved.s));
     } catch (EndOfFile & e) {
         throw Error("cannot connect to '%1%'", config->host);

@@ -1,18 +1,18 @@
-#include "nix/expr/value-to-json.hh"
-#include "nix/expr/eval-inline.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/signals.hh"
+#include "bsd/expr/value-to-json.hh"
+#include "bsd/expr/eval-inline.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/signals.hh"
 
 #include <cstdlib>
 #include <iomanip>
 #include <nlohmann/json.hpp>
 
 
-namespace nix {
+namespace bsd {
 using json = nlohmann::json;
 // TODO: rename. It doesn't print.
 json printValueAsJSON(EvalState & state, bool strict,
-    Value & v, const PosIdx pos, NixStringContext & context, bool copyToStore)
+    Value & v, const PosIdx pos, BsdStringContext & context, bool copyToStore)
 {
     checkInterrupt();
 
@@ -107,7 +107,7 @@ json printValueAsJSON(EvalState & state, bool strict,
 }
 
 void printValueAsJSON(EvalState & state, bool strict,
-    Value & v, const PosIdx pos, std::ostream & str, NixStringContext & context, bool copyToStore)
+    Value & v, const PosIdx pos, std::ostream & str, BsdStringContext & context, bool copyToStore)
 {
     try {
         str << printValueAsJSON(state, strict, v, pos, context, copyToStore);
@@ -117,7 +117,7 @@ void printValueAsJSON(EvalState & state, bool strict,
 }
 
 json ExternalValueBase::printValueAsJSON(EvalState & state, bool strict,
-    NixStringContext & context, bool copyToStore) const
+    BsdStringContext & context, bool copyToStore) const
 {
     state.error<TypeError>("cannot convert %1% to JSON", showType())
     .debugThrow();

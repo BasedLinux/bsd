@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "nix/store/content-address.hh"
+#include "bsd/store/content-address.hh"
 
-namespace nix {
+namespace bsd {
 
 /* ----------------------------------------------------------------------------
  * ContentAddressMethod::parse, ContentAddressMethod::render
@@ -12,7 +12,7 @@ TEST(ContentAddressMethod, testRoundTripPrintParse_1) {
     for (ContentAddressMethod cam : {
         ContentAddressMethod::Raw::Text,
         ContentAddressMethod::Raw::Flat,
-        ContentAddressMethod::Raw::NixArchive,
+        ContentAddressMethod::Raw::BsdArchive,
         ContentAddressMethod::Raw::Git,
     }) {
         EXPECT_EQ(ContentAddressMethod::parse(cam.render()), cam);

@@ -2,11 +2,11 @@
 
 source common.sh
 
-cp ../simple.nix ../simple.builder.sh "${config_nix}" "$TEST_HOME"
+cp ../simple.bsd ../simple.builder.sh "${config_bsd}" "$TEST_HOME"
 
 cd "$TEST_HOME"
 
-cat <<EOF > flake.nix
+cat <<EOF > flake.bsd
 {
     outputs = {self}: {
       bundlers.$system = rec {
@@ -16,19 +16,19 @@ cat <<EOF > flake.nix
           else self.packages.$system.default;
         default = simple;
       };
-      packages.$system.default = import ./simple.nix;
+      packages.$system.default = import ./simple.bsd;
       apps.$system.default = {
         type = "app";
-        program = "\${import ./simple.nix}/hello";
+        program = "\${import ./simple.bsd}/hello";
       };
     };
 }
 EOF
 
-nix build .#
-nix bundle --bundler .# .#
-nix bundle --bundler .#bundlers."$system".default .#packages."$system".default
-nix bundle --bundler .#bundlers."$system".simple  .#packages."$system".default
+bsd build .#
+bsd bundle --bundler .# .#
+bsd bundle --bundler .#bundlers."$system".default .#packages."$system".default
+bsd bundle --bundler .#bundlers."$system".simple  .#packages."$system".default
 
-nix bundle --bundler .#bundlers."$system".default .#apps."$system".default
-nix bundle --bundler .#bundlers."$system".simple  .#apps."$system".default
+bsd bundle --bundler .#bundlers."$system".default .#apps."$system".default
+bsd bundle --bundler .#bundlers."$system".simple  .#apps."$system".default

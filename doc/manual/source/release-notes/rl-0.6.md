@@ -4,8 +4,8 @@
     
       - Multiple builds can now be performed in parallel (option `-j`).
     
-      - Distributed builds. Nix can now call a shell script to forward
-        builds to Nix installations on remote machines, which may or may
+      - Distributed builds. Bsd can now call a shell script to forward
+        builds to Bsd installations on remote machines, which may or may
         not be of the same platform type.
     
       - Option `--fallback` allows recovery from broken substitutes.
@@ -16,18 +16,18 @@
   - Improvements to the garbage collector (i.e., it should actually work
     now).
 
-  - Setuid Nix installations allow a Nix store to be shared among
+  - Setuid Bsd installations allow a Bsd store to be shared among
     multiple users.
 
   - Substitute registration is much faster now.
 
-  - A utility `nix-build` to build a Nix expression and create a symlink
-    to the result int the current directory; useful for testing Nix
+  - A utility `bsd-build` to build a Bsd expression and create a symlink
+    to the result int the current directory; useful for testing Bsd
     derivations.
 
   - Manual updates.
 
-  - `nix-env` changes:
+  - `bsd-env` changes:
     
       - Derivations for other platforms are filtered out (which can be
         overridden using `--system-filter`).
@@ -45,7 +45,7 @@
   - More sensible verbosity levels all around (builder output is now
     shown always, unless `-Q` is given).
 
-  - Nix expression language changes:
+  - Bsd expression language changes:
     
       - New language construct: `with
                                                         E1;
@@ -58,7 +58,7 @@
 
   - Expression evaluation is much faster.
 
-  - An Emacs mode for editing Nix expressions (with syntax highlighting
+  - An Emacs mode for editing Bsd expressions (with syntax highlighting
     and indentation) has been added.
 
   - Many bug fixes.

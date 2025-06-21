@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: Nix
+title: Bsd
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -8,8 +8,8 @@ authors:
   - given-names: Eelco
     family-names: Dolstra
     email: edolstra@gmail.com
-  - name: The Nix contributors
-    website: 'https://github.com/NixOS/nix'
+  - name: The Bsd contributors
+    website: 'https://github.com/BasedLinux/bsd'
 references:
   - title: The Purely Functional Software Deployment Model
     authors:
@@ -28,11 +28,11 @@ references:
     - software deployment
     - purely functional
     - component-based software engineering
-repository-code: 'https://github.com/NixOS/nix'
-url: 'https://nixos.org/'
+repository-code: 'https://github.com/BasedLinux/bsd'
+url: 'https://basedlinux.org/'
 abstract: >-
-  Nix, a purely functional package manager, is a powerful
-  package manager for Linux and other Unix systems that
+  Bsd, a purely functional package manager, is a powerful
+  package manager for Linux and other Ubsd systems that
   makes package management reliable and reproducible.
 keywords:
   - reproducibility

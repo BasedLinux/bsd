@@ -1,18 +1,18 @@
 #include <fcntl.h>
 
-#include "nix/util/error.hh"
-#include "nix/util/config-global.hh"
-#include "nix/util/fs-sink.hh"
+#include "bsd/util/error.hh"
+#include "bsd/util/config-global.hh"
+#include "bsd/util/fs-sink.hh"
 
 #ifdef _WIN32
 # include <fileapi.h>
-# include "nix/util/file-path.hh"
-# include "nix/util/windows-error.hh"
+# include "bsd/util/file-path.hh"
+# include "bsd/util/windows-error.hh"
 #endif
 
 #include "util-config-private.hh"
 
-namespace nix {
+namespace bsd {
 
 void copyRecursive(
     SourceAccessor & accessor, const CanonPath & from,
@@ -162,7 +162,7 @@ void RestoreRegularFile::operator () (std::string_view data)
 void RestoreSink::createSymlink(const CanonPath & path, const std::string & target)
 {
     auto p = append(dstPath, path);
-    nix::createSymlink(target, p.string());
+    bsd::createSymlink(target, p.string());
 }
 
 

@@ -5,14 +5,14 @@
 A [coverage analysis report] is available online
 You can build it yourself:
 
-[coverage analysis report]: https://hydra.nixos.org/job/nix/master/coverage/latest/download-by-type/report/coverage
+[coverage analysis report]: https://hydra.basedlinux.org/job/bsd/master/coverage/latest/download-by-type/report/coverage
 
 ```
-# nix build .#hydraJobs.coverage
+# bsd build .#hydraJobs.coverage
 # xdg-open ./result/coverage/index.html
 ```
 
-[Extensive records of build metrics](https://hydra.nixos.org/job/nix/master/coverage#tabs-charts), such as test coverage over time, are also available online.
+[Extensive records of build metrics](https://hydra.basedlinux.org/job/bsd/master/coverage#tabs-charts), such as test coverage over time, are also available online.
 
 ## Unit-tests
 
@@ -30,7 +30,7 @@ The unit tests are defined using the [googletest] and [rapidcheck] frameworks.
 > src
 > ├── libexpr
 > │   ├── meson.build
-> │   ├── include/nix/expr/value/context.hh
+> │   ├── include/bsd/expr/value/context.hh
 > │   ├── value/context.cc
 > │   …
 > │
@@ -46,7 +46,7 @@ The unit tests are defined using the [googletest] and [rapidcheck] frameworks.
 > │   │
 > │   ├── libexpr-test-support
 > │   │   ├── meson.build
-> │   │   ├── include/nix/expr
+> │   │   ├── include/bsd/expr
 > │   │   │   ├── meson.build
 > │   │   │   └── tests
 > │   │   │       ├── value/context.hh
@@ -62,16 +62,16 @@ The unit tests are defined using the [googletest] and [rapidcheck] frameworks.
 > …
 > ```
 
-The tests for each Nix library (`libnixexpr`, `libnixstore`, etc..) live inside a directory `src/${library_name_without-nix}-test`.
-Given an interface (header) and implementation pair in the original library, say, `src/libexpr/include/nix/expr/value/context.hh` and `src/libexpr/value/context.cc`, we write tests for it in `src/libexpr-tests/value/context.cc`, and (possibly) declare/define additional interfaces for testing purposes in `src/libexpr-test-support/include/nix/expr/tests/value/context.hh` and `src/libexpr-test-support/tests/value/context.cc`.
+The tests for each Bsd library (`libbsdexpr`, `libbsdstore`, etc..) live inside a directory `src/${library_name_without-bsd}-test`.
+Given an interface (header) and implementation pair in the original library, say, `src/libexpr/include/bsd/expr/value/context.hh` and `src/libexpr/value/context.cc`, we write tests for it in `src/libexpr-tests/value/context.cc`, and (possibly) declare/define additional interfaces for testing purposes in `src/libexpr-test-support/include/bsd/expr/tests/value/context.hh` and `src/libexpr-test-support/tests/value/context.cc`.
 
 Data for unit tests is stored in a `data` subdir of the directory for each unit test executable.
-For example, `libnixstore` code is in `src/libstore`, and its test data is in `src/libstore-tests/data`.
-The path to the `src/${library_name_without-nix}-test/data` directory is passed to the unit test executable with the environment variable `_NIX_TEST_UNIT_DATA`.
+For example, `libbsdstore` code is in `src/libstore`, and its test data is in `src/libstore-tests/data`.
+The path to the `src/${library_name_without-bsd}-test/data` directory is passed to the unit test executable with the environment variable `_NIX_TEST_UNIT_DATA`.
 Note that each executable only gets the data for its tests.
 
-The unit test libraries are in `src/${library_name_without-nix}-test-support`.
-All headers are in a `tests` subdirectory so they are included with `#include "nix/tests/"`.
+The unit test libraries are in `src/${library_name_without-bsd}-test-support`.
+All headers are in a `tests` subdirectory so they are included with `#include "bsd/tests/"`.
 
 The use of all these separate directories for the unit tests might seem inconvenient, as for example the tests are not "right next to" the part of the code they are testing.
 But organizing the tests this way has one big benefit:
@@ -79,7 +79,7 @@ there is no risk of any build-system wildcards for the library accidentally pick
 
 ### Running tests
 
-You can run the whole testsuite with `meson test` from the Meson build directory, or the tests for a specific component with `meson test nix-store-tests`.
+You can run the whole testsuite with `meson test` from the Meson build directory, or the tests for a specific component with `meson test bsd-store-tests`.
 A environment variables that Google Test accepts are also worth knowing:
 
 1. [`GTEST_FILTER`](https://google.github.io/googletest/advanced.html#running-a-subset-of-the-tests)
@@ -98,7 +98,7 @@ A environment variables that Google Test accepts are also worth knowing:
 Putting the first two together, one might run
 
 ```bash
-GTEST_BRIEF=1 GTEST_FILTER='ErrorTraceTest.*' meson test nix-expr-tests -v
+GTEST_BRIEF=1 GTEST_FILTER='ErrorTraceTest.*' meson test bsd-expr-tests -v
 ```
 
 for short but comprensive output.
@@ -108,7 +108,7 @@ for short but comprensive output.
 For debugging, it is useful to combine the third option above with Meson's [`--gdb`](https://mesonbuild.com/Unit-tests.html#other-test-options) flag:
 
 ```bash
-GTEST_BRIEF=1 GTEST_FILTER='Group.my-failing-test' meson test nix-expr-tests --gdb
+GTEST_BRIEF=1 GTEST_FILTER='Group.my-failing-test' meson test bsd-expr-tests --gdb
 ```
 
 This will:
@@ -126,7 +126,7 @@ See [functional characterisation testing](#characterisation-testing-functional) 
 Like with the functional characterisation, `_NIX_TEST_ACCEPT=1` is also used.
 For example:
 ```shell-session
-$ _NIX_TEST_ACCEPT=1 meson test nix-store-tests -v
+$ _NIX_TEST_ACCEPT=1 meson test bsd-store-tests -v
 ...
 [  SKIPPED ] WorkerProtoTest.string_read
 [  SKIPPED ] WorkerProtoTest.string_write
@@ -134,7 +134,7 @@ $ _NIX_TEST_ACCEPT=1 meson test nix-store-tests -v
 [  SKIPPED ] WorkerProtoTest.storePath_write
 ...
 ```
-will regenerate the "golden master" expected result for the `libnixstore` characterisation tests.
+will regenerate the "golden master" expected result for the `libbsdstore` characterisation tests.
 The characterisation tests will mark themselves "skipped" since they regenerated the expected result instead of actually testing anything.
 
 ### Unit test support libraries
@@ -154,7 +154,7 @@ On other platforms they wouldn't be run at all.
 The functional tests reside under the `tests/functional` directory and are listed in `tests/functional/meson.build`.
 Each test is a bash script.
 
-Functional tests are run during `installCheck` in the `nix` package build, as well as separately from the build, in VM tests.
+Functional tests are run during `installCheck` in the `bsd` package build, as well as separately from the build, in VM tests.
 
 ### Running the whole test suite
 
@@ -174,10 +174,10 @@ That test group can be run like this:
 
 ```shell-session
 $ meson test --suite ca
-ninja: Entering directory `/home/jcericson/src/nix/master/build'
+ninja: Entering directory `/home/jcericson/src/bsd/master/build'
 ninja: no work to do.
-[1-20/20] 🌑 nix-functional-tests:ca / ca/why-depends                                1/20 nix-functional-tests:ca / ca/nix-run                                  OK               0.16s
-[2-20/20] 🌒 nix-functional-tests:ca / ca/why-depends                                2/20 nix-functional-tests:ca / ca/import-derivation                        OK               0.17s
+[1-20/20] 🌑 bsd-functional-tests:ca / ca/why-depends                                1/20 bsd-functional-tests:ca / ca/bsd-run                                  OK               0.16s
+[2-20/20] 🌒 bsd-functional-tests:ca / ca/why-depends                                2/20 bsd-functional-tests:ca / ca/import-derivation                        OK               0.17s
 ```
 
 ### Running individual tests
@@ -186,9 +186,9 @@ Individual tests can be run with `meson`:
 
 ```shell-session
 $ meson test --verbose ${testName}
-ninja: Entering directory `/home/jcericson/src/nix/master/build'
+ninja: Entering directory `/home/jcericson/src/bsd/master/build'
 ninja: no work to do.
-1/1 nix-functional-tests:main / ${testName}        OK               0.41s
+1/1 bsd-functional-tests:main / ${testName}        OK               0.41s
 
 Ok:                 1
 Expected Fail:      0
@@ -197,7 +197,7 @@ Unexpected Pass:    0
 Skipped:            0
 Timeout:            0
 
-Full log written to /home/jcericson/src/nix/master/build/meson-logs/testlog.txt
+Full log written to /home/jcericson/src/bsd/master/build/meson-logs/testlog.txt
 ```
 
 The `--verbose` flag will make Meson also show the console output of each test for easier debugging.
@@ -219,21 +219,21 @@ output from bar
 
 When a functional test fails, it usually does so somewhere in the middle of the script.
 
-To figure out what's wrong, it is convenient to run the test regularly up to the failing `nix` command, and then run that command with a debugger like GDB.
+To figure out what's wrong, it is convenient to run the test regularly up to the failing `bsd` command, and then run that command with a debugger like GDB.
 
 For example, if the script looks like:
 
 ```bash
 foo
-nix blah blub
+bsd blah blub
 bar
 ```
 edit it like so:
 
 ```diff
  foo
--nix blah blub
-+gdb --args nix blah blub
+-bsd blah blub
++gdb --args bsd blah blub
  bar
 ```
 
@@ -248,8 +248,8 @@ GNU gdb (GDB) 12.1
 (gdb)
 ```
 
-One can debug the Nix invocation in all the usual ways.
-For example, enter `run` to start the Nix invocation.
+One can debug the Bsd invocation in all the usual ways.
+For example, enter `run` to start the Bsd invocation.
 
 ### Troubleshooting
 
@@ -262,8 +262,8 @@ git clean -x --force tests
 
 ### Characterisation testing { #characterisation-testing-functional }
 
-Occasionally, Nix utilizes a technique called [Characterisation Testing](https://en.wikipedia.org/wiki/Characterization_test) as part of the functional tests.
-This technique is to include the exact output/behavior of a former version of Nix in a test in order to check that Nix continues to produce the same behavior going forward.
+Occasionally, Bsd utilizes a technique called [Characterisation Testing](https://en.wikipedia.org/wiki/Characterization_test) as part of the functional tests.
+This technique is to include the exact output/behavior of a former version of Bsd in a test in order to check that Bsd continues to produce the same behavior going forward.
 
 For example, this technique is used for the language tests, to check both the printed final value if evaluation was successful, and any errors and warnings encountered.
 
@@ -277,7 +277,7 @@ This convention is shared with the [characterisation unit tests](#characterisati
 
 An interesting situation to document is the case when these tests are "overfitted".
 The language tests are, again, an example of this.
-The expected successful output of evaluation is supposed to be highly stable – we do not intend to make breaking changes to (the stable parts of) the Nix language.
+The expected successful output of evaluation is supposed to be highly stable – we do not intend to make breaking changes to (the stable parts of) the Bsd language.
 However, the errors and warnings during evaluation (successful or not) are not stable in this way.
 We are free to change how they are displayed at any time.
 
@@ -288,32 +288,32 @@ Regressions are caught, and improvements always show up in code review.
 
 To ensure that characterisation testing doesn't make it harder to intentionally change these interfaces, there always must be an easy way to regenerate the expected output, as we do with `_NIX_TEST_ACCEPT=1`.
 
-### Running functional tests on NixOS
+### Running functional tests on BasedLinux
 
 We run the functional tests not just in the build, but also in VM tests.
-This helps us ensure that Nix works correctly on NixOS, and environments that have similar characteristics that are hard to reproduce in a build environment.
+This helps us ensure that Bsd works correctly on BasedLinux, and environments that have similar characteristics that are hard to reproduce in a build environment.
 
 These can be run with:
 
 ```shell
-nix build .#hydraJobs.tests.functional_user
+bsd build .#hydraJobs.tests.functional_user
 ```
 
 Generally, this build is sufficient, but in nightly or CI we also test the attributes `functional_root` and `functional_trusted`, in which the test suite is run with different levels of authorization.
 
 ## Integration tests
 
-The integration tests are defined in the Nix flake under the `hydraJobs.tests` attribute.
-These tests include everything that needs to interact with external services or run Nix in a non-trivial distributed setup.
-Because these tests are expensive and require more than what the standard github-actions setup provides, they only run on the master branch (on <https://hydra.nixos.org/jobset/nix/master>).
+The integration tests are defined in the Bsd flake under the `hydraJobs.tests` attribute.
+These tests include everything that needs to interact with external services or run Bsd in a non-trivial distributed setup.
+Because these tests are expensive and require more than what the standard github-actions setup provides, they only run on the master branch (on <https://hydra.basedlinux.org/jobset/bsd/master>).
 
-You can run them manually with `nix build .#hydraJobs.tests.{testName}` or `nix-build -A hydraJobs.tests.{testName}`.
+You can run them manually with `bsd build .#hydraJobs.tests.{testName}` or `bsd-build -A hydraJobs.tests.{testName}`.
 
 ## Installer tests
 
-After a one-time setup, the Nix repository's GitHub Actions continuous integration (CI) workflow can test the installer each time you push to a branch.
+After a one-time setup, the Bsd repository's GitHub Actions continuous integration (CI) workflow can test the installer each time you push to a branch.
 
-Creating a Cachix cache for your installer tests and adding its authorisation token to GitHub enables [two installer-specific jobs in the CI workflow](https://github.com/NixOS/nix/blob/88a45d6149c0e304f6eb2efcc2d7a4d0d569f8af/.github/workflows/ci.yml#L50-L91):
+Creating a Cachix cache for your installer tests and adding its authorisation token to GitHub enables [two installer-specific jobs in the CI workflow](https://github.com/BasedLinux/bsd/blob/88a45d6149c0e304f6eb2efcc2d7a4d0d569f8af/.github/workflows/ci.yml#L50-L91):
 
 - The `installer` job generates installers for the platforms below and uploads them to your Cachix cache:
   - `x86_64-linux`
@@ -321,18 +321,18 @@ Creating a Cachix cache for your installer tests and adding its authorisation to
   - `armv7l-linux`
   - `x86_64-darwin`
 
-- The `installer_test` job (which runs on `ubuntu-24.04` and `macos-14`) will try to install Nix with the cached installer and run a trivial Nix command.
+- The `installer_test` job (which runs on `ubuntu-24.04` and `macos-14`) will try to install Bsd with the cached installer and run a trivial Bsd command.
 
 ### One-time setup
 
-1. Have a GitHub account with a fork of the [Nix repository](https://github.com/NixOS/nix).
+1. Have a GitHub account with a fork of the [Bsd repository](https://github.com/BasedLinux/bsd).
 2. At cachix.org:
     - Create or log in to an account.
-    - Create a Cachix cache using the format `<github-username>-nix-install-tests`.
+    - Create a Cachix cache using the format `<github-username>-bsd-install-tests`.
     - Navigate to the new cache > Settings > Auth Tokens.
     - Generate a new Cachix auth token and copy the generated value.
 3. At github.com:
-    - Navigate to your Nix fork > Settings > Secrets > Actions > New repository secret.
+    - Navigate to your Bsd fork > Settings > Secrets > Actions > New repository secret.
     - Name the secret `CACHIX_AUTH_TOKEN`.
     - Paste the copied value of the Cachix cache auth token.
 
@@ -343,12 +343,12 @@ Creating a Cachix cache for your installer tests and adding its authorisation to
 After the CI run completes, you can check the output to extract the installer URL:
 1. Click into the detailed view of the CI run.
 2. Click into any `installer_test` run (the URL you're here to extract will be the same in all of them).
-3. Click into the `Run cachix/install-nix-action@v...` step and click the detail triangle next to the first log line (it will also be `Run cachix/install-nix-action@v...`)
+3. Click into the `Run cachix/install-bsd-action@v...` step and click the detail triangle next to the first log line (it will also be `Run cachix/install-bsd-action@v...`)
 4. Copy the value of `install_url`
 5. To generate an install command, plug this `install_url` and your GitHub username into this template:
 
     ```console
-    curl -L <install_url> | sh -s -- --tarball-url-prefix https://<github-username>-nix-install-tests.cachix.org/serve
+    curl -L <install_url> | sh -s -- --tarball-url-prefix https://<github-username>-bsd-install-tests.cachix.org/serve
     ```
 
 <!-- #### Manually generating test installers
@@ -363,7 +363,7 @@ so I don't want to uphold any of it as "right". It may have been dumb or
 the _hard_ way from the getgo. Fundamentals may have changed since.
 
 Here's the build command I used to do this on and for x86_64-darwin:
-nix build --out-link /tmp/foo ".#checks.x86_64-darwin.binaryTarball"
+bsd build --out-link /tmp/foo ".#checks.x86_64-darwin.binaryTarball"
 
 I used the stable out-link to make it easier to script the next steps:
 link=$(readlink /tmp/foo)

@@ -1,6 +1,6 @@
-#include "nix/cmd/command-installable-value.hh"
+#include "bsd/cmd/command-installable-value.hh"
 
-namespace nix {
+namespace bsd {
 
 void InstallableValueCommand::run(ref<Store> store, ref<Installable> installable)
 {

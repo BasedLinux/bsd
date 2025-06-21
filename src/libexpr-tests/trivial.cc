@@ -1,6 +1,6 @@
-#include "nix/expr/tests/libexpr.hh"
+#include "bsd/expr/tests/libexpr.hh"
 
-namespace nix {
+namespace bsd {
     // Testing of trivial expressions
     class TrivialExpressionTest : public LibExprTest {};
 
@@ -140,7 +140,7 @@ namespace nix {
         {};
 
     TEST_P(AttrSetMergeTrvialExpressionTest, attrsetMergeLazy) {
-        // Usually Nix rejects duplicate keys in an attrset but it does allow
+        // Usually Bsd rejects duplicate keys in an attrset but it does allow
         // so if it is an attribute set that contains disjoint sets of keys.
         // The below is equivalent to `{a.b = 1; a.c = 2; }`.
         // The attribute set `a` will be a Thunk at first as the attributes
@@ -298,4 +298,4 @@ namespace nix {
     TEST_F(TrivialExpressionTest, orCantBeUsed) {
         ASSERT_THROW(eval("let or = 1; in or"), Error);
     }
-} /* namespace nix */
+} /* namespace bsd */

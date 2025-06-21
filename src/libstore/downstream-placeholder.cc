@@ -1,11 +1,11 @@
-#include "nix/store/downstream-placeholder.hh"
-#include "nix/store/derivations.hh"
+#include "bsd/store/downstream-placeholder.hh"
+#include "bsd/store/derivations.hh"
 
-namespace nix {
+namespace bsd {
 
 std::string DownstreamPlaceholder::render() const
 {
-    return "/" + hash.to_string(HashFormat::Nix32, false);
+    return "/" + hash.to_string(HashFormat::Bsd32, false);
 }
 
 
@@ -17,7 +17,7 @@ DownstreamPlaceholder DownstreamPlaceholder::unknownCaOutput(
     xpSettings.require(Xp::CaDerivations);
     auto drvNameWithExtension = drvPath.name();
     auto drvName = drvNameWithExtension.substr(0, drvNameWithExtension.size() - 4);
-    auto clearText = "nix-upstream-output:" + std::string { drvPath.hashPart() } + ":" + outputPathName(drvName, outputName);
+    auto clearText = "bsd-upstream-output:" + std::string { drvPath.hashPart() } + ":" + outputPathName(drvName, outputName);
     return DownstreamPlaceholder {
         hashString(HashAlgorithm::SHA256, clearText)
     };
@@ -30,8 +30,8 @@ DownstreamPlaceholder DownstreamPlaceholder::unknownDerivation(
 {
     xpSettings.require(Xp::DynamicDerivations);
     auto compressed = compressHash(placeholder.hash, 20);
-    auto clearText = "nix-computed-output:"
-        + compressed.to_string(HashFormat::Nix32, false)
+    auto clearText = "bsd-computed-output:"
+        + compressed.to_string(HashFormat::Bsd32, false)
         + ":" + std::string { outputName };
     return DownstreamPlaceholder {
         hashString(HashAlgorithm::SHA256, clearText)

@@ -1,7 +1,7 @@
-#include "nix/store/store-registration.hh"
-#include "nix/util/callback.hh"
+#include "bsd/store/store-registration.hh"
+#include "bsd/util/callback.hh"
 
-namespace nix {
+namespace bsd {
 
 struct DummyStoreConfig : public std::enable_shared_from_this<DummyStoreConfig>, virtual StoreConfig {
     using StoreConfig::StoreConfig;
@@ -69,8 +69,8 @@ struct DummyStore : virtual Store
     virtual StorePath addToStoreFromDump(
         Source & dump,
         std::string_view name,
-        FileSerialisationMethod dumpMethod = FileSerialisationMethod::NixArchive,
-        ContentAddressMethod hashMethod = FileIngestionMethod::NixArchive,
+        FileSerialisationMethod dumpMethod = FileSerialisationMethod::BsdArchive,
+        ContentAddressMethod hashMethod = FileIngestionMethod::BsdArchive,
         HashAlgorithm hashAlgo = HashAlgorithm::SHA256,
         const StorePathSet & references = StorePathSet(),
         RepairFlag repair = NoRepair) override

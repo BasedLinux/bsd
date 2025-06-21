@@ -1,8 +1,8 @@
-#include "nix/expr/value.hh"
+#include "bsd/expr/value.hh"
 
-#include "nix/store/tests/libstore.hh"
+#include "bsd/store/tests/libstore.hh"
 
-namespace nix {
+namespace bsd {
 
 class ValueTest : public LibStoreTest
 {};
@@ -22,4 +22,4 @@ TEST_F(ValueTest, vInt)
     ASSERT_EQ(true, vInt.isValid());
 }
 
-} // namespace nix
+} // namespace bsd

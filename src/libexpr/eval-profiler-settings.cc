@@ -1,12 +1,12 @@
-#include "nix/expr/eval-profiler-settings.hh"
-#include "nix/util/configuration.hh"
-#include "nix/util/logging.hh" /* Needs to be included before config-impl.hh */
-#include "nix/util/config-impl.hh"
-#include "nix/util/abstract-setting-to-json.hh"
+#include "bsd/expr/eval-profiler-settings.hh"
+#include "bsd/util/configuration.hh"
+#include "bsd/util/logging.hh" /* Needs to be included before config-impl.hh */
+#include "bsd/util/config-impl.hh"
+#include "bsd/util/abstract-setting-to-json.hh"
 
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
 template<>
 EvalProfilerMode BaseSetting<EvalProfilerMode>::parse(const std::string & str) const

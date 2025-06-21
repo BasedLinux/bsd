@@ -29,10 +29,10 @@ chmod -R +w "$TEST_ROOT/machine"* || true
 rm -rf "$TEST_ROOT/machine"* || true
 
 
-# Note: ssh://localhost bypasses ssh, directly invoking nix-store as a
+# Note: ssh://localhost bypasses ssh, directly invoking bsd-store as a
 # child process. This allows us to test LegacySSHStore::buildDerivation().
 # ssh-ng://... likewise allows us to test RemoteStore::buildDerivation().
-nix build -L -v -f "$file" -o "$TEST_ROOT/result" --max-jobs 0 \
+bsd build -L -v -f "$file" -o "$TEST_ROOT/result" --max-jobs 0 \
   --arg busybox "$busybox" \
   --store "$TEST_ROOT/machine0" \
   --builders "$(join_by '; ' "${builders[@]}")"
@@ -41,7 +41,7 @@ outPath=$(readlink -f "$TEST_ROOT/result")
 
 grep 'FOO BAR BAZ' "$TEST_ROOT/machine0/$outPath"
 
-testPrintOutPath=$(nix build -L -v -f "$file" --no-link --print-out-paths --max-jobs 0 \
+testPrintOutPath=$(bsd build -L -v -f "$file" --no-link --print-out-paths --max-jobs 0 \
   --arg busybox "$busybox" \
   --store "$TEST_ROOT/machine0" \
   --builders "$(join_by '; ' "${builders[@]}")"
@@ -50,21 +50,21 @@ testPrintOutPath=$(nix build -L -v -f "$file" --no-link --print-out-paths --max-
 [[ $testPrintOutPath =~ store.*build-remote ]]
 
 # Ensure that input1 was built on store1 due to the required feature.
-output=$(nix path-info --store "$TEST_ROOT/machine1" --all)
+output=$(bsd path-info --store "$TEST_ROOT/machine1" --all)
 echo "$output" | grepQuiet builder-build-remote-input-1.sh
 echo "$output" | grepQuietInverse builder-build-remote-input-2.sh
 echo "$output" | grepQuietInverse builder-build-remote-input-3.sh
 unset output
 
 # Ensure that input2 was built on store2 due to the required feature.
-output=$(nix path-info --store "$TEST_ROOT/machine2" --all)
+output=$(bsd path-info --store "$TEST_ROOT/machine2" --all)
 echo "$output" | grepQuietInverse builder-build-remote-input-1.sh
 echo "$output" | grepQuiet builder-build-remote-input-2.sh
 echo "$output" | grepQuietInverse builder-build-remote-input-3.sh
 unset output
 
 # Ensure that input3 was built on store3 due to the required feature.
-output=$(nix path-info --store "$TEST_ROOT/machine3" --all)
+output=$(bsd path-info --store "$TEST_ROOT/machine3" --all)
 echo "$output" | grepQuietInverse builder-build-remote-input-1.sh
 echo "$output" | grepQuietInverse builder-build-remote-input-2.sh
 echo "$output" | grepQuiet builder-build-remote-input-3.sh
@@ -72,11 +72,11 @@ unset output
 
 
 for i in input1 input3; do
-nix log --store "$TEST_ROOT/machine0" --file "$file" --arg busybox "$busybox" "passthru.$i" | grep hi-$i
+bsd log --store "$TEST_ROOT/machine0" --file "$file" --arg busybox "$busybox" "passthru.$i" | grep hi-$i
 done
 
 # Behavior of keep-failed
-out="$(nix-build 2>&1 failing.nix \
+out="$(bsd-build 2>&1 failing.bsd \
   --no-out-link \
   --builders "$(join_by '; ' "${builders[@]}")"  \
   --keep-failed \

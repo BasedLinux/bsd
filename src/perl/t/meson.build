@@ -1,16 +1,16 @@
-# Nix-Perl Tests
+# Bsd-Perl Tests
 #============================================================================
 
 
 # src
 #---------------------------------------------------
 
-nix_perl_tests = files(
+bsd_perl_tests = files(
   'init.t',
   # hack for trailing newline
 )
 
 
-foreach f : nix_perl_tests
+foreach f : bsd_perl_tests
   fs.copyfile(f)
 endforeach

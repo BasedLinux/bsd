@@ -1,9 +1,9 @@
-#include "nix/store/store-registration.hh"
-#include "nix/store/store-open.hh"
-#include "nix/store/local-store.hh"
-#include "nix/store/uds-remote-store.hh"
+#include "bsd/store/store-registration.hh"
+#include "bsd/store/store-open.hh"
+#include "bsd/store/local-store.hh"
+#include "bsd/store/uds-remote-store.hh"
 
-namespace nix {
+namespace bsd {
 
 ref<Store> openStore(const std::string & uri, const Store::Config::Params & extraParams)
 {
@@ -24,18 +24,18 @@ ref<StoreConfig> resolveStoreConfig(StoreReference && storeURI)
     auto storeConfig = std::visit(
         overloaded{
             [&](const StoreReference::Auto &) -> ref<StoreConfig> {
-                auto stateDir = getOr(params, "state", settings.nixStateDir);
+                auto stateDir = getOr(params, "state", settings.bsdStateDir);
                 if (access(stateDir.c_str(), R_OK | W_OK) == 0)
                     return make_ref<LocalStore::Config>(params);
-                else if (pathExists(settings.nixDaemonSocketFile))
+                else if (pathExists(settings.bsdDaemonSocketFile))
                     return make_ref<UDSRemoteStore::Config>(params);
 #ifdef __linux__
                 else if (
                     !pathExists(stateDir) && params.empty() && !isRootUser() && !getEnv("NIX_STORE_DIR").has_value()
                     && !getEnv("NIX_STATE_DIR").has_value()) {
-                    /* If /nix doesn't exist, there is no daemon socket, and
+                    /* If /bsd doesn't exist, there is no daemon socket, and
                        we're not root, then automatically set up a chroot
-                       store in ~/.local/share/nix/root. */
+                       store in ~/.local/share/bsd/root. */
                     auto chrootStore = getDataDir() + "/root";
                     if (!pathExists(chrootStore)) {
                         try {
@@ -43,9 +43,9 @@ ref<StoreConfig> resolveStoreConfig(StoreReference && storeURI)
                         } catch (SystemError & e) {
                             return make_ref<LocalStore::Config>(params);
                         }
-                        warn("'%s' does not exist, so Nix will use '%s' as a chroot store", stateDir, chrootStore);
+                        warn("'%s' does not exist, so Bsd will use '%s' as a chroot store", stateDir, chrootStore);
                     } else
-                        debug("'%s' does not exist, so Nix will use '%s' as a chroot store", stateDir, chrootStore);
+                        debug("'%s' does not exist, so Bsd will use '%s' as a chroot store", stateDir, chrootStore);
                     return make_ref<LocalStore::Config>("local", chrootStore, params);
                 }
 #endif
@@ -57,7 +57,7 @@ ref<StoreConfig> resolveStoreConfig(StoreReference && storeURI)
                     if (implem.uriSchemes.count(g.scheme))
                         return implem.parseConfig(g.scheme, g.authority, params);
 
-                throw Error("don't know how to open Nix store with scheme '%s'", g.scheme);
+                throw Error("don't know how to open Bsd store with scheme '%s'", g.scheme);
             },
         },
         storeURI.variant);

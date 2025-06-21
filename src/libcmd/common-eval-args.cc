@@ -1,22 +1,22 @@
-#include "nix/fetchers/fetch-settings.hh"
-#include "nix/expr/eval-settings.hh"
-#include "nix/cmd/common-eval-args.hh"
-#include "nix/main/shared.hh"
-#include "nix/util/config-global.hh"
-#include "nix/store/filetransfer.hh"
-#include "nix/expr/eval.hh"
-#include "nix/fetchers/fetchers.hh"
-#include "nix/fetchers/registry.hh"
-#include "nix/flake/flakeref.hh"
-#include "nix/flake/settings.hh"
-#include "nix/store/store-open.hh"
-#include "nix/cmd/command.hh"
-#include "nix/fetchers/tarball.hh"
-#include "nix/fetchers/fetch-to-store.hh"
-#include "nix/cmd/compatibility-settings.hh"
-#include "nix/expr/eval-settings.hh"
+#include "bsd/fetchers/fetch-settings.hh"
+#include "bsd/expr/eval-settings.hh"
+#include "bsd/cmd/common-eval-args.hh"
+#include "bsd/main/shared.hh"
+#include "bsd/util/config-global.hh"
+#include "bsd/store/filetransfer.hh"
+#include "bsd/expr/eval.hh"
+#include "bsd/fetchers/fetchers.hh"
+#include "bsd/fetchers/registry.hh"
+#include "bsd/flake/flakeref.hh"
+#include "bsd/flake/settings.hh"
+#include "bsd/store/store-open.hh"
+#include "bsd/cmd/command.hh"
+#include "bsd/fetchers/tarball.hh"
+#include "bsd/fetchers/fetch-to-store.hh"
+#include "bsd/cmd/compatibility-settings.hh"
+#include "bsd/expr/eval-settings.hh"
 
-namespace nix {
+namespace bsd {
 
 
 fetchers::Settings fetchSettings;
@@ -34,7 +34,7 @@ EvalSettings evalSettings {
                 auto flakeRef = parseFlakeRef(fetchSettings, std::string { rest }, {}, true, false);
                 debug("fetching flake search path element '%s''", rest);
                 auto [accessor, lockedRef] = flakeRef.resolve(state.store).lazyFetch(state.store);
-                auto storePath = nix::fetchToStore(
+                auto storePath = bsd::fetchToStore(
                     state.fetchSettings,
                     *state.store,
                     SourcePath(accessor),
@@ -64,7 +64,7 @@ MixEvalArgs::MixEvalArgs()
 {
     addFlag({
         .longName = "arg",
-        .description = "Pass the value *expr* as the argument *name* to Nix functions.",
+        .description = "Pass the value *expr* as the argument *name* to Bsd functions.",
         .category = category,
         .labels = {"name", "expr"},
         .handler = {[&](std::string name, std::string expr) { autoArgs.insert_or_assign(name, AutoArg{AutoArgExpr{expr}}); }},
@@ -72,7 +72,7 @@ MixEvalArgs::MixEvalArgs()
 
     addFlag({
         .longName = "argstr",
-        .description = "Pass the string *string* as the argument *name* to Nix functions.",
+        .description = "Pass the string *string* as the argument *name* to Bsd functions.",
         .category = category,
         .labels = {"name", "string"},
         .handler = {[&](std::string name, std::string s) { autoArgs.insert_or_assign(name, AutoArg{AutoArgString{s}}); }},
@@ -80,7 +80,7 @@ MixEvalArgs::MixEvalArgs()
 
     addFlag({
         .longName = "arg-from-file",
-        .description = "Pass the contents of file *path* as the argument *name* to Nix functions.",
+        .description = "Pass the contents of file *path* as the argument *name* to Bsd functions.",
         .category = category,
         .labels = {"name", "path"},
         .handler = {[&](std::string name, std::string path) { autoArgs.insert_or_assign(name, AutoArg{AutoArgFile{path}}); }},
@@ -89,7 +89,7 @@ MixEvalArgs::MixEvalArgs()
 
     addFlag({
         .longName = "arg-from-stdin",
-        .description = "Pass the contents of stdin as the argument *name* to Nix functions.",
+        .description = "Pass the contents of stdin as the argument *name* to Bsd functions.",
         .category = category,
         .labels = {"name"},
         .handler = {[&](std::string name) { autoArgs.insert_or_assign(name, AutoArg{AutoArgStdin{}}); }},
@@ -103,7 +103,7 @@ MixEvalArgs::MixEvalArgs()
 
   This option may be given multiple times.
 
-  Paths added through `-I` take precedence over the [`nix-path` configuration setting](@docroot@/command-ref/conf-file.md#conf-nix-path) and the [`NIX_PATH` environment variable](@docroot@/command-ref/env-common.md#env-NIX_PATH).
+  Paths added through `-I` take precedence over the [`bsd-path` configuration setting](@docroot@/command-ref/conf-file.md#conf-bsd-path) and the [`NIX_PATH` environment variable](@docroot@/command-ref/env-common.md#env-NIX_PATH).
   )",
         .category = category,
         .labels = {"path"},
@@ -142,7 +142,7 @@ MixEvalArgs::MixEvalArgs()
         .longName = "eval-store",
         .description =
           R"(
-            The [URL of the Nix store](@docroot@/store/types/index.md#store-url-format)
+            The [URL of the Bsd store](@docroot@/store/types/index.md#store-url-format)
             to use for evaluation, i.e. to store derivations (`.drv` files) and inputs referenced by them.
           )",
         .category = category,
@@ -158,7 +158,7 @@ Bindings * MixEvalArgs::getAutoArgs(EvalState & state)
         auto v = state.allocValue();
         std::visit(overloaded {
             [&](const AutoArgExpr & arg) {
-                state.mkThunk_(*v, state.parseExprFromString(arg.expr, compatibilitySettings.nixShellShebangArgumentsRelativeToScript ? state.rootPath(absPath(getCommandBaseDir())) : state.rootPath(".")));
+                state.mkThunk_(*v, state.parseExprFromString(arg.expr, compatibilitySettings.bsdShellShebangArgumentsRelativeToScript ? state.rootPath(absPath(getCommandBaseDir())) : state.rootPath(".")));
             },
             [&](const AutoArgString & arg) {
                 v->mkString(arg.s);
@@ -194,7 +194,7 @@ SourcePath lookupFileArg(EvalState & state, std::string_view s, const Path * bas
         experimentalFeatureSettings.require(Xp::Flakes);
         auto flakeRef = parseFlakeRef(fetchSettings, std::string(s.substr(6)), {}, true, false);
         auto [accessor, lockedRef] = flakeRef.resolve(state.store).lazyFetch(state.store);
-        auto storePath = nix::fetchToStore(
+        auto storePath = bsd::fetchToStore(
             state.fetchSettings,
             *state.store,
             SourcePath(accessor),

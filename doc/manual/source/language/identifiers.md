@@ -45,7 +45,7 @@ These keywords are reserved and cannot be used as [identifiers](#identifiers):
 
 > **Note**
 >
-> The Nix language evaluator currently allows `or` to be used as a name in some contexts, for backwards compatibility reasons.
+> The Bsd language evaluator currently allows `or` to be used as a name in some contexts, for backwards compatibility reasons.
 > Users are advised not to rely on this.
 >
 > There are long-standing issues with how `or` is parsed as a name, which can't be resolved without making a breaking change to the language.

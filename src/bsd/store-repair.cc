@@ -1,0 +1,27 @@
+#include "bsd/cmd/command.hh"
+#include "bsd/store/store-api.hh"
+
+using namespace bsd;
+
+struct CmdStoreRepair : StorePathsCommand
+{
+    std::string description() override
+    {
+        return "repair store paths";
+    }
+
+    std::string doc() override
+    {
+        return
+          #include "store-repair.md"
+          ;
+    }
+
+    void run(ref<Store> store, StorePaths && storePaths) override
+    {
+        for (auto & path : storePaths)
+            store->repairPath(path);
+    }
+};
+
+static auto rStoreRepair = registerCommand2<CmdStoreRepair>({"store", "repair"});

@@ -1,11 +1,11 @@
-#include "nix/expr/print-ambiguous.hh"
-#include "nix/expr/print.hh"
-#include "nix/util/signals.hh"
-#include "nix/expr/eval.hh"
+#include "bsd/expr/print-ambiguous.hh"
+#include "bsd/expr/print.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/expr/eval.hh"
 
-namespace nix {
+namespace bsd {
 
-// See: https://github.com/NixOS/nix/issues/9730
+// See: https://github.com/BasedLinux/bsd/issues/9730
 void printAmbiguous(
     Value &v,
     const SymbolTable &symbols,
@@ -93,7 +93,7 @@ void printAmbiguous(
         str << v.fpoint();
         break;
     default:
-        printError("Nix evaluator internal error: printAmbiguous: invalid value type");
+        printError("Bsd evaluator internal error: printAmbiguous: invalid value type");
         unreachable();
     }
 }

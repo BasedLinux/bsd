@@ -1,12 +1,12 @@
 #ifndef _WIN32
 
-#  include "nix/util/util.hh"
-#  include "nix/util/monitor-fd.hh"
+#  include "bsd/util/util.hh"
+#  include "bsd/util/monitor-fd.hh"
 
 #  include <sys/file.h>
 #  include <gtest/gtest.h>
 
-namespace nix {
+namespace bsd {
 TEST(MonitorFdHup, shouldNotBlock)
 {
     Pipe p;

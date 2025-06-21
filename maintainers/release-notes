@@ -1,6 +1,6 @@
-#!/usr/bin/env nix
+#!/usr/bin/env bsd
 # vim: set filetype=bash:
-#!nix shell .#changelog-d --command bash
+#!bsd shell .#changelog-d --command bash
 
 set -euo pipefail
 
@@ -66,7 +66,7 @@ fi
 
 # --- CHECKS ---
 
-if [[ ! -e flake.nix ]] || [[ ! -e .git ]]; then
+if [[ ! -e flake.bsd ]] || [[ ! -e .git ]]; then
   die "must run in repo root"
   exit 1
 fi

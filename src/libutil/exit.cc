@@ -1,6 +1,6 @@
-#include "nix/util/exit.hh"
+#include "bsd/util/exit.hh"
 
-namespace nix {
+namespace bsd {
 
 Exit::~Exit() {}
 

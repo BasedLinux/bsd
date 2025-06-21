@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "nix/store/legacy-ssh-store.hh"
+#include "bsd/store/legacy-ssh-store.hh"
 
-namespace nix {
+namespace bsd {
 
 TEST(LegacySSHStore, constructConfig)
 {

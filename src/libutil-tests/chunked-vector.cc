@@ -1,8 +1,8 @@
-#include "nix/util/chunked-vector.hh"
+#include "bsd/util/chunked-vector.hh"
 
 #include <gtest/gtest.h>
 
-namespace nix {
+namespace bsd {
     TEST(ChunkedVector, InitEmpty) {
         auto v = ChunkedVector<int, 2>(100);
         ASSERT_EQ(v.size(), 0u);

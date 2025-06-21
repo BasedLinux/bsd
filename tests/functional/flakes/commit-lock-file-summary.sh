@@ -2,7 +2,7 @@
 
 source ./common.sh
 
-TODO_NixOS
+TODO_BasedLinux
 
 createFlake1
 
@@ -10,7 +10,7 @@ lockfileSummaryFlake=$TEST_ROOT/lockfileSummaryFlake
 createGitRepo "$lockfileSummaryFlake" "--initial-branch=main"
 
 # Test that the --commit-lock-file-summary flag and its alias work
-cat > "$lockfileSummaryFlake/flake.nix" <<EOF
+cat > "$lockfileSummaryFlake/flake.bsd" <<EOF
 {
   inputs = {
     flake1.url = "git+file://$flake1Dir";
@@ -24,11 +24,11 @@ cat > "$lockfileSummaryFlake/flake.nix" <<EOF
 }
 EOF
 
-git -C "$lockfileSummaryFlake" add flake.nix
+git -C "$lockfileSummaryFlake" add flake.bsd
 git -C "$lockfileSummaryFlake" commit -m 'Add lockfileSummaryFlake'
 
 testSummary="test summary 1"
-nix flake lock "$lockfileSummaryFlake" --commit-lock-file --commit-lock-file-summary "$testSummary"
+bsd flake lock "$lockfileSummaryFlake" --commit-lock-file --commit-lock-file-summary "$testSummary"
 [[ -e "$lockfileSummaryFlake/flake.lock" ]]
 [[ -z $(git -C "$lockfileSummaryFlake" diff main || echo failed) ]]
 [[ "$(git -C "$lockfileSummaryFlake" log --format=%s -n 1)" = "$testSummary" ]]
@@ -36,9 +36,9 @@ nix flake lock "$lockfileSummaryFlake" --commit-lock-file --commit-lock-file-sum
 git -C "$lockfileSummaryFlake" rm :/:flake.lock
 git -C "$lockfileSummaryFlake" commit -m "remove flake.lock"
 testSummary="test summary 2"
-# NOTE(cole-h): We use `--option` here because Nix settings do not currently support flag-ifying the
-# alias of a setting: https://github.com/NixOS/nix/issues/10989
-nix flake lock "$lockfileSummaryFlake" --commit-lock-file --option commit-lockfile-summary "$testSummary"
+# NOTE(cole-h): We use `--option` here because Bsd settings do not currently support flag-ifying the
+# alias of a setting: https://github.com/BasedLinux/bsd/issues/10989
+bsd flake lock "$lockfileSummaryFlake" --commit-lock-file --option commit-lockfile-summary "$testSummary"
 [[ -e "$lockfileSummaryFlake/flake.lock" ]]
 [[ -z $(git -C "$lockfileSummaryFlake" diff main || echo failed) ]]
 [[ "$(git -C "$lockfileSummaryFlake" log --format=%s -n 1)" = "$testSummary" ]]

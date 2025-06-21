@@ -1,13 +1,13 @@
-#include "nix/util/users.hh"
-#include "nix/expr/eval-cache.hh"
-#include "nix/store/sqlite.hh"
-#include "nix/expr/eval.hh"
-#include "nix/expr/eval-inline.hh"
-#include "nix/store/store-api.hh"
+#include "bsd/util/users.hh"
+#include "bsd/expr/eval-cache.hh"
+#include "bsd/store/sqlite.hh"
+#include "bsd/expr/eval.hh"
+#include "bsd/expr/eval-inline.hh"
+#include "bsd/store/store-api.hh"
 // Need specialization involving `SymbolStr` just in this one module.
-#include "nix/util/strings-inline.hh"
+#include "bsd/util/strings-inline.hh"
 
-namespace nix::eval_cache {
+namespace bsd::eval_cache {
 
 CachedEvalError::CachedEvalError(ref<AttrCursor> cursor, Symbol attr)
     : EvalError(cursor->root->state, "cached failure of attribute '%s'", cursor->getAttrPathStr(attr))
@@ -319,16 +319,16 @@ struct AttrDb
                 return {{rowId, attrs}};
             }
             case AttrType::String: {
-                NixStringContext context;
+                BsdStringContext context;
                 if (!queryAttribute.isNull(3))
                     for (auto & s : tokenizeString<std::vector<std::string>>(queryAttribute.getStr(3), ";"))
-                        context.insert(NixStringContextElem::parse(s));
+                        context.insert(BsdStringContextElem::parse(s));
                 return {{rowId, string_t{queryAttribute.getStr(2), context}}};
             }
             case AttrType::Bool:
                 return {{rowId, queryAttribute.getInt(2) != 0}};
             case AttrType::Int:
-                return {{rowId, int_t{NixInt{queryAttribute.getInt(2)}}}};
+                return {{rowId, int_t{BsdInt{queryAttribute.getInt(2)}}}};
             case AttrType::ListOfStrings:
                 return {{rowId, tokenizeString<std::vector<std::string>>(queryAttribute.getStr(2), "\t")}};
             case AttrType::Missing:
@@ -619,13 +619,13 @@ string_t AttrCursor::getStringWithContext()
                 bool valid = true;
                 for (auto & c : s->second) {
                     const StorePath & path = std::visit(overloaded {
-                        [&](const NixStringContextElem::DrvDeep & d) -> const StorePath & {
+                        [&](const BsdStringContextElem::DrvDeep & d) -> const StorePath & {
                             return d.drvPath;
                         },
-                        [&](const NixStringContextElem::Built & b) -> const StorePath & {
+                        [&](const BsdStringContextElem::Built & b) -> const StorePath & {
                             return b.drvPath->getBaseStorePath();
                         },
-                        [&](const NixStringContextElem::Opaque & o) -> const StorePath & {
+                        [&](const BsdStringContextElem::Opaque & o) -> const StorePath & {
                             return o.path;
                         },
                     }, c.raw);
@@ -646,7 +646,7 @@ string_t AttrCursor::getStringWithContext()
     auto & v = forceValue();
 
     if (v.type() == nString) {
-        NixStringContext context;
+        BsdStringContext context;
         copyContext(v, context);
         return {v.c_str(), std::move(context)};
     }
@@ -677,7 +677,7 @@ bool AttrCursor::getBool()
     return v.boolean();
 }
 
-NixInt AttrCursor::getInt()
+BsdInt AttrCursor::getInt()
 {
     if (root->db) {
         fetchCachedValue();

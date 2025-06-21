@@ -17,8 +17,8 @@ initLowerStore
 mountOverlayfs
 
 # Add to overlay before lower to ensure file is duplicated
-upperPath=$(nix-store --store "$storeB" --add delete-duplicate.sh)
-lowerPath=$(nix-store --store "$storeA" --add delete-duplicate.sh)
+upperPath=$(bsd-store --store "$storeB" --add delete-duplicate.sh)
+lowerPath=$(bsd-store --store "$storeA" --add delete-duplicate.sh)
 [[ "$upperPath" = "$lowerPath" ]]
 
 # Check there really are two files with different inodes
@@ -27,10 +27,10 @@ lowerInode=$(stat -c %i "$storeA/$lowerPath")
 [[ "$upperInode" != "$lowerInode" ]]
 
 # Now delete file via the overlay store
-nix-store --store "$storeB&remount-hook=$PWD/remount.sh" --delete "$upperPath"
+bsd-store --store "$storeB&remount-hook=$PWD/remount.sh" --delete "$upperPath"
 
 # Check there is no longer a file in upper layer
-expect 1 stat "$storeBTop/${upperPath##/nix/store/}"
+expect 1 stat "$storeBTop/${upperPath##/bsd/store/}"
 
 # Check that overlay file is now the one in lower layer
 upperInode=$(stat -c %i "$storeBRoot/$upperPath")

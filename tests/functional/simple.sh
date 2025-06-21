@@ -2,13 +2,13 @@
 
 source common.sh
 
-drvPath=$(nix-instantiate simple.nix)
+drvPath=$(bsd-instantiate simple.bsd)
 
-test "$(nix-store -q --binding system "$drvPath")" = "$system"
+test "$(bsd-store -q --binding system "$drvPath")" = "$system"
 
 echo "derivation is $drvPath"
 
-outPath=$(nix-store -rvv "$drvPath")
+outPath=$(bsd-store -rvv "$drvPath")
 
 echo "output path is $outPath"
 
@@ -17,21 +17,21 @@ echo "output path is $outPath"
 text=$(cat "$outPath/hello")
 [[ "$text" = "Hello World!" ]]
 
-TODO_NixOS
+TODO_BasedLinux
 
 # Directed delete: $outPath is not reachable from a root, so it should
 # be deleteable.
-nix-store --delete "$outPath"
+bsd-store --delete "$outPath"
 [[ ! -e $outPath/hello ]]
 
-outPath="$(NIX_REMOTE='local?store=/foo&real='"$TEST_ROOT"'/real-store' nix-instantiate --readonly-mode hash-check.nix)"
+outPath="$(NIX_REMOTE='local?store=/foo&real='"$TEST_ROOT"'/real-store' bsd-instantiate --readonly-mode hash-check.bsd)"
 if test "$outPath" != "/foo/lfy1s6ca46rm5r6w4gg9hc0axiakjcnm-dependencies.drv"; then
     echo "hashDerivationModulo appears broken, got $outPath"
     exit 1
 fi
 
-outPath="$(NIX_REMOTE='local?store=/foo&real='"$TEST_ROOT"'/real-store' nix-instantiate --readonly-mode big-derivation-attr.nix)"
+outPath="$(NIX_REMOTE='local?store=/foo&real='"$TEST_ROOT"'/real-store' bsd-instantiate --readonly-mode big-derivation-attr.bsd)"
 if test "$outPath" != "/foo/xxiwa5zlaajv6xdjynf9yym9g319d6mn-big-derivation-attr.drv"; then
-    echo "big-derivation-attr.nix hash appears broken, got $outPath. Memory corruption in large drv attr?"
+    echo "big-derivation-attr.bsd hash appears broken, got $outPath. Memory corruption in large drv attr?"
     exit 1
 fi

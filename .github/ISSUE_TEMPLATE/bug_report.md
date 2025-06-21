@@ -12,8 +12,8 @@ assignees: ''
 <!--
   A clear and concise description of what the bug is.
 
-  If you have a problem with a specific package or NixOS,
-  you probably want to file an issue at https://github.com/NixOS/nixpkgs/issues.
+  If you have a problem with a specific package or BasedLinux,
+  you probably want to file an issue at https://github.com/BasedLinux/bsdpkgs/issues.
 -->
 
 ## Steps To Reproduce
@@ -22,7 +22,7 @@ assignees: ''
   Example:
 
   1. Clone this repository: ...
-  2. Run `nix-... ...`
+  2. Run `bsd-... ...`
   3. Observe unexpected behaviour
 -->
 
@@ -32,7 +32,7 @@ assignees: ''
 
 ## Metadata
 
-<!-- Please insert the output of running `nix-env --version` below this line -->
+<!-- Please insert the output of running `bsd-env --version` below this line -->
 
 ## Additional context
 
@@ -42,13 +42,13 @@ assignees: ''
 
 <!-- make sure this issue is not redundant or obsolete -->
 
-- [ ] checked [latest Nix manual] \([source])
+- [ ] checked [latest Bsd manual] \([source])
 - [ ] checked [open bug issues and pull requests] for possible duplicates
 
-[latest Nix manual]: https://nixos.org/manual/nix/unstable/
-[source]: https://github.com/NixOS/nix/tree/master/doc/manual/source
-[open bug issues and pull requests]: https://github.com/NixOS/nix/labels/bug
+[latest Bsd manual]: https://basedlinux.org/manual/bsd/unstable/
+[source]: https://github.com/BasedLinux/bsd/tree/master/doc/manual/source
+[open bug issues and pull requests]: https://github.com/BasedLinux/bsd/labels/bug
 
 ---
 
-Add :+1: to [issues you find important](https://github.com/NixOS/nix/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc).
+Add :+1: to [issues you find important](https://github.com/BasedLinux/bsd/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc).

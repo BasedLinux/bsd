@@ -8,7 +8,7 @@ clearStoreIfPossible
 
 repo="$TEST_ROOT/git"
 
-rm -rf "$repo" "${repo}-tmp" "$TEST_HOME/.cache/nix"
+rm -rf "$repo" "${repo}-tmp" "$TEST_HOME/.cache/bsd"
 
 git init "$repo"
 git -C "$repo" config user.email "foobar@example.com"
@@ -18,7 +18,7 @@ echo utrecht > "$repo/hello"
 git -C "$repo" add hello
 git -C "$repo" commit -m 'Bla1'
 
-path=$(nix eval --raw --impure --expr "(builtins.fetchGit { url = $repo; ref = \"master\"; }).outPath")
+path=$(bsd eval --raw --impure --expr "(builtins.fetchGit { url = $repo; ref = \"master\"; }).outPath")
 
 # Test various combinations of ref names
 # (taken from the git project)
@@ -41,7 +41,7 @@ valid_ref() {
     { set +x; printf >&2 '\n>>>>>>>>>> valid_ref %s\b <<<<<<<<<<\n' $(printf %s "$1" | sed -n -e l); set -x; }
     git check-ref-format --branch "$1" >/dev/null
     git -C "$repo" branch "$1" master >/dev/null
-    path1=$(nix eval --raw --impure --expr "(builtins.fetchGit { url = $repo; ref = ''$1''; }).outPath")
+    path1=$(bsd eval --raw --impure --expr "(builtins.fetchGit { url = $repo; ref = ''$1''; }).outPath")
     [[ $path1 = $path ]]
     git -C "$repo" branch -D "$1" >/dev/null
 }
@@ -55,7 +55,7 @@ invalid_ref() {
     else
         (! git check-ref-format --branch "$1" >/dev/null 2>&1)
     fi
-    expect 1 nix --debug eval --raw --impure --expr "(builtins.fetchGit { url = $repo; ref = ''$1''; }).outPath" 2>&1 | grep 'invalid Git branch/tag name' >/dev/null
+    expect 1 bsd --debug eval --raw --impure --expr "(builtins.fetchGit { url = $repo; ref = ''$1''; }).outPath" 2>&1 | grep 'invalid Git branch/tag name' >/dev/null
 }
 
 

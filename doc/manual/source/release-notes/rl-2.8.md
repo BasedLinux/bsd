@@ -1,10 +1,10 @@
 # Release 2.8 (2022-04-19)
 
-* New experimental command: `nix fmt`, which applies a formatter
-  defined by the `formatter.<system>` flake output to the Nix
+* New experimental command: `bsd fmt`, which applies a formatter
+  defined by the `formatter.<system>` flake output to the Bsd
   expressions in a flake.
 
-* Various Nix commands can now read expressions from standard input
+* Various Bsd commands can now read expressions from standard input
   using `--file -`.
 
 * New experimental builtin function `builtins.fetchClosure` that
@@ -21,7 +21,7 @@
   derivations that can produce a different result every time they're
   built. Here is an example:
 
-  ```nix
+  ```bsd
   stdenv.mkDerivation {
     name = "impure";
     __impure = true; # marks this derivation as impure
@@ -29,25 +29,25 @@
   }
   ```
 
-  Running `nix build` twice on this expression will build the
+  Running `bsd build` twice on this expression will build the
   derivation twice, producing two different content-addressed store
   paths. Like fixed-output derivations, impure derivations have access
   to the network. Only fixed-output derivations and impure derivations
   can depend on an impure derivation.
 
-* `nix store make-content-addressable` has been renamed to `nix store
+* `bsd store make-content-addressable` has been renamed to `bsd store
   make-content-addressed`.
 
-* The `nixosModule` flake output attribute has been renamed consistent
-  with the `.default` renames in Nix 2.7.
+* The `bsdosModule` flake output attribute has been renamed consistent
+  with the `.default` renames in Bsd 2.7.
 
-  * `nixosModule` → `nixosModules.default`
+  * `bsdosModule` → `bsdosModules.default`
 
-  As before, the old output will continue to work, but `nix flake check` will
+  As before, the old output will continue to work, but `bsd flake check` will
   issue a warning about it.
 
-* `nix run` is now stricter in what it accepts: members of the `apps`
+* `bsd run` is now stricter in what it accepts: members of the `apps`
   flake output are now required to be apps (as defined in [the
-  manual](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-run.html#apps)),
+  manual](https://basedlinux.org/manual/bsd/stable/command-ref/new-cli/bsd3-run.html#apps)),
   and members of `packages` or `legacyPackages` must be derivations
   (not apps).

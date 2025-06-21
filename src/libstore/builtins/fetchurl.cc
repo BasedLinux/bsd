@@ -1,10 +1,10 @@
-#include "nix/store/builtins.hh"
-#include "nix/store/filetransfer.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/archive.hh"
-#include "nix/util/compression.hh"
+#include "bsd/store/builtins.hh"
+#include "bsd/store/filetransfer.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/util/compression.hh"
 
-namespace nix {
+namespace bsd {
 
 static void builtinFetchurl(const BuiltinBuilderContext & ctx)
 {

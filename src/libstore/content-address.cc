@@ -1,8 +1,8 @@
-#include "nix/util/args.hh"
-#include "nix/store/content-address.hh"
-#include "nix/util/split.hh"
+#include "bsd/util/args.hh"
+#include "bsd/store/content-address.hh"
+#include "bsd/util/split.hh"
 
-namespace nix {
+namespace bsd {
 
 std::string_view makeFileIngestionPrefix(FileIngestionMethod m)
 {
@@ -10,7 +10,7 @@ std::string_view makeFileIngestionPrefix(FileIngestionMethod m)
     case FileIngestionMethod::Flat:
         // Not prefixed for back compat
         return "";
-    case FileIngestionMethod::NixArchive:
+    case FileIngestionMethod::BsdArchive:
         return "r:";
     case FileIngestionMethod::Git:
         experimentalFeatureSettings.require(Xp::GitHashing);
@@ -26,7 +26,7 @@ std::string_view ContentAddressMethod::render() const
     case ContentAddressMethod::Raw::Text:
         return "text";
     case ContentAddressMethod::Raw::Flat:
-    case ContentAddressMethod::Raw::NixArchive:
+    case ContentAddressMethod::Raw::BsdArchive:
     case ContentAddressMethod::Raw::Git:
         return renderFileIngestionMethod(getFileIngestionMethod());
     default:
@@ -48,8 +48,8 @@ static ContentAddressMethod fileIngestionMethodToContentAddressMethod(FileIngest
     switch (m) {
     case FileIngestionMethod::Flat:
         return ContentAddressMethod::Raw::Flat;
-    case FileIngestionMethod::NixArchive:
-        return ContentAddressMethod::Raw::NixArchive;
+    case FileIngestionMethod::BsdArchive:
+        return ContentAddressMethod::Raw::BsdArchive;
     case FileIngestionMethod::Git:
         return ContentAddressMethod::Raw::Git;
     default:
@@ -72,7 +72,7 @@ std::string_view ContentAddressMethod::renderPrefix() const
     case ContentAddressMethod::Raw::Text:
         return "text:";
     case ContentAddressMethod::Raw::Flat:
-    case ContentAddressMethod::Raw::NixArchive:
+    case ContentAddressMethod::Raw::BsdArchive:
     case ContentAddressMethod::Raw::Git:
         return makeFileIngestionPrefix(getFileIngestionMethod());
     default:
@@ -83,7 +83,7 @@ std::string_view ContentAddressMethod::renderPrefix() const
 ContentAddressMethod ContentAddressMethod::parsePrefix(std::string_view & m)
 {
     if (splitPrefix(m, "r:")) {
-        return ContentAddressMethod::Raw::NixArchive;
+        return ContentAddressMethod::Raw::BsdArchive;
     }
     else if (splitPrefix(m, "git:")) {
         experimentalFeatureSettings.require(Xp::GitHashing);
@@ -106,7 +106,7 @@ static std::string renderPrefixModern(const ContentAddressMethod & ca)
     case ContentAddressMethod::Raw::Text:
         return "text:";
     case ContentAddressMethod::Raw::Flat:
-    case ContentAddressMethod::Raw::NixArchive:
+    case ContentAddressMethod::Raw::BsdArchive:
     case ContentAddressMethod::Raw::Git:
         return "fixed:" + makeFileIngestionPrefix(ca.getFileIngestionMethod());
     default:
@@ -124,8 +124,8 @@ FileIngestionMethod ContentAddressMethod::getFileIngestionMethod() const
     switch (raw) {
     case ContentAddressMethod::Raw::Flat:
         return FileIngestionMethod::Flat;
-    case ContentAddressMethod::Raw::NixArchive:
-        return FileIngestionMethod::NixArchive;
+    case ContentAddressMethod::Raw::BsdArchive:
+        return FileIngestionMethod::BsdArchive;
     case ContentAddressMethod::Raw::Git:
         return FileIngestionMethod::Git;
     case ContentAddressMethod::Raw::Text:
@@ -137,7 +137,7 @@ FileIngestionMethod ContentAddressMethod::getFileIngestionMethod() const
 
 std::string ContentAddress::render() const
 {
-    return renderPrefixModern(method) + this->hash.to_string(HashFormat::Nix32, true);
+    return renderPrefixModern(method) + this->hash.to_string(HashFormat::Bsd32, true);
 }
 
 /**
@@ -175,7 +175,7 @@ static std::pair<ContentAddressMethod, HashAlgorithm> parseContentAddressMethodP
         // Parse method
         auto method = ContentAddressMethod::Raw::Flat;
         if (splitPrefix(rest, "r:"))
-            method = ContentAddressMethod::Raw::NixArchive;
+            method = ContentAddressMethod::Raw::BsdArchive;
         else if (splitPrefix(rest, "git:")) {
             experimentalFeatureSettings.require(Xp::GitHashing);
             method = ContentAddressMethod::Raw::Git;
@@ -246,7 +246,7 @@ ContentAddressWithReferences ContentAddressWithReferences::withoutRefs(const Con
             .references = {},
         };
     case ContentAddressMethod::Raw::Flat:
-    case ContentAddressMethod::Raw::NixArchive:
+    case ContentAddressMethod::Raw::BsdArchive:
     case ContentAddressMethod::Raw::Git:
         return FixedOutputInfo {
             .method = ca.method.getFileIngestionMethod(),
@@ -270,7 +270,7 @@ ContentAddressWithReferences ContentAddressWithReferences::fromParts(
             .references = std::move(refs.others),
         };
     case ContentAddressMethod::Raw::Flat:
-    case ContentAddressMethod::Raw::NixArchive:
+    case ContentAddressMethod::Raw::BsdArchive:
     case ContentAddressMethod::Raw::Git:
         return FixedOutputInfo {
             .method = method.getFileIngestionMethod(),

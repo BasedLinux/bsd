@@ -1,19 +1,19 @@
 #include <unordered_set>
 
-#include "nix/store/derivations.hh"
-#include "nix/store/parsed-derivations.hh"
-#include "nix/store/derivation-options.hh"
-#include "nix/store/globals.hh"
-#include "nix/store/store-open.hh"
-#include "nix/util/thread-pool.hh"
-#include "nix/store/realisation.hh"
-#include "nix/util/topo-sort.hh"
-#include "nix/util/callback.hh"
-#include "nix/util/closure.hh"
-#include "nix/store/filetransfer.hh"
-#include "nix/util/strings.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/parsed-derivations.hh"
+#include "bsd/store/derivation-options.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/store-open.hh"
+#include "bsd/util/thread-pool.hh"
+#include "bsd/store/realisation.hh"
+#include "bsd/util/topo-sort.hh"
+#include "bsd/util/callback.hh"
+#include "bsd/util/closure.hh"
+#include "bsd/store/filetransfer.hh"
+#include "bsd/util/strings.hh"
 
-namespace nix {
+namespace bsd {
 
 void Store::computeFSClosure(const StorePathSet & startPaths,
     StorePathSet & paths_, bool flipDirection, bool includeOutputs, bool includeDerivers)

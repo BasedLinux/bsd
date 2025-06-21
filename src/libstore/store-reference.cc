@@ -1,12 +1,12 @@
 #include <regex>
 
-#include "nix/util/error.hh"
-#include "nix/util/url.hh"
-#include "nix/store/store-reference.hh"
-#include "nix/util/file-system.hh"
-#include "nix/util/util.hh"
+#include "bsd/util/error.hh"
+#include "bsd/util/url.hh"
+#include "bsd/store/store-reference.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/util/util.hh"
 
-namespace nix {
+namespace bsd {
 
 static bool isNonUriPath(const std::string & spec)
 {
@@ -71,7 +71,7 @@ StoreReference StoreReference::parse(const std::string & uri, const StoreReferen
             return {
                 .variant =
                     Specified{
-                        .scheme = "unix",
+                        .scheme = "ubsd",
                         .authority = "",
                     },
                 .params = std::move(params),
@@ -97,7 +97,7 @@ StoreReference StoreReference::parse(const std::string & uri, const StoreReferen
         }
     }
 
-    throw UsageError("Cannot parse Nix store '%s'", uri);
+    throw UsageError("Cannot parse Bsd store '%s'", uri);
 }
 
 /* Split URI into protocol+hierarchy part and its parameter set. */

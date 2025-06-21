@@ -2,17 +2,17 @@
 
 source common.sh
 
-file=build-hook.nix
+file=build-hook.bsd
 
 source build-remote.sh
 
-# Add a `post-build-hook` option to the nix conf.
+# Add a `post-build-hook` option to the bsd conf.
 # This hook will be executed both for the local machine and the remote builders
 # (because they share the same config).
 registerBuildHook () {
     # Dummy post-build-hook just to ensure that it's executed correctly.
     # (we can't reuse the one from `$PWD/push-to-store.sh` because of
-    # https://github.com/NixOS/nix/issues/4341)
+    # https://github.com/BasedLinux/bsd/issues/4341)
     cat <<EOF > "$TEST_ROOT/post-build-hook.sh"
 #!/bin/sh
 
@@ -23,13 +23,13 @@ EOF
     chmod +x "$TEST_ROOT/post-build-hook.sh"
     rm -f "$TEST_ROOT/post-hook-counter"
 
-    echo "post-build-hook = $TEST_ROOT/post-build-hook.sh" >> "$test_nix_conf"
+    echo "post-build-hook = $TEST_ROOT/post-build-hook.sh" >> "$test_bsd_conf"
 }
 
 registerBuildHook
 source build-remote.sh
 
-# `build-hook.nix` has four derivations to build, and the hook runs twice for
+# `build-hook.bsd` has four derivations to build, and the hook runs twice for
 # each derivation (once on the builder and once on the host), so the counter
 # should contain eight lines now
 [[ $(wc -l < "$TEST_ROOT/post-hook-counter") -eq 8 ]]

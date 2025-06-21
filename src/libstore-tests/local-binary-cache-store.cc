@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "nix/store/local-binary-cache-store.hh"
+#include "bsd/store/local-binary-cache-store.hh"
 
-namespace nix {
+namespace bsd {
 
 TEST(LocalBinaryCacheStore, constructConfig)
 {
@@ -11,4 +11,4 @@ TEST(LocalBinaryCacheStore, constructConfig)
     EXPECT_EQ(config.binaryCacheDir, "/foo/bar/baz");
 }
 
-} // namespace nix
+} // namespace bsd

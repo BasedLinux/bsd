@@ -1,11 +1,11 @@
-project('nix-store', 'cpp',
+project('bsd-store', 'cpp',
   version : files('.version'),
   default_options : [
     'cpp_std=c++2a',
     # TODO(Qyriad): increase the warning level
     'warning_level=1',
     'errorlogs=true', # Please print logs for tests that fail
-    'localstatedir=/nix/var',
+    'localstatedir=/bsd/var',
   ],
   meson_version : '>= 1.1',
   license : 'LGPL-2.1-or-later',
@@ -13,7 +13,7 @@ project('nix-store', 'cpp',
 
 cxx = meson.get_compiler('cpp')
 
-subdir('nix-meson-build-support/deps-lists')
+subdir('bsd-meson-build-support/deps-lists')
 
 configdata_pub = configuration_data()
 configdata_priv = configuration_data()
@@ -26,16 +26,16 @@ configdata_pub.set_quoted(
   'NIX_LOCAL_SYSTEM',
   host_machine.cpu_family() + '-' + host_machine.system(),
   description :
-    'This is the system name Nix expects for local running instance of Nix.\n\n'
+    'This is the system name Bsd expects for local running instance of Bsd.\n\n'
     + 'See the "system" setting for additional details',
 )
 
 deps_private_maybe_subproject = [
 ]
 deps_public_maybe_subproject = [
-  dependency('nix-util'),
+  dependency('bsd-util'),
 ]
-subdir('nix-meson-build-support/subprojects')
+subdir('bsd-meson-build-support/subprojects')
 
 run_command('ln', '-s',
   meson.project_build_root() / '__nothing_link_target',
@@ -90,7 +90,7 @@ if host_machine.system() == 'windows'
   deps_other += [wsock32]
 endif
 
-subdir('nix-meson-build-support/libatomic')
+subdir('bsd-meson-build-support/libatomic')
 
 boost = dependency(
   'boost',
@@ -145,7 +145,7 @@ if aws_s3.found()
 endif
 deps_other += aws_s3
 
-subdir('nix-meson-build-support/generate-header')
+subdir('bsd-meson-build-support/generate-header')
 
 generated_headers = []
 foreach header : [
@@ -195,7 +195,7 @@ path_opts = [
   'libdir',
   'includedir',
   'libexecdir',
-  # Homecooked Nix directories.
+  # Homecooked Bsd directories.
   'store-dir',
   'localstatedir',
   'log-dir',
@@ -217,7 +217,7 @@ foreach optname : path_opts
 endforeach
 
 # sysconfdir doesn't get anything installed to directly, and is only used to
-# tell Nix where to look for nix.conf, so it doesn't get appended to prefix.
+# tell Bsd where to look for bsd.conf, so it doesn't get appended to prefix.
 sysconfdir = get_option('sysconfdir')
 if not fs.is_absolute(sysconfdir)
   sysconfdir = '/' / sysconfdir
@@ -229,9 +229,9 @@ endif
 configdata_priv.set_quoted('NIX_PREFIX',    prefix)
 configdata_priv.set_quoted('NIX_STORE_DIR', store_dir)
 configdata_priv.set_quoted('NIX_DATA_DIR',  datadir)
-configdata_priv.set_quoted('NIX_STATE_DIR', localstatedir / 'nix')
+configdata_priv.set_quoted('NIX_STATE_DIR', localstatedir / 'bsd')
 configdata_priv.set_quoted('NIX_LOG_DIR',   log_dir)
-configdata_priv.set_quoted('NIX_CONF_DIR',  sysconfdir / 'nix')
+configdata_priv.set_quoted('NIX_CONF_DIR',  sysconfdir / 'bsd')
 configdata_priv.set_quoted('NIX_MAN_DIR',   mandir)
 
 lsof = find_program('lsof', required : false)
@@ -248,7 +248,7 @@ config_priv_h = configure_file(
   output : 'store-config-private.hh',
 )
 
-subdir('nix-meson-build-support/common')
+subdir('bsd-meson-build-support/common')
 
 sources = files(
   'binary-cache-store.cc',
@@ -322,7 +322,7 @@ sources = files(
   'worker-protocol.cc',
 )
 
-subdir('include/nix/store')
+subdir('include/bsd/store')
 
 if host_machine.system() == 'linux'
   subdir('linux')
@@ -331,14 +331,14 @@ endif
 if host_machine.system() == 'windows'
   subdir('windows')
 else
-  subdir('unix')
+  subdir('ubsd')
 endif
 
-subdir('nix-meson-build-support/export-all-symbols')
-subdir('nix-meson-build-support/windows-version')
+subdir('bsd-meson-build-support/export-all-symbols')
+subdir('bsd-meson-build-support/windows-version')
 
 this_library = library(
-  'nixstore',
+  'bsdstore',
   generated_headers,
   sources,
   config_priv_h,
@@ -349,7 +349,7 @@ this_library = library(
   install : true,
 )
 
-install_headers(headers, subdir : 'nix/store', preserve_path : true)
+install_headers(headers, subdir : 'bsd/store', preserve_path : true)
 
 libraries_private = []
 
@@ -364,4 +364,4 @@ if host_machine.system() != 'darwin'
   }
 endif
 
-subdir('nix-meson-build-support/export')
+subdir('bsd-meson-build-support/export')

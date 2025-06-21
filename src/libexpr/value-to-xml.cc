@@ -1,12 +1,12 @@
-#include "nix/expr/value-to-xml.hh"
-#include "nix/util/xml-writer.hh"
-#include "nix/expr/eval-inline.hh"
-#include "nix/util/signals.hh"
+#include "bsd/expr/value-to-xml.hh"
+#include "bsd/util/xml-writer.hh"
+#include "bsd/expr/eval-inline.hh"
+#include "bsd/util/signals.hh"
 
 #include <cstdlib>
 
 
-namespace nix {
+namespace bsd {
 
 
 static XMLAttrs singletonAttrs(const std::string & name, std::string_view value)
@@ -18,7 +18,7 @@ static XMLAttrs singletonAttrs(const std::string & name, std::string_view value)
 
 
 static void printValueAsXML(EvalState & state, bool strict, bool location,
-    Value & v, XMLWriter & doc, NixStringContext & context, PathSet & drvsSeen,
+    Value & v, XMLWriter & doc, BsdStringContext & context, PathSet & drvsSeen,
     const PosIdx pos);
 
 
@@ -32,7 +32,7 @@ static void posToXML(EvalState & state, XMLAttrs & xmlAttrs, const Pos & pos)
 
 
 static void showAttrs(EvalState & state, bool strict, bool location,
-    const Bindings & attrs, XMLWriter & doc, NixStringContext & context, PathSet & drvsSeen)
+    const Bindings & attrs, XMLWriter & doc, BsdStringContext & context, PathSet & drvsSeen)
 {
     StringSet names;
 
@@ -49,7 +49,7 @@ static void showAttrs(EvalState & state, bool strict, bool location,
 
 
 static void printValueAsXML(EvalState & state, bool strict, bool location,
-    Value & v, XMLWriter & doc, NixStringContext & context, PathSet & drvsSeen,
+    Value & v, XMLWriter & doc, BsdStringContext & context, PathSet & drvsSeen,
     const PosIdx pos)
 {
     checkInterrupt();
@@ -157,7 +157,7 @@ static void printValueAsXML(EvalState & state, bool strict, bool location,
 
 
 void ExternalValueBase::printValueAsXML(EvalState & state, bool strict,
-    bool location, XMLWriter & doc, NixStringContext & context, PathSet & drvsSeen,
+    bool location, XMLWriter & doc, BsdStringContext & context, PathSet & drvsSeen,
     const PosIdx pos) const
 {
     doc.writeEmptyElement("unevaluated");
@@ -165,7 +165,7 @@ void ExternalValueBase::printValueAsXML(EvalState & state, bool strict,
 
 
 void printValueAsXML(EvalState & state, bool strict, bool location,
-    Value & v, std::ostream & out, NixStringContext & context, const PosIdx pos)
+    Value & v, std::ostream & out, BsdStringContext & context, const PosIdx pos)
 {
     XMLWriter doc(true, out);
     XMLOpenElement root(doc, "expr");

@@ -1,12 +1,12 @@
 #ifdef _WIN32
 #  include <ioapiset.h>
-#  include "nix/util/windows-error.hh"
+#  include "bsd/util/windows-error.hh"
 
-#  include "nix/util/logging.hh"
-#  include "nix/util/util.hh"
-#  include "nix/util/muxable-pipe.hh"
+#  include "bsd/util/logging.hh"
+#  include "bsd/util/util.hh"
+#  include "bsd/util/muxable-pipe.hh"
 
-namespace nix {
+namespace bsd {
 
 void MuxablePipePollState::poll(HANDLE ioport, std::optional<unsigned int> timeout)
 {

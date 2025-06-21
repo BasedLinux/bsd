@@ -1,27 +1,27 @@
-#include "nix/util/serialise.hh"
-#include "nix/util/util.hh"
-#include "nix/store/path-with-outputs.hh"
-#include "nix/store/gc-store.hh"
-#include "nix/store/remote-fs-accessor.hh"
-#include "nix/store/build-result.hh"
-#include "nix/store/remote-store.hh"
-#include "nix/store/remote-store-connection.hh"
-#include "nix/store/worker-protocol.hh"
-#include "nix/store/worker-protocol-impl.hh"
-#include "nix/util/archive.hh"
-#include "nix/store/globals.hh"
-#include "nix/store/derivations.hh"
-#include "nix/util/pool.hh"
-#include "nix/util/finally.hh"
-#include "nix/util/git.hh"
-#include "nix/util/logging.hh"
-#include "nix/util/callback.hh"
-#include "nix/store/filetransfer.hh"
-#include "nix/util/signals.hh"
+#include "bsd/util/serialise.hh"
+#include "bsd/util/util.hh"
+#include "bsd/store/path-with-outputs.hh"
+#include "bsd/store/gc-store.hh"
+#include "bsd/store/remote-fs-accessor.hh"
+#include "bsd/store/build-result.hh"
+#include "bsd/store/remote-store.hh"
+#include "bsd/store/remote-store-connection.hh"
+#include "bsd/store/worker-protocol.hh"
+#include "bsd/store/worker-protocol-impl.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/util/pool.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/git.hh"
+#include "bsd/util/logging.hh"
+#include "bsd/util/callback.hh"
+#include "bsd/store/filetransfer.hh"
+#include "bsd/util/signals.hh"
 
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
 /* TODO: Separate these store types into different files, give them better names */
 RemoteStore::RemoteStore(const Config & config)
@@ -68,7 +68,7 @@ void RemoteStore::initConnection(Connection & conn)
 {
     /* Send the magic greeting, check for the reply. */
     try {
-        conn.from.endOfFileError = "Nix daemon disconnected unexpectedly (maybe it crashed?)";
+        conn.from.endOfFileError = "Bsd daemon disconnected unexpectedly (maybe it crashed?)";
 
         StringSink saved;
         TeeSource tee(conn.from, saved);
@@ -122,7 +122,7 @@ void RemoteStore::setOptions(Connection & conn)
        << settings.useSubstitutes;
 
     if (GET_PROTOCOL_MINOR(conn.protoVersion) >= 12) {
-        std::map<std::string, nix::Config::SettingInfo> overrides;
+        std::map<std::string, bsd::Config::SettingInfo> overrides;
         settings.getSettings(overrides, true); // libstore settings
         fileTransferSettings.getSettings(overrides, true);
         overrides.erase(settings.keepFailed.name);
@@ -396,7 +396,7 @@ ref<const ValidPathInfo> RemoteStore::addCAToStore(
             WorkerProto::Serialise<ValidPathInfo>::read(*this, *conn));
     }
     else {
-        if (repair) throw Error("repairing is not supported when building through the Nix daemon protocol < 1.25");
+        if (repair) throw Error("repairing is not supported when building through the Bsd daemon protocol < 1.25");
 
         switch (caMethod.raw) {
             case ContentAddressMethod::Raw::Text:
@@ -411,7 +411,7 @@ ref<const ValidPathInfo> RemoteStore::addCAToStore(
                 break;
             }
             case ContentAddressMethod::Raw::Flat:
-            case ContentAddressMethod::Raw::NixArchive:
+            case ContentAddressMethod::Raw::BsdArchive:
             case ContentAddressMethod::Raw::Git:
             default:
             {
@@ -419,8 +419,8 @@ ref<const ValidPathInfo> RemoteStore::addCAToStore(
                 conn->to
                     << WorkerProto::Op::AddToStore
                     << name
-                    << ((hashAlgo == HashAlgorithm::SHA256 && fim == FileIngestionMethod::NixArchive) ? 0 : 1) /* backwards compatibility hack */
-                    << (fim == FileIngestionMethod::NixArchive ? 1 : 0)
+                    << ((hashAlgo == HashAlgorithm::SHA256 && fim == FileIngestionMethod::BsdArchive) ? 0 : 1) /* backwards compatibility hack */
+                    << (fim == FileIngestionMethod::BsdArchive ? 1 : 0)
                     << printHashAlgo(hashAlgo);
 
                 try {
@@ -428,7 +428,7 @@ ref<const ValidPathInfo> RemoteStore::addCAToStore(
                     connections->incCapacity();
                     {
                         Finally cleanup([&]() { connections->decCapacity(); });
-                        if (fim == FileIngestionMethod::NixArchive) {
+                        if (fim == FileIngestionMethod::BsdArchive) {
                             dump.drainInto(conn->to);
                         } else {
                             std::string contents = dump.drain();
@@ -470,12 +470,12 @@ StorePath RemoteStore::addToStoreFromDump(
     case FileIngestionMethod::Flat:
         fsm = FileSerialisationMethod::Flat;
         break;
-    case FileIngestionMethod::NixArchive:
-        fsm = FileSerialisationMethod::NixArchive;
+    case FileIngestionMethod::BsdArchive:
+        fsm = FileSerialisationMethod::BsdArchive;
         break;
     case FileIngestionMethod::Git:
         // Use NAR; Git is not a serialization method
-        fsm = FileSerialisationMethod::NixArchive;
+        fsm = FileSerialisationMethod::BsdArchive;
         break;
     default:
         assert(false);
@@ -672,7 +672,7 @@ void RemoteStore::buildPaths(const std::vector<DerivedPath> & drvPaths, BuildMod
         /* Old daemons did not take a 'buildMode' parameter, so we
            need to validate it here on the client side.  */
         if (buildMode != bmNormal)
-            throw Error("repairing or checking is not supported when building through the Nix daemon");
+            throw Error("repairing or checking is not supported when building through the Bsd daemon");
     conn.processStderr();
     readInt(conn->from);
 }
@@ -896,7 +896,7 @@ void RemoteStore::addBuildLog(const StorePath & drvPath, std::string_view log)
 std::optional<std::string> RemoteStore::getVersion()
 {
     auto conn(getConnection());
-    return conn->daemonNixVersion;
+    return conn->daemonBsdVersion;
 }
 
 

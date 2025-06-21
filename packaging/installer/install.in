@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# This script installs the Nix package manager on your system by
+# This script installs the Bsd package manager on your system by
 # downloading a binary distribution and running its installer script
-# (which in turn creates and populates /nix).
+# (which in turn creates and populates /bsd).
 
 { # Prevent execution if this script was only partially downloaded
 oops() {
@@ -12,8 +12,8 @@ oops() {
 
 umask 0022
 
-tmpDir="$(mktemp -d -t nix-binary-tarball-unpack.XXXXXXXXXX || \
-          oops "Can't create temporary directory for downloading the Nix binary tarball")"
+tmpDir="$(mktemp -d -t bsd-binary-tarball-unpack.XXXXXXXXXX || \
+          oops "Can't create temporary directory for downloading the Bsd binary tarball")"
 cleanup() {
     rm -rf "$tmpDir"
 }
@@ -65,7 +65,7 @@ case "$(uname -s).$(uname -m)" in
         path=@tarballPath_aarch64-darwin@
         system=aarch64-darwin
         ;;
-    *) oops "sorry, there is no binary distribution of Nix for your platform";;
+    *) oops "sorry, there is no binary distribution of Bsd for your platform";;
 esac
 
 # Use this command-line option to fetch the tarballs using nar-serve or Cachix
@@ -76,10 +76,10 @@ if [ "${1:-}" = "--tarball-url-prefix" ]; then
     url=${2}/${path}
     shift 2
 else
-    url=https://releases.nixos.org/nix/nix-@nixVersion@/nix-@nixVersion@-$system.tar.xz
+    url=https://releases.basedlinux.org/bsd/bsd-@bsdVersion@/bsd-@bsdVersion@-$system.tar.xz
 fi
 
-tarball=$tmpDir/nix-@nixVersion@-$system.tar.xz
+tarball=$tmpDir/bsd-@bsdVersion@-$system.tar.xz
 
 require_util tar "unpack the binary tarball"
 if [ "$(uname -s)" != "Darwin" ]; then
@@ -94,7 +94,7 @@ else
     oops "you don't have wget or curl installed, which I need to download the binary tarball"
 fi
 
-echo "downloading Nix @nixVersion@ binary tarball for $system from '$url' to '$tmpDir'..."
+echo "downloading Bsd @bsdVersion@ binary tarball for $system from '$url' to '$tmpDir'..."
 fetch "$url" "$tarball" || oops "failed to download '$url'"
 
 if command -v sha256sum > /dev/null 2>&1; then

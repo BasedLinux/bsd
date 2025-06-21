@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Ensure that we can’t build twice the same derivation concurrently.
-# Regression test for https://github.com/NixOS/nix/issues/5029
+# Regression test for https://github.com/BasedLinux/bsd/issues/5029
 
 source common.sh
 
@@ -12,7 +12,7 @@ export NIX_TESTS_CA_BY_DEFAULT=1
 clearStore
 
 for i in {0..5}; do
-    nix build --no-link --file ./racy.nix &
+    bsd build --no-link --file ./racy.bsd &
 done
 
 wait

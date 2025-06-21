@@ -1,33 +1,33 @@
-#include "nix/util/signature/local-keys.hh"
-#include "nix/util/source-accessor.hh"
-#include "nix/store/globals.hh"
-#include "nix/store/derived-path.hh"
-#include "nix/store/realisation.hh"
-#include "nix/store/derivations.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/store-open.hh"
-#include "nix/util/util.hh"
-#include "nix/store/nar-info-disk-cache.hh"
-#include "nix/util/thread-pool.hh"
-#include "nix/util/references.hh"
-#include "nix/util/archive.hh"
-#include "nix/util/callback.hh"
-#include "nix/util/git.hh"
-#include "nix/util/posix-source-accessor.hh"
+#include "bsd/util/signature/local-keys.hh"
+#include "bsd/util/source-accessor.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/derived-path.hh"
+#include "bsd/store/realisation.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/store-open.hh"
+#include "bsd/util/util.hh"
+#include "bsd/store/nar-info-disk-cache.hh"
+#include "bsd/util/thread-pool.hh"
+#include "bsd/util/references.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/util/callback.hh"
+#include "bsd/util/git.hh"
+#include "bsd/util/posix-source-accessor.hh"
 // FIXME this should not be here, see TODO below on
 // `addMultipleToStore`.
-#include "nix/store/worker-protocol.hh"
-#include "nix/util/signals.hh"
-#include "nix/util/users.hh"
+#include "bsd/store/worker-protocol.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/users.hh"
 
 #include <filesystem>
 #include <nlohmann/json.hpp>
 
-#include "nix/util/strings.hh"
+#include "bsd/util/strings.hh"
 
 using json = nlohmann::json;
 
-namespace nix {
+namespace bsd {
 
 
 bool MixStoreDirMethods::isInStore(PathView path) const
@@ -39,7 +39,7 @@ bool MixStoreDirMethods::isInStore(PathView path) const
 std::pair<StorePath, Path> MixStoreDirMethods::toStorePath(PathView path) const
 {
     if (!isInStore(path))
-        throw Error("path '%1%' is not in the Nix store", path);
+        throw Error("path '%1%' is not in the Bsd store", path);
     auto slash = path.find('/', storeDir.size() + 1);
     if (slash == Path::npos)
         return {parseStorePath(path), ""};
@@ -57,7 +57,7 @@ Path Store::followLinksToStore(std::string_view _path) const
         path = absPath(target, dirOf(path));
     }
     if (!isInStore(path))
-        throw BadStorePath("path '%1%' is not in the Nix store", path);
+        throw BadStorePath("path '%1%' is not in the Bsd store", path);
     return path;
 }
 
@@ -70,7 +70,7 @@ StorePath Store::followLinksToStorePath(std::string_view path) const
 
 /*
 The exact specification of store paths is in `protocols/store-path.md`
-in the Nix manual. These few functions implement that specification.
+in the Bsd manual. These few functions implement that specification.
 
 If changes to these functions go beyond mere implementation changes i.e.
 also update the user-visible behavior, please update the specification
@@ -81,7 +81,7 @@ to match.
 StorePath MixStoreDirMethods::makeStorePath(std::string_view type,
     std::string_view hash, std::string_view name) const
 {
-    /* e.g., "source:sha256:1abc...:/nix/store:foo.tar.gz" */
+    /* e.g., "source:sha256:1abc...:/bsd/store:foo.tar.gz" */
     auto s = std::string(type) + ":" + std::string(hash)
         + ":" + storeDir + ":" + std::string(name);
     auto h = compressHash(hashString(HashAlgorithm::SHA256, s), 20);
@@ -125,7 +125,7 @@ StorePath MixStoreDirMethods::makeFixedOutputPath(std::string_view name, const F
     if (info.method == FileIngestionMethod::Git && info.hash.algo != HashAlgorithm::SHA1)
         throw Error("Git file ingestion must use SHA-1 hash");
 
-    if (info.hash.algo == HashAlgorithm::SHA256 && info.method == FileIngestionMethod::NixArchive) {
+    if (info.hash.algo == HashAlgorithm::SHA256 && info.method == FileIngestionMethod::BsdArchive) {
         return makeStorePath(makeType(*this, "source", info.references), info.hash, name);
     } else {
         if (!info.references.empty()) {
@@ -203,12 +203,12 @@ StorePath Store::addToStore(
     case FileIngestionMethod::Flat:
         fsm = FileSerialisationMethod::Flat;
         break;
-    case FileIngestionMethod::NixArchive:
-        fsm = FileSerialisationMethod::NixArchive;
+    case FileIngestionMethod::BsdArchive:
+        fsm = FileSerialisationMethod::BsdArchive;
         break;
     case FileIngestionMethod::Git:
         // Use NAR; Git is not a serialization method
-        fsm = FileSerialisationMethod::NixArchive;
+        fsm = FileSerialisationMethod::BsdArchive;
         break;
     }
     std::optional<StorePath> storePath;
@@ -360,7 +360,7 @@ ValidPathInfo Store::addToStoreSlow(
     RegularFileSink fileSink { caHashSink };
     TeeSink unusualHashTee { narHashSink, caHashSink };
 
-    auto & narSink = method == ContentAddressMethod::Raw::NixArchive && hashAlgo != HashAlgorithm::SHA256
+    auto & narSink = method == ContentAddressMethod::Raw::BsdArchive && hashAlgo != HashAlgorithm::SHA256
         ? static_cast<Sink &>(unusualHashTee)
         : narHashSink;
 
@@ -388,7 +388,7 @@ ValidPathInfo Store::addToStoreSlow(
        finish. */
     auto [narHash, narSize] = narHashSink.finish();
 
-    auto hash = method == ContentAddressMethod::Raw::NixArchive && hashAlgo == HashAlgorithm::SHA256
+    auto hash = method == ContentAddressMethod::Raw::BsdArchive && hashAlgo == HashAlgorithm::SHA256
         ? narHash
         : method == ContentAddressMethod::Raw::Git
         ? git::dumpHash(hashAlgo, srcPath).hash
@@ -428,8 +428,8 @@ StringSet Store::Config::getDefaultSystemFeatures()
     if (experimentalFeatureSettings.isEnabled(Xp::CaDerivations))
         res.insert("ca-derivations");
 
-    if (experimentalFeatureSettings.isEnabled(Xp::RecursiveNix))
-        res.insert("recursive-nix");
+    if (experimentalFeatureSettings.isEnabled(Xp::RecursiveBsd))
+        res.insert("recursive-bsd");
 
     return res;
 }
@@ -909,7 +909,7 @@ StorePathSet Store::exportReferences(const StorePathSet & storePaths, const Stor
     /* If there are derivations in the graph, then include their
        outputs as well.  This is useful if you want to do things
        like passing all build-time dependencies of some path to a
-       derivation that builds a NixOS DVD image. */
+       derivation that builds a BasedLinux DVD image. */
     auto paths2 = paths;
 
     for (auto & j : paths2) {

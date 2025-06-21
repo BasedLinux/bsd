@@ -1,28 +1,28 @@
-#include "nix/store/globals.hh"
-#include "nix/cmd/installable-attr-path.hh"
-#include "nix/store/outputs-spec.hh"
-#include "nix/util/util.hh"
-#include "nix/cmd/command.hh"
-#include "nix/expr/attr-path.hh"
-#include "nix/cmd/common-eval-args.hh"
-#include "nix/store/derivations.hh"
-#include "nix/expr/eval-inline.hh"
-#include "nix/expr/eval.hh"
-#include "nix/expr/get-drvs.hh"
-#include "nix/store/store-api.hh"
-#include "nix/main/shared.hh"
-#include "nix/flake/flake.hh"
-#include "nix/expr/eval-cache.hh"
-#include "nix/util/url.hh"
-#include "nix/fetchers/registry.hh"
-#include "nix/store/build-result.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/cmd/installable-attr-path.hh"
+#include "bsd/store/outputs-spec.hh"
+#include "bsd/util/util.hh"
+#include "bsd/cmd/command.hh"
+#include "bsd/expr/attr-path.hh"
+#include "bsd/cmd/common-eval-args.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/expr/eval-inline.hh"
+#include "bsd/expr/eval.hh"
+#include "bsd/expr/get-drvs.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/main/shared.hh"
+#include "bsd/flake/flake.hh"
+#include "bsd/expr/eval-cache.hh"
+#include "bsd/util/url.hh"
+#include "bsd/fetchers/registry.hh"
+#include "bsd/store/build-result.hh"
 
 #include <regex>
 #include <queue>
 
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
 InstallableAttrPath::InstallableAttrPath(
     ref<EvalState> state,

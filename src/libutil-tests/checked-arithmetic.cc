@@ -5,17 +5,17 @@
 #include <rapidcheck/gtest.h>
 #include <rapidcheck/gen/Arbitrary.hpp>
 
-#include "nix/util/checked-arithmetic.hh"
+#include "bsd/util/checked-arithmetic.hh"
 
-#include "nix/util/tests/gtest-with-params.hh"
+#include "bsd/util/tests/gtest-with-params.hh"
 
 namespace rc {
-using namespace nix;
+using namespace bsd;
 
 template<std::integral T>
-struct Arbitrary<nix::checked::Checked<T>>
+struct Arbitrary<bsd::checked::Checked<T>>
 {
-    static Gen<nix::checked::Checked<T>> arbitrary()
+    static Gen<bsd::checked::Checked<T>> arbitrary()
     {
         return gen::arbitrary<T>();
     }
@@ -23,7 +23,7 @@ struct Arbitrary<nix::checked::Checked<T>>
 
 }
 
-namespace nix::checked {
+namespace bsd::checked {
 
 // Pointer to member function! Mildly gross.
 template<std::integral T>
@@ -83,7 +83,7 @@ void checkDivision(TSmall a_, TSmall b)
         RC_ASSERT(result.overflowed());
     } else if (b == 0) {
         RC_ASSERT(result.divideByZero());
-        RC_ASSERT_THROWS_AS(result.valueWrapping(), nix::checked::DivideByZero);
+        RC_ASSERT_THROWS_AS(result.valueWrapping(), bsd::checked::DivideByZero);
         RC_ASSERT(result.valueChecked() == std::nullopt);
     } else {
         TBig referenceResult = a_ / b;

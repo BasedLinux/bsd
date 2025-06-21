@@ -1,26 +1,26 @@
-#include "nix/expr/eval.hh"
-#include "nix/expr/eval-settings.hh"
-#include "nix/expr/primops.hh"
-#include "nix/expr/print-options.hh"
-#include "nix/expr/symbol-table.hh"
-#include "nix/util/exit.hh"
-#include "nix/util/types.hh"
-#include "nix/util/util.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/derivations.hh"
-#include "nix/store/downstream-placeholder.hh"
-#include "nix/expr/eval-inline.hh"
-#include "nix/store/filetransfer.hh"
-#include "nix/expr/function-trace.hh"
-#include "nix/store/profiles.hh"
-#include "nix/expr/print.hh"
-#include "nix/fetchers/filtering-source-accessor.hh"
-#include "nix/util/memory-source-accessor.hh"
-#include "nix/expr/gc-small-vector.hh"
-#include "nix/util/url.hh"
-#include "nix/fetchers/fetch-to-store.hh"
-#include "nix/fetchers/tarball.hh"
-#include "nix/fetchers/input-cache.hh"
+#include "bsd/expr/eval.hh"
+#include "bsd/expr/eval-settings.hh"
+#include "bsd/expr/primops.hh"
+#include "bsd/expr/print-options.hh"
+#include "bsd/expr/symbol-table.hh"
+#include "bsd/util/exit.hh"
+#include "bsd/util/types.hh"
+#include "bsd/util/util.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/downstream-placeholder.hh"
+#include "bsd/expr/eval-inline.hh"
+#include "bsd/store/filetransfer.hh"
+#include "bsd/expr/function-trace.hh"
+#include "bsd/store/profiles.hh"
+#include "bsd/expr/print.hh"
+#include "bsd/fetchers/filtering-source-accessor.hh"
+#include "bsd/util/memory-source-accessor.hh"
+#include "bsd/expr/gc-small-vector.hh"
+#include "bsd/util/url.hh"
+#include "bsd/fetchers/fetch-to-store.hh"
+#include "bsd/fetchers/tarball.hh"
+#include "bsd/fetchers/input-cache.hh"
 
 #include "parser-tab.hh"
 
@@ -41,11 +41,11 @@
 #  include <sys/resource.h>
 #endif
 
-#include "nix/util/strings-inline.hh"
+#include "bsd/util/strings-inline.hh"
 
 using json = nlohmann::json;
 
-namespace nix {
+namespace bsd {
 
 static char * allocString(size_t size)
 {
@@ -240,7 +240,7 @@ EvalState::EvalState(
         .div = symbols.create("__div"),
         .or_ = symbols.create("or"),
         .findFile = symbols.create("__findFile"),
-        .nixPath = symbols.create("__nixPath"),
+        .bsdPath = symbols.create("__bsdPath"),
         .body = symbols.create("body"),
     }
     , repair(NoRepair)
@@ -259,7 +259,7 @@ EvalState::EvalState(
 
                    This happens when the store dir in the
                    ambient file system has a path (e.g. because
-                   another Nix store there), but the relocated
+                   another Bsd store there), but the relocated
                    store does not.
 
                    TODO make the various source accessors doing
@@ -272,14 +272,14 @@ EvalState::EvalState(
     , rootFS(
         ({
             /* In pure eval mode, we provide a filesystem that only
-               contains the Nix store.
+               contains the Bsd store.
 
                If we have a chroot store and pure eval is not enabled,
                use a union accessor to make the chroot store available
                at its logical location while still having the
                underlying directory available. This is necessary for
                instance if we're evaluating a file from the physical
-               /nix/store while using a chroot store. */
+               /bsd/store while using a chroot store. */
             auto accessor = getFSSourceAccessor();
 
             auto realStoreDir = dirOf(store->toRealPath(StorePath::dummy));
@@ -304,8 +304,8 @@ EvalState::EvalState(
     , corepkgsFS(make_ref<MemorySourceAccessor>())
     , internalFS(make_ref<MemorySourceAccessor>())
     , derivationInternal{corepkgsFS->addFile(
-        CanonPath("derivation-internal.nix"),
-        #include "primops/derivation.nix.gen.hh"
+        CanonPath("derivation-internal.bsd"),
+        #include "primops/derivation.bsd.gen.hh"
     )}
     , store(store)
     , buildStore(buildStore ? buildStore : store)
@@ -324,8 +324,8 @@ EvalState::EvalState(
 #endif
     , staticBaseEnv{std::make_shared<StaticEnv>(nullptr, nullptr)}
 {
-    corepkgsFS->setPathDisplay("<nix", ">");
-    internalFS->setPathDisplay("«nix-internal»", "");
+    corepkgsFS->setPathDisplay("<bsd", ">");
+    internalFS->setPathDisplay("«bsd-internal»", "");
 
     countCalls = getEnv("NIX_COUNT_CALLS").value_or("0") != "0";
 
@@ -342,18 +342,18 @@ EvalState::EvalState(
     vStringSymlink.mkString("symlink");
     vStringUnknown.mkString("unknown");
 
-    /* Construct the Nix expression search path. */
+    /* Construct the Bsd expression search path. */
     assert(lookupPath.elements.empty());
     if (!settings.pureEval) {
         for (auto & i : lookupPathFromArguments.elements) {
             lookupPath.elements.emplace_back(LookupPath::Elem {i});
         }
         /* $NIX_PATH overriding regular settings is implemented as a hack in `initGC()` */
-        for (auto & i : settings.nixPath.get()) {
+        for (auto & i : settings.bsdPath.get()) {
             lookupPath.elements.emplace_back(LookupPath::Elem::parse(i));
         }
         if (!settings.restrictEval) {
-            for (auto & i : EvalSettings::getDefaultNixPath()) {
+            for (auto & i : EvalSettings::getDefaultBsdPath()) {
                 lookupPath.elements.emplace_back(LookupPath::Elem::parse(i));
             }
         }
@@ -365,8 +365,8 @@ EvalState::EvalState(
             resolveLookupPathPath(i.path, true);
 
     corepkgsFS->addFile(
-        CanonPath("fetchurl.nix"),
-        #include "fetchurl.nix.gen.hh"
+        CanonPath("fetchurl.bsd"),
+        #include "fetchurl.bsd.gen.hh"
     );
 
     createBaseEnv(settings);
@@ -893,7 +893,7 @@ void Value::mkString(std::string_view s)
 }
 
 
-static const char * * encodeContext(const NixStringContext & context)
+static const char * * encodeContext(const BsdStringContext & context)
 {
     if (!context.empty()) {
         size_t n = 0;
@@ -908,12 +908,12 @@ static const char * * encodeContext(const NixStringContext & context)
         return nullptr;
 }
 
-void Value::mkString(std::string_view s, const NixStringContext & context)
+void Value::mkString(std::string_view s, const BsdStringContext & context)
 {
     mkString(makeImmutableString(s), encodeContext(context));
 }
 
-void Value::mkStringMove(const char * s, const NixStringContext & context)
+void Value::mkStringMove(const char * s, const BsdStringContext & context)
 {
     mkString(s, encodeContext(context));
 }
@@ -992,8 +992,8 @@ void EvalState::mkStorePathString(const StorePath & p, Value & v)
 {
     v.mkString(
         store->printStorePath(p),
-        NixStringContext {
-            NixStringContextElem::Opaque { .path = p },
+        BsdStringContext {
+            BsdStringContextElem::Opaque { .path = p },
         });
 }
 
@@ -1021,7 +1021,7 @@ void EvalState::mkOutputString(
 {
     value.mkString(
         mkOutputStringRaw(b, optStaticOutputPath, xpSettings),
-        NixStringContext { b });
+        BsdStringContext { b });
 }
 
 
@@ -1057,8 +1057,8 @@ void EvalState::mkSingleDerivedPathString(
 {
     v.mkString(
         mkSingleDerivedPathStringRaw(p),
-        NixStringContext {
-            std::visit([](auto && v) -> NixStringContextElem { return v; }, p),
+        BsdStringContext {
+            std::visit([](auto && v) -> BsdStringContextElem { return v; }, p),
         });
 }
 
@@ -1146,7 +1146,7 @@ void EvalState::evalFile(const SourcePath & path, Value & v, bool mustBeTrivial)
                 "while evaluating the file '%1%':", resolvedPath.to_string())
             : nullptr;
 
-        // Enforce that 'flake.nix' is a direct attrset, not a
+        // Enforce that 'flake.bsd' is a direct attrset, not a
         // computation.
         if (mustBeTrivial &&
             !(dynamic_cast<ExprAttrs *>(e)))
@@ -1787,7 +1787,7 @@ void ExprCall::eval(EvalState & state, Env & env, Value & v)
     Value vFun;
     fun->eval(state, env, vFun);
 
-    // Empirical arity of Nixpkgs lambdas by regex e.g. ([a-zA-Z]+:(\s|(/\*.*\/)|(#.*\n))*){5}
+    // Empirical arity of Bsdpkgs lambdas by regex e.g. ([a-zA-Z]+:(\s|(/\*.*\/)|(#.*\n))*){5}
     // 2: over 4000
     // 3: about 300
     // 4: about 60
@@ -1846,10 +1846,10 @@ void EvalState::autoCallFunction(const Bindings & args, Value & fun, Value & res
                 attrs.insert(*j);
             } else if (!i.def) {
                 error<MissingArgumentError>(R"(cannot evaluate a function that has an argument without a value ('%1%')
-Nix attempted to evaluate a function as a top level expression; in
+Bsd attempted to evaluate a function as a top level expression; in
 this case it must have its arguments supplied either by default
 values, or passed explicitly with '--arg' or '--argstr'. See
-https://nixos.org/manual/nix/stable/language/constructs.html#functions.)", symbols[i.name])
+https://basedlinux.org/manual/bsd/stable/language/constructs.html#functions.)", symbols[i.name])
                     .atPos(i.pos).withFrame(*fun.lambda().env, *fun.lambda().fun).debugThrow();
             }
         }
@@ -2019,11 +2019,11 @@ void EvalState::concatLists(Value & v, size_t nrLists, Value * const * lists, co
 
 void ExprConcatStrings::eval(EvalState & state, Env & env, Value & v)
 {
-    NixStringContext context;
+    BsdStringContext context;
     std::vector<BackedStringView> s;
     size_t sSize = 0;
-    NixInt n{0};
-    NixFloat nf = 0;
+    BsdInt n{0};
+    BsdFloat nf = 0;
 
     bool first = !forceString;
     ValueType firstType = nString;
@@ -2068,7 +2068,7 @@ void ExprConcatStrings::eval(EvalState & state, Env & env, Value & v)
             if (vTmp.type() == nInt) {
                 auto newN = n + vTmp.integer();
                 if (auto checked = newN.valueChecked(); checked.has_value()) {
-                    n = NixInt(*checked);
+                    n = BsdInt(*checked);
                 } else {
                     state.error<EvalError>("integer overflow in adding %1% + %2%", n, vTmp.integer()).atPos(i_pos).debugThrow();
                 }
@@ -2184,7 +2184,7 @@ void EvalState::forceValueDeep(Value & v)
 }
 
 
-NixInt EvalState::forceInt(Value & v, const PosIdx pos, std::string_view errorCtx)
+BsdInt EvalState::forceInt(Value & v, const PosIdx pos, std::string_view errorCtx)
 {
     try {
         forceValue(v, pos);
@@ -2204,7 +2204,7 @@ NixInt EvalState::forceInt(Value & v, const PosIdx pos, std::string_view errorCt
 }
 
 
-NixFloat EvalState::forceFloat(Value & v, const PosIdx pos, std::string_view errorCtx)
+BsdFloat EvalState::forceFloat(Value & v, const PosIdx pos, std::string_view errorCtx)
 {
     try {
         forceValue(v, pos);
@@ -2295,15 +2295,15 @@ std::string_view EvalState::forceString(Value & v, const PosIdx pos, std::string
 }
 
 
-void copyContext(const Value & v, NixStringContext & context, const ExperimentalFeatureSettings & xpSettings)
+void copyContext(const Value & v, BsdStringContext & context, const ExperimentalFeatureSettings & xpSettings)
 {
     if (v.context())
         for (const char * * p = v.context(); *p; ++p)
-            context.insert(NixStringContextElem::parse(*p, xpSettings));
+            context.insert(BsdStringContextElem::parse(*p, xpSettings));
 }
 
 
-std::string_view EvalState::forceString(Value & v, NixStringContext & context, const PosIdx pos, std::string_view errorCtx, const ExperimentalFeatureSettings & xpSettings)
+std::string_view EvalState::forceString(Value & v, BsdStringContext & context, const PosIdx pos, std::string_view errorCtx, const ExperimentalFeatureSettings & xpSettings)
 {
     auto s = forceString(v, pos, errorCtx);
     copyContext(v, context, xpSettings);
@@ -2333,7 +2333,7 @@ bool EvalState::isDerivation(Value & v)
 
 
 std::optional<std::string> EvalState::tryAttrsToString(const PosIdx pos, Value & v,
-    NixStringContext & context, bool coerceMore, bool copyToStore)
+    BsdStringContext & context, bool coerceMore, bool copyToStore)
 {
     auto i = v.attrs()->find(sToString);
     if (i != v.attrs()->end()) {
@@ -2350,7 +2350,7 @@ std::optional<std::string> EvalState::tryAttrsToString(const PosIdx pos, Value &
 BackedStringView EvalState::coerceToString(
     const PosIdx pos,
     Value & v,
-    NixStringContext & context,
+    BsdStringContext & context,
     std::string_view errorCtx,
     bool coerceMore,
     bool copyToStore,
@@ -2439,9 +2439,9 @@ BackedStringView EvalState::coerceToString(
 }
 
 
-StorePath EvalState::copyPathToStore(NixStringContext & context, const SourcePath & path)
+StorePath EvalState::copyPathToStore(BsdStringContext & context, const SourcePath & path)
 {
-    if (nix::isDerivation(path.path.abs()))
+    if (bsd::isDerivation(path.path.abs()))
         error<EvalError>("file names are not allowed to end in '%1%'", drvExtension).debugThrow();
 
     auto dstPathCached = get(*srcToStore.lock(), path);
@@ -2455,7 +2455,7 @@ StorePath EvalState::copyPathToStore(NixStringContext & context, const SourcePat
                 path.resolveSymlinks(SymlinkResolution::Ancestors),
                 settings.readOnlyMode ? FetchMode::DryRun : FetchMode::Copy,
                 path.baseName(),
-                ContentAddressMethod::Raw::NixArchive,
+                ContentAddressMethod::Raw::BsdArchive,
                 nullptr,
                 repair);
             allowPath(dstPath);
@@ -2464,14 +2464,14 @@ StorePath EvalState::copyPathToStore(NixStringContext & context, const SourcePat
             return dstPath;
         }();
 
-    context.insert(NixStringContextElem::Opaque {
+    context.insert(BsdStringContextElem::Opaque {
         .path = dstPath
     });
     return dstPath;
 }
 
 
-SourcePath EvalState::coerceToPath(const PosIdx pos, Value & v, NixStringContext & context, std::string_view errorCtx)
+SourcePath EvalState::coerceToPath(const PosIdx pos, Value & v, BsdStringContext & context, std::string_view errorCtx)
 {
     try {
         forceValue(v, pos);
@@ -2504,18 +2504,18 @@ SourcePath EvalState::coerceToPath(const PosIdx pos, Value & v, NixStringContext
 }
 
 
-StorePath EvalState::coerceToStorePath(const PosIdx pos, Value & v, NixStringContext & context, std::string_view errorCtx)
+StorePath EvalState::coerceToStorePath(const PosIdx pos, Value & v, BsdStringContext & context, std::string_view errorCtx)
 {
     auto path = coerceToString(pos, v, context, errorCtx, false, false, true).toOwned();
     if (auto storePath = store->maybeParseStorePath(path))
         return *storePath;
-    error<EvalError>("path '%1%' is not in the Nix store", path).withTrace(pos, errorCtx).debugThrow();
+    error<EvalError>("path '%1%' is not in the Bsd store", path).withTrace(pos, errorCtx).debugThrow();
 }
 
 
 std::pair<SingleDerivedPath, std::string_view> EvalState::coerceToSingleDerivedPathUnchecked(const PosIdx pos, Value & v, std::string_view errorCtx, const ExperimentalFeatureSettings & xpSettings)
 {
-    NixStringContext context;
+    BsdStringContext context;
     auto s = forceString(v, context, pos, errorCtx, xpSettings);
     auto csize = context.size();
     if (csize != 1)
@@ -2524,18 +2524,18 @@ std::pair<SingleDerivedPath, std::string_view> EvalState::coerceToSingleDerivedP
             s, csize)
             .withTrace(pos, errorCtx).debugThrow();
     auto derivedPath = std::visit(overloaded {
-        [&](NixStringContextElem::Opaque && o) -> SingleDerivedPath {
+        [&](BsdStringContextElem::Opaque && o) -> SingleDerivedPath {
             return std::move(o);
         },
-        [&](NixStringContextElem::DrvDeep &&) -> SingleDerivedPath {
+        [&](BsdStringContextElem::DrvDeep &&) -> SingleDerivedPath {
             error<EvalError>(
                 "string '%s' has a context which refers to a complete source and binary closure. This is not supported at this time",
                 s).withTrace(pos, errorCtx).debugThrow();
         },
-        [&](NixStringContextElem::Built && b) -> SingleDerivedPath {
+        [&](BsdStringContextElem::Built && b) -> SingleDerivedPath {
             return std::move(b);
         },
-    }, ((NixStringContextElem &&) *context.begin()).raw);
+    }, ((BsdStringContextElem &&) *context.begin()).raw);
     return {
         std::move(derivedPath),
         std::move(s),
@@ -3029,7 +3029,7 @@ void EvalState::printStatistics()
 }
 
 
-SourcePath resolveExprPath(SourcePath path, bool addDefaultNix)
+SourcePath resolveExprPath(SourcePath path, bool addDefaultBsd)
 {
     unsigned int followCount = 0, maxFollow = 1024;
 
@@ -3044,9 +3044,9 @@ SourcePath resolveExprPath(SourcePath path, bool addDefaultNix)
         path = {path.accessor, CanonPath(p.readLink(), path.path.parent().value_or(CanonPath::root))};
     }
 
-    /* If `path' refers to a directory, append `/default.nix'. */
-    if (addDefaultNix && path.resolveSymlinks().lstat().type == SourceAccessor::tDirectory)
-        return path / "default.nix";
+    /* If `path' refers to a directory, append `/default.bsd'. */
+    if (addDefaultBsd && path.resolveSymlinks().lstat().type == SourceAccessor::tDirectory)
+        return path / "default.bsd";
 
     return path;
 }
@@ -3120,13 +3120,13 @@ SourcePath EvalState::findFile(const LookupPath & lookupPath, const std::string_
         if (res.pathExists()) return res;
     }
 
-    if (hasPrefix(path, "nix/"))
+    if (hasPrefix(path, "bsd/"))
         return {corepkgsFS, CanonPath(path.substr(3))};
 
     error<ThrownError>(
         settings.pureEval
             ? "cannot look up '<%s>' in pure evaluation mode (use '--impure' to override)"
-            : "file '%s' was not found in the Nix search path (add it using $NIX_PATH or -I)",
+            : "file '%s' was not found in the Bsd search path (add it using $NIX_PATH or -I)",
         path
     ).atPos(pos).debugThrow();
 }
@@ -3157,7 +3157,7 @@ std::optional<SourcePath> EvalState::resolveLookupPathPath(const LookupPath::Pat
             return finish(this->storePath(storePath));
         } catch (Error & e) {
             logWarning({
-                .msg = HintFmt("Nix search path entry '%1%' cannot be downloaded, ignoring", value)
+                .msg = HintFmt("Bsd search path entry '%1%' cannot be downloaded, ignoring", value)
             });
         }
     }
@@ -3189,7 +3189,7 @@ std::optional<SourcePath> EvalState::resolveLookupPathPath(const LookupPath::Pat
             return finish(std::move(path));
         else {
             logWarning({
-                .msg = HintFmt("Nix search path entry '%1%' does not exist, ignoring", value)
+                .msg = HintFmt("Bsd search path entry '%1%' does not exist, ignoring", value)
             });
         }
     }
@@ -3237,7 +3237,7 @@ DocComment EvalState::getDocCommentForPos(PosIdx pos)
     return it->second;
 }
 
-std::string ExternalValueBase::coerceToString(EvalState & state, const PosIdx & pos, NixStringContext & context, bool copyMore, bool copyToStore) const
+std::string ExternalValueBase::coerceToString(EvalState & state, const PosIdx & pos, BsdStringContext & context, bool copyMore, bool copyToStore) const
 {
     state.error<TypeError>(
         "cannot coerce %1% to a string: %2%", showType(), *this
@@ -3260,7 +3260,7 @@ void forceNoNullByte(std::string_view s, std::function<Pos()> pos)
     if (s.find('\0') != s.npos) {
         using namespace std::string_view_literals;
         auto str = replaceStrings(std::string(s), "\0"sv, "␀"sv);
-        Error error("input string '%s' cannot be represented as Nix string because it contains null bytes", str);
+        Error error("input string '%s' cannot be represented as Bsd string because it contains null bytes", str);
         if (pos) {
             error.atPos(pos());
         }

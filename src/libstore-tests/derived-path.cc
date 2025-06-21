@@ -3,10 +3,10 @@
 #include <gtest/gtest.h>
 #include <rapidcheck/gtest.h>
 
-#include "nix/store/tests/derived-path.hh"
-#include "nix/store/tests/libstore.hh"
+#include "bsd/store/tests/derived-path.hh"
+#include "bsd/store/tests/libstore.hh"
 
-namespace nix {
+namespace bsd {
 
 class DerivedPathTest : public LibStoreTest
 {
@@ -17,7 +17,7 @@ class DerivedPathTest : public LibStoreTest
  * `DerivedPath::Opaque`.
  */
 TEST_F(DerivedPathTest, opaque) {
-    std::string_view opaque = "/nix/store/g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x";
+    std::string_view opaque = "/bsd/store/g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x";
     auto elem = DerivedPath::parse(*store, opaque);
     auto * p = std::get_if<DerivedPath::Opaque>(&elem);
     ASSERT_TRUE(p);
@@ -30,7 +30,7 @@ TEST_F(DerivedPathTest, opaque) {
  * `DerivedPath::Built`.
  */
 TEST_F(DerivedPathTest, built_opaque) {
-    std::string_view built = "/nix/store/g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x.drv^bar,foo";
+    std::string_view built = "/bsd/store/g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x.drv^bar,foo";
     auto elem = DerivedPath::parse(*store, built);
     auto * p = std::get_if<DerivedPath::Built>(&elem);
     ASSERT_TRUE(p);
@@ -53,7 +53,7 @@ TEST_F(DerivedPathTest, built_built) {
     ExperimentalFeatureSettings mockXpSettings;
     mockXpSettings.set("experimental-features", "dynamic-derivations ca-derivations");
 
-    std::string_view built = "/nix/store/g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x.drv^foo^bar,baz";
+    std::string_view built = "/bsd/store/g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x.drv^foo^bar,baz";
     auto elem = DerivedPath::parse(*store, built, mockXpSettings);
     auto * p = std::get_if<DerivedPath::Built>(&elem);
     ASSERT_TRUE(p);
@@ -73,7 +73,7 @@ TEST_F(DerivedPathTest, built_built) {
  */
 TEST_F(DerivedPathTest, built_built_xp) {
     ASSERT_THROW(
-        DerivedPath::parse(*store, "/nix/store/g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x.drv^foo^bar,baz"),
+        DerivedPath::parse(*store, "/bsd/store/g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x.drv^foo^bar,baz"),
         MissingExperimentalFeature);
 }
 

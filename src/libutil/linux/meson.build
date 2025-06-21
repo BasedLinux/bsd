@@ -4,4 +4,4 @@ sources += files(
   # hack for trailing newline
 )
 
-subdir('include/nix/util')
+subdir('include/bsd/util')

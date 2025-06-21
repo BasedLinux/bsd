@@ -1,7 +1,7 @@
 #include <atomic>
-#include "nix/util/source-accessor.hh"
+#include "bsd/util/source-accessor.hh"
 
-namespace nix {
+namespace bsd {
 
 static std::atomic<size_t> nextNumber{0};
 

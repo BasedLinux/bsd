@@ -1,15 +1,15 @@
-#include "nix/util/serialise.hh"
-#include "nix/store/path-with-outputs.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/build-result.hh"
-#include "nix/store/common-protocol.hh"
-#include "nix/store/common-protocol-impl.hh"
-#include "nix/util/archive.hh"
-#include "nix/store/derivations.hh"
+#include "bsd/util/serialise.hh"
+#include "bsd/store/path-with-outputs.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/build-result.hh"
+#include "bsd/store/common-protocol.hh"
+#include "bsd/store/common-protocol-impl.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/store/derivations.hh"
 
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
 /* protocol-agnostic definitions */
 

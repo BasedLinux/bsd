@@ -2,31 +2,31 @@
 
 source common.sh
 
-TODO_NixOS
+TODO_BasedLinux
 
 clearStore
 
-drvPath=$(nix-instantiate dependencies.nix)
-outPath=$(nix-store -rvv "$drvPath")
+drvPath=$(bsd-instantiate dependencies.bsd)
+outPath=$(bsd-store -rvv "$drvPath")
 
 # Set a GC root.
 rm -f "$NIX_STATE_DIR/gcroots/foo"
 ln -sf "$outPath" "$NIX_STATE_DIR/gcroots/foo"
 
-[ "$(nix-store -q --roots "$outPath")" = "$NIX_STATE_DIR/gcroots/foo -> $outPath" ]
+[ "$(bsd-store -q --roots "$outPath")" = "$NIX_STATE_DIR/gcroots/foo -> $outPath" ]
 
-nix-store --gc --print-roots | grep "$outPath"
-nix-store --gc --print-live | grep "$outPath"
-nix-store --gc --print-dead | grep "$drvPath"
-if nix-store --gc --print-dead | grep -E "$outPath"$; then false; fi
+bsd-store --gc --print-roots | grep "$outPath"
+bsd-store --gc --print-live | grep "$outPath"
+bsd-store --gc --print-dead | grep "$drvPath"
+if bsd-store --gc --print-dead | grep -E "$outPath"$; then false; fi
 
-nix-store --gc --print-dead
+bsd-store --gc --print-dead
 
 inUse=$(readLink "$outPath/reference-to-input-2")
-if nix-store --delete "$inUse"; then false; fi
+if bsd-store --delete "$inUse"; then false; fi
 test -e "$inUse"
 
-if nix-store --delete "$outPath"; then false; fi
+if bsd-store --delete "$outPath"; then false; fi
 test -e "$outPath"
 
 for i in "$NIX_STORE_DIR"/*; do
@@ -35,7 +35,7 @@ for i in "$NIX_STORE_DIR"/*; do
     touch "$i.chroot"
 done
 
-nix-collect-garbage
+bsd-collect-garbage
 
 # Check that the root and its dependencies haven't been deleted.
 cat "$outPath/foobar"
@@ -46,7 +46,7 @@ if test -e "$drvPath"; then false; fi
 
 rm "$NIX_STATE_DIR/gcroots/foo"
 
-nix-collect-garbage
+bsd-collect-garbage
 
 # Check that the output has been GC'd.
 if test -e "$outPath/foobar"; then false; fi

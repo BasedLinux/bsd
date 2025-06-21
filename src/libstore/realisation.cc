@@ -1,10 +1,10 @@
-#include "nix/store/realisation.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/closure.hh"
-#include "nix/util/signature/local-keys.hh"
+#include "bsd/store/realisation.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/closure.hh"
+#include "bsd/util/signature/local-keys.hh"
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
 MakeError(InvalidDerivationOutputId, Error);
 
@@ -161,7 +161,7 @@ bool Realisation::isCompatibleWith(const Realisation & other) const
         if (dependentRealisations.empty() != other.dependentRealisations.empty()) {
             warn(
                 "Encountered a realisation for '%s' with an empty set of "
-                "dependencies. This is likely an artifact from an older Nix. "
+                "dependencies. This is likely an artifact from an older Bsd. "
                 "I’ll try to fix the realisation if I can",
                 id.to_string());
             return true;
@@ -199,4 +199,4 @@ RealisedPath::Set RealisedPath::closure(Store& store) const
     return ret;
 }
 
-} // namespace nix
+} // namespace bsd

@@ -1,4 +1,4 @@
-project('nix-flake', 'cpp',
+project('bsd-flake', 'cpp',
   version : files('.version'),
   default_options : [
     'cpp_std=c++2a',
@@ -12,28 +12,28 @@ project('nix-flake', 'cpp',
 
 cxx = meson.get_compiler('cpp')
 
-subdir('nix-meson-build-support/deps-lists')
+subdir('bsd-meson-build-support/deps-lists')
 
 deps_private_maybe_subproject = [
 ]
 deps_public_maybe_subproject = [
-  dependency('nix-util'),
-  dependency('nix-store'),
-  dependency('nix-fetchers'),
-  dependency('nix-expr'),
+  dependency('bsd-util'),
+  dependency('bsd-store'),
+  dependency('bsd-fetchers'),
+  dependency('bsd-expr'),
 ]
-subdir('nix-meson-build-support/subprojects')
+subdir('bsd-meson-build-support/subprojects')
 
 nlohmann_json = dependency('nlohmann_json', version : '>= 3.9')
 deps_public += nlohmann_json
 
-subdir('nix-meson-build-support/common')
+subdir('bsd-meson-build-support/common')
 
-subdir('nix-meson-build-support/generate-header')
+subdir('bsd-meson-build-support/generate-header')
 
 generated_headers = []
 foreach header : [
-  'call-flake.nix',
+  'call-flake.bsd',
 ]
   generated_headers += gen_header.process(header)
 endforeach
@@ -48,13 +48,13 @@ sources = files(
   'url-name.cc',
 )
 
-subdir('include/nix/flake')
+subdir('include/bsd/flake')
 
-subdir('nix-meson-build-support/export-all-symbols')
-subdir('nix-meson-build-support/windows-version')
+subdir('bsd-meson-build-support/export-all-symbols')
+subdir('bsd-meson-build-support/windows-version')
 
 this_library = library(
-  'nixflake',
+  'bsdflake',
   sources,
   generated_headers,
   dependencies : deps_public + deps_private + deps_other,
@@ -64,8 +64,8 @@ this_library = library(
   install : true,
 )
 
-install_headers(headers, subdir : 'nix/flake', preserve_path : true)
+install_headers(headers, subdir : 'bsd/flake', preserve_path : true)
 
 libraries_private = []
 
-subdir('nix-meson-build-support/export')
+subdir('bsd-meson-build-support/export')

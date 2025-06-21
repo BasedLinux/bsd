@@ -1,6 +1,6 @@
 configure_file(
-  input : 'nix-profile.sh.in',
-  output : 'nix-profile.sh',
+  input : 'bsd-profile.sh.in',
+  output : 'bsd-profile.sh',
   configuration : {
     'localstatedir': localstatedir,
   }
@@ -8,8 +8,8 @@ configure_file(
 
 foreach rc : [ '.sh', '.fish', '-daemon.sh', '-daemon.fish' ]
   configure_file(
-    input : 'nix-profile' + rc  + '.in',
-    output : 'nix' + rc,
+    input : 'bsd-profile' + rc  + '.in',
+    output : 'bsd' + rc,
     install : true,
     install_dir : get_option('profile-dir'),
     install_mode : 'rw-r--r--',

@@ -1,8 +1,8 @@
-#include "nix/cmd/markdown.hh"
-#include "nix/util/environment-variables.hh"
-#include "nix/util/error.hh"
-#include "nix/util/finally.hh"
-#include "nix/util/terminal.hh"
+#include "bsd/cmd/markdown.hh"
+#include "bsd/util/environment-variables.hh"
+#include "bsd/util/error.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/terminal.hh"
 
 #include "cmd-config-private.hh"
 
@@ -11,7 +11,7 @@
 #  include <lowdown.h>
 #endif
 
-namespace nix {
+namespace bsd {
 
 #if HAVE_LOWDOWN
 static std::string doRenderMarkdownToTerminal(std::string_view markdown)
@@ -84,4 +84,4 @@ std::string renderMarkdownToTerminal(std::string_view markdown)
 }
 #endif
 
-} // namespace nix
+} // namespace bsd

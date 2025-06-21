@@ -5,16 +5,16 @@
 #include <regex>
 #include <strings.h> // for strcasecmp
 
-#include "nix/util/signals.hh"
-#include "nix/util/configuration.hh"
-#include "nix/util/hash.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/configuration.hh"
+#include "bsd/util/hash.hh"
 
-#include "nix/util/git.hh"
-#include "nix/util/serialise.hh"
+#include "bsd/util/git.hh"
+#include "bsd/util/serialise.hh"
 
-namespace nix::git {
+namespace bsd::git {
 
-using namespace nix;
+using namespace bsd;
 using namespace std::string_literals;
 
 std::optional<Mode> decodeMode(RawMode m) {

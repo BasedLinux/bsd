@@ -1,14 +1,14 @@
-#include "nix/fetchers/fetch-settings.hh"
-#include "nix/fetchers/registry.hh"
-#include "nix/fetchers/tarball.hh"
-#include "nix/util/users.hh"
-#include "nix/store/globals.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/local-fs-store.hh"
+#include "bsd/fetchers/fetch-settings.hh"
+#include "bsd/fetchers/registry.hh"
+#include "bsd/fetchers/tarball.hh"
+#include "bsd/util/users.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/local-fs-store.hh"
 
 #include <nlohmann/json.hpp>
 
-namespace nix::fetchers {
+namespace bsd::fetchers {
 
 std::shared_ptr<Registry> Registry::read(
     const Settings & settings,
@@ -103,7 +103,7 @@ void Registry::remove(const Input & input)
 
 static Path getSystemRegistryPath()
 {
-    return settings.nixConfDir + "/registry.json";
+    return settings.bsdConfDir + "/registry.json";
 }
 
 static std::shared_ptr<Registry> getSystemRegistry(const Settings & settings)

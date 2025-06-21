@@ -4,15 +4,15 @@
 #include <nlohmann/json.hpp>
 #include <gtest/gtest.h>
 
-#include "nix/store/worker-protocol.hh"
-#include "nix/store/worker-protocol-connection.hh"
-#include "nix/store/worker-protocol-impl.hh"
-#include "nix/store/derived-path.hh"
-#include "nix/store/build-result.hh"
-#include "nix/store/tests/protocol.hh"
-#include "nix/util/tests/characterization.hh"
+#include "bsd/store/worker-protocol.hh"
+#include "bsd/store/worker-protocol-connection.hh"
+#include "bsd/store/worker-protocol-impl.hh"
+#include "bsd/store/derived-path.hh"
+#include "bsd/store/build-result.hh"
+#include "bsd/store/tests/protocol.hh"
+#include "bsd/util/tests/characterization.hh"
 
-namespace nix {
+namespace bsd {
 
 const char workerProtoDir[] = "worker-protocol";
 
@@ -66,7 +66,7 @@ VERSIONED_CHARACTERIZATION_TEST(
             .hash = hashString(HashAlgorithm::SHA1, "blob blob..."),
         },
         ContentAddress {
-            .method = ContentAddressMethod::Raw::NixArchive,
+            .method = ContentAddressMethod::Raw::BsdArchive,
             .hash = hashString(HashAlgorithm::SHA256, "(...)"),
         },
     }))
@@ -516,7 +516,7 @@ VERSIONED_CHARACTERIZATION_TEST(
                 *LibStoreTest::store,
                 "foo",
                 FixedOutputInfo {
-                    .method = FileIngestionMethod::NixArchive,
+                    .method = FileIngestionMethod::BsdArchive,
                     .hash = hashString(HashAlgorithm::SHA256, "(...)"),
                     .references = {
                         .others = {
@@ -624,10 +624,10 @@ VERSIONED_CHARACTERIZATION_TEST(
     1 << 8 | 33,
     (std::tuple<WorkerProto::ClientHandshakeInfo, WorkerProto::ClientHandshakeInfo> {
         {
-            .daemonNixVersion = std::optional { "foo" },
+            .daemonBsdVersion = std::optional { "foo" },
         },
         {
-            .daemonNixVersion = std::optional { "bar" },
+            .daemonBsdVersion = std::optional { "bar" },
         },
     }))
 
@@ -638,11 +638,11 @@ VERSIONED_CHARACTERIZATION_TEST(
     1 << 8 | 35,
     (std::tuple<WorkerProto::ClientHandshakeInfo, WorkerProto::ClientHandshakeInfo> {
         {
-            .daemonNixVersion = std::optional { "foo" },
+            .daemonBsdVersion = std::optional { "foo" },
             .remoteTrustsUs = std::optional { NotTrusted },
         },
         {
-            .daemonNixVersion = std::optional { "bar" },
+            .daemonBsdVersion = std::optional { "bar" },
             .remoteTrustsUs = std::optional { Trusted },
         },
     }))

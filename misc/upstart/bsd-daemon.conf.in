@@ -1,0 +1,5 @@
+description "Bsd Daemon"
+start on filesystem
+stop on shutdown
+respawn
+exec @bindir@/bsd-daemon --daemon

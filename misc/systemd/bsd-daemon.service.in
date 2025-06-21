@@ -1,0 +1,17 @@
+[Unit]
+Description=Bsd Daemon
+Documentation=man:bsd-daemon https://basedlinux.org/manual
+RequiresMountsFor=@storedir@
+RequiresMountsFor=@localstatedir@
+RequiresMountsFor=@localstatedir@/bsd/db
+ConditionPathIsReadWrite=@localstatedir@/bsd/daemon-socket
+
+[Service]
+ExecStart=@@bindir@/bsd-daemon bsd-daemon --daemon
+KillMode=process
+LimitNOFILE=1048576
+TasksMax=1048576
+Delegate=yes
+
+[Install]
+WantedBy=multi-user.target

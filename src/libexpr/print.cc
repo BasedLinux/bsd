@@ -2,15 +2,15 @@
 #include <unordered_set>
 #include <sstream>
 
-#include "nix/expr/print.hh"
-#include "nix/util/ansicolor.hh"
-#include "nix/util/signals.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/terminal.hh"
-#include "nix/util/english.hh"
-#include "nix/expr/eval.hh"
+#include "bsd/expr/print.hh"
+#include "bsd/util/ansicolor.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/terminal.hh"
+#include "bsd/util/english.hh"
+#include "bsd/expr/eval.hh"
 
-namespace nix {
+namespace bsd {
 
 void printElided(
     std::ostream & output,
@@ -75,7 +75,7 @@ printLiteralBool(std::ostream & str, bool boolean)
 //
 // This list should generally be kept in sync with `./lexer.l'.
 // You can test if a keyword needs to be added by running:
-//   $ nix eval --expr '{ <KEYWORD> = 1; }'
+//   $ bsd eval --expr '{ <KEYWORD> = 1; }'
 // For example `or' doesn't need to be quoted.
 bool isReservedKeyword(const std::string_view str)
 {
@@ -217,7 +217,7 @@ private:
 
     void printElided(unsigned int value, const std::string_view single, const std::string_view plural)
     {
-        ::nix::printElided(output, value, single, plural, options.ansiColors);
+        ::bsd::printElided(output, value, single, plural, options.ansiColors);
     }
 
     void printInt(Value & v)
@@ -274,7 +274,7 @@ private:
     {
         std::optional<StorePath> storePath;
         if (auto i = v.attrs()->get(state.sDrvPath)) {
-            NixStringContext context;
+            BsdStringContext context;
             storePath = state.coerceToStorePath(i->pos, *i->value, context, "while evaluating the drvPath of a derivation");
         }
 

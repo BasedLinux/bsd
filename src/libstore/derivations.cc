@@ -1,19 +1,19 @@
-#include "nix/store/derivations.hh"
-#include "nix/store/downstream-placeholder.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/globals.hh"
-#include "nix/util/types.hh"
-#include "nix/util/util.hh"
-#include "nix/util/split.hh"
-#include "nix/store/common-protocol.hh"
-#include "nix/store/common-protocol-impl.hh"
-#include "nix/util/strings-inline.hh"
-#include "nix/util/json-utils.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/downstream-placeholder.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/util/types.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/split.hh"
+#include "bsd/store/common-protocol.hh"
+#include "bsd/store/common-protocol-impl.hh"
+#include "bsd/util/strings-inline.hh"
+#include "bsd/util/json-utils.hh"
 
 #include <boost/container/small_vector.hpp>
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
 std::optional<StorePath> DerivationOutput::path(const StoreDirConfig & store, std::string_view drvName, OutputNameView outputName) const
 {
@@ -1004,7 +1004,7 @@ void writeDerivation(Sink & out, const StoreDirConfig & store, const BasicDeriva
 std::string hashPlaceholder(const OutputNameView outputName)
 {
     // FIXME: memoize?
-    return "/" + hashString(HashAlgorithm::SHA256, concatStrings("nix-output:", outputName)).to_string(HashFormat::Nix32, false);
+    return "/" + hashString(HashAlgorithm::SHA256, concatStrings("bsd-output:", outputName)).to_string(HashFormat::Bsd32, false);
 }
 
 void BasicDerivation::applyRewrites(const StringMap & rewrites)

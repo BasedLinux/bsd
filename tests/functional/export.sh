@@ -2,17 +2,17 @@
 
 source common.sh
 
-TODO_NixOS
+TODO_BasedLinux
 
 clearStore
 
-outPath=$(nix-build dependencies.nix --no-out-link)
+outPath=$(bsd-build dependencies.bsd --no-out-link)
 
-nix-store --export $outPath > $TEST_ROOT/exp
+bsd-store --export $outPath > $TEST_ROOT/exp
 
-nix-store --export $(nix-store -qR $outPath) > $TEST_ROOT/exp_all
+bsd-store --export $(bsd-store -qR $outPath) > $TEST_ROOT/exp_all
 
-if nix-store --export $outPath >/dev/full ; then
+if bsd-store --export $outPath >/dev/full ; then
     echo "exporting to a bad file descriptor should fail"
     exit 1
 fi
@@ -20,7 +20,7 @@ fi
 
 clearStore
 
-if nix-store --import < $TEST_ROOT/exp; then
+if bsd-store --import < $TEST_ROOT/exp; then
     echo "importing a non-closure should fail"
     exit 1
 fi
@@ -28,13 +28,13 @@ fi
 
 clearStore
 
-nix-store --import < $TEST_ROOT/exp_all
+bsd-store --import < $TEST_ROOT/exp_all
 
-nix-store --export $(nix-store -qR $outPath) > $TEST_ROOT/exp_all2
+bsd-store --export $(bsd-store -qR $outPath) > $TEST_ROOT/exp_all2
 
 
 clearStore
 
 # Regression test: the derivers in exp_all2 are empty, which shouldn't
 # cause a failure.
-nix-store --import < $TEST_ROOT/exp_all2
+bsd-store --import < $TEST_ROOT/exp_all2

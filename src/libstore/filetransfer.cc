@@ -1,12 +1,12 @@
-#include "nix/store/filetransfer.hh"
-#include "nix/store/globals.hh"
-#include "nix/util/config-global.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/s3.hh"
-#include "nix/util/compression.hh"
-#include "nix/util/finally.hh"
-#include "nix/util/callback.hh"
-#include "nix/util/signals.hh"
+#include "bsd/store/filetransfer.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/util/config-global.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/s3.hh"
+#include "bsd/util/compression.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/callback.hh"
+#include "bsd/util/signals.hh"
 
 #include "store-config-private.hh"
 #if NIX_WITH_S3_SUPPORT
@@ -14,7 +14,7 @@
 #endif
 
 #ifdef __linux__
-# include "nix/util/linux-namespaces.hh"
+# include "bsd/util/linux-namespaces.hh"
 #endif
 
 #include <unistd.h>
@@ -31,7 +31,7 @@
 
 using namespace std::string_literals;
 
-namespace nix {
+namespace bsd {
 
 const unsigned int RETRY_TIME_MS_DEFAULT = 250;
 const unsigned int RETRY_TIME_MS_TOO_MANY_REQUESTS = 60000;
@@ -267,7 +267,7 @@ struct curlFileTransfer : public FileTransfer
         {
             try {
                 act.progress(dlnow, dltotal);
-            } catch (nix::Interrupted &) {
+            } catch (bsd::Interrupted &) {
                 assert(getInterrupted());
             }
             return getInterrupted();
@@ -306,7 +306,7 @@ struct curlFileTransfer : public FileTransfer
 
         #if !defined(_WIN32) && LIBCURL_VERSION_NUM >= 0x071000
         static int cloexec_callback(void *, curl_socket_t curlfd, curlsocktype purpose) {
-            unix::closeOnExec(curlfd);
+            ubsd::closeOnExec(curlfd);
             vomit("cloexec set for fd %i", curlfd);
             return CURL_SOCKOPT_OK;
         }
@@ -345,7 +345,7 @@ struct curlFileTransfer : public FileTransfer
             curl_easy_setopt(req, CURLOPT_MAXREDIRS, 10);
             curl_easy_setopt(req, CURLOPT_NOSIGNAL, 1);
             curl_easy_setopt(req, CURLOPT_USERAGENT,
-                ("curl/" LIBCURL_VERSION " Nix/" + nixVersion +
+                ("curl/" LIBCURL_VERSION " Bsd/" + bsdVersion +
                     (fileTransferSettings.userAgentSuffix != "" ? " " + fileTransferSettings.userAgentSuffix.get() : "")).c_str());
             #if LIBCURL_VERSION_NUM >= 0x072b00
             curl_easy_setopt(req, CURLOPT_PIPEWAIT, 1);
@@ -639,7 +639,7 @@ struct curlFileTransfer : public FileTransfer
         #ifdef __linux__
         try {
             tryUnshareFilesystem();
-        } catch (nix::Error & e) {
+        } catch (bsd::Error & e) {
             e.addTrace({}, "in download thread");
             throw;
         }
@@ -658,7 +658,7 @@ struct curlFileTransfer : public FileTransfer
             int running;
             CURLMcode mc = curl_multi_perform(curlm, &running);
             if (mc != CURLM_OK)
-                throw nix::Error("unexpected error from curl_multi_perform(): %s", curl_multi_strerror(mc));
+                throw bsd::Error("unexpected error from curl_multi_perform(): %s", curl_multi_strerror(mc));
 
             /* Set the promises of any finished requests. */
             CURLMsg * msg;
@@ -690,7 +690,7 @@ struct curlFileTransfer : public FileTransfer
             vomit("download thread waiting for %d ms", sleepTimeMs);
             mc = curl_multi_wait(curlm, extraFDs, 1, sleepTimeMs, &numfds);
             if (mc != CURLM_OK)
-                throw nix::Error("unexpected error from curl_multi_wait(): %s", curl_multi_strerror(mc));
+                throw bsd::Error("unexpected error from curl_multi_wait(): %s", curl_multi_strerror(mc));
 
             nextWakeup = std::chrono::steady_clock::time_point();
 
@@ -740,7 +740,7 @@ struct curlFileTransfer : public FileTransfer
     {
         try {
             workerThreadMain();
-        } catch (nix::Interrupted & e) {
+        } catch (bsd::Interrupted & e) {
         } catch (std::exception & e) {
             printError("unexpected error in download thread: %s", e.what());
         }
@@ -757,12 +757,12 @@ struct curlFileTransfer : public FileTransfer
         if (item->request.data
             && !hasPrefix(item->request.uri, "http://")
             && !hasPrefix(item->request.uri, "https://"))
-            throw nix::Error("uploading to '%s' is not supported", item->request.uri);
+            throw bsd::Error("uploading to '%s' is not supported", item->request.uri);
 
         {
             auto state(state_.lock());
             if (state->quit)
-                throw nix::Error("cannot enqueue download request because the download thread is shutting down");
+                throw bsd::Error("cannot enqueue download request because the download thread is shutting down");
             state->incoming.push(item);
         }
         #ifndef _WIN32 // TODO need graceful async exit support on Windows?
@@ -777,7 +777,7 @@ struct curlFileTransfer : public FileTransfer
 
         auto slash = path.find('/', 5); // 5 is the length of "s3://" prefix
             if (slash == std::string::npos)
-                throw nix::Error("bad S3 URI '%s'", path);
+                throw bsd::Error("bad S3 URI '%s'", path);
 
         std::string bucketName(path, 5, slash - 5);
         std::string key(path, slash + 1);
@@ -812,7 +812,7 @@ struct curlFileTransfer : public FileTransfer
                 res.urls.push_back(request.uri);
                 callback(std::move(res));
 #else
-                throw nix::Error("cannot download '%s' because Nix is not built with S3 support", request.uri);
+                throw bsd::Error("cannot download '%s' because Bsd is not built with S3 support", request.uri);
 #endif
             } catch (...) { callback.rethrow(); }
             return;
@@ -876,7 +876,7 @@ void FileTransfer::download(
        that would cause the sink to execute on the fileTransfer
        thread. If 'sink' is a coroutine, this will fail. Also, if the
        sink is expensive (e.g. one that does decompression and writing
-       to the Nix store), it would stall the download thread too much.
+       to the Bsd store), it would stall the download thread too much.
        Therefore we use a buffer to communicate data between the
        download thread and the calling thread. */
 
@@ -978,7 +978,7 @@ FileTransferError::FileTransferError(FileTransfer::Error error, std::optional<st
     : Error(args...), error(error), response(response)
 {
     const auto hf = HintFmt(args...);
-    // FIXME: Due to https://github.com/NixOS/nix/issues/3841 we don't know how
+    // FIXME: Due to https://github.com/BasedLinux/bsd/issues/3841 we don't know how
     // to print different messages for different verbosity levels. For now
     // we add some heuristics for detecting when we want to show the response.
     if (response && (response->size() < 1024 || response->find("<html>") != std::string::npos))

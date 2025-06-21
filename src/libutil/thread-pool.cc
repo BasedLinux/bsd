@@ -1,8 +1,8 @@
-#include "nix/util/thread-pool.hh"
-#include "nix/util/signals.hh"
-#include "nix/util/util.hh"
+#include "bsd/util/thread-pool.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/util.hh"
 
-namespace nix {
+namespace bsd {
 
 ThreadPool::ThreadPool(size_t _maxThreads)
     : maxThreads(_maxThreads)
@@ -83,7 +83,7 @@ void ThreadPool::doWork(bool mainThread)
 
 #ifndef _WIN32 // Does Windows need anything similar for async exit handling?
     if (!mainThread)
-        unix::interruptCheck = [&]() { return (bool) quit; };
+        ubsd::interruptCheck = [&]() { return (bool) quit; };
 #endif
 
     bool didWork = false;

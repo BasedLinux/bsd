@@ -3,7 +3,7 @@
 > **Warning**
 >
 > This JSON format is currently
-> [**experimental**](@docroot@/development/experimental-features.md#xp-feature-nix-command)
+> [**experimental**](@docroot@/development/experimental-features.md#xp-feature-bsd-command)
 > and subject to change.
 
 The JSON serialization of a
@@ -28,7 +28,7 @@ is a JSON object with the following fields:
     Valid method strings are:
 
     - [`flat`](@docroot@/store/store-object/content-address.md#method-flat)
-    - [`nar`](@docroot@/store/store-object/content-address.md#method-nix-archive)
+    - [`nar`](@docroot@/store/store-object/content-address.md#method-bsd-archive)
     - [`text`](@docroot@/store/store-object/content-address.md#method-text)
     - [`git`](@docroot@/store/store-object/content-address.md#method-git)
 
@@ -52,7 +52,7 @@ is a JSON object with the following fields:
   > ```json
   > "outputs": {
   >   "out": {
-  >     "path": "/nix/store/2543j7c6jn75blc3drf4g5vhb1rhdq29-source",
+  >     "path": "/bsd/store/2543j7c6jn75blc3drf4g5vhb1rhdq29-source",
   >     "method": "nar",
   >     "hashAlgo": "sha256",
   >     "hash": "6fc80dcc62179dbc12fc0b5881275898f93444833d21b89dfe5f7fbcbb1d0d62"
@@ -70,8 +70,8 @@ is a JSON object with the following fields:
   >
   > ```json
   > "inputDrvs": {
-  >   "/nix/store/6lkh5yi7nlb7l6dr8fljlli5zfd9hq58-curl-7.73.0.drv": ["dev"],
-  >   "/nix/store/fn3kgnfzl5dzym26j8g907gq3kbm8bfh-unzip-6.0.drv": ["out"]
+  >   "/bsd/store/6lkh5yi7nlb7l6dr8fljlli5zfd9hq58-curl-7.73.0.drv": ["dev"],
+  >   "/bsd/store/fn3kgnfzl5dzym26j8g907gq3kbm8bfh-unzip-6.0.drv": ["out"]
   > }
   > ```
 
@@ -84,7 +84,7 @@ is a JSON object with the following fields:
 * `builder`:
   The absolute path of the program to be executed to run the build.
   Typically this is the `bash` shell
-  (e.g. `/nix/store/r3j288vpmczbl500w6zz89gyfa4nr0b1-bash-4.4-p23/bin/bash`).
+  (e.g. `/bsd/store/r3j288vpmczbl500w6zz89gyfa4nr0b1-bash-4.4-p23/bin/bash`).
 
 * `args`:
   The command-line arguments passed to the `builder`.

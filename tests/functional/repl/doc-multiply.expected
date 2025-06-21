@@ -1,17 +1,17 @@
-Nix <nix version>
+Bsd <bsd version>
 Type :? for help.
 
-nix-repl> :l doc-comments.nix
+bsd-repl> :l doc-comments.bsd
 Added <number omitted> variables.
 
-nix-repl> :doc multiply
+bsd-repl> :doc multiply
 Function `multiply`\
-  … defined at /path/to/tests/functional/repl/doc-comments.nix:10:14
+  … defined at /path/to/tests/functional/repl/doc-comments.bsd:10:14
 
 
 Perform *arithmetic* multiplication. It's kind of like repeated **addition**, very neat.
 
-```nix
+```bsd
 multiply 2 3
 => 6
 ```

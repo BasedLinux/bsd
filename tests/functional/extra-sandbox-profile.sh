@@ -12,7 +12,7 @@ testSandboxProfile () (
     sandboxMode="$1"
 
     rm -f "${DEST_FILE}"
-    nix-build --no-out-link ./extra-sandbox-profile.nix \
+    bsd-build --no-out-link ./extra-sandbox-profile.bsd \
         --option sandbox "$sandboxMode" \
         --argstr seed "$RANDOM" \
         --argstr destFile "${DEST_FILE}"

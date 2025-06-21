@@ -1,10 +1,10 @@
-#include "nix/util/args.hh"
-#include "nix/util/args/root.hh"
-#include "nix/util/hash.hh"
-#include "nix/util/environment-variables.hh"
-#include "nix/util/signals.hh"
-#include "nix/util/users.hh"
-#include "nix/util/json-utils.hh"
+#include "bsd/util/args.hh"
+#include "bsd/util/args/root.hh"
+#include "bsd/util/hash.hh"
+#include "bsd/util/environment-variables.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/users.hh"
+#include "bsd/util/json-utils.hh"
 
 #include <fstream>
 #include <string>
@@ -13,7 +13,7 @@
 # include <glob.h>
 #endif
 
-namespace nix {
+namespace bsd {
 
 void Args::addFlag(Flag && flag_)
 {
@@ -143,11 +143,11 @@ struct ParseUnquoted : public Parser {
                     return;
                 }
                 else
-                    throw Error("single backtick is not a supported syntax in the nix shebang.");
+                    throw Error("single backtick is not a supported syntax in the bsd shebang.");
 
             // reserved characters
             // meaning to be determined, or may be reserved indefinitely so that
-            // #!nix syntax looks unambiguous
+            // #!bsd syntax looks unambiguous
             case '$':
             case '*':
             case '~':
@@ -164,11 +164,11 @@ struct ParseUnquoted : public Parser {
             case '\'':
             case '"':
             case '\\':
-                throw Error("unsupported unquoted character in nix shebang: " + std::string(1, remaining[0]) + ". Use double backticks to escape?");
+                throw Error("unsupported unquoted character in bsd shebang: " + std::string(1, remaining[0]) + ". Use double backticks to escape?");
 
             case '#':
                 if (acc.empty()) {
-                    throw Error ("unquoted nix shebang argument cannot start with #. Use double backticks to escape?");
+                    throw Error ("unquoted bsd shebang argument cannot start with #. Use double backticks to escape?");
                 } else {
                     acc += remaining[0];
                     remaining = remaining.substr(1);
@@ -186,7 +186,7 @@ struct ParseUnquoted : public Parser {
 
 void ParseQuoted::operator()(std::shared_ptr<Parser> &state, Strings & r) {
     if (remaining.empty()) {
-        throw Error("unterminated quoted string in nix shebang");
+        throw Error("unterminated quoted string in bsd shebang");
     }
     switch (remaining[0]) {
         case ' ':
@@ -287,9 +287,9 @@ void RootArgs::parseCmdline(const Strings & _cmdline, bool allowShebang)
                     line = chomp(line);
 
                     std::smatch match;
-                    // We match one space after `nix` so that we preserve indentation.
+                    // We match one space after `bsd` so that we preserve indentation.
                     // No space is necessary for an empty line. An empty line has basically no effect.
-                    if (std::regex_match(line, match, std::regex("^#!\\s*nix(:? |$)(.*)$")))
+                    if (std::regex_match(line, match, std::regex("^#!\\s*bsd(:? |$)(.*)$")))
                         shebangContent += std::string_view{match[2].first, match[2].second} + "\n";
                 }
                 for (const auto & word : parseShebangContent(shebangContent)) {
@@ -579,7 +579,7 @@ Strings argvToStrings(int argc, char * * argv)
 
 std::optional<ExperimentalFeature> Command::experimentalFeature ()
 {
-    return { Xp::NixCommand };
+    return { Xp::BsdCommand };
 }
 
 MultiCommand::MultiCommand(std::string_view commandName, const Commands & commands_)

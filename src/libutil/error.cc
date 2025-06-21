@@ -1,17 +1,17 @@
 #include <algorithm>
 
-#include "nix/util/error.hh"
-#include "nix/util/environment-variables.hh"
-#include "nix/util/signals.hh"
-#include "nix/util/terminal.hh"
-#include "nix/util/position.hh"
+#include "bsd/util/error.hh"
+#include "bsd/util/environment-variables.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/terminal.hh"
+#include "bsd/util/position.hh"
 
 #include <iostream>
 #include <optional>
-#include "nix/util/serialise.hh"
+#include "bsd/util/serialise.hh"
 #include <sstream>
 
-namespace nix {
+namespace bsd {
 
 void BaseError::addTrace(std::shared_ptr<const Pos> && e, HintFmt hint, TracePrint print)
 {
@@ -21,7 +21,7 @@ void BaseError::addTrace(std::shared_ptr<const Pos> && e, HintFmt hint, TracePri
 void throwExceptionSelfCheck()
 {
     // This is meant to be caught in initLibUtil()
-    throw Error("C++ exception handling is broken. This would appear to be a problem with the way Nix was compiled and/or linked and/or loaded.");
+    throw Error("C++ exception handling is broken. This would appear to be a problem with the way Bsd was compiled and/or linked and/or loaded.");
 }
 
 // c++ std::exception descendants must have a 'const char* what()' function.
@@ -214,7 +214,7 @@ void printSkippedTracesMaybe(
             // - 1 entry of A
             // - (9 duplicate frames omitted)
             //
-            // See: `tests/functional/lang/eval-fail-mutual-recursion.nix`
+            // See: `tests/functional/lang/eval-fail-mutual-recursion.bsd`
             tracesSeen.clear();
         }
     }

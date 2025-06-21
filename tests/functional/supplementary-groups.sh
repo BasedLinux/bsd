@@ -7,7 +7,7 @@ requireSandboxSupport
 if ! command -p -v unshare; then skipTest "Need unshare"; fi
 needLocalStore "The test uses --store always so we would just be bypassing the daemon"
 
-TODO_NixOS
+TODO_BasedLinux
 
 execUnshare <<EOF
   source common.sh
@@ -21,7 +21,7 @@ execUnshare <<EOF
     mkdir -p \$NIX_REMOTE
   }
 
-  cmd=(nix-build ./hermetic.nix --arg busybox "$busybox" --arg seed 1 --no-out-link)
+  cmd=(bsd-build ./hermetic.bsd --arg busybox "$busybox" --arg seed 1 --no-out-link)
 
   # Fails with default setting
   setLocalStore store1

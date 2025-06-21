@@ -1,35 +1,35 @@
-#include "nix/store/globals.hh"
-#include "nix/cmd/installables.hh"
-#include "nix/cmd/installable-derived-path.hh"
-#include "nix/cmd/installable-attr-path.hh"
-#include "nix/cmd/installable-flake.hh"
-#include "nix/store/outputs-spec.hh"
-#include "nix/util/users.hh"
-#include "nix/util/util.hh"
-#include "nix/cmd/command.hh"
-#include "nix/expr/attr-path.hh"
-#include "nix/cmd/common-eval-args.hh"
-#include "nix/store/derivations.hh"
-#include "nix/expr/eval-inline.hh"
-#include "nix/expr/eval.hh"
-#include "nix/expr/eval-settings.hh"
-#include "nix/expr/get-drvs.hh"
-#include "nix/store/store-api.hh"
-#include "nix/main/shared.hh"
-#include "nix/flake/flake.hh"
-#include "nix/expr/eval-cache.hh"
-#include "nix/util/url.hh"
-#include "nix/fetchers/registry.hh"
-#include "nix/store/build-result.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/cmd/installables.hh"
+#include "bsd/cmd/installable-derived-path.hh"
+#include "bsd/cmd/installable-attr-path.hh"
+#include "bsd/cmd/installable-flake.hh"
+#include "bsd/store/outputs-spec.hh"
+#include "bsd/util/users.hh"
+#include "bsd/util/util.hh"
+#include "bsd/cmd/command.hh"
+#include "bsd/expr/attr-path.hh"
+#include "bsd/cmd/common-eval-args.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/expr/eval-inline.hh"
+#include "bsd/expr/eval.hh"
+#include "bsd/expr/eval-settings.hh"
+#include "bsd/expr/get-drvs.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/main/shared.hh"
+#include "bsd/flake/flake.hh"
+#include "bsd/expr/eval-cache.hh"
+#include "bsd/util/url.hh"
+#include "bsd/fetchers/registry.hh"
+#include "bsd/store/build-result.hh"
 
 #include <regex>
 #include <queue>
 
 #include <nlohmann/json.hpp>
 
-#include "nix/util/strings-inline.hh"
+#include "bsd/util/strings-inline.hh"
 
-namespace nix {
+namespace bsd {
 
 void completeFlakeInputAttrPath(
     AddCompletions & completions,
@@ -56,12 +56,12 @@ MixFlakeOptions::MixFlakeOptions()
 
     > **DEPRECATED**
     >
-    > Use [`nix flake update`](@docroot@/command-ref/new-cli/nix3-flake-update.md) instead.
+    > Use [`bsd flake update`](@docroot@/command-ref/new-cli/bsd3-flake-update.md) instead.
         )",
         .category = category,
         .handler = {[&]() {
             lockFlags.recreateLockFile = true;
-            warn("'--recreate-lock-file' is deprecated and will be removed in a future version; use 'nix flake update' instead.");
+            warn("'--recreate-lock-file' is deprecated and will be removed in a future version; use 'bsd flake update' instead.");
         }},
     });
 
@@ -109,7 +109,7 @@ MixFlakeOptions::MixFlakeOptions()
 
     > **DEPRECATED**
     >
-    > Use [`nix flake update`](@docroot@/command-ref/new-cli/nix3-flake-update.md) instead.
+    > Use [`bsd flake update`](@docroot@/command-ref/new-cli/bsd3-flake-update.md) instead.
         )",
         .category = category,
         .labels = {"input-path"},
@@ -124,7 +124,7 @@ MixFlakeOptions::MixFlakeOptions()
 
     addFlag({
         .longName = "override-input",
-        .description = "Override a specific flake input (e.g. `dwarffs/nixpkgs`). This implies `--no-write-lock-file`.",
+        .description = "Override a specific flake input (e.g. `dwarffs/bsdpkgs`). This implies `--no-write-lock-file`.",
         .category = category,
         .labels = {"input-path", "flake-url"},
         .handler = {[&](std::string inputAttrPath, std::string flakeRef) {
@@ -198,8 +198,8 @@ SourceExprCommand::SourceExprCommand()
         .longName = "file",
         .shortName = 'f',
         .description =
-            "Interpret [*installables*](@docroot@/command-ref/new-cli/nix.md#installables) as attribute paths relative to the Nix expression stored in *file*. "
-            "If *file* is the character -, then a Nix expression is read from standard input. "
+            "Interpret [*installables*](@docroot@/command-ref/new-cli/bsd.md#installables) as attribute paths relative to the Bsd expression stored in *file*. "
+            "If *file* is the character -, then a Bsd expression is read from standard input. "
             "Implies `--impure`.",
         .category = installablesCategory,
         .labels = {"file"},
@@ -209,7 +209,7 @@ SourceExprCommand::SourceExprCommand()
 
     addFlag({
         .longName = "expr",
-        .description = "Interpret [*installables*](@docroot@/command-ref/new-cli/nix.md#installables) as attribute paths relative to the Nix expression *expr*.",
+        .description = "Interpret [*installables*](@docroot@/command-ref/new-cli/bsd.md#installables) as attribute paths relative to the Bsd expression *expr*.",
         .category = installablesCategory,
         .labels = {"expr"},
         .handler = {&expr},
@@ -242,7 +242,7 @@ Strings SourceExprCommand::getDefaultFlakeAttrPathPrefixes()
         // As a convenience, look for the attribute in
         // 'outputs.packages'.
         "packages." + settings.thisSystem.get() + ".",
-        // As a temporary hack until Nixpkgs is properly converted
+        // As a temporary hack until Bsdpkgs is properly converted
         // to provide a clean 'packages' set, look in 'legacyPackages'.
         "legacyPackages." + settings.thisSystem.get() + "."
     };
@@ -471,11 +471,11 @@ ref<eval_cache::EvalCache> openEvalCache(
     if (fingerprint) {
         auto search = state.evalCaches.find(fingerprint.value());
         if (search == state.evalCaches.end()) {
-            search = state.evalCaches.emplace(fingerprint.value(), make_ref<nix::eval_cache::EvalCache>(fingerprint, state, rootLoader)).first;
+            search = state.evalCaches.emplace(fingerprint.value(), make_ref<bsd::eval_cache::EvalCache>(fingerprint, state, rootLoader)).first;
         }
         return search->second;
     } else {
-        return make_ref<nix::eval_cache::EvalCache>(std::nullopt, state, rootLoader);
+        return make_ref<bsd::eval_cache::EvalCache>(std::nullopt, state, rootLoader);
     }
 }
 
@@ -849,7 +849,7 @@ RawInstallablesCommand::RawInstallablesCommand()
 void RawInstallablesCommand::applyDefaultInstallables(std::vector<std::string> & rawInstallables)
 {
     if (rawInstallables.empty()) {
-        // FIXME: commands like "nix profile add" should not have a
+        // FIXME: commands like "bsd profile add" should not have a
         // default, probably.
         rawInstallables.push_back(".");
     }

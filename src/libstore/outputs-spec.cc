@@ -1,13 +1,13 @@
 #include <regex>
 #include <nlohmann/json.hpp>
 
-#include "nix/util/util.hh"
-#include "nix/util/regex-combinators.hh"
-#include "nix/store/outputs-spec.hh"
-#include "nix/store/path-regex.hh"
-#include "nix/util/strings-inline.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/regex-combinators.hh"
+#include "bsd/store/outputs-spec.hh"
+#include "bsd/store/path-regex.hh"
+#include "bsd/util/strings-inline.hh"
 
-namespace nix {
+namespace bsd {
 
 bool OutputsSpec::contains(const std::string & outputName) const
 {
@@ -151,7 +151,7 @@ bool OutputsSpec::isSubsetOf(const OutputsSpec & that) const
 
 namespace nlohmann {
 
-using namespace nix;
+using namespace bsd;
 
 #ifndef DOXYGEN_SKIP
 

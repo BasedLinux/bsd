@@ -5,7 +5,7 @@ R"(
 This store type is a variation of the [local store] designed to leverage Linux's [Overlay Filesystem](https://docs.kernel.org/filesystems/overlayfs.html) (OverlayFS for short).
 Just as OverlayFS combines a lower and upper filesystem by treating the upper one as a patch against the lower, the local overlay store combines a lower store with an upper almost-[local store].
 ("almost" because while the upper filesystems for OverlayFS is valid on its own, the upper almost-store is not a valid local store on its own because some references will dangle.)
-To use this store, you will first need to configure an OverlayFS mountpoint [appropriately](#example-filesystem-layout) as Nix will not do this for you (though it will verify the mountpoint is configured correctly).
+To use this store, you will first need to configure an OverlayFS mountpoint [appropriately](#example-filesystem-layout) as Bsd will not do this for you (though it will verify the mountpoint is configured correctly).
 
 ### Conceptual parts of a local overlay store
 
@@ -23,7 +23,7 @@ The parts of a local overlay store are as follows:
 
   The local overlay store never tries to modify the lower store in any way.
   Something else could modify the lower store, but there are restrictions on this
-  Nix itself requires that this store only grow, and not change in other ways.
+  Bsd itself requires that this store only grow, and not change in other ways.
   For example, new store objects can be added, but deleting or modifying store objects is not allowed in general, because that will confuse and corrupt any local overlay store using those objects.
   (In addition, the underlying filesystem overlay mechanism may impose additional restrictions, see below.)
 
@@ -36,7 +36,7 @@ The parts of a local overlay store are as follows:
 
     This is the directory used/exposed by the lower store.
 
-    As specified above, Nix requires the local store can only grow not change in other ways.
+    As specified above, Bsd requires the local store can only grow not change in other ways.
     Linux's OverlayFS in addition imposes the further requirement that this directory cannot change at all.
     That means that, while any local overlay store exists that is using this store as a lower store, this directory must not change.
 
@@ -76,8 +76,8 @@ The parts of a local overlay store are as follows:
     This contains all the store objects from each of the two directories.
 
     The lower store directory and upper layer directory are combined via OverlayFS to create this directory.
-    Nix doesn't do this itself, because it typically wouldn't have the permissions to do so, so it is the responsibility of the user to set this up first.
-    Nix can, however, optionally check that the OverlayFS mount settings appear as expected, matching Nix's own settings.
+    Bsd doesn't do this itself, because it typically wouldn't have the permissions to do so, so it is the responsibility of the user to set this up first.
+    Bsd can, however, optionally check that the OverlayFS mount settings appear as expected, matching Bsd's own settings.
 
   - **Upper SQLite database**:
 
@@ -99,9 +99,9 @@ Here is a worked out example of usage, following the concepts in the previous se
 
 Say we have the following paths:
 
-- `/mnt/example/merged-store/nix/store`
+- `/mnt/example/merged-store/bsd/store`
 
-- `/mnt/example/store-a/nix/store`
+- `/mnt/example/store-a/bsd/store`
 
 - `/mnt/example/store-b`
 
@@ -111,21 +111,21 @@ Then the following store URI can be used to access a local-overlay store at `/mn
 local-overlay://?root=/mnt/example/merged-store&lower-store=/mnt/example/store-a&upper-layer=/mnt/example/store-b
 ```
 
-The lower store directory is located at `/mnt/example/store-a/nix/store`, while the upper layer is at `/mnt/example/store-b`.
+The lower store directory is located at `/mnt/example/store-a/bsd/store`, while the upper layer is at `/mnt/example/store-b`.
 
 Before accessing the overlay store you will need to ensure the OverlayFS mount is set up correctly:
 
 ```shell
 mount -t overlay overlay \
-  -o lowerdir="/mnt/example/store-a/nix/store" \
+  -o lowerdir="/mnt/example/store-a/bsd/store" \
   -o upperdir="/mnt/example/store-b" \
   -o workdir="/mnt/example/workdir" \
-  "/mnt/example/merged-store/nix/store"
+  "/mnt/example/merged-store/bsd/store"
 ```
 
 Note that OverlayFS requires `/mnt/example/workdir` to be on the same volume as the `upperdir`.
 
-By default, Nix will check that the mountpoint as been set up correctly and fail with an error if it has not.
+By default, Bsd will check that the mountpoint as been set up correctly and fail with an error if it has not.
 You can override this behaviour by passing [`check-mount=false`](#store-experimental-local-overlay-store-check-mount) if you need to.
 
 )"

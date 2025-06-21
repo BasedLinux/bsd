@@ -1,7 +1,7 @@
-#include "nix/fetchers/store-path-accessor.hh"
-#include "nix/store/store-api.hh"
+#include "bsd/fetchers/store-path-accessor.hh"
+#include "bsd/store/store-api.hh"
 
-namespace nix {
+namespace bsd {
 
 ref<SourceAccessor> makeStorePathAccessor(ref<Store> store, const StorePath & storePath)
 {

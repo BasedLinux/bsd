@@ -1,10 +1,10 @@
-#include "nix/util/environment-variables.hh"
-#include "nix/util/executable-path.hh"
-#include "nix/util/strings-inline.hh"
-#include "nix/util/util.hh"
-#include "nix/util/file-path-impl.hh"
+#include "bsd/util/environment-variables.hh"
+#include "bsd/util/executable-path.hh"
+#include "bsd/util/strings-inline.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/file-path-impl.hh"
 
-namespace nix {
+namespace bsd {
 
 constexpr static const OsStringView path_var_separator{
     &ExecutablePath::separator,
@@ -92,4 +92,4 @@ std::filesystem::path ExecutablePath::findPath(
     }
 }
 
-} // namespace nix
+} // namespace bsd

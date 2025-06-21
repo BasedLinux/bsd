@@ -6,18 +6,18 @@
 
 source common.sh
 
-TODO_NixOS
+TODO_BasedLinux
 
 clearStore
 
 startDaemon
 
 # Determine the output path of the "good" derivation.
-goodOut=$(nix-store -q $(nix-instantiate ./secure-drv-outputs.nix -A good))
+goodOut=$(bsd-store -q $(bsd-instantiate ./secure-drv-outputs.bsd -A good))
 
 # Instantiate the "bad" derivation.
-badDrv=$(nix-instantiate ./secure-drv-outputs.nix -A bad)
-badOut=$(nix-store -q $badDrv)
+badDrv=$(bsd-instantiate ./secure-drv-outputs.bsd -A bad)
+badOut=$(bsd-store -q $badDrv)
 
 # Rewrite the bad derivation to produce the output path of the good
 # derivation.
@@ -26,12 +26,12 @@ sed -e "s|$badOut|$goodOut|g" < $badDrv > $TEST_ROOT/bad.drv
 
 # Add the manipulated derivation to the store and build it.  This
 # should fail.
-if badDrv2=$(nix-store --add $TEST_ROOT/bad.drv); then
-    nix-store -r "$badDrv2"
+if badDrv2=$(bsd-store --add $TEST_ROOT/bad.drv); then
+    bsd-store -r "$badDrv2"
 fi
 
 # Now build the good derivation.
-goodOut2=$(nix-build ./secure-drv-outputs.nix -A good --no-out-link)
+goodOut2=$(bsd-build ./secure-drv-outputs.bsd -A good --no-out-link)
 test "$goodOut" = "$goodOut2"
 
 if ! test -e "$goodOut"/good; then

@@ -1,8 +1,8 @@
-#include "nix/util/cgroup.hh"
-#include "nix/util/signals.hh"
-#include "nix/util/util.hh"
-#include "nix/util/file-system.hh"
-#include "nix/util/finally.hh"
+#include "bsd/util/cgroup.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/util/finally.hh"
 
 #include <chrono>
 #include <cmath>
@@ -13,7 +13,7 @@
 #include <dirent.h>
 #include <mntent.h>
 
-namespace nix {
+namespace bsd {
 
 std::optional<Path> getCgroupFS()
 {

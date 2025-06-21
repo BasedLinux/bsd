@@ -1,4 +1,4 @@
-project('nix-util-tests', 'cpp',
+project('bsd-util-tests', 'cpp',
   version : files('.version'),
   default_options : [
     'cpp_std=c++2a',
@@ -12,19 +12,19 @@ project('nix-util-tests', 'cpp',
 
 cxx = meson.get_compiler('cpp')
 
-subdir('nix-meson-build-support/deps-lists')
+subdir('bsd-meson-build-support/deps-lists')
 
 deps_private_maybe_subproject = [
-  dependency('nix-util'),
-  dependency('nix-util-c'),
-  dependency('nix-util-test-support'),
+  dependency('bsd-util'),
+  dependency('bsd-util-c'),
+  dependency('bsd-util-test-support'),
 ]
 deps_public_maybe_subproject = [
 ]
-subdir('nix-meson-build-support/subprojects')
+subdir('bsd-meson-build-support/subprojects')
 
-subdir('nix-meson-build-support/export-all-symbols')
-subdir('nix-meson-build-support/windows-version')
+subdir('bsd-meson-build-support/export-all-symbols')
+subdir('bsd-meson-build-support/windows-version')
 
 rapidcheck = dependency('rapidcheck')
 deps_private += rapidcheck
@@ -40,7 +40,7 @@ config_priv_h = configure_file(
   output : 'util-tests-config.hh',
 )
 
-subdir('nix-meson-build-support/common')
+subdir('bsd-meson-build-support/common')
 
 sources = files(
   'args.cc',
@@ -60,7 +60,7 @@ sources = files(
   'logging.cc',
   'lru-cache.cc',
   'monitorfdhup.cc',
-  'nix_api_util.cc',
+  'bsd_api_util.cc',
   'pool.cc',
   'position.cc',
   'processes.cc',

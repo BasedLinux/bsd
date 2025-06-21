@@ -1,12 +1,12 @@
 #include <nlohmann/json.hpp>
 #include <gtest/gtest.h>
 
-#include "nix/fetchers/fetchers.hh"
-#include "nix/fetchers/fetch-settings.hh"
-#include "nix/util/json-utils.hh"
-#include "nix/util/tests/characterization.hh"
+#include "bsd/fetchers/fetchers.hh"
+#include "bsd/fetchers/fetch-settings.hh"
+#include "bsd/util/json-utils.hh"
+#include "bsd/util/tests/characterization.hh"
 
-namespace nix::fetchers {
+namespace bsd::fetchers {
 
 using nlohmann::json;
 

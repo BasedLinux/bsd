@@ -1,19 +1,19 @@
-#include "nix/fetchers/fetchers.hh"
-#include "nix/util/processes.hh"
-#include "nix/util/users.hh"
-#include "nix/fetchers/cache.hh"
-#include "nix/store/globals.hh"
-#include "nix/util/tarfile.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/url-parts.hh"
-#include "nix/fetchers/store-path-accessor.hh"
-#include "nix/fetchers/fetch-settings.hh"
+#include "bsd/fetchers/fetchers.hh"
+#include "bsd/util/processes.hh"
+#include "bsd/util/users.hh"
+#include "bsd/fetchers/cache.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/util/tarfile.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/url-parts.hh"
+#include "bsd/fetchers/store-path-accessor.hh"
+#include "bsd/fetchers/fetch-settings.hh"
 
 #include <sys/time.h>
 
 using namespace std::string_literals;
 
-namespace nix::fetchers {
+namespace bsd::fetchers {
 
 static RunOptions hgOptions(const Strings & args)
 {
@@ -217,7 +217,7 @@ struct MercurialInputScheme : InputScheme
                 auto storePath = store->addToStore(
                     input.getName(),
                     {getFSSourceAccessor(), CanonPath(actualPath)},
-                    ContentAddressMethod::Raw::NixArchive, HashAlgorithm::SHA256, {},
+                    ContentAddressMethod::Raw::BsdArchive, HashAlgorithm::SHA256, {},
                     filter);
 
                 return storePath;
@@ -263,7 +263,7 @@ struct MercurialInputScheme : InputScheme
                 return makeResult(res->value, res->storePath);
         }
 
-        Path cacheDir = fmt("%s/hg/%s", getCacheDir(), hashString(HashAlgorithm::SHA256, actualUrl).to_string(HashFormat::Nix32, false));
+        Path cacheDir = fmt("%s/hg/%s", getCacheDir(), hashString(HashAlgorithm::SHA256, actualUrl).to_string(HashFormat::Bsd32, false));
 
         /* If this is a commit hash that we already have, we don't
            have to pull again. */

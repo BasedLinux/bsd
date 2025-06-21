@@ -20,9 +20,9 @@ else
     flags=(--arg contentAddress true --extra-experimental-features ca-derivations)
 fi
 
-for nixFile in derivation/*.nix; do
-    drvPath=$(env -u NIX_STORE nix-instantiate --store "$store" --pure-eval "${flags[@]}" --expr "$(< "$nixFile")")
-    testName=$(basename "$nixFile" .nix)
+for bsdFile in derivation/*.bsd; do
+    drvPath=$(env -u NIX_STORE bsd-instantiate --store "$store" --pure-eval "${flags[@]}" --expr "$(< "$bsdFile")")
+    testName=$(basename "$bsdFile" .bsd)
     got="${store}${drvPath}"
     expected="derivation/${drvDir}/${testName}.drv"
     diffAndAcceptInner "$testName" "$got" "$expected"

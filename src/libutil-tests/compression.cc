@@ -1,7 +1,7 @@
-#include "nix/util/compression.hh"
+#include "bsd/util/compression.hh"
 #include <gtest/gtest.h>
 
-namespace nix {
+namespace bsd {
 
     /* ----------------------------------------------------------------------------
      * compress / decompress

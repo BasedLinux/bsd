@@ -8,26 +8,26 @@ follow to ensure a consistent and approachable user experience.
 
 ## Overview
 
-`nix` command provides a single entry to a number of sub-commands that help
+`bsd` command provides a single entry to a number of sub-commands that help
 **developers and system administrators** in the life-cycle of a software
 project. We particularly need to pay special attention to help and assist new
-users of Nix.
+users of Bsd.
 
 # Naming the `COMMANDS`
 
 Words matter. Naming is an important part of the usability. Users will be
-interacting with Nix on a regular basis so we should **name things for ease of
+interacting with Bsd on a regular basis so we should **name things for ease of
 understanding**.
 
 We recommend following the [Principle of Least
 Astonishment](https://en.wikipedia.org/wiki/Principle_of_least_astonishment).
 This means that you should **never use acronyms or abbreviations** unless they
-are commonly used in other tools (e.g. `nix init`). And if the command name is
+are commonly used in other tools (e.g. `bsd init`). And if the command name is
 too long (> 10-12 characters) then shortening it makes sense (e.g.
 “prioritization” → “priority”).
 
 Commands should **follow a noun-verb dialogue**. Although noun-verb formatting
-seems backwards from a speaking perspective (i.e. `nix store copy` vs. `nix
+seems backwards from a speaking perspective (i.e. `bsd store copy` vs. `bsd
 copy store`) it allows us to organize commands the same way users think about
 completing an action (the group first, then the command).
 
@@ -36,12 +36,12 @@ completing an action (the group first, then the command).
 Rules are there to guide you by limiting your options. But not everything can
 fit the rules all the time. In those cases document the exceptions in [Appendix
 1: Commands naming exceptions](#appendix-1-commands-naming-exceptions) and
-provide reason. The rules want to force a Nix developer to look, not just at
+provide reason. The rules want to force a Bsd developer to look, not just at
 the command at hand, but also the command in a full context alongside other
-`nix` commands.
+`bsd` commands.
 
 ```shell
-$ nix [<GROUP>] <COMMAND> [<ARGUMENTS>] [<OPTIONS>]
+$ bsd [<GROUP>] <COMMAND> [<ARGUMENTS>] [<OPTIONS>]
 ```
 
 - `GROUP`, `COMMAND`, `ARGUMENTS` and `OPTIONS` should be lowercase and in a
@@ -71,11 +71,11 @@ impacted the most by bad user experience.
     - Show [next possible steps](#next-steps).
     - Showing some [“tips”](#educate-the-user) when running logs running tasks
       (eg. building / downloading) in order to teach users interesting bits of
-      Nix ecosystem.
+      Bsd ecosystem.
     - [Help pages](#help-is-essential) to be as good as we can write them
       pointing to external documentation and tutorials for more.
 
-  Examples of such commands: `nix init`, `nix develop`, `nix build`, `nix run`,
+  Examples of such commands: `bsd init`, `bsd develop`, `bsd build`, `bsd run`,
   ...
 
 - **Infrequently used commands**
@@ -87,16 +87,16 @@ impacted the most by bad user experience.
       and [aligning of text](#text-alignment).
     - [Autocomplete](#shell-completion) of options.
 
-  Examples of such commands: `nix edit`, `nix eval`, ...
+  Examples of such commands: `bsd edit`, `bsd eval`, ...
 
 - **Utility and scripting commands**
 
-  Commands that expose certain internal functionality of `nix`, mostly used by
+  Commands that expose certain internal functionality of `bsd`, mostly used by
   other scripts.
 
     - [Autocomplete](#shell-completion) of options.
 
-  Examples of such commands: `nix store copy`, `nix hash base16`, `nix store
+  Examples of such commands: `bsd store copy`, `bsd hash base16`, `bsd store
   ping`, ...
 
 
@@ -113,12 +113,12 @@ whenever in doubt look at it as a preferred direction.
 
 The rules are:
 
-- Help is shown by using `--help` or `help` command (eg `nix` `--``help` or
-  `nix help`).
-- For non-COMMANDs (eg. `nix` `--``help` and `nix store` `--``help`) we **show
+- Help is shown by using `--help` or `help` command (eg `bsd` `--``help` or
+  `bsd help`).
+- For non-COMMANDs (eg. `bsd` `--``help` and `bsd store` `--``help`) we **show
   a summary** of most common use cases. Summary is presented on the STDOUT
   without any use of PAGER.
-- For COMMANDs (eg. `nix init` `--``help` or `nix help init`) we display the
+- For COMMANDs (eg. `bsd init` `--``help` or `bsd help init`) we display the
   man page of that command. By default the PAGER is used (as in `git`).
 - At the end of either summary or man page there should be an URL pointing to
   an online version of more detailed documentation.
@@ -139,7 +139,7 @@ This type of help is most common and almost expected by users. We need to
 Completion needs to be **context aware**, this mean when a user types:
 
 ```shell
-$ nix build n<TAB>
+$ bsd build n<TAB>
 ```
 
 we need to display a list of flakes starting with `n`.
@@ -155,13 +155,13 @@ In first example we prompt the user for typing wrong command name:
 
 
 ```shell
-$ nix int
+$ bsd int
 ------------------------------------------------------------------------
   Error! Command `int` not found.
 ------------------------------------------------------------------------
   Did you mean:
-    |> nix init
-    |> nix input
+    |> bsd init
+    |> bsd input
 ```
 
 Sometimes users will make mistake either because of a typo or simply because of
@@ -170,11 +170,11 @@ sensitive.
 
 
 ```shell
-$ nix init --template=template#python
+$ bsd init --template=template#python
 ------------------------------------------------------------------------
   Error! Template `template#python` not found.
 ------------------------------------------------------------------------
-Initializing Nix project at `/path/to/here`.
+Initializing Bsd project at `/path/to/here`.
       Select a template for you new project:
           |> template#python
              template#python-pip
@@ -184,17 +184,17 @@ Initializing Nix project at `/path/to/here`.
 ### Next steps
 
 It can be invaluable to newcomers to show what a possible next steps and what
-is the usual development workflow with Nix. For example:
+is the usual development workflow with Bsd. For example:
 
 
 ```shell
-$ nix init --template=template#python
+$ bsd init --template=template#python
 Initializing project `template#python`
           in `/home/USER/dev/new-project`
 
   Next steps
-    |> nix develop   -- to enter development environment
-    |> nix build     -- to build your project
+    |> bsd develop   -- to enter development environment
+    |> bsd build     -- to build your project
 ```
 
 ### Educate the user
@@ -207,7 +207,7 @@ An example of educating users might be to provide *Tips* in places where they
 are waiting.
 
 ```shell
-$ nix build
+$ bsd build
     Started building my-project 1.2.3
  Downloaded python3.8-poetry 1.2.3 in 5.3 seconds
  Downloaded python3.8-requests 1.2.3 in 5.3 seconds
@@ -216,7 +216,7 @@ $ nix build
          |> `?` to see other options
 ------------------------------------------------------------------------
       Learn something new with every build...
-         |> See last logs of a build with `nix log --last` command.
+         |> See last logs of a build with `bsd log --last` command.
 ------------------------------------------------------------------------
   Evaluated my-project 1.2.3 in 14.43 seconds
 Downloading [12 / 200]
@@ -282,8 +282,8 @@ A place to use prompt and provide user with interactive select
 
 
 ```shell
-$ nix init
-Initializing Nix project at `/path/to/here`.
+$ bsd init
+Initializing Bsd project at `/path/to/here`.
       Select a template for you new project:
           |> py
              template#python-pip
@@ -293,12 +293,12 @@ Initializing Nix project at `/path/to/here`.
 
 Another great place to add prompts are **confirmation dialogues for dangerous
 actions**. For example when adding new substitutor via `OPTIONS` or via
-`flake.nix` we should prompt - for the first time - and let user review what is
+`flake.bsd` we should prompt - for the first time - and let user review what is
 going to happen.
 
 
 ```shell
-$ nix build --option substitutors https://cache.example.org
+$ bsd build --option substitutors https://cache.example.org
 ------------------------------------------------------------------------
   Warning! A security related question needs to be answered.
 ------------------------------------------------------------------------
@@ -317,7 +317,7 @@ compromise between being terse and being verbose, between showing help to
 beginners and annoying advance users. For this it is important that we know
 what are the priorities.
 
-Nix command line should be first and foremost written with beginners in mind.
+Bsd command line should be first and foremost written with beginners in mind.
 But users won't stay beginners for long and what was once useful might quickly
 become annoying. There is no golden rule that we can give in this guideline
 that would make it easier how to draw a line and find best compromise.
@@ -331,7 +331,7 @@ certain `OPTIONS`, etc…)
 
 ## Follow best practices
 
-Needless to say we Nix must be a good citizen and follow best practices in
+Needless to say we Bsd must be a good citizen and follow best practices in
 command line.
 
 In short: **STDOUT is for output, STDERR is for (human) messaging.**
@@ -340,21 +340,21 @@ STDOUT and STDERR provide a way for you to output messages to the user while
 also allowing them to redirect content to a file. For example:
 
 ```shell
-$ nix build > build.txt
+$ bsd build > build.txt
 ------------------------------------------------------------------------
   Error! Attribute `bin` missing at (1:94) from string.
 ------------------------------------------------------------------------
 
-  1| with import <nixpkgs> { }; (pkgs.runCommandCC or pkgs.runCommand) "shell" { buildInputs = [ (surge.bin) ]; } ""
+  1| with import <bsdpkgs> { }; (pkgs.runCommandCC or pkgs.runCommand) "shell" { buildInputs = [ (surge.bin) ]; } ""
 ```
 
 Because this warning is on STDERR, it doesn’t end up in the file.
 
-But not everything on STDERR is an error though. For example, you can run `nix
+But not everything on STDERR is an error though. For example, you can run `bsd
 build` and collect logs in a file while still seeing the progress.
 
 ```
-$ nix build > build.txt
+$ bsd build > build.txt
   Evaluated 1234 files in 1.2 seconds
  Downloaded python3.8-poetry 1.2.3 in 5.3 seconds
  Downloaded python3.8-requests 1.2.3 in 5.3 seconds
@@ -363,7 +363,7 @@ $ nix build > build.txt
          |> `?` to see other options
 ------------------------------------------------------------------------
       Learn something new with every build...
-         |> See last logs of a build with `nix log --last` command.
+         |> See last logs of a build with `bsd log --last` command.
 ------------------------------------------------------------------------
   Evaluated my-project 1.2.3 in 14.43 seconds
 Downloading [12 / 200]
@@ -396,7 +396,7 @@ action a user performs, your CLI should provide an equal and appropriate
 reaction, clearly highlighting the what just happened. For example:
 
 ```shell
-$ nix build
+$ bsd build
  Downloaded python3.8-poetry 1.2.3 in 5.3 seconds
  Downloaded python3.8-requests 1.2.3 in 5.3 seconds
 ...
@@ -405,18 +405,18 @@ $
 ```
 
 Above command clearly states that command successfully completed. And in case
-of `nix build`, which is a command that might take some time to complete, it is
+of `bsd build`, which is a command that might take some time to complete, it is
 equally important to also show that a command started.
 
 ## Text alignment
 
 Text alignment is the number one design element that will present all of the
-Nix commands as a family and not as separate tools glued together.
+Bsd commands as a family and not as separate tools glued together.
 
 The format we should follow is:
 
 ```shell
-$ nix COMMAND
+$ bsd COMMAND
    VERB_1 NOUN and other words
   VERB__1 NOUN and other words
        |> Some details
@@ -509,10 +509,10 @@ can, with a few key strokes, be changed into and advance introspection tool.
 ### Progress
 
 For longer running commands we should provide and overview the progress.
-This is shown best in `nix build` example:
+This is shown best in `bsd build` example:
 
 ```shell
-$ nix build
+$ bsd build
     Started building my-project 1.2.3
  Downloaded python3.8-poetry 1.2.3 in 5.3 seconds
  Downloaded python3.8-requests 1.2.3 in 5.3 seconds
@@ -521,7 +521,7 @@ $ nix build
          |> `?` to see other options
 ------------------------------------------------------------------------
       Learn something new with every build...
-         |> See last logs of a build with `nix log --last` command.
+         |> See last logs of a build with `bsd log --last` command.
 ------------------------------------------------------------------------
   Evaluated my-project 1.2.3 in 14.43 seconds
 Downloading [12 / 200]
@@ -536,8 +536,8 @@ Downloading [12 / 200]
 Use a `fzf` like fuzzy search when there are multiple options to choose from.
 
 ```shell
-$ nix init
-Initializing Nix project at `/path/to/here`.
+$ bsd init
+Initializing Bsd project at `/path/to/here`.
       Select a template for you new project:
           |> py
              template#python-pip
@@ -551,7 +551,7 @@ In some situations we need to prompt the user and inform the user about what is
 going to happen.
 
 ```shell
-$ nix build --option substitutors https://cache.example.org
+$ bsd build --option substitutors https://cache.example.org
 ------------------------------------------------------------------------
   Warning! A security related question needs to be answered.
 ------------------------------------------------------------------------
@@ -586,4 +586,4 @@ There are also two shortcuts, `--debug` to run in `DEBUG` verbosity level and
 
 # Appendix 1: Commands naming exceptions
 
-`nix init` and `nix repl` are well established
+`bsd init` and `bsd repl` are well established

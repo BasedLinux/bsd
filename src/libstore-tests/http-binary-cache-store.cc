@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "nix/store/http-binary-cache-store.hh"
+#include "bsd/store/http-binary-cache-store.hh"
 
-namespace nix {
+namespace bsd {
 
 TEST(HttpBinaryCacheStore, constructConfig)
 {
@@ -18,4 +18,4 @@ TEST(HttpBinaryCacheStore, constructConfigNoTrailingSlash)
     EXPECT_EQ(config.cacheUri, "https://foo.bar.baz/a/b");
 }
 
-} // namespace nix
+} // namespace bsd

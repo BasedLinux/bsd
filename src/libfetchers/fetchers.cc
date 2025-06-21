@@ -1,14 +1,14 @@
-#include "nix/fetchers/fetchers.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/source-path.hh"
-#include "nix/fetchers/fetch-to-store.hh"
-#include "nix/util/json-utils.hh"
-#include "nix/fetchers/store-path-accessor.hh"
-#include "nix/fetchers/fetch-settings.hh"
+#include "bsd/fetchers/fetchers.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/source-path.hh"
+#include "bsd/fetchers/fetch-to-store.hh"
+#include "bsd/util/json-utils.hh"
+#include "bsd/fetchers/store-path-accessor.hh"
+#include "bsd/fetchers/fetch-settings.hh"
 
 #include <nlohmann/json.hpp>
 
-namespace nix::fetchers {
+namespace bsd::fetchers {
 
 using InputSchemeMap = std::map<std::string_view, std::shared_ptr<InputScheme>>;
 
@@ -198,7 +198,7 @@ std::pair<StorePath, Input> Input::fetchToStore(ref<Store> store) const
         try {
             auto [accessor, result] = getAccessorUnchecked(store);
 
-            auto storePath = nix::fetchToStore(*settings, *store, SourcePath(accessor), FetchMode::Copy, result.getName());
+            auto storePath = bsd::fetchToStore(*settings, *store, SourcePath(accessor), FetchMode::Copy, result.getName());
 
             auto narHash = store->queryPathInfo(storePath)->narHash;
             result.attrs.insert_or_assign("narHash", narHash.to_string(HashFormat::SRI, true));
@@ -301,7 +301,7 @@ std::pair<ref<SourceAccessor>, Input> Input::getAccessorUnchecked(ref<Store> sto
     if (!scheme)
         throw Error("cannot fetch unsupported input '%s'", attrsToJSON(toAttrs()));
 
-    /* The tree may already be in the Nix store, or it could be
+    /* The tree may already be in the Bsd store, or it could be
        substituted (which is often faster than fetching from the
        original source). So check that. We only do this for final
        inputs, otherwise there is a risk that we don't return the
@@ -381,7 +381,7 @@ StorePath Input::computeStorePath(Store & store) const
     if (!narHash)
         throw Error("cannot compute store path for unlocked input '%s'", to_string());
     return store.makeFixedOutputPath(getName(), FixedOutputInfo {
-        .method = FileIngestionMethod::NixArchive,
+        .method = FileIngestionMethod::BsdArchive,
         .hash = *narHash,
         .references = {},
     });
@@ -491,7 +491,7 @@ std::string publicKeys_to_string(const std::vector<PublicKey>& publicKeys)
 
 namespace nlohmann {
 
-using namespace nix;
+using namespace bsd;
 
 #ifndef DOXYGEN_SKIP
 

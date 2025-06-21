@@ -1,4 +1,4 @@
-foreach config : [ 'nix-daemon.socket', 'nix-daemon.service' ]
+foreach config : [ 'bsd-daemon.socket', 'bsd-daemon.service' ]
   configure_file(
     input : config + '.in',
     output : config,
@@ -14,8 +14,8 @@ foreach config : [ 'nix-daemon.socket', 'nix-daemon.service' ]
 endforeach
 
 configure_file(
-  input : 'nix-daemon.conf.in',
-  output : 'nix-daemon.conf',
+  input : 'bsd-daemon.conf.in',
+  output : 'bsd-daemon.conf',
   install : true,
   install_dir : get_option('prefix') / 'lib/tmpfiles.d',
   install_mode : 'rw-r--r--',

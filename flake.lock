@@ -18,8 +18,8 @@
     },
     "flake-parts": {
       "inputs": {
-        "nixpkgs-lib": [
-          "nixpkgs"
+        "bsdpkgs-lib": [
+          "bsdpkgs"
         ]
       },
       "locked": {
@@ -36,75 +36,75 @@
         "type": "github"
       }
     },
-    "git-hooks-nix": {
+    "git-hooks-bsd": {
       "inputs": {
         "flake-compat": [],
         "gitignore": [],
-        "nixpkgs": [
-          "nixpkgs"
+        "bsdpkgs": [
+          "bsdpkgs"
         ],
-        "nixpkgs-stable": [
-          "nixpkgs"
+        "bsdpkgs-stable": [
+          "bsdpkgs"
         ]
       },
       "locked": {
         "lastModified": 1734279981,
         "narHash": "sha256-NdaCraHPp8iYMWzdXAt5Nv6sA3MUzlCiGiR586TCwo0=",
         "owner": "cachix",
-        "repo": "git-hooks.nix",
+        "repo": "git-hooks.bsd",
         "rev": "aa9f40c906904ebd83da78e7f328cd8aeaeae785",
         "type": "github"
       },
       "original": {
         "owner": "cachix",
-        "repo": "git-hooks.nix",
+        "repo": "git-hooks.bsd",
         "type": "github"
       }
     },
-    "nixpkgs": {
+    "bsdpkgs": {
       "locked": {
         "lastModified": 1747179050,
         "narHash": "sha256-qhFMmDkeJX9KJwr5H32f1r7Prs7XbQWtO0h3V0a0rFY=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
+        "owner": "BasedLinux",
+        "repo": "bsdpkgs",
         "rev": "adaa24fbf46737f3f1b5497bf64bae750f82942e",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
+        "owner": "BasedLinux",
+        "ref": "bsdos-unstable",
+        "repo": "bsdpkgs",
         "type": "github"
       }
     },
-    "nixpkgs-23-11": {
+    "bsdpkgs-23-11": {
       "locked": {
         "lastModified": 1717159533,
         "narHash": "sha256-oamiKNfr2MS6yH64rUn99mIZjc45nGJlj9eGth/3Xuw=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
+        "owner": "BasedLinux",
+        "repo": "bsdpkgs",
         "rev": "a62e6edd6d5e1fa0329b8653c801147986f8d446",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
-        "repo": "nixpkgs",
+        "owner": "BasedLinux",
+        "repo": "bsdpkgs",
         "rev": "a62e6edd6d5e1fa0329b8653c801147986f8d446",
         "type": "github"
       }
     },
-    "nixpkgs-regression": {
+    "bsdpkgs-regression": {
       "locked": {
         "lastModified": 1643052045,
         "narHash": "sha256-uGJ0VXIhWKGXxkeNnq4TvV3CIOkUJ3PAoLZ3HMzNVMw=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
+        "owner": "BasedLinux",
+        "repo": "bsdpkgs",
         "rev": "215d4d0fd80ca5163643b03a33fde804a29cc1e2",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
-        "repo": "nixpkgs",
+        "owner": "BasedLinux",
+        "repo": "bsdpkgs",
         "rev": "215d4d0fd80ca5163643b03a33fde804a29cc1e2",
         "type": "github"
       }
@@ -113,10 +113,10 @@
       "inputs": {
         "flake-compat": "flake-compat",
         "flake-parts": "flake-parts",
-        "git-hooks-nix": "git-hooks-nix",
-        "nixpkgs": "nixpkgs",
-        "nixpkgs-23-11": "nixpkgs-23-11",
-        "nixpkgs-regression": "nixpkgs-regression"
+        "git-hooks-bsd": "git-hooks-bsd",
+        "bsdpkgs": "bsdpkgs",
+        "bsdpkgs-23-11": "bsdpkgs-23-11",
+        "bsdpkgs-regression": "bsdpkgs-regression"
       }
     }
   },

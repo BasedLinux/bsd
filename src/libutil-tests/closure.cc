@@ -1,7 +1,7 @@
-#include "nix/util/closure.hh"
+#include "bsd/util/closure.hh"
 #include <gtest/gtest.h>
 
-namespace nix {
+namespace bsd {
 
 using namespace std;
 

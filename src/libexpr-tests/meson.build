@@ -1,4 +1,4 @@
-project('nix-expr-tests', 'cpp',
+project('bsd-expr-tests', 'cpp',
   version : files('.version'),
   default_options : [
     'cpp_std=c++2a',
@@ -12,19 +12,19 @@ project('nix-expr-tests', 'cpp',
 
 cxx = meson.get_compiler('cpp')
 
-subdir('nix-meson-build-support/deps-lists')
+subdir('bsd-meson-build-support/deps-lists')
 
 deps_private_maybe_subproject = [
-  dependency('nix-expr'),
-  dependency('nix-expr-c'),
-  dependency('nix-expr-test-support'),
+  dependency('bsd-expr'),
+  dependency('bsd-expr-c'),
+  dependency('bsd-expr-test-support'),
 ]
 deps_public_maybe_subproject = [
 ]
-subdir('nix-meson-build-support/subprojects')
+subdir('bsd-meson-build-support/subprojects')
 
-subdir('nix-meson-build-support/export-all-symbols')
-subdir('nix-meson-build-support/windows-version')
+subdir('bsd-meson-build-support/export-all-symbols')
+subdir('bsd-meson-build-support/windows-version')
 
 rapidcheck = dependency('rapidcheck')
 deps_private += rapidcheck
@@ -43,7 +43,7 @@ config_priv_h = configure_file(
   output : 'expr-tests-config.hh',
 )
 
-subdir('nix-meson-build-support/common')
+subdir('bsd-meson-build-support/common')
 
 sources = files(
   'derived-path.cc',
@@ -51,9 +51,9 @@ sources = files(
   'eval.cc',
   'json.cc',
   'main.cc',
-  'nix_api_expr.cc',
-  'nix_api_external.cc',
-  'nix_api_value.cc',
+  'bsd_api_expr.cc',
+  'bsd_api_external.cc',
+  'bsd_api_value.cc',
   'primops.cc',
   'search-path.cc',
   'trivial.cc',

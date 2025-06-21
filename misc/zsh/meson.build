@@ -1,4 +1,4 @@
-foreach script : [ [ 'completion.zsh', '_nix' ], [ 'run-help-nix' ] ]
+foreach script : [ [ 'completion.zsh', '_bsd' ], [ 'run-help-bsd' ] ]
   configure_file(
     input : script[0],
     output : script.get(1, script[0]),

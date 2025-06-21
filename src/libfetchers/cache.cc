@@ -1,13 +1,13 @@
-#include "nix/fetchers/cache.hh"
-#include "nix/fetchers/fetch-settings.hh"
-#include "nix/util/users.hh"
-#include "nix/store/sqlite.hh"
-#include "nix/util/sync.hh"
-#include "nix/store/store-api.hh"
+#include "bsd/fetchers/cache.hh"
+#include "bsd/fetchers/fetch-settings.hh"
+#include "bsd/util/users.hh"
+#include "bsd/store/sqlite.hh"
+#include "bsd/util/sync.hh"
+#include "bsd/store/store-api.hh"
 
 #include <nlohmann/json.hpp>
 
-namespace nix::fetchers {
+namespace bsd::fetchers {
 
 static const char * schema = R"sql(
 

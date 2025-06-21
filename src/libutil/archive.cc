@@ -5,14 +5,14 @@
 
 #include <strings.h> // for strcasecmp
 
-#include "nix/util/archive.hh"
-#include "nix/util/config-global.hh"
-#include "nix/util/posix-source-accessor.hh"
-#include "nix/util/source-path.hh"
-#include "nix/util/file-system.hh"
-#include "nix/util/signals.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/util/config-global.hh"
+#include "bsd/util/posix-source-accessor.hh"
+#include "bsd/util/source-path.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/util/signals.hh"
 
-namespace nix {
+namespace bsd {
 
 struct ArchiveSettings : Config
 {
@@ -272,7 +272,7 @@ void parseDump(FileSystemObjectSink & sink, Source & source)
            decoded.  Ignore and throw the exception below. */
     }
     if (version != narVersionMagic1)
-        throw badArchive("input doesn't look like a Nix archive");
+        throw badArchive("input doesn't look like a Bsd archive");
     parse(sink, source, CanonPath::root);
 }
 

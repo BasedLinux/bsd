@@ -1,15 +1,15 @@
-#include "nix/store/sqlite.hh"
-#include "nix/store/globals.hh"
-#include "nix/util/util.hh"
-#include "nix/util/url.hh"
-#include "nix/util/signals.hh"
+#include "bsd/store/sqlite.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/url.hh"
+#include "bsd/util/signals.hh"
 
 #include <sqlite3.h>
 
 #include <atomic>
 #include <thread>
 
-namespace nix {
+namespace bsd {
 
 SQLiteError::SQLiteError(const char *path, const char *errMsg, int errNo, int extendedErrNo, int offset, HintFmt && hf)
   : Error(""), path(path), errMsg(errMsg), errNo(errNo), extendedErrNo(extendedErrNo), offset(offset)
@@ -56,9 +56,9 @@ static void traceSQL(void * x, const char * sql)
 SQLite::SQLite(const Path & path, SQLiteOpenMode mode)
 {
     // useSQLiteWAL also indicates what virtual file system we need.  Using
-    // `unix-dotfile` is needed on NFS file systems and on Windows' Subsystem
+    // `ubsd-dotfile` is needed on NFS file systems and on Windows' Subsystem
     // for Linux (WSL) where useSQLiteWAL should be false by default.
-    const char *vfs = settings.useSQLiteWAL ? 0 : "unix-dotfile";
+    const char *vfs = settings.useSQLiteWAL ? 0 : "ubsd-dotfile";
     bool immutable = mode == SQLiteOpenMode::Immutable;
     int flags = immutable ? SQLITE_OPEN_READONLY : SQLITE_OPEN_READWRITE;
     if (mode == SQLiteOpenMode::Normal) flags |= SQLITE_OPEN_CREATE;

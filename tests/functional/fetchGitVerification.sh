@@ -30,27 +30,27 @@ echo 'hello' > $repo/text
 git -C $repo add text
 git -C $repo -c "user.signingkey=$key1File" commit -S -m 'initial commit'
 
-out=$(nix eval --impure --raw --expr "builtins.fetchGit { url = \"file://$repo\"; keytype = \"ssh-rsa\"; publicKey = \"$publicKey2\"; }" 2>&1) || status=$?
+out=$(bsd eval --impure --raw --expr "builtins.fetchGit { url = \"file://$repo\"; keytype = \"ssh-rsa\"; publicKey = \"$publicKey2\"; }" 2>&1) || status=$?
 [[ $status == 1 ]]
 [[ $out =~ 'No principal matched.' ]]
-[[ $(nix eval --impure --raw --expr "builtins.readFile (builtins.fetchGit { url = \"file://$repo\"; publicKey = \"$publicKey1\"; } + \"/text\")") = 'hello' ]]
+[[ $(bsd eval --impure --raw --expr "builtins.readFile (builtins.fetchGit { url = \"file://$repo\"; publicKey = \"$publicKey1\"; } + \"/text\")") = 'hello' ]]
 
 echo 'hello world' > $repo/text
 
 # Verification on a dirty repo should fail.
-out=$(nix eval --impure --raw --expr "builtins.fetchGit { url = \"file://$repo\"; keytype = \"ssh-rsa\"; publicKey = \"$publicKey2\"; }" 2>&1) || status=$?
+out=$(bsd eval --impure --raw --expr "builtins.fetchGit { url = \"file://$repo\"; keytype = \"ssh-rsa\"; publicKey = \"$publicKey2\"; }" 2>&1) || status=$?
 [[ $status == 1 ]]
 [[ $out =~ 'dirty' ]]
 
 git -C $repo add text
 git -C $repo -c "user.signingkey=$key2File" commit -S -m 'second commit'
 
-[[ $(nix eval --impure --raw --expr "builtins.readFile (builtins.fetchGit { url = \"file://$repo\"; publicKeys = [{key = \"$publicKey1\";} {type = \"ssh-rsa\"; key = \"$publicKey2\";}]; } + \"/text\")") = 'hello world' ]]
+[[ $(bsd eval --impure --raw --expr "builtins.readFile (builtins.fetchGit { url = \"file://$repo\"; publicKeys = [{key = \"$publicKey1\";} {type = \"ssh-rsa\"; key = \"$publicKey2\";}]; } + \"/text\")") = 'hello world' ]]
 
 # Flake input test
 flakeDir="$TEST_ROOT/flake"
 mkdir -p "$flakeDir"
-cat > "$flakeDir/flake.nix" <<EOF
+cat > "$flakeDir/flake.bsd" <<EOF
 {
   inputs.test = {
     type = "git";
@@ -64,10 +64,10 @@ cat > "$flakeDir/flake.nix" <<EOF
   outputs = { test, ... }: { test = test.outPath; };
 }
 EOF
-nix build --out-link "$flakeDir/result" "$flakeDir#test"
+bsd build --out-link "$flakeDir/result" "$flakeDir#test"
 [[ $(cat "$flakeDir/result/text") = 'hello world' ]]
 
-cat > "$flakeDir/flake.nix" <<EOF
+cat > "$flakeDir/flake.bsd" <<EOF
 {
   inputs.test = {
     type = "git";
@@ -79,6 +79,6 @@ cat > "$flakeDir/flake.nix" <<EOF
   outputs = { test, ... }: { test = test.outPath; };
 }
 EOF
-out=$(nix build "$flakeDir#test" 2>&1) || status=$?
+out=$(bsd build "$flakeDir#test" 2>&1) || status=$?
 [[ $status == 1 ]]
 [[ $out =~ 'No principal matched.' ]]

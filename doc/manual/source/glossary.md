@@ -4,7 +4,7 @@
 
   Generic term for software that facilitates the building of software by automating the invocation of compilers, linkers, and other tools.
 
-  Nix can be used as a generic build system.
+  Bsd can be used as a generic build system.
   It has no knowledge of any particular programming language or toolchain.
   These details are specified in [derivation expressions](#gloss-derivation-expression).
 
@@ -17,7 +17,7 @@
   [*tamper proof*](https://en.wikipedia.org/wiki/Tamperproofing)
   --- variations of the data should always calculate to distinct content addresses.
 
-  For how Nix uses content addresses, see:
+  For how Bsd uses content addresses, see:
 
     - [Content-Addressing File System Objects](@docroot@/store/file-system-object/content-address.md)
     - [Content-Addressing Store Objects](@docroot@/store/store-object/content-address.md)
@@ -25,11 +25,11 @@
 
   Software Heritage's writing on [*Intrinsic and Extrinsic identifiers*](https://www.softwareheritage.org/2020/07/09/intrinsic-vs-extrinsic-identifiers) is also a good introduction to the value of content-addressing over other referencing schemes.
 
-  Besides content addressing, the Nix store also uses [input addressing](#gloss-input-addressed-store-object).
+  Besides content addressing, the Bsd store also uses [input addressing](#gloss-input-addressed-store-object).
 
 - [content-addressed storage]{#gloss-content-addressed-store}
 
-  The industry term for storage and retrieval systems using [content addressing](#gloss-content-address). A Nix store also has [input addressing](#gloss-input-addressed-store-object), and metadata.
+  The industry term for storage and retrieval systems using [content addressing](#gloss-content-address). A Bsd store also has [input addressing](#gloss-input-addressed-store-object), and metadata.
 
 - [derivation]{#gloss-derivation}
 
@@ -38,7 +38,7 @@
   Derivations are implemented as [operating system processes that run in a sandbox](@docroot@/store/building.md#builder-execution).
   This sandbox by default only allows reading from store objects specified as inputs, and only allows writing to designated [outputs][output] to be [captured as store objects](@docroot@/store/building.md#processing-outputs).
 
-  A derivation is typically specified as a [derivation expression] in the [Nix language], and [instantiated][instantiate] to a [store derivation].
+  A derivation is typically specified as a [derivation expression] in the [Bsd language], and [instantiated][instantiate] to a [store derivation].
   There are multiple ways of obtaining store objects from store derivatons, collectively called [realisation][realise].
 
   [derivation]: #gloss-derivation
@@ -55,7 +55,7 @@
 
   A [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) (DAG) is graph whose edges are given a direction ("a to b" is not the same edge as "b to a"), and for which no possible path (created by joining together edges) forms a cycle.
 
-  DAGs are very important to Nix.
+  DAGs are very important to Bsd.
   In particular, the non-self-[references][reference] of [store object][store object] form a cycle.
 
 - [derivation path]{#gloss-derivation-path}
@@ -70,7 +70,7 @@
 
 - [derivation expression]{#gloss-derivation-expression}
 
-  A description of a [store derivation] using the [`derivation` primitive](./language/derivations.md) in the [Nix language].
+  A description of a [store derivation] using the [`derivation` primitive](./language/derivations.md) in the [Bsd language].
 
   [derivation expression]: #gloss-derivation-expression
 
@@ -78,7 +78,7 @@
 
   Translate a [derivation expression] into a [store derivation].
 
-  See [`nix-instantiate`](./command-ref/nix-instantiate.md), which produces a store derivation from a Nix expression that evaluates to a derivation.
+  See [`bsd-instantiate`](./command-ref/bsd-instantiate.md), which produces a store derivation from a Bsd expression that evaluates to a derivation.
 
   [instantiate]: #gloss-instantiate
 
@@ -91,9 +91,9 @@
   - [Building](@docroot@/store/building.md) the corresponding [store derivation]
   - Delegating to a [remote machine](@docroot@/command-ref/conf-file.md#conf-builders) and retrieving the outputs
 
-  See [`nix-store --realise`](@docroot@/command-ref/nix-store/realise.md) for a detailed description of the algorithm.
+  See [`bsd-store --realise`](@docroot@/command-ref/bsd-store/realise.md) for a detailed description of the algorithm.
 
-  See also [`nix-build`](./command-ref/nix-build.md) and [`nix build`](./command-ref/new-cli/nix3-build.md) (experimental).
+  See also [`bsd-build`](./command-ref/bsd-build.md) and [`bsd build`](./command-ref/new-cli/bsd3-build.md) (experimental).
 
   [realise]: #gloss-realise
 
@@ -110,33 +110,33 @@
 - [store]{#gloss-store}
 
   A collection of [store objects][store object], with operations to manipulate that collection.
-  See [Nix Store](./store/index.md) for details.
+  See [Bsd Store](./store/index.md) for details.
 
   There are many types of stores, see [Store Types](./store/types/index.md) for details.
 
   [store]: #gloss-store
 
-- [Nix instance]{#gloss-nix-instance}
+- [Bsd instance]{#gloss-bsd-instance}
   <!-- ambiguous -->
-  1. An installation of Nix, which includes the presence of a [store], and the Nix package manager which operates on that store.
-     A local Nix installation and a [remote builder](@docroot@/advanced-topics/distributed-builds.md) are two examples of Nix instances.
-  2. A running Nix process, such as the `nix` command.
+  1. An installation of Bsd, which includes the presence of a [store], and the Bsd package manager which operates on that store.
+     A local Bsd installation and a [remote builder](@docroot@/advanced-topics/distributed-builds.md) are two examples of Bsd instances.
+  2. A running Bsd process, such as the `bsd` command.
 
 - [binary cache]{#gloss-binary-cache}
 
-  A *binary cache* is a Nix store which uses a different format: its
+  A *binary cache* is a Bsd store which uses a different format: its
   metadata and signatures are kept in `.narinfo` files rather than in a
-  [Nix database]. This different format simplifies serving store objects
+  [Bsd database]. This different format simplifies serving store objects
   over the network, but cannot host builds. Examples of binary caches
-  include S3 buckets and the [NixOS binary cache](https://cache.nixos.org).
+  include S3 buckets and the [BasedLinux binary cache](https://cache.basedlinux.org).
 
 - [store path]{#gloss-store-path}
 
-  The location of a [store object] in the file system, i.e., an immediate child of the Nix store directory.
+  The location of a [store object] in the file system, i.e., an immediate child of the Bsd store directory.
 
   > **Example**
   >
-  > `/nix/store/a040m110amc4h71lds2jmr8qrkj2jhxd-git-2.38.1`
+  > `/bsd/store/a040m110amc4h71lds2jmr8qrkj2jhxd-git-2.38.1`
 
   See [Store Path](@docroot@/store/store-path.md) for details.
 
@@ -144,7 +144,7 @@
 
 - [file system object]{#gloss-file-system-object}
 
-  The Nix data model for representing simplified file system data.
+  The Bsd data model for representing simplified file system data.
 
   See [File System Object](@docroot@/store/file-system-object.md) for details.
 
@@ -184,7 +184,7 @@
 
 - [substitute]{#gloss-substitute}
 
-  A substitute is a command invocation stored in the [Nix database] that
+  A substitute is a command invocation stored in the [Bsd database] that
   describes how to build a store object, bypassing the normal build
   mechanism (i.e., derivations). Typically, the substitute builds the
   store object by downloading a pre-built version of the store object
@@ -192,7 +192,7 @@
 
 - [substituter]{#gloss-substituter}
 
-  An additional [store]{#gloss-store} from which Nix can obtain store objects instead of building them.
+  An additional [store]{#gloss-store} from which Bsd can obtain store objects instead of building them.
   Often the substituter is a [binary cache](#gloss-binary-cache), but any store can serve as substituter.
 
   See the [`substituters` configuration option](./command-ref/conf-file.md#conf-substituters) for details.
@@ -201,39 +201,39 @@
 
 - [purity]{#gloss-purity}
 
-  The assumption that equal Nix derivations when run always produce
+  The assumption that equal Bsd derivations when run always produce
   the same output. This cannot be guaranteed in general (e.g., a
   builder can rely on external inputs such as the network or the
-  system time) but the Nix model assumes it.
+  system time) but the Bsd model assumes it.
 
 - [impure derivation]{#gloss-impure-derivation}
 
   [An experimental feature](#@docroot@/development/experimental-features.md#xp-feature-impure-derivations) that allows derivations to be explicitly marked as impure,
   so that they are always rebuilt, and their outputs not reused by subsequent calls to realise them.
 
-- [Nix database]{#gloss-nix-database}
+- [Bsd database]{#gloss-bsd-database}
 
   An SQlite database to track [reference]s between [store object]s.
   This is an implementation detail of the [local store].
 
-  Default location: `/nix/var/nix/db`.
+  Default location: `/bsd/var/bsd/db`.
 
-  [Nix database]: #gloss-nix-database
+  [Bsd database]: #gloss-bsd-database
 
-- [Nix expression]{#gloss-nix-expression}
+- [Bsd expression]{#gloss-bsd-expression}
 
-  A syntactically valid use of the [Nix language].
+  A syntactically valid use of the [Bsd language].
 
   > **Example**
   >
-  > The contents of a `.nix` file form a Nix expression.
+  > The contents of a `.bsd` file form a Bsd expression.
 
-  Nix expressions specify [derivation expressions][derivation expression], which are [instantiated][instantiate] into the Nix store as [store derivations][store derivation].
+  Bsd expressions specify [derivation expressions][derivation expression], which are [instantiated][instantiate] into the Bsd store as [store derivations][store derivation].
   These derivations can then be [realised][realise] to produce [outputs][output].
 
   > **Example**
   >
-  > Building and deploying software using Nix entails writing Nix expressions to describe [packages][package] and compositions thereof.
+  > Building and deploying software using Bsd entails writing Bsd expressions to describe [packages][package] and compositions thereof.
 
 - [reference]{#gloss-reference}
 
@@ -261,7 +261,7 @@
   build-time dependencies, while the closure of its [output path] is
   equivalent to its runtime dependencies. For correct deployment it
   is necessary to deploy whole closures, since otherwise at runtime
-  files could be missing. The command `nix-store --query --requisites ` prints out
+  files could be missing. The command `bsd-store --query --requisites ` prints out
   closures of store paths.
 
   As an example, if the [store object] at path `P` contains a [reference]
@@ -312,7 +312,7 @@
   The [store derivation] that produced an [output path].
 
   The deriver for an output path can be queried with the `--deriver` option to
-  [`nix-store --query`](@docroot@/command-ref/nix-store/query.md).
+  [`bsd-store --query`](@docroot@/command-ref/bsd-store/query.md).
 
 - [validity]{#gloss-validity}
 
@@ -320,7 +320,7 @@
 
   For a [local store], this means:
   - The store path leads to an existing [store object] in that [store].
-  - The store path is listed in the [Nix database] as being valid.
+  - The store path is listed in the [Bsd database] as being valid.
   - All paths in the store path's [closure] are valid.
 
   [validity]: #gloss-validity
@@ -331,27 +331,27 @@
   An automatically generated store object that consists of a set of
   symlinks to “active” applications, i.e., other store paths. These
   are generated automatically by
-  [`nix-env`](./command-ref/nix-env.md). See *profiles*.
+  [`bsd-env`](./command-ref/bsd-env.md). See *profiles*.
 
 - [profile]{#gloss-profile}
 
   A symlink to the current *user environment* of a user, e.g.,
-  `/nix/var/nix/profiles/default`.
+  `/bsd/var/bsd/profiles/default`.
 
 - [installable]{#gloss-installable}
 
-  Something that can be realised in the Nix store.
+  Something that can be realised in the Bsd store.
 
-  See [installables](./command-ref/new-cli/nix.md#installables) for [`nix` commands](./command-ref/new-cli/nix.md) (experimental) for details.
+  See [installables](./command-ref/new-cli/bsd.md#installables) for [`bsd` commands](./command-ref/new-cli/bsd.md) (experimental) for details.
 
-- [Nix Archive (NAR)]{#gloss-nar}
+- [Bsd Archive (NAR)]{#gloss-nar}
 
-  A *N*ix *AR*chive. This is a serialisation of a path in the Nix
+  A *N*ix *AR*chive. This is a serialisation of a path in the Bsd
   store. It can contain regular files, directories and symbolic
-  links.  NARs are generated and unpacked using `nix-store --dump`
-  and `nix-store --restore`.
+  links.  NARs are generated and unpacked using `bsd-store --dump`
+  and `bsd-store --restore`.
 
-  See [Nix Archive](store/file-system-object/content-address.html#serial-nix-archive) for details.
+  See [Bsd Archive](store/file-system-object/content-address.html#serial-bsd-archive) for details.
 
 - [`∅`]{#gloss-empty-set}
 
@@ -365,9 +365,9 @@
 
   A software package; files that belong together for a particular purpose, and metadata.
 
-  Nix represents files as [file system objects][file system object], and how they belong together is encoded as [references][reference] between [store objects][store object] that contain these file system objects.
+  Bsd represents files as [file system objects][file system object], and how they belong together is encoded as [references][reference] between [store objects][store object] that contain these file system objects.
 
-  The [Nix language] allows denoting packages in terms of [attribute sets](@docroot@/language/types.md#attribute-set) containing:
+  The [Bsd language] allows denoting packages in terms of [attribute sets](@docroot@/language/types.md#attribute-set) containing:
   - attributes that refer to the files of a package, typically in the form of [derivation outputs](#output),
   - attributes with metadata, such as information about how the package is supposed to be used.
 
@@ -412,4 +412,4 @@
   See the contribution guide on the [purpose and lifecycle of experimental feaures](@docroot@/development/experimental-features.md).
 
 
-[Nix language]: ./language/index.md
+[Bsd language]: ./language/index.md

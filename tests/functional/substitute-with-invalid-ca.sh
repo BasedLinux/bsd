@@ -19,11 +19,11 @@ cat <<EOF > "$TEST_HOME"/bad.txt
 I’m a bad path
 EOF
 
-good=$(nix-store --add "$TEST_HOME"/good.txt)
-bad=$(nix-store --add "$TEST_HOME"/bad.txt)
-nix copy --to "$BINARY_CACHE" "$good"
-nix copy --to "$BINARY_CACHE" "$bad"
-nix-collect-garbage >/dev/null 2>&1
+good=$(bsd-store --add "$TEST_HOME"/good.txt)
+bad=$(bsd-store --add "$TEST_HOME"/bad.txt)
+bsd copy --to "$BINARY_CACHE" "$good"
+bsd copy --to "$BINARY_CACHE" "$bad"
+bsd-collect-garbage >/dev/null 2>&1
 
 # Falsifying the narinfo file for '$good'
 goodPathNarInfo=$(getRemoteNarInfo "$good")
@@ -35,6 +35,6 @@ done
 
 # Copying back '$good' from the binary cache. This should fail as it is
 # corrupted
-if nix copy --from "$BINARY_CACHE" "$good"; then
+if bsd copy --from "$BINARY_CACHE" "$good"; then
     fail "Importing a path with a wrong CA field should fail"
 fi

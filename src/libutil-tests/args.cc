@@ -1,11 +1,11 @@
-#include "nix/util/args.hh"
-#include "nix/util/fs-sink.hh"
+#include "bsd/util/args.hh"
+#include "bsd/util/fs-sink.hh"
 #include <list>
 
 #include <gtest/gtest.h>
 #include <rapidcheck/gtest.h>
 
-namespace nix {
+namespace bsd {
 
     TEST(parseShebangContent, basic) {
         std::list<std::string> r = parseShebangContent("hi there");
@@ -42,24 +42,24 @@ namespace nix {
     }
 
     TEST(parseShebangContent, doubleBacktickMarkdownCodeBlockNaive) {
-        std::list<std::string> r = parseShebangContent("``Example 1\n```nix\na: a\n``` ``");
+        std::list<std::string> r = parseShebangContent("``Example 1\n```bsd\na: a\n``` ``");
         auto i = r.begin();
         ASSERT_EQ(r.size(), 1u);
-        ASSERT_EQ(*i++, "Example 1\n``nix\na: a\n``");
+        ASSERT_EQ(*i++, "Example 1\n``bsd\na: a\n``");
     }
 
     TEST(parseShebangContent, doubleBacktickMarkdownCodeBlockCorrect) {
-        std::list<std::string> r = parseShebangContent("``Example 1\n````nix\na: a\n```` ``");
+        std::list<std::string> r = parseShebangContent("``Example 1\n````bsd\na: a\n```` ``");
         auto i = r.begin();
         ASSERT_EQ(r.size(), 1u);
-        ASSERT_EQ(*i++, "Example 1\n```nix\na: a\n```");
+        ASSERT_EQ(*i++, "Example 1\n```bsd\na: a\n```");
     }
 
     TEST(parseShebangContent, doubleBacktickMarkdownCodeBlock2) {
-        std::list<std::string> r = parseShebangContent("``Example 1\n````nix\na: a\n````\nExample 2\n````nix\na: a\n```` ``");
+        std::list<std::string> r = parseShebangContent("``Example 1\n````bsd\na: a\n````\nExample 2\n````bsd\na: a\n```` ``");
         auto i = r.begin();
         ASSERT_EQ(r.size(), 1u);
-        ASSERT_EQ(*i++, "Example 1\n```nix\na: a\n```\nExample 2\n```nix\na: a\n```");
+        ASSERT_EQ(*i++, "Example 1\n```bsd\na: a\n```\nExample 2\n```bsd\na: a\n```");
     }
 
     TEST(parseShebangContent, singleBacktickInDoubleBacktickQuotes) {

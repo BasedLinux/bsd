@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 #include <cstdlib>
-#include "nix/store/globals.hh"
-#include "nix/util/logging.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/util/logging.hh"
 
-using namespace nix;
+using namespace bsd;
 
 int main (int argc, char **argv) {
     if (argc > 1 && std::string_view(argv[1]) == "__build-remote") {
@@ -16,9 +16,9 @@ int main (int argc, char **argv) {
 
     #ifdef __linux__ // should match the conditional around sandboxBuildDir declaration.
 
-    // When building and testing nix within the host's Nix sandbox, our store dir will be located in the host's sandboxBuildDir, e.g.:
+    // When building and testing bsd within the host's Bsd sandbox, our store dir will be located in the host's sandboxBuildDir, e.g.:
     // Host
-    //   storeDir = /nix/store
+    //   storeDir = /bsd/store
     //   sandboxBuildDir = /build
     // This process
     //   storeDir = /build/foo/bar/store

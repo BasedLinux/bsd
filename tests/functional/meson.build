@@ -1,4 +1,4 @@
-project('nix-functional-tests',
+project('bsd-functional-tests',
   version : files('.version'),
   default_options : [
     'cpp_std=c++2a',
@@ -12,7 +12,7 @@ project('nix-functional-tests',
 
 fs = import('fs')
 
-nix = find_program('nix')
+bsd = find_program('bsd')
 bash = find_program('bash', native : true)
 busybox = find_program('busybox', native : true, required : false)
 # Look up `coreutils` package by searching for `ls` binary.
@@ -21,10 +21,10 @@ busybox = find_program('busybox', native : true, required : false)
 coreutils = find_program('ls', native : true)
 dot = find_program('dot', native : true, required : false)
 
-nix_bin_dir = fs.parent(nix.full_path())
+bsd_bin_dir = fs.parent(bsd.full_path())
 
 test_confdata = {
-  'bindir': nix_bin_dir,
+  'bindir': bsd_bin_dir,
   'coreutils': fs.parent(coreutils.full_path()),
   'dot': dot.found() ? dot.full_path() : '',
   'bash': bash.full_path(),
@@ -38,8 +38,8 @@ test_confdata = {
 subdir('common')
 
 configure_file(
-  input : 'config.nix.in',
-  output : 'config.nix',
+  input : 'config.bsd.in',
+  output : 'config.bsd',
   configuration : test_confdata,
 )
 
@@ -50,7 +50,7 @@ suites = [
     'tests': [
       'test-infra.sh',
       'gc.sh',
-      'nix-collect-garbage-d.sh',
+      'bsd-collect-garbage-d.sh',
       'remote-store.sh',
       'legacy-ssh-store.sh',
       'lang.sh',
@@ -63,7 +63,7 @@ suites = [
       'user-envs-migration.sh',
       'binary-cache.sh',
       'multiple-outputs.sh',
-      'nix-build.sh',
+      'bsd-build.sh',
       'gc-concurrent.sh',
       'repair.sh',
       'fixed.sh',
@@ -86,7 +86,7 @@ suites = [
       'hash-path.sh',
       'gc-non-blocking.sh',
       'check.sh',
-      'nix-shell.sh',
+      'bsd-shell.sh',
       'check-refs.sh',
       'build-remote-input-addressed.sh',
       'secure-drv-outputs.sh',
@@ -94,7 +94,7 @@ suites = [
       'fetchGitSubmodules.sh',
       'fetchGitVerification.sh',
       'readfile-context.sh',
-      'nix-channel.sh',
+      'bsd-channel.sh',
       'recursive.sh',
       'dependencies.sh',
       'check-reqs.sh',
@@ -129,8 +129,8 @@ suites = [
       'brotli.sh',
       'zstd.sh',
       'compression-levels.sh',
-      'nix-copy-ssh.sh',
-      'nix-copy-ssh-ng.sh',
+      'bsd-copy-ssh.sh',
+      'bsd-copy-ssh-ng.sh',
       'post-hook.sh',
       'function-trace.sh',
       'formatter.sh',
@@ -140,7 +140,7 @@ suites = [
       'derivation-json.sh',
       'derivation-advanced-attributes.sh',
       'import-from-derivation.sh',
-      'nix_path.sh',
+      'bsd_path.sh',
       'nars.sh',
       'placeholders.sh',
       'ssh-relay.sh',
@@ -151,7 +151,7 @@ suites = [
       'db-migration.sh',
       'bash-profile.sh',
       'pass-as-file.sh',
-      'nix-profile.sh',
+      'bsd-profile.sh',
       'suggestions.sh',
       'store-info.sh',
       'fetchClosure.sh',
@@ -173,8 +173,8 @@ suites = [
   },
 ]
 
-nix_store = dependency('nix-store', required : false)
-if nix_store.found()
+bsd_store = dependency('bsd-store', required : false)
+if bsd_store.found()
   add_languages('cpp')
   subdir('test-libstoreconsumer')
   suites += {
@@ -191,8 +191,8 @@ if nix_store.found()
 endif
 
 # Plugin tests require shared libraries support.
-nix_expr = dependency('nix-expr', required : false)
-if nix_expr.found() and get_option('default_library') != 'static'
+bsd_expr = dependency('bsd-expr', required : false)
+if bsd_expr.found() and get_option('default_library') != 'static'
   add_languages('cpp')
   subdir('plugins')
   suites += {

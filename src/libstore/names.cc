@@ -1,10 +1,10 @@
-#include "nix/store/names.hh"
-#include "nix/util/util.hh"
+#include "bsd/store/names.hh"
+#include "bsd/util/util.hh"
 
 #include <regex>
 
 
-namespace nix {
+namespace bsd {
 
 
 struct Regex

@@ -3,35 +3,35 @@
 This is primarily a bug fix release. It also has a number of new
 features:
 
-  - `nix-prefetch-url` can now download URLs specified in a Nix
+  - `bsd-prefetch-url` can now download URLs specified in a Bsd
     expression. For example,
     
-        $ nix-prefetch-url -A hello.src
+        $ bsd-prefetch-url -A hello.src
     
     will prefetch the file specified by the `fetchurl` call in the
-    attribute `hello.src` from the Nix expression in the current
+    attribute `hello.src` from the Bsd expression in the current
     directory, and print the cryptographic hash of the resulting file on
-    stdout. This differs from `nix-build -A
+    stdout. This differs from `bsd-build -A
                     hello.src` in that it doesn't verify the hash, and is thus useful
-    when you’re updating a Nix expression.
+    when you’re updating a Bsd expression.
     
     You can also prefetch the result of functions that unpack a tarball,
     such as `fetchFromGitHub`. For example:
     
-        $ nix-prefetch-url --unpack https://github.com/NixOS/patchelf/archive/0.8.tar.gz
+        $ bsd-prefetch-url --unpack https://github.com/BasedLinux/patchelf/archive/0.8.tar.gz
     
-    or from a Nix expression:
+    or from a Bsd expression:
     
-        $ nix-prefetch-url -A nix-repl.src
+        $ bsd-prefetch-url -A bsd-repl.src
 
-  - The builtin function `<nix/fetchurl.nix>` now supports downloading
+  - The builtin function `<bsd/fetchurl.bsd>` now supports downloading
     and unpacking NARs. This removes the need to have multiple downloads
-    in the Nixpkgs stdenv bootstrap process (like a separate busybox
+    in the Bsdpkgs stdenv bootstrap process (like a separate busybox
     binary for Linux, or curl/mkdir/sh/bzip2 for Darwin). Now all those
     files can be combined into a single NAR, optionally compressed using
     `xz`.
 
-  - Nix now supports SHA-512 hashes for verifying fixed-output
+  - Bsd now supports SHA-512 hashes for verifying fixed-output
     derivations, and in `builtins.hashString`.
 
   - The new flag `--option build-repeat
@@ -50,12 +50,12 @@ features:
     run available under `store-path-check`. This makes it easier to
     investigate the non-determinism using tools like `diffoscope`, e.g.,
     
-        $ nix-build pkgs/stdenv/linux -A stage1.pkgs.zlib --check -K
-        error: derivation ‘/nix/store/l54i8wlw2265…-zlib-1.2.8.drv’ may not
-        be deterministic: output ‘/nix/store/11a27shh6n2i…-zlib-1.2.8’
-        differs from ‘/nix/store/11a27shh6n2i…-zlib-1.2.8-check’
+        $ bsd-build pkgs/stdenv/linux -A stage1.pkgs.zlib --check -K
+        error: derivation ‘/bsd/store/l54i8wlw2265…-zlib-1.2.8.drv’ may not
+        be deterministic: output ‘/bsd/store/11a27shh6n2i…-zlib-1.2.8’
+        differs from ‘/bsd/store/11a27shh6n2i…-zlib-1.2.8-check’
         
-        $ diffoscope /nix/store/11a27shh6n2i…-zlib-1.2.8 /nix/store/11a27shh6n2i…-zlib-1.2.8-check
+        $ diffoscope /bsd/store/11a27shh6n2i…-zlib-1.2.8 /bsd/store/11a27shh6n2i…-zlib-1.2.8-check
         …
         ├── lib/libz.a
         │   ├── metadata
@@ -67,7 +67,7 @@ features:
 
   - Improved FreeBSD support.
 
-  - `nix-env -qa --xml --meta` now prints license information.
+  - `bsd-env -qa --xml --meta` now prints license information.
 
   - The maximum number of parallel TCP connections that the binary cache
     substituter will use has been decreased from 150 to 25. This should
@@ -75,7 +75,7 @@ features:
     performance.
 
   - All "chroot"-containing strings got renamed to "sandbox". In
-    particular, some Nix options got renamed, but the old names are
+    particular, some Bsd options got renamed, but the old names are
     still accepted as lower-priority aliases.
 
 This release has contributions from Anders Claesson, Anthony Cowley,

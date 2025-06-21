@@ -1,6 +1,6 @@
-#include "nix/cmd/misc-store-flags.hh"
+#include "bsd/cmd/misc-store-flags.hh"
 
-namespace nix::flag
+namespace bsd::flag
 {
 
 static void hashFormatCompleter(AddCompletions & completions, size_t index, std::string_view prefix)
@@ -14,10 +14,10 @@ static void hashFormatCompleter(AddCompletions & completions, size_t index, std:
 
 Args::Flag hashFormatWithDefault(std::string && longName, HashFormat * hf)
 {
-    assert(*hf == nix::HashFormat::SRI);
+    assert(*hf == bsd::HashFormat::SRI);
     return Args::Flag {
             .longName = std::move(longName),
-            .description = "Hash format (`base16`, `nix32`, `base64`, `sri`). Default: `sri`.",
+            .description = "Hash format (`base16`, `bsd32`, `base64`, `sri`). Default: `sri`.",
             .labels = {"hash-format"},
             .handler = {[hf](std::string s) {
                 *hf = parseHashFormat(s);
@@ -30,7 +30,7 @@ Args::Flag hashFormatOpt(std::string && longName, std::optional<HashFormat> * oh
 {
     return Args::Flag {
             .longName = std::move(longName),
-            .description = "Hash format (`base16`, `nix32`, `base64`, `sri`).",
+            .description = "Hash format (`base16`, `bsd32`, `base64`, `sri`).",
             .labels = {"hash-format"},
             .handler = {[ohf](std::string s) {
                 *ohf = std::optional<HashFormat>{parseHashFormat(s)};
@@ -83,7 +83,7 @@ Args::Flag fileIngestionMethod(FileIngestionMethod * method)
 
     - `nar` (the default):
       Serialises the input as a
-      [Nix Archive](@docroot@/store/file-system-object/content-address.md#serial-nix-archive)
+      [Bsd Archive](@docroot@/store/file-system-object/content-address.md#serial-bsd-archive)
       and passes that to the hash function.
 
     - `flat`:
@@ -107,10 +107,10 @@ Args::Flag contentAddressMethod(ContentAddressMethod * method)
     How to compute the content-address of the store object.
     One of:
 
-    - [`nar`](@docroot@/store/store-object/content-address.md#method-nix-archive)
+    - [`nar`](@docroot@/store/store-object/content-address.md#method-bsd-archive)
       (the default):
       Serialises the input as a
-      [Nix Archive](@docroot@/store/file-system-object/content-address.md#serial-nix-archive)
+      [Bsd Archive](@docroot@/store/file-system-object/content-address.md#serial-bsd-archive)
       and passes that to the hash function.
 
     - [`flat`](@docroot@/store/store-object/content-address.md#method-flat):

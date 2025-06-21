@@ -1,6 +1,6 @@
-#include "nix/fetchers/filtering-source-accessor.hh"
+#include "bsd/fetchers/filtering-source-accessor.hh"
 
-namespace nix {
+namespace bsd {
 
 std::optional<std::filesystem::path> FilteringSourceAccessor::getPhysicalPath(const CanonPath & path)
 {

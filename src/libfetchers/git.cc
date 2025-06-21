@@ -1,20 +1,20 @@
-#include "nix/util/error.hh"
-#include "nix/fetchers/fetchers.hh"
-#include "nix/util/users.hh"
-#include "nix/fetchers/cache.hh"
-#include "nix/store/globals.hh"
-#include "nix/util/tarfile.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/url-parts.hh"
-#include "nix/store/pathlocks.hh"
-#include "nix/util/processes.hh"
-#include "nix/util/git.hh"
-#include "nix/fetchers/git-utils.hh"
-#include "nix/util/logging.hh"
-#include "nix/util/finally.hh"
-#include "nix/fetchers/fetch-settings.hh"
-#include "nix/util/json-utils.hh"
-#include "nix/util/archive.hh"
+#include "bsd/util/error.hh"
+#include "bsd/fetchers/fetchers.hh"
+#include "bsd/util/users.hh"
+#include "bsd/fetchers/cache.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/util/tarfile.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/url-parts.hh"
+#include "bsd/store/pathlocks.hh"
+#include "bsd/util/processes.hh"
+#include "bsd/util/git.hh"
+#include "bsd/fetchers/git-utils.hh"
+#include "bsd/util/logging.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/fetchers/fetch-settings.hh"
+#include "bsd/util/json-utils.hh"
+#include "bsd/util/archive.hh"
 
 #include <regex>
 #include <string.h>
@@ -26,7 +26,7 @@
 
 using namespace std::string_literals;
 
-namespace nix::fetchers {
+namespace bsd::fetchers {
 
 namespace {
 
@@ -34,7 +34,7 @@ namespace {
 // The value itself does not matter, since we always fetch a specific revision or branch.
 // It is set with `-c init.defaultBranch=` instead of `--initial-branch=` to stay compatible with
 // old version of git, which will ignore unrecognized `-c` options.
-const std::string gitInitialBranch = "__nix_dummy_branch";
+const std::string gitInitialBranch = "__bsd_dummy_branch";
 
 bool isCacheFileWithinTtl(time_t now, const struct stat & st)
 {
@@ -45,7 +45,7 @@ Path getCachePath(std::string_view key, bool shallow)
 {
     return getCacheDir()
     + "/gitv3/"
-    + hashString(HashAlgorithm::SHA256, key).to_string(HashFormat::Nix32, false)
+    + hashString(HashAlgorithm::SHA256, key).to_string(HashFormat::Bsd32, false)
     + (shallow ? "-shallow" : "");
 }
 
@@ -450,16 +450,16 @@ struct GitInputScheme : InputScheme
         // This allows relative git flake inputs to be resolved against the
         // **current working directory** (as in POSIX), which tends to work out
         // ok in the context of flakes, but is the wrong behavior,
-        // as it should resolve against the flake.nix base directory instead.
+        // as it should resolve against the flake.bsd base directory instead.
         //
-        // See: https://discourse.nixos.org/t/57783 and #9708
+        // See: https://discourse.basedlinux.org/t/57783 and #9708
         //
         if (url.scheme == "file" && !forceHttp && !isBareRepository) {
             if (!isAbsolute(url.path)) {
                 warn(
                     "Fetching Git repository '%s', which uses a path relative to the current directory. "
                     "This is not supported and will stop working in a future release. "
-                    "See https://github.com/NixOS/nix/issues/12281 for details.",
+                    "See https://github.com/BasedLinux/bsd/issues/12281 for details.",
                     url);
             }
             repoInfo.location = std::filesystem::absolute(url.path);
@@ -537,7 +537,7 @@ struct GitInputScheme : InputScheme
                 return RestrictedPathError(
                     "Path '%1%' in the repository %2% is not tracked by Git.\n"
                     "\n"
-                    "To make it visible to Nix, run:\n"
+                    "To make it visible to Bsd, run:\n"
                     "\n"
                     "git -C %2% add \"%1%\"",
                     path.rel(),
@@ -697,7 +697,7 @@ struct GitInputScheme : InputScheme
            input accessor consisting of the accessor for the top-level
            repo and the accessors for the submodules. */
         if (getSubmodulesAttr(input)) {
-            std::map<CanonPath, nix::ref<SourceAccessor>> mounts;
+            std::map<CanonPath, bsd::ref<SourceAccessor>> mounts;
 
             for (auto & [submodule, submoduleRev] : repo->getSubmodules(rev, exportIgnore)) {
                 auto resolved = repo->resolveSubmoduleUrl(submodule.url);
@@ -759,7 +759,7 @@ struct GitInputScheme : InputScheme
            consisting of the accessor for the top-level repo and the
            accessors for the submodule workdirs. */
         if (getSubmodulesAttr(input) && !repoInfo.workdirInfo.submodules.empty()) {
-            std::map<CanonPath, nix::ref<SourceAccessor>> mounts;
+            std::map<CanonPath, bsd::ref<SourceAccessor>> mounts;
 
             for (auto & submodule : repoInfo.workdirInfo.submodules) {
                 auto submodulePath = repoPath / submodule.path.rel();
@@ -837,7 +837,7 @@ struct GitInputScheme : InputScheme
             /* In this situation, we don't have a git CLI behavior that we can copy.
                `git archive` does not support submodules, so it is unclear whether
                rules from the parent should affect the submodule or not.
-               When git may eventually implement this, we need Nix to match its
+               When git may eventually implement this, we need Bsd to match its
                behavior. */
             throw UnimplementedError("exportIgnore and submodules are not supported together yet");
         }

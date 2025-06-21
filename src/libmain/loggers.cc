@@ -1,8 +1,8 @@
-#include "nix/main/loggers.hh"
-#include "nix/util/environment-variables.hh"
-#include "nix/main/progress-bar.hh"
+#include "bsd/main/loggers.hh"
+#include "bsd/util/environment-variables.hh"
+#include "bsd/main/progress-bar.hh"
 
-namespace nix {
+namespace bsd {
 
 LogFormat defaultLogFormat = LogFormat::raw;
 

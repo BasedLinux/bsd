@@ -1,1 +1,1 @@
-{ dir = "lib"; owner = "NixOS"; ref = "23.05"; repo = "nixpkgs"; type = "github"; }
+{ dir = "lib"; owner = "BasedLinux"; ref = "23.05"; repo = "bsdpkgs"; type = "github"; }

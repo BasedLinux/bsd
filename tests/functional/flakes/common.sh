@@ -7,23 +7,23 @@ registry=$TEST_ROOT/registry.json
 
 writeSimpleFlake() {
     local flakeDir="$1"
-    cat > "$flakeDir/flake.nix" <<EOF
+    cat > "$flakeDir/flake.bsd" <<EOF
 {
   description = "Bla bla";
 
   outputs = inputs: rec {
     packages.$system = rec {
-      foo = import ./simple.nix;
-      fooScript = (import ./shell.nix {}).foo;
+      foo = import ./simple.bsd;
+      fooScript = (import ./shell.bsd {}).foo;
       default = foo;
     };
     packages.someOtherSystem = rec {
-      foo = import ./simple.nix;
+      foo = import ./simple.bsd;
       default = foo;
     };
 
-    # To test "nix flake init".
-    legacyPackages.$system.hello = import ./simple.nix;
+    # To test "bsd flake init".
+    legacyPackages.$system.hello = import ./simple.bsd;
 
     parent = builtins.dirOf ./.;
 
@@ -34,14 +34,14 @@ writeSimpleFlake() {
 }
 EOF
 
-    cp ../simple.nix ../shell.nix ../simple.builder.sh "${config_nix}" "$flakeDir/"
+    cp ../simple.bsd ../shell.bsd ../simple.builder.sh "${config_bsd}" "$flakeDir/"
 }
 
 createSimpleGitFlake() {
     requireGit
     local flakeDir="$1"
     writeSimpleFlake "$flakeDir"
-    git -C "$flakeDir" add flake.nix simple.nix shell.nix simple.builder.sh config.nix
+    git -C "$flakeDir" add flake.bsd simple.bsd shell.bsd simple.builder.sh config.bsd
     git -C "$flakeDir" commit -m 'Initial'
 }
 
@@ -50,7 +50,7 @@ createFlake1() {
     flake1Dir="$TEST_ROOT/flake1"
     createGitRepo "$flake1Dir" ""
     createSimpleGitFlake "$flake1Dir"
-    nix registry add --registry "$registry" flake1 "git+file://$flake1Dir"
+    bsd registry add --registry "$registry" flake1 "git+file://$flake1Dir"
 }
 
 createFlake2() {
@@ -60,7 +60,7 @@ createFlake2() {
     # Give one repo a non-main initial branch.
     createGitRepo "$flake2Dir" "--initial-branch=main"
 
-    cat > "$flake2Dir/flake.nix" <<EOF
+    cat > "$flake2Dir/flake.bsd" <<EOF
 {
   description = "Fnord";
 
@@ -70,15 +70,15 @@ createFlake2() {
 }
 EOF
 
-    git -C "$flake2Dir" add flake.nix
+    git -C "$flake2Dir" add flake.bsd
     git -C "$flake2Dir" commit -m 'Initial'
 
-    nix registry add --registry "$registry" flake2 "git+file://$percentEncodedFlake2Dir"
+    bsd registry add --registry "$registry" flake2 "git+file://$percentEncodedFlake2Dir"
 }
 
 writeDependentFlake() {
     local flakeDir="$1"
-    cat > "$flakeDir/flake.nix" <<EOF
+    cat > "$flakeDir/flake.bsd" <<EOF
 {
   outputs = { self, flake1 }: {
     packages.$system.default = flake1.packages.$system.default;
@@ -90,20 +90,20 @@ EOF
 
 writeIfdFlake() {
     local flakeDir="$1"
-    cat > "$flakeDir/flake.nix" <<EOF
+    cat > "$flakeDir/flake.bsd" <<EOF
 {
   outputs = { self }: {
-    packages.$system.default = import ./ifd.nix;
+    packages.$system.default = import ./ifd.bsd;
   };
 }
 EOF
 
-    cp -n ../ifd.nix ../dependencies.nix ../dependencies.builder0.sh "${config_nix}" "$flakeDir/"
+    cp -n ../ifd.bsd ../dependencies.bsd ../dependencies.builder0.sh "${config_bsd}" "$flakeDir/"
 }
 
 writeTrivialFlake() {
     local flakeDir="$1"
-    cat > "$flakeDir/flake.nix" <<EOF
+    cat > "$flakeDir/flake.bsd" <<EOF
 {
   outputs = { self }: {
     expr = 123;

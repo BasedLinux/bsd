@@ -1,15 +1,15 @@
 #ifdef __FreeBSD__
-#  include "nix/util/freebsd-jail.hh"
+#  include "bsd/util/freebsd-jail.hh"
 
 #  include <sys/resource.h>
 #  include <sys/param.h>
 #  include <sys/jail.h>
 #  include <sys/mount.h>
 
-#  include "nix/util/error.hh"
-#  include "nix/util/util.hh"
+#  include "bsd/util/error.hh"
+#  include "bsd/util/util.hh"
 
-namespace nix {
+namespace bsd {
 
 AutoRemoveJail::AutoRemoveJail()
     : del{false}

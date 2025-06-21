@@ -1,12 +1,12 @@
-#include "nix/expr/primops.hh"
-#include "nix/expr/eval-inline.hh"
-#include "nix/expr/eval-settings.hh"
-#include "nix/store/store-api.hh"
-#include "nix/fetchers/fetchers.hh"
-#include "nix/util/url.hh"
-#include "nix/util/url-parts.hh"
+#include "bsd/expr/primops.hh"
+#include "bsd/expr/eval-inline.hh"
+#include "bsd/expr/eval-settings.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/fetchers/fetchers.hh"
+#include "bsd/util/url.hh"
+#include "bsd/util/url-parts.hh"
 
-namespace nix {
+namespace bsd {
 
 static void prim_fetchMercurial(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
@@ -14,7 +14,7 @@ static void prim_fetchMercurial(EvalState & state, const PosIdx pos, Value * * a
     std::optional<Hash> rev;
     std::optional<std::string> ref;
     std::string_view name = "source";
-    NixStringContext context;
+    BsdStringContext context;
 
     state.forceValue(*args[0], pos);
 

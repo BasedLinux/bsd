@@ -18,20 +18,20 @@ However, an output spec named "out" describes and output store object whose name
 >
 > A derivation is named `hello`, and has two outputs, `out`, and `dev`
 >
-> - The derivation's path will be: `/nix/store/<hash>-hello.drv`.
+> - The derivation's path will be: `/bsd/store/<hash>-hello.drv`.
 >
-> - The store path of `out` will be: `/nix/store/<hash>-hello`.
+> - The store path of `out` will be: `/bsd/store/<hash>-hello`.
 >
-> - The store path of `dev` will be: `/nix/store/<hash>-hello-dev`.
+> - The store path of `dev` will be: `/bsd/store/<hash>-hello-dev`.
 
 The outputs are the derivations are the [store objects](@docroot@/store/store-object.md) it is obligated to produce.
 
 > **Note**
 >
-> The formal terminology here is somewhat at odds with everyday communication in the Nix community today.
+> The formal terminology here is somewhat at odds with everyday communication in the Bsd community today.
 > "output" in casual usage tends to refer to either to the actual output store object, or the notional output spec, depending on context.
 >
-> For example "hello's `dev` output" means the store object referred to by the store path `/nix/store/<hash>-hello-dev`.
+> For example "hello's `dev` output" means the store object referred to by the store path `/bsd/store/<hash>-hello-dev`.
 > It is unusual to call this the "`hello-dev` output", even though `hello-dev` is the actual name of that store object.
 
 ## Types of output addressing
@@ -72,7 +72,7 @@ The rules for this are fairly concise:
 
   - With floating content-addressing or input-addressing it is floating.
 
-  > Thus, historically with Nix, with no experimental features enabled, *all* outputs are fixed.
+  > Thus, historically with Bsd, with no experimental features enabled, *all* outputs are fixed.
 
 - The derivation may be *pure* or *impure*, indicating what read access to the outside world the [builder](../index.md#builder) has.
 

@@ -1,6 +1,6 @@
 configure_file(
-  input : 'config.nix.in',
-  output : 'config.nix',
+  input : 'config.bsd.in',
+  output : 'config.bsd',
   configuration : test_confdata,
 )
 

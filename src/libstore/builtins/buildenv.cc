@@ -1,14 +1,14 @@
-#include "nix/store/builtins/buildenv.hh"
-#include "nix/store/builtins.hh"
-#include "nix/store/derivations.hh"
-#include "nix/util/signals.hh"
+#include "bsd/store/builtins/buildenv.hh"
+#include "bsd/store/builtins.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/util/signals.hh"
 
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
 #include <algorithm>
 
-namespace nix {
+namespace bsd {
 
 struct State
 {
@@ -59,11 +59,11 @@ static void createLinks(State & state, const Path & srcDir, const Path & dstDir,
          * `$out/lib/pythonX.Y/site-packages/easy-install.pth'.)
          */
         if (hasSuffix(srcFile, "/propagated-build-inputs") ||
-            hasSuffix(srcFile, "/nix-support") ||
+            hasSuffix(srcFile, "/bsd-support") ||
             hasSuffix(srcFile, "/perllocal.pod") ||
             hasSuffix(srcFile, "/info/dir") ||
             hasSuffix(srcFile, "/log") ||
-            hasSuffix(srcFile, "/manifest.nix") ||
+            hasSuffix(srcFile, "/manifest.bsd") ||
             hasSuffix(srcFile, "/manifest.json"))
             continue;
 
@@ -132,7 +132,7 @@ void buildProfile(const Path & out, Packages && pkgs)
 
         try {
             for (const auto & p : tokenizeString<std::vector<std::string>>(
-                    readFile(pkgDir + "/nix-support/propagated-user-env-packages"), " \n"))
+                    readFile(pkgDir + "/bsd-support/propagated-user-env-packages"), " \n"))
                 if (!done.count(p))
                     postponed.insert(p);
         } catch (SysError & e) {
@@ -199,7 +199,7 @@ static void builtinBuildenv(const BuiltinBuilderContext & ctx)
 
     buildProfile(out, std::move(pkgs));
 
-    createSymlink(getAttr("manifest"), out + "/manifest.nix");
+    createSymlink(getAttr("manifest"), out + "/manifest.bsd");
 }
 
 static RegisterBuiltinBuilder registerBuildenv("buildenv", builtinBuildenv);

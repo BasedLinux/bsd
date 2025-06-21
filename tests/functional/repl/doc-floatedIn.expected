@@ -1,12 +1,12 @@
-Nix <nix version>
+Bsd <bsd version>
 Type :? for help.
 
-nix-repl> :l doc-comments.nix
+bsd-repl> :l doc-comments.bsd
 Added <number omitted> variables.
 
-nix-repl> :doc floatedIn
+bsd-repl> :doc floatedIn
 Function `floatedIn`\
-  … defined at /path/to/tests/functional/repl/doc-comments.nix:21:5
+  … defined at /path/to/tests/functional/repl/doc-comments.bsd:21:5
 
 
 This also works.

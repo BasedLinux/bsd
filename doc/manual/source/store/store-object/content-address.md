@@ -95,9 +95,9 @@ It is somewhat obscure, mainly used for "drv files"
 (derivations serialized as store objects in their ["ATerm" file format](@docroot@/protocols/derivation-aterm.md)).
 Prefer another method if possible.
 
-### Nix Archive { #method-nix-archive }
+### Bsd Archive { #method-bsd-archive }
 
-This uses the corresponding [Nix Archive](../file-system-object/content-address.md#serial-nix-archive) method of file system object content addressing.
+This uses the corresponding [Bsd Archive](../file-system-object/content-address.md#serial-bsd-archive) method of file system object content addressing.
 
 References (to other store objects and self-references alike) are supported so long as the hash algorithm is SHA-256, but not (neither kind) otherwise.
 

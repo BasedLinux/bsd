@@ -1,5 +1,5 @@
 error: undefined variable 'invalid'
-       at /pwd/lang/eval-fail-eol-1.nix:2:1:
+       at /pwd/lang/eval-fail-eol-1.bsd:2:1:
             1| # foo
             2| invalid
              | ^

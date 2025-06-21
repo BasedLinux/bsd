@@ -1,11 +1,11 @@
-#include "nix/util/json-utils.hh"
-#include "nix/util/error.hh"
-#include "nix/util/types.hh"
+#include "bsd/util/json-utils.hh"
+#include "bsd/util/error.hh"
+#include "bsd/util/types.hh"
 #include <nlohmann/json_fwd.hpp>
 #include <iostream>
 #include <optional>
 
-namespace nix {
+namespace bsd {
 
 const nlohmann::json * get(const nlohmann::json & map, const std::string & key)
 {

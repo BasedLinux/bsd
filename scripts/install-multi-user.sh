@@ -4,10 +4,10 @@ set -eu
 set -o pipefail
 
 # Sourced from:
-# - https://github.com/LnL7/nix-darwin/blob/8c29d0985d74b4a990238497c47a2542a5616b3c/bootstrap.sh
+# - https://github.com/LnL7/bsd-darwin/blob/8c29d0985d74b4a990238497c47a2542a5616b3c/bootstrap.sh
 # - https://gist.github.com/expipiplus1/e571ce88c608a1e83547c918591b149f/ac504c6c1b96e65505fbda437a28ce563408ecb0
-# - https://github.com/NixOS/nixos-org-configurations/blob/a122f418797713d519aadf02e677fce0dc1cb446/delft/scripts/nix-mac-installer.sh
-# - https://github.com/matthewbauer/macNixOS/blob/f6045394f9153edea417be90c216788e754feaba/install-macNixOS.sh
+# - https://github.com/BasedLinux/bsdos-org-configurations/blob/a122f418797713d519aadf02e677fce0dc1cb446/delft/scripts/bsd-mac-installer.sh
+# - https://github.com/matthewbauer/macBasedLinux/blob/f6045394f9153edea417be90c216788e754feaba/install-macBasedLinux.sh
 # - https://gist.github.com/LnL7/9717bd6cdcb30b086fd7f2093e5f8494/86b26f852ce563e973acd30f796a9a416248c34a
 #
 # however tracking which bits came from which would be impossible.
@@ -23,22 +23,22 @@ readonly RED='\033[31m'
 # installer allows overriding build user count to speed up installation
 # as creating each user takes non-trivial amount of time on macos
 readonly NIX_USER_COUNT=${NIX_USER_COUNT:-32}
-readonly NIX_BUILD_GROUP_NAME="nixbld"
+readonly NIX_BUILD_GROUP_NAME="bsdbld"
 # each system specific installer must set these:
 #   NIX_FIRST_BUILD_UID
 #   NIX_BUILD_GROUP_ID
 #   NIX_BUILD_USER_NAME_TEMPLATE
 # Please don't change this. We don't support it, because the
-# default shell profile that comes with Nix doesn't support it.
-readonly NIX_ROOT="/nix"
+# default shell profile that comes with Bsd doesn't support it.
+readonly NIX_ROOT="/bsd"
 readonly NIX_EXTRA_CONF=${NIX_EXTRA_CONF:-}
 
-readonly PROFILE_TARGETS=("/etc/bashrc" "/etc/profile.d/nix.sh" "/etc/zshrc" "/etc/bash.bashrc" "/etc/zsh/zshrc")
-readonly PROFILE_BACKUP_SUFFIX=".backup-before-nix"
-readonly PROFILE_NIX_FILE="$NIX_ROOT/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
+readonly PROFILE_TARGETS=("/etc/bashrc" "/etc/profile.d/bsd.sh" "/etc/zshrc" "/etc/bash.bashrc" "/etc/zsh/zshrc")
+readonly PROFILE_BACKUP_SUFFIX=".backup-before-bsd"
+readonly PROFILE_NIX_FILE="$NIX_ROOT/var/bsd/profiles/default/etc/profile.d/bsd-daemon.sh"
 
 # Fish has different syntax than zsh/bash, treat it separate
-readonly PROFILE_FISH_SUFFIX="conf.d/nix.fish"
+readonly PROFILE_FISH_SUFFIX="conf.d/bsd.fish"
 readonly PROFILE_FISH_PREFIXES=(
     # each of these are common values of $__fish_sysconf_dir,
     # under which Fish will look for a file named
@@ -48,12 +48,12 @@ readonly PROFILE_FISH_PREFIXES=(
     "/opt/homebrew/etc/fish" # homebrew
     "/opt/local/etc/fish"    # macports
 )
-readonly PROFILE_NIX_FILE_FISH="$NIX_ROOT/var/nix/profiles/default/etc/profile.d/nix-daemon.fish"
+readonly PROFILE_NIX_FILE_FISH="$NIX_ROOT/var/bsd/profiles/default/etc/profile.d/bsd-daemon.fish"
 
-readonly NIX_INSTALLED_NIX="@nix@"
+readonly NIX_INSTALLED_NIX="@bsd@"
 readonly NIX_INSTALLED_CACERT="@cacert@"
-#readonly NIX_INSTALLED_NIX="/nix/store/j8dbv5w6jl34caywh2ygdy88knx1mdf7-nix-2.3.6"
-#readonly NIX_INSTALLED_CACERT="/nix/store/7dxhzymvy330i28ii676fl1pqwcahv2f-nss-cacert-3.49.2"
+#readonly NIX_INSTALLED_NIX="/bsd/store/j8dbv5w6jl34caywh2ygdy88knx1mdf7-bsd-2.3.6"
+#readonly NIX_INSTALLED_CACERT="/bsd/store/7dxhzymvy330i28ii676fl1pqwcahv2f-nss-cacert-3.49.2"
 readonly EXTRACTED_NIX_PATH="$(dirname "$0")"
 
 # allow to override identity change command
@@ -101,9 +101,9 @@ is_os_darwin() {
 
 contact_us() {
     echo "You can open an issue at"
-    echo "https://github.com/NixOS/nix/issues/new?labels=installer&template=installer.md"
+    echo "https://github.com/BasedLinux/bsd/issues/new?labels=installer&template=installer.md"
     echo ""
-    echo "Or get in touch with the community: https://nixos.org/community"
+    echo "Or get in touch with the community: https://basedlinux.org/community"
 }
 get_help() {
     echo "We'd love to help if you need it."
@@ -112,7 +112,7 @@ get_help() {
 }
 
 uninstall_directions() {
-    subheader "Uninstalling nix:"
+    subheader "Uninstalling bsd:"
     local step=0
 
     if poly_service_installed_check; then
@@ -137,20 +137,20 @@ EOF
 
     step=$((step + 1))
     cat <<EOF
-$step. Delete the files Nix added to your system:
+$step. Delete the files Bsd added to your system:
 
-  $NIX_BECOME rm -rf "/etc/nix" "$NIX_ROOT" "$ROOT_HOME/.nix-profile" "$ROOT_HOME/.nix-defexpr" "$ROOT_HOME/.nix-channels" "$ROOT_HOME/.local/state/nix" "$ROOT_HOME/.cache/nix" "$HOME/.nix-profile" "$HOME/.nix-defexpr" "$HOME/.nix-channels" "$HOME/.local/state/nix" "$HOME/.cache/nix"
+  $NIX_BECOME rm -rf "/etc/bsd" "$NIX_ROOT" "$ROOT_HOME/.bsd-profile" "$ROOT_HOME/.bsd-defexpr" "$ROOT_HOME/.bsd-channels" "$ROOT_HOME/.local/state/bsd" "$ROOT_HOME/.cache/bsd" "$HOME/.bsd-profile" "$HOME/.bsd-defexpr" "$HOME/.bsd-channels" "$HOME/.local/state/bsd" "$HOME/.cache/bsd"
 
 and that is it.
 
 EOF
 }
 
-nix_user_for_core() {
+bsd_user_for_core() {
     printf "$NIX_BUILD_USER_NAME_TEMPLATE" "$1"
 }
 
-nix_uid_for_core() {
+bsd_uid_for_core() {
     echo $((NIX_FIRST_BUILD_UID + $1 - 1))
 }
 
@@ -272,7 +272,7 @@ confirm_edit() {
     local edit_path="$2"
     cat <<EOF
 
-Nix isn't the only thing in $path,
+Bsd isn't the only thing in $path,
 but I think I know how to edit it out.
 Here's the diff:
 EOF
@@ -280,7 +280,7 @@ EOF
     # could technically test the diff, but caller should do it
     _diff "$path" "$edit_path"
     if ui_confirm "Does the change above look right?"; then
-        _sudo "remove nix from $path" cp "$edit_path" "$path"
+        _sudo "remove bsd from $path" cp "$edit_path" "$path"
     fi
 }
 
@@ -398,7 +398,7 @@ finish_success() {
     cat <<EOF
 Try it! Open a new terminal, and type:
 $(poly_extra_try_me_commands)
-  $ nix-shell -p nix-info --run "nix-info -m"
+  $ bsd-shell -p bsd-info --run "bsd-info -m"
 
 Thank you for using this installer. If you have any feedback or need
 help, don't hesitate:
@@ -410,7 +410,7 @@ EOF
 }
 
 finish_uninstall_success() {
-    ok "Alright! Nix should be removed!"
+    ok "Alright! Bsd should be removed!"
 
     cat <<EOF
 If you spot anything this uninstaller missed or have feedback,
@@ -422,24 +422,24 @@ EOF
     finish_cleanup
 }
 
-remove_nix_artifacts() {
+remove_bsd_artifacts() {
     failure "Not implemented yet"
 }
 
 cure_artifacts() {
     poly_cure_artifacts
-    # remove_nix_artifacts (LATER)
+    # remove_bsd_artifacts (LATER)
 }
 
 validate_starting_assumptions() {
     task "Checking for artifacts of previous installs"
     cat <<EOF
-Before I try to install, I'll check for signs Nix already is or has
+Before I try to install, I'll check for signs Bsd already is or has
 been installed on this system.
 EOF
-    if type nix-env 2> /dev/null >&2; then
+    if type bsd-env 2> /dev/null >&2; then
         warning <<EOF
-Nix already appears to be installed. This installer may run into issues.
+Bsd already appears to be installed. This installer may run into issues.
 If an error occurs, try manually uninstalling, then rerunning this script.
 
 $(uninstall_directions)
@@ -456,7 +456,7 @@ EOF
         #       of the copies so that people don't hit this 2 or 3x in
         #       a row for different files.
         if [ -e "$profile_target$PROFILE_BACKUP_SUFFIX" ]; then
-            # this backup process first released in Nix 2.1
+            # this backup process first released in Bsd 2.1
 
             if diff -q "$profile_target$PROFILE_BACKUP_SUFFIX" "$profile_target" > /dev/null; then
                 # a backup file for the rc-file exist, but they are identical,
@@ -466,7 +466,7 @@ EOF
             fi
 
             failure <<EOF
-I back up shell profile/rc scripts before I add Nix to them.
+I back up shell profile/rc scripts before I add Bsd to them.
 I need to back up $profile_target to $profile_target$PROFILE_BACKUP_SUFFIX,
 but the latter already exists.
 
@@ -476,11 +476,11 @@ Here's how to clean up the old backup file:
    to another location, just in case.
 
 2. Ensure $profile_target$PROFILE_BACKUP_SUFFIX does not have anything
-   Nix-related in it. If it does, something is probably quite
+   Bsd-related in it. If it does, something is probably quite
    wrong. Please open an issue or get in touch immediately.
 
 3. Once you confirm $profile_target is backed up and
-   $profile_target$PROFILE_BACKUP_SUFFIX doesn't mention Nix, run:
+   $profile_target$PROFILE_BACKUP_SUFFIX doesn't mention Bsd, run:
    mv $profile_target$PROFILE_BACKUP_SUFFIX $profile_target
 EOF
         fi
@@ -490,7 +490,7 @@ EOF
         warning <<EOF
 We did not detect systemd on your system. With a multi-user install
 without systemd you will have to manually configure your init system to
-launch the Nix daemon after installation.
+launch the Bsd daemon after installation.
 EOF
         if ! ui_confirm "Do you want to proceed with a multi-user installation?"; then
             failure <<EOF
@@ -501,9 +501,9 @@ EOF
 }
 
 setup_report() {
-    header "Nix config report"
+    header "Bsd config report"
     row "        Temp Dir" "$SCRATCH"
-    row "        Nix Root" "$NIX_ROOT"
+    row "        Bsd Root" "$NIX_ROOT"
     row "     Build Users" "$NIX_USER_COUNT"
     row "  Build Group ID" "$NIX_BUILD_GROUP_ID"
     row "Build Group Name" "$NIX_BUILD_GROUP_NAME"
@@ -515,7 +515,7 @@ setup_report() {
 
     row "    Username" "UID"
     for i in $(seq 1 "$NIX_USER_COUNT"); do
-        row "     $(nix_user_for_core "$i")" "$(nix_uid_for_core "$i")"
+        row "     $(bsd_user_for_core "$i")" "$(bsd_uid_for_core "$i")"
     done
     echo ""
 }
@@ -549,8 +549,8 @@ create_build_user_for_core() {
     local uid
 
     coreid="$1"
-    username=$(nix_user_for_core "$coreid")
-    uid=$(nix_uid_for_core "$coreid")
+    username=$(bsd_user_for_core "$coreid")
+    uid=$(bsd_uid_for_core "$coreid")
 
     task "Setting up the build user $username"
 
@@ -593,11 +593,11 @@ EOF
     # to extract _just_ the user's note, instead it is prefixed with
     # some plist junk. This was causing the user note to always be set,
     # even if there was no reason for it.
-    if poly_user_note_get "$username" | grep -q "Nix build user $coreid"; then
-        row "              Note" "Nix build user $coreid"
+    if poly_user_note_get "$username" | grep -q "Bsd build user $coreid"; then
+        row "              Note" "Bsd build user $coreid"
     else
-        poly_user_note_set "$username" "Nix build user $coreid"
-        row "              Note" "Nix build user $coreid"
+        poly_user_note_set "$username" "Bsd build user $coreid"
+        row "              Note" "Bsd build user $coreid"
     fi
 
     if [ "$(poly_user_shell_get "$username")" = "/sbin/nologin" ]; then
@@ -632,7 +632,7 @@ create_directories() {
     # FIXME: remove all of this because it duplicates LocalStore::LocalStore().
     task "Setting up the basic directory structure"
     if [ -d "$NIX_ROOT" ]; then
-        # if /nix already exists, take ownership
+        # if /bsd already exists, take ownership
         #
         # Caution: notes below are macOS-y
         # This is a bit of a goldilocks zone for taking ownership
@@ -657,7 +657,7 @@ create_directories() {
         #     A bash with a properly-working `command -p`
         #     should ignore this hard-set PATH in favor of
         #     whatever it obtains internally. See
-        #     github.com/NixOS/nix/issues/5768
+        #     github.com/BasedLinux/bsd/issues/5768
         # - fall back on `command -v` which would find
         #   any chown on path
         # if we don't find one, the command is already
@@ -671,31 +671,31 @@ create_directories() {
 
         if [[ -z "$get_chr_own" ]]; then
             reminder <<EOF
-I wanted to take root ownership of existing Nix store files,
+I wanted to take root ownership of existing Bsd store files,
 but I couldn't locate 'chown'. (You may need to fix your PATH.)
 To manually change file ownership, you can run:
     sudo chown -R 'root:$NIX_BUILD_GROUP_NAME' '$NIX_ROOT'
 EOF
         else
-            _sudo "to take root ownership of existing Nix store files" \
+            _sudo "to take root ownership of existing Bsd store files" \
                   "$get_chr_own" -R "root:$NIX_BUILD_GROUP_NAME" "$NIX_ROOT" || true
         fi
     fi
-    _sudo "to make the basic directory structure of Nix (part 1)" \
-          install -dv -m 0755 /nix /nix/var /nix/var/log /nix/var/log/nix /nix/var/log/nix/drvs /nix/var/nix{,/db,/gcroots,/profiles,/temproots,/userpool,/daemon-socket} /nix/var/nix/{gcroots,profiles}/per-user
+    _sudo "to make the basic directory structure of Bsd (part 1)" \
+          install -dv -m 0755 /bsd /bsd/var /bsd/var/log /bsd/var/log/bsd /bsd/var/log/bsd/drvs /bsd/var/bsd{,/db,/gcroots,/profiles,/temproots,/userpool,/daemon-socket} /bsd/var/bsd/{gcroots,profiles}/per-user
 
-    _sudo "to make the basic directory structure of Nix (part 2)" \
-          install -dv -g "$NIX_BUILD_GROUP_NAME" -m 1775 /nix/store
+    _sudo "to make the basic directory structure of Bsd (part 2)" \
+          install -dv -g "$NIX_BUILD_GROUP_NAME" -m 1775 /bsd/store
 
-    _sudo "to place the default nix daemon configuration (part 1)" \
-          install -dv -m 0555 /etc/nix
+    _sudo "to place the default bsd daemon configuration (part 1)" \
+          install -dv -m 0555 /etc/bsd
 }
 
 place_channel_configuration() {
     if [ -z "${NIX_INSTALLER_NO_CHANNEL_ADD:-}" ]; then
-        echo "https://nixos.org/channels/nixpkgs-unstable nixpkgs" > "$SCRATCH/.nix-channels"
+        echo "https://basedlinux.org/channels/bsdpkgs-unstable bsdpkgs" > "$SCRATCH/.bsd-channels"
         _sudo "to set up the default system channel (part 1)" \
-            install -m 0644 "$SCRATCH/.nix-channels" "$ROOT_HOME/.nix-channels"
+            install -m 0644 "$SCRATCH/.bsd-channels" "$ROOT_HOME/.bsd-channels"
     fi
 }
 
@@ -703,8 +703,8 @@ check_selinux() {
     if command -v getenforce > /dev/null 2>&1; then
         if [ "$(getenforce)" = "Enforcing" ]; then
             failure <<EOF
-Nix does not work with selinux enabled yet!
-see https://github.com/NixOS/nix/issues/2374
+Bsd does not work with selinux enabled yet!
+see https://github.com/BasedLinux/bsd/issues/2374
 EOF
         fi
     fi
@@ -716,35 +716,35 @@ check_required_system_specific_settings() {
     fi
 }
 
-welcome_to_nix() {
+welcome_to_bsd() {
     local -r NIX_UID_RANGES="${NIX_FIRST_BUILD_UID}..$((NIX_FIRST_BUILD_UID + NIX_USER_COUNT - 1))"
     local -r RANGE_TEXT=$(echo -ne "${BLUE}(uids [${NIX_UID_RANGES}])${ESC}")
     local -r GROUP_TEXT=$(echo -ne "${BLUE}(gid ${NIX_BUILD_GROUP_ID})${ESC}")
 
-    ok "Welcome to the Multi-User Nix Installation"
+    ok "Welcome to the Multi-User Bsd Installation"
 
     cat <<EOF
 
-This installation tool will set up your computer with the Nix package
+This installation tool will set up your computer with the Bsd package
 manager. This will happen in a few stages:
 
-1. Make sure your computer doesn't already have Nix. If it does, I
+1. Make sure your computer doesn't already have Bsd. If it does, I
    will show you instructions on how to clean up your old install.
 
 2. Show you what I am going to install and where. Then I will ask
    if you are ready to continue.
 
 3. Create the system users ${RANGE_TEXT} and groups ${GROUP_TEXT}
-   that the Nix daemon uses to run builds. To create system users
+   that the Bsd daemon uses to run builds. To create system users
    in a different range, exit and run this tool again with
    NIX_FIRST_BUILD_UID set.
 
-4. Perform the basic installation of the Nix files daemon.
+4. Perform the basic installation of the Bsd files daemon.
 
-5. Configure your shell to import special Nix Profile files, so you
-   can use Nix.
+5. Configure your shell to import special Bsd Profile files, so you
+   can use Bsd.
 
-6. Start the Nix daemon.
+6. Start the Bsd daemon.
 
 EOF
 
@@ -753,20 +753,20 @@ EOF
 
 I will:
 
- - make sure your computer doesn't already have Nix files
+ - make sure your computer doesn't already have Bsd files
    (if it does, I will tell you how to clean them up.)
  - create local users (see the list above for the users I'll make)
  - create a local group ($NIX_BUILD_GROUP_NAME)
- - install Nix in $NIX_ROOT
- - create a configuration file in /etc/nix
- - set up the "default profile" by creating some Nix-related files in
+ - install Bsd in $NIX_ROOT
+ - create a configuration file in /etc/bsd
+ - set up the "default profile" by creating some Bsd-related files in
    $ROOT_HOME
 EOF
         for profile_target in "${PROFILE_TARGETS[@]}"; do
             if [ -e "$profile_target" ]; then
                 cat <<EOF
  - back up $profile_target to $profile_target$PROFILE_BACKUP_SUFFIX
- - update $profile_target to include some Nix configuration
+ - update $profile_target to include some Bsd configuration
 EOF
             fi
         done
@@ -788,7 +788,7 @@ This script is going to call sudo a lot. Normally, it would show you
 exactly what commands it is running and why. However, the script is
 run in a headless fashion, like this:
 
-  $ curl -L https://nixos.org/nix/install | sh
+  $ curl -L https://basedlinux.org/bsd/install | sh
 
 or maybe in a CI pipeline. Because of that, I'm going to skip the
 verbose output in the interest of brevity.
@@ -796,8 +796,8 @@ verbose output in the interest of brevity.
 If you would like to
 see the output, try like this:
 
-  $ curl -L -o install-nix https://nixos.org/nix/install
-  $ sh ./install-nix
+  $ curl -L -o install-bsd https://basedlinux.org/bsd/install
+  $ sh ./install-bsd
 
 EOF
         return 0
@@ -829,41 +829,41 @@ EOF
     fi
 }
 
-install_from_extracted_nix() {
-    task "Installing Nix"
+install_from_extracted_bsd() {
+    task "Installing Bsd"
     (
         cd "$EXTRACTED_NIX_PATH"
 
-        _sudo "to copy the basic Nix files to the new store at $NIX_ROOT/store" \
+        _sudo "to copy the basic Bsd files to the new store at $NIX_ROOT/store" \
               cp -RPp ./store/* "$NIX_ROOT/store/"
 
         _sudo "to make the new store non-writable at $NIX_ROOT/store" \
               chmod -R ugo-w "$NIX_ROOT/store/"
 
         if [ -d "$NIX_INSTALLED_NIX" ]; then
-            echo "      Alright! We have our first nix at $NIX_INSTALLED_NIX"
+            echo "      Alright! We have our first bsd at $NIX_INSTALLED_NIX"
         else
             failure <<EOF
-Something went wrong, and I didn't find Nix installed at
+Something went wrong, and I didn't find Bsd installed at
 $NIX_INSTALLED_NIX.
 EOF
         fi
 
-        _sudo "to load data for the first time in to the Nix Database" \
-              HOME="$ROOT_HOME" "$NIX_INSTALLED_NIX/bin/nix-store" --load-db < ./.reginfo
+        _sudo "to load data for the first time in to the Bsd Database" \
+              HOME="$ROOT_HOME" "$NIX_INSTALLED_NIX/bin/bsd-store" --load-db < ./.reginfo
 
-        echo "      Just finished getting the nix database ready."
+        echo "      Just finished getting the bsd database ready."
     )
 }
 
 shell_source_lines() {
     cat <<EOF
 
-# Nix
+# Bsd
 if [ -e '$PROFILE_NIX_FILE' ]; then
   . '$PROFILE_NIX_FILE'
 fi
-# End Nix
+# End Bsd
 
 EOF
 }
@@ -872,11 +872,11 @@ EOF
 fish_source_lines() {
     cat <<EOF
 
-# Nix
+# Bsd
 if test -e '$PROFILE_NIX_FILE_FISH'
   . '$PROFILE_NIX_FILE_FISH'
 end
-# End Nix
+# End Bsd
 
 EOF
 }
@@ -898,7 +898,7 @@ configure_shell_profile() {
 
         if [ -e "$profile_target" ]; then
             shell_source_lines \
-                | _sudo "extend your $profile_target with nix-daemon settings" \
+                | _sudo "extend your $profile_target with bsd-daemon settings" \
                         tee -a "$profile_target"
         fi
     done
@@ -919,33 +919,33 @@ configure_shell_profile() {
         fi
 
         fish_source_lines \
-            | _sudo "write nix-daemon settings to $profile_target" \
+            | _sudo "write bsd-daemon settings to $profile_target" \
                     tee "$profile_target"
     done
 
     # TODO: should we suggest '. $PROFILE_NIX_FILE'? It would get them on
     # their way less disruptively, but a counter-argument is that they won't
     # immediately notice if something didn't get set up right?
-    reminder "Nix won't work in active shell sessions until you restart them."
+    reminder "Bsd won't work in active shell sessions until you restart them."
 }
 
 cert_in_store() {
     # in a subshell
     # - change into the cert-file dir
     # - get the phyiscal pwd
-    # and test if this path is in the Nix store
+    # and test if this path is in the Bsd store
     [[ "$(cd -- "$(dirname "$NIX_SSL_CERT_FILE")" && exec pwd -P)" == "$NIX_ROOT/store/"* ]]
 }
 
 setup_default_profile() {
     task "Setting up the default profile"
-    _sudo "to install a bootstrapping Nix in to the default profile" \
-          HOME="$ROOT_HOME" "$NIX_INSTALLED_NIX/bin/nix-env" -i "$NIX_INSTALLED_NIX"
+    _sudo "to install a bootstrapping Bsd in to the default profile" \
+          HOME="$ROOT_HOME" "$NIX_INSTALLED_NIX/bin/bsd-env" -i "$NIX_INSTALLED_NIX"
 
     if [ -z "${NIX_SSL_CERT_FILE:-}" ] || ! [ -f "${NIX_SSL_CERT_FILE:-}" ] || cert_in_store; then
-        _sudo "to install a bootstrapping SSL certificate just for Nix in to the default profile" \
-              HOME="$ROOT_HOME" "$NIX_INSTALLED_NIX/bin/nix-env" -i "$NIX_INSTALLED_CACERT"
-        export NIX_SSL_CERT_FILE=/nix/var/nix/profiles/default/etc/ssl/certs/ca-bundle.crt
+        _sudo "to install a bootstrapping SSL certificate just for Bsd in to the default profile" \
+              HOME="$ROOT_HOME" "$NIX_INSTALLED_NIX/bin/bsd-env" -i "$NIX_INSTALLED_CACERT"
+        export NIX_SSL_CERT_FILE=/bsd/var/bsd/profiles/default/etc/ssl/certs/ca-bundle.crt
     fi
 
     if [ -z "${NIX_INSTALLER_NO_CHANNEL_ADD:-}" ]; then
@@ -953,23 +953,23 @@ setup_default_profile() {
         # otherwise it will be lost in environments where sudo doesn't pass
         # all the environment variables by default.
         if ! _sudo "to update the default channel in the default profile" \
-            HOME="$ROOT_HOME" NIX_SSL_CERT_FILE="$NIX_SSL_CERT_FILE" "$NIX_INSTALLED_NIX/bin/nix-channel" --update nixpkgs; then
+            HOME="$ROOT_HOME" NIX_SSL_CERT_FILE="$NIX_SSL_CERT_FILE" "$NIX_INSTALLED_NIX/bin/bsd-channel" --update bsdpkgs; then
             reminder <<EOF
-I had trouble fetching the nixpkgs channel (are you offline?)
-To try again later, run: sudo -i nix-channel --update nixpkgs
+I had trouble fetching the bsdpkgs channel (are you offline?)
+To try again later, run: sudo -i bsd-channel --update bsdpkgs
 EOF
         fi
     fi
 }
 
 
-place_nix_configuration() {
-    cat <<EOF > "$SCRATCH/nix.conf"
+place_bsd_configuration() {
+    cat <<EOF > "$SCRATCH/bsd.conf"
 $NIX_EXTRA_CONF
 build-users-group = $NIX_BUILD_GROUP_NAME
 EOF
-    _sudo "to place the default nix daemon configuration (part 2)" \
-          install -m 0644 "$SCRATCH/nix.conf" /etc/nix/nix.conf
+    _sudo "to place the default bsd daemon configuration (part 2)" \
+          install -m 0644 "$SCRATCH/bsd.conf" /etc/bsd/bsd.conf
 }
 
 
@@ -989,7 +989,7 @@ main() {
     fi
 
 
-    welcome_to_nix
+    welcome_to_bsd
 
     if ! is_root; then
         chat_about_sudo
@@ -1017,7 +1017,7 @@ main() {
     create_build_users
     create_directories
     place_channel_configuration
-    install_from_extracted_nix
+    install_from_extracted_bsd
 
     configure_shell_profile
 
@@ -1027,9 +1027,9 @@ main() {
     set -eu
 
     setup_default_profile
-    place_nix_configuration
+    place_bsd_configuration
 
-    poly_configure_nix_daemon_service
+    poly_configure_bsd_daemon_service
 
     trap finish_success EXIT
 }

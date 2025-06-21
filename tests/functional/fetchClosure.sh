@@ -4,21 +4,21 @@ source common.sh
 
 enableFeatures "fetch-closure"
 
-TODO_NixOS
+TODO_BasedLinux
 
 clearStore
 clearCacheCache
 
 # Old daemons don't properly zero out the self-references when
-# calculating the CA hashes, so this breaks `nix store
+# calculating the CA hashes, so this breaks `bsd store
 # make-content-addressed` which expects the client and the daemon to
 # compute the same hash
 requireDaemonNewerThan "2.16.0pre20230524"
 
 # Initialize binary cache.
-nonCaPath=$(nix build --json --file ./dependencies.nix --no-link | jq -r .[].outputs.out)
-caPath=$(nix store make-content-addressed --json $nonCaPath | jq -r '.rewrites | map(.) | .[]')
-nix copy --to file://$cacheDir $nonCaPath
+nonCaPath=$(bsd build --json --file ./dependencies.bsd --no-link | jq -r .[].outputs.out)
+caPath=$(bsd store make-content-addressed --json $nonCaPath | jq -r '.rewrites | map(.) | .[]')
+bsd copy --to file://$cacheDir $nonCaPath
 
 # Test basic fetchClosure rewriting from non-CA to CA.
 clearStore
@@ -26,7 +26,7 @@ clearStore
 [ ! -e $nonCaPath ]
 [ ! -e $caPath ]
 
-[[ $(nix eval -v --raw --expr "
+[[ $(bsd eval -v --raw --expr "
   builtins.fetchClosure {
     fromStore = \"file://$cacheDir\";
     fromPath = $nonCaPath;
@@ -45,7 +45,7 @@ clearStore
 if [[ "$NIX_REMOTE" != "daemon" ]]; then
 
     # If we want to return a non-CA path, we have to be explicit about it.
-    expectStderr 1 nix eval --raw --no-require-sigs --expr "
+    expectStderr 1 bsd eval --raw --no-require-sigs --expr "
       builtins.fetchClosure {
         fromStore = \"file://$cacheDir\";
         fromPath = $nonCaPath;
@@ -58,7 +58,7 @@ if [[ "$NIX_REMOTE" != "daemon" ]]; then
     [ ! -e $caPath ]
 
     # We can use non-CA paths when we ask explicitly.
-    [[ $(nix eval --raw --no-require-sigs --expr "
+    [[ $(bsd eval --raw --no-require-sigs --expr "
       builtins.fetchClosure {
         fromStore = \"file://$cacheDir\";
         fromPath = $nonCaPath;
@@ -75,7 +75,7 @@ fi
 [ ! -e $caPath ]
 
 # 'toPath' set to empty string should fail but print the expected path.
-expectStderr 1 nix eval -v --json --expr "
+expectStderr 1 bsd eval -v --json --expr "
   builtins.fetchClosure {
     fromStore = \"file://$cacheDir\";
     fromPath = $nonCaPath;
@@ -84,13 +84,13 @@ expectStderr 1 nix eval -v --json --expr "
 " | grep "error: rewriting.*$nonCaPath.*yielded.*$caPath"
 
 # If fromPath is CA, then toPath isn't needed.
-nix copy --to file://$cacheDir $caPath
+bsd copy --to file://$cacheDir $caPath
 
 clearStore
 
 [ ! -e $caPath ]
 
-[[ $(nix eval -v --raw --expr "
+[[ $(bsd eval -v --raw --expr "
   builtins.fetchClosure {
     fromStore = \"file://$cacheDir\";
     fromPath = $caPath;
@@ -103,7 +103,7 @@ clearStore
 clearStore
 narCache=$TEST_ROOT/nar-cache
 rm -rf $narCache
-(! nix eval -v --raw --expr "
+(! bsd eval -v --raw --expr "
   builtins.fetchClosure {
     fromStore = \"file://$cacheDir?local-nar-cache=$narCache\";
     fromPath = $caPath;
@@ -118,7 +118,7 @@ badPath=$(echo $caPath | sed -e 's!/store/................................-!/sto
 
 [ ! -e $badPath ]
 
-expectStderr 1 nix eval -v --raw --expr "
+expectStderr 1 bsd eval -v --raw --expr "
   builtins.fetchClosure {
     fromStore = \"file://$cacheDir\";
     fromPath = $nonCaPath;
@@ -132,7 +132,7 @@ expectStderr 1 nix eval -v --raw --expr "
 # It would be nice for this to fail, but checking it would be too(?) slow.
 [ -e $caPath ]
 
-[[ $(nix eval -v --raw --expr "
+[[ $(bsd eval -v --raw --expr "
   builtins.fetchClosure {
     fromStore = \"file://$cacheDir\";
     fromPath = $badPath;
@@ -144,7 +144,7 @@ expectStderr 1 nix eval -v --raw --expr "
 # However, if the output address is unexpected, we can report it
 
 
-expectStderr 1 nix eval -v --raw --expr "
+expectStderr 1 bsd eval -v --raw --expr "
   builtins.fetchClosure {
     fromStore = \"file://$cacheDir\";
     fromPath = $caPath;

@@ -14,38 +14,38 @@ function diffAndAccept() {
     diffAndAcceptInner "$testName" "$got" "$expected"
 }
 
-export TEST_VAR=foo # for eval-okay-getenv.nix
+export TEST_VAR=foo # for eval-okay-getenv.bsd
 export NIX_REMOTE=dummy://
-export NIX_STORE_DIR=/nix/store
+export NIX_STORE_DIR=/bsd/store
 
-nix-instantiate --eval -E 'builtins.trace "Hello" 123' 2>&1 | grepQuiet Hello
-nix-instantiate --eval -E 'builtins.trace "Hello" 123' 2>/dev/null | grepQuiet 123
-nix-instantiate --eval -E 'builtins.addErrorContext "Hello" 123' 2>&1
-nix-instantiate --trace-verbose --eval -E 'builtins.traceVerbose "Hello" 123' 2>&1 | grepQuiet Hello
-nix-instantiate --eval -E 'builtins.traceVerbose "Hello" 123' 2>&1 | grepQuietInverse Hello
-nix-instantiate --show-trace --eval -E 'builtins.addErrorContext "Hello" 123' 2>&1 | grepQuietInverse Hello
-expectStderr 1 nix-instantiate --show-trace --eval -E 'builtins.addErrorContext "Hello" (throw "Foo")' | grepQuiet Hello
-expectStderr 1 nix-instantiate --show-trace --eval -E 'builtins.addErrorContext "Hello %" (throw "Foo")' | grepQuiet 'Hello %'
+bsd-instantiate --eval -E 'builtins.trace "Hello" 123' 2>&1 | grepQuiet Hello
+bsd-instantiate --eval -E 'builtins.trace "Hello" 123' 2>/dev/null | grepQuiet 123
+bsd-instantiate --eval -E 'builtins.addErrorContext "Hello" 123' 2>&1
+bsd-instantiate --trace-verbose --eval -E 'builtins.traceVerbose "Hello" 123' 2>&1 | grepQuiet Hello
+bsd-instantiate --eval -E 'builtins.traceVerbose "Hello" 123' 2>&1 | grepQuietInverse Hello
+bsd-instantiate --show-trace --eval -E 'builtins.addErrorContext "Hello" 123' 2>&1 | grepQuietInverse Hello
+expectStderr 1 bsd-instantiate --show-trace --eval -E 'builtins.addErrorContext "Hello" (throw "Foo")' | grepQuiet Hello
+expectStderr 1 bsd-instantiate --show-trace --eval -E 'builtins.addErrorContext "Hello %" (throw "Foo")' | grepQuiet 'Hello %'
 # Relies on parsing the expression derivation as a derivation, can't use --eval
-expectStderr 1 nix-instantiate --show-trace lang/non-eval-fail-bad-drvPath.nix | grepQuiet "store path '8qlfcic10lw5304gqm8q45nr7g7jl62b-cachix-1.7.3-bin' is not a valid derivation path"
+expectStderr 1 bsd-instantiate --show-trace lang/non-eval-fail-bad-drvPath.bsd | grepQuiet "store path '8qlfcic10lw5304gqm8q45nr7g7jl62b-cachix-1.7.3-bin' is not a valid derivation path"
 
 
-nix-instantiate --eval -E 'let x = builtins.trace { x = x; } true; in x' \
+bsd-instantiate --eval -E 'let x = builtins.trace { x = x; } true; in x' \
   2>&1 | grepQuiet -E 'trace: { x = «potential infinite recursion»; }'
 
-nix-instantiate --eval -E 'let x = { repeating = x; tracing = builtins.trace x true; }; in x.tracing'\
+bsd-instantiate --eval -E 'let x = { repeating = x; tracing = builtins.trace x true; }; in x.tracing'\
   2>&1 | grepQuiet -F 'trace: { repeating = «repeated»; tracing = «potential infinite recursion»; }'
 
-nix-instantiate --eval -E 'builtins.warn "Hello" 123' 2>&1 | grepQuiet 'warning: Hello'
-# shellcheck disable=SC2016 # The ${} in this is Nix, not shell
-nix-instantiate --eval -E 'builtins.addErrorContext "while doing ${"something"} interesting" (builtins.warn "Hello" 123)' 2>/dev/null | grepQuiet 123
+bsd-instantiate --eval -E 'builtins.warn "Hello" 123' 2>&1 | grepQuiet 'warning: Hello'
+# shellcheck disable=SC2016 # The ${} in this is Bsd, not shell
+bsd-instantiate --eval -E 'builtins.addErrorContext "while doing ${"something"} interesting" (builtins.warn "Hello" 123)' 2>/dev/null | grepQuiet 123
 
 # warn does not accept non-strings for now
-expectStderr 1 nix-instantiate --eval -E 'let x = builtins.warn { x = x; } true; in x' \
+expectStderr 1 bsd-instantiate --eval -E 'let x = builtins.warn { x = x; } true; in x' \
   | grepQuiet "expected a string but found a set"
-expectStderr 1 nix-instantiate --eval --abort-on-warn -E 'builtins.warn "Hello" 123' | grepQuiet Hello
-# shellcheck disable=SC2016 # The ${} in this is Nix, not shell
-NIX_ABORT_ON_WARN=1 expectStderr 1 nix-instantiate --eval -E 'builtins.addErrorContext "while doing ${"something"} interesting" (builtins.warn "Hello" 123)' | grepQuiet "while doing something interesting"
+expectStderr 1 bsd-instantiate --eval --abort-on-warn -E 'builtins.warn "Hello" 123' | grepQuiet Hello
+# shellcheck disable=SC2016 # The ${} in this is Bsd, not shell
+NIX_ABORT_ON_WARN=1 expectStderr 1 bsd-instantiate --eval -E 'builtins.addErrorContext "while doing ${"something"} interesting" (builtins.warn "Hello" 123)' | grepQuiet "while doing something interesting"
 
 set +x
 
@@ -65,10 +65,10 @@ postprocess() {
     fi
 }
 
-for i in lang/parse-fail-*.nix; do
+for i in lang/parse-fail-*.bsd; do
     echo "parsing $i (should fail)";
-    i=$(basename "$i" .nix)
-    if expectStderr 1 nix-instantiate --parse - < "lang/$i.nix" > "lang/$i.err"
+    i=$(basename "$i" .bsd)
+    if expectStderr 1 bsd-instantiate --parse - < "lang/$i.bsd" > "lang/$i.err"
     then
         postprocess "$i"
         diffAndAccept "$i" err err.exp
@@ -78,11 +78,11 @@ for i in lang/parse-fail-*.nix; do
     fi
 done
 
-for i in lang/parse-okay-*.nix; do
+for i in lang/parse-okay-*.bsd; do
     echo "parsing $i (should succeed)";
-    i=$(basename "$i" .nix)
+    i=$(basename "$i" .bsd)
     if
-        expect 0 nix-instantiate --parse - < "lang/$i.nix" \
+        expect 0 bsd-instantiate --parse - < "lang/$i.bsd" \
             1> "lang/$i.out" \
             2> "lang/$i.err"
     then
@@ -96,9 +96,9 @@ for i in lang/parse-okay-*.nix; do
     fi
 done
 
-for i in lang/eval-fail-*.nix; do
+for i in lang/eval-fail-*.bsd; do
     echo "evaluating $i (should fail)";
-    i=$(basename "$i" .nix)
+    i=$(basename "$i" .bsd)
     flags="$(
         if [[ -e "lang/$i.flags" ]]; then
             sed -e 's/#.*//' < "lang/$i.flags"
@@ -109,7 +109,7 @@ for i in lang/eval-fail-*.nix; do
     )"
     if
         # shellcheck disable=SC2086 # word splitting of flags is intended
-        expectStderr 1 nix-instantiate $flags "lang/$i.nix" \
+        expectStderr 1 bsd-instantiate $flags "lang/$i.bsd" \
             | sed "s!$(pwd)!/pwd!g" > "lang/$i.err"
     then
         postprocess "$i"
@@ -120,13 +120,13 @@ for i in lang/eval-fail-*.nix; do
     fi
 done
 
-for i in lang/eval-okay-*.nix; do
+for i in lang/eval-okay-*.bsd; do
     echo "evaluating $i (should succeed)";
-    i=$(basename "$i" .nix)
+    i=$(basename "$i" .bsd)
 
     if test -e "lang/$i.exp.xml"; then
-        if expect 0 nix-instantiate --eval --xml --no-location --strict \
-                "lang/$i.nix" > "lang/$i.out.xml"
+        if expect 0 bsd-instantiate --eval --xml --no-location --strict \
+                "lang/$i.bsd" > "lang/$i.out.xml"
         then
             postprocess "$i"
             diffAndAccept "$i" out.xml exp.xml
@@ -144,7 +144,7 @@ for i in lang/eval-okay-*.nix; do
             expect 0 env \
                 NIX_PATH=lang/dir3:lang/dir4 \
                 HOME=/fake-home \
-                nix-instantiate "${flags[@]}" --eval --strict "lang/$i.nix" \
+                bsd-instantiate "${flags[@]}" --eval --strict "lang/$i.bsd" \
                 1> "lang/$i.out" \
                 2> "lang/$i.err"
         then

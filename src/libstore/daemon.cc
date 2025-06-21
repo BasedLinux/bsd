@@ -1,29 +1,29 @@
-#include "nix/store/daemon.hh"
-#include "nix/util/signals.hh"
-#include "nix/store/worker-protocol.hh"
-#include "nix/store/worker-protocol-connection.hh"
-#include "nix/store/worker-protocol-impl.hh"
-#include "nix/store/build-result.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/store-cast.hh"
-#include "nix/store/gc-store.hh"
-#include "nix/store/log-store.hh"
-#include "nix/store/indirect-root-store.hh"
-#include "nix/store/path-with-outputs.hh"
-#include "nix/util/finally.hh"
-#include "nix/util/archive.hh"
-#include "nix/store/derivations.hh"
-#include "nix/util/args.hh"
-#include "nix/util/git.hh"
-#include "nix/util/logging.hh"
+#include "bsd/store/daemon.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/store/worker-protocol.hh"
+#include "bsd/store/worker-protocol-connection.hh"
+#include "bsd/store/worker-protocol-impl.hh"
+#include "bsd/store/build-result.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/store-cast.hh"
+#include "bsd/store/gc-store.hh"
+#include "bsd/store/log-store.hh"
+#include "bsd/store/indirect-root-store.hh"
+#include "bsd/store/path-with-outputs.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/util/args.hh"
+#include "bsd/util/git.hh"
+#include "bsd/util/logging.hh"
 
 #ifndef _WIN32 // TODO need graceful async exit support on Windows?
-# include "nix/util/monitor-fd.hh"
+# include "bsd/util/monitor-fd.hh"
 #endif
 
 #include <sstream>
 
-namespace nix::daemon {
+namespace bsd::daemon {
 
 Sink & operator << (Sink & sink, const Logger::Fields & fields)
 {
@@ -208,7 +208,7 @@ struct ClientSettings
         settings.keepFailed = keepFailed;
         settings.keepGoing = keepGoing;
         settings.tryFallback = tryFallback;
-        nix::verbosity = verbosity;
+        bsd::verbosity = verbosity;
         settings.maxBuildJobs.assign(maxBuildJobs);
         settings.maxSilentTime = maxSilentTime;
         settings.verboseBuild = verboseBuild;
@@ -234,7 +234,7 @@ struct ClientSettings
                         subs.push_back(s + "/");
                     else
                         warn("ignoring untrusted substituter '%s', you are not a trusted user.\n"
-                             "Run `man nix.conf` for more information on the `substituters` configuration option.", s);
+                             "Run `man bsd.conf` for more information on the `substituters` configuration option.", s);
                 res = subs;
                 return true;
             };
@@ -249,7 +249,7 @@ struct ClientSettings
                         debug("Ignoring the client-specified experimental features");
                 } else if (name == "plugin-files") {
                     warn("Ignoring the client-specified plugin-files.\n"
-                         "The client specifying plugins to the daemon never made sense, and was removed in Nix >=2.14.");
+                         "The client specifying plugins to the daemon never made sense, and was removed in Bsd >=2.14.");
                 }
                 else if (trusted
                     || name == settings.buildTimeout.name
@@ -413,12 +413,12 @@ static void performOp(TunnelLogger * logger, ref<Store> store,
                 case FileIngestionMethod::Flat:
                     dumpMethod = FileSerialisationMethod::Flat;
                     break;
-                case FileIngestionMethod::NixArchive:
-                    dumpMethod = FileSerialisationMethod::NixArchive;
+                case FileIngestionMethod::BsdArchive:
+                    dumpMethod = FileSerialisationMethod::BsdArchive;
                     break;
                 case FileIngestionMethod::Git:
                     // Use NAR; Git is not a serialization method
-                    dumpMethod = FileSerialisationMethod::NixArchive;
+                    dumpMethod = FileSerialisationMethod::BsdArchive;
                     break;
                 default:
                     assert(false);
@@ -440,14 +440,14 @@ static void performOp(TunnelLogger * logger, ref<Store> store,
                 std::string hashAlgoRaw;
                 conn.from >> baseName >> fixed /* obsolete */ >> recursive >> hashAlgoRaw;
                 if (recursive > true)
-                    throw Error("unsupported FileIngestionMethod with value of %i; you may need to upgrade nix-daemon", recursive);
+                    throw Error("unsupported FileIngestionMethod with value of %i; you may need to upgrade bsd-daemon", recursive);
                 method = recursive
-                    ? ContentAddressMethod::Raw::NixArchive
+                    ? ContentAddressMethod::Raw::BsdArchive
                     : ContentAddressMethod::Raw::Flat;
                 /* Compatibility hack. */
                 if (!fixed) {
                     hashAlgoRaw = "sha256";
-                    method = ContentAddressMethod::Raw::NixArchive;
+                    method = ContentAddressMethod::Raw::BsdArchive;
                 }
                 hashAlgo = parseHashAlgo(hashAlgoRaw);
             }
@@ -468,7 +468,7 @@ static void performOp(TunnelLogger * logger, ref<Store> store,
             });
             logger->startWork();
             auto path = store->addToStoreFromDump(
-                *dumpSource, baseName, FileSerialisationMethod::NixArchive, method, hashAlgo);
+                *dumpSource, baseName, FileSerialisationMethod::BsdArchive, method, hashAlgo);
             logger->stopWork();
 
             conn.to << store->printStorePath(path);
@@ -542,7 +542,7 @@ static void performOp(TunnelLogger * logger, ref<Store> store,
                FIXME: layer violation in this message: the daemon code (i.e.
                this file) knows whether a client/connection is trusted, but it
                does not how how the client was authenticated. The mechanism
-               need not be getting the UID of the other end of a Unix Domain
+               need not be getting the UID of the other end of a Ubsd Domain
                Socket.
               */
             if (mode == bmRepair && !trusted)
@@ -1035,7 +1035,7 @@ void processConnection(
             to, from, PROTOCOL_VERSION, WorkerProto::allFeatures);
 
     if (protoVersion < 0x10a)
-        throw Error("the Nix client version is too old");
+        throw Error("the Bsd client version is too old");
 
     WorkerProto::BasicServerConnection conn;
     conn.to = std::move(to);
@@ -1062,7 +1062,7 @@ void processConnection(
     });
 
     conn.postHandshake(*store, {
-        .daemonNixVersion = nixVersion,
+        .daemonBsdVersion = bsdVersion,
         // We and the underlying store both need to trust the client for
         // it to be trusted.
         .remoteTrustsUs = trusted
@@ -1107,7 +1107,7 @@ void processConnection(
                 tunnelLogger->stopWork(&e);
                 if (!errorAllowed) throw;
             } catch (std::bad_alloc & e) {
-                auto ex = Error("Nix daemon out of memory");
+                auto ex = Error("Bsd daemon out of memory");
                 tunnelLogger->stopWork(&ex);
                 throw;
             }

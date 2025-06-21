@@ -3,9 +3,9 @@
 > **Note**
 >
 > This is an advanced topic.
-> The Nix language is designed to be used without the programmer consciously dealing with string contexts or even knowing what they are.
+> The Bsd language is designed to be used without the programmer consciously dealing with string contexts or even knowing what they are.
 
-A string in the Nix language is not just a sequence of characters like strings in other languages.
+A string in the Bsd language is not just a sequence of characters like strings in other languages.
 It is actually a pair of a sequence of characters and a *string context*.
 The string context is an (unordered) set of *string context elements*.
 
@@ -13,12 +13,12 @@ The purpose of string contexts is to collect non-string values attached to strin
 [string concatenation](./operators.md#string-concatenation),
 [string interpolation](./string-interpolation.md),
 and similar operations.
-The idea is that a user can reference other files when creating text files through Nix expressions, without manually keeping track of the exact paths.
-Nix will ensure that the all referenced files are accessible – that all [store paths](@docroot@/glossary.md#gloss-store-path) are [valid](@docroot@/glossary.md#gloss-validity).
+The idea is that a user can reference other files when creating text files through Bsd expressions, without manually keeping track of the exact paths.
+Bsd will ensure that the all referenced files are accessible – that all [store paths](@docroot@/glossary.md#gloss-store-path) are [valid](@docroot@/glossary.md#gloss-validity).
 
 > **Note**
 >
-> String contexts are *not* explicitly manipulated in idiomatic Nix language code.
+> String contexts are *not* explicitly manipulated in idiomatic Bsd language code.
 
 String context elements come in different forms:
 
@@ -33,13 +33,13 @@ String context elements come in different forms:
     >
     > [`builtins.storePath`] creates a string with a single constant string context element:
     >
-    > ```nix
-    > builtins.getContext (builtins.storePath "/nix/store/wkhdf9jinag5750mqlax6z2zbwhqb76n-hello-2.10")
+    > ```bsd
+    > builtins.getContext (builtins.storePath "/bsd/store/wkhdf9jinag5750mqlax6z2zbwhqb76n-hello-2.10")
     > ```
     > evaluates to
-    > ```nix
+    > ```bsd
     > {
-    >   "/nix/store/wkhdf9jinag5750mqlax6z2zbwhqb76n-hello-2.10" = {
+    >   "/bsd/store/wkhdf9jinag5750mqlax6z2zbwhqb76n-hello-2.10" = {
     >     path = true;
     >   };
     > }
@@ -54,18 +54,18 @@ String context elements come in different forms:
     > **Example**
     >
     > The behavior of string contexts are best demonstrated with a built-in function that is still experimental: [`builtins.outputOf`].
-    > This example will *not* work with stable Nix!
+    > This example will *not* work with stable Bsd!
     >
-    > ```nix
+    > ```bsd
     > builtins.getContext
     >   (builtins.outputOf
-    >     (builtins.storePath "/nix/store/fvchh9cvcr7kdla6n860hshchsba305w-hello-2.12.drv")
+    >     (builtins.storePath "/bsd/store/fvchh9cvcr7kdla6n860hshchsba305w-hello-2.12.drv")
     >     "out")
     > ```
     > evaluates to
-    > ```nix
+    > ```bsd
     > {
-    >   "/nix/store/fvchh9cvcr7kdla6n860hshchsba305w-hello-2.12.drv" = {
+    >   "/bsd/store/fvchh9cvcr7kdla6n860hshchsba305w-hello-2.12.drv" = {
     >     outputs = [ "out" ];
     >   };
     > }
@@ -85,15 +85,15 @@ String context elements come in different forms:
   > The best way to illustrate *derivation deep* string contexts is with [`builtins.addDrvOutputDependencies`].
   > Take a regular constant string context element pointing to a derivation, and transform it into a "Derivation deep" string context element.
   >
-  > ```nix
+  > ```bsd
   > builtins.getContext
   >   (builtins.addDrvOutputDependencies
-  >     (builtins.storePath "/nix/store/fvchh9cvcr7kdla6n860hshchsba305w-hello-2.12.drv"))
+  >     (builtins.storePath "/bsd/store/fvchh9cvcr7kdla6n860hshchsba305w-hello-2.12.drv"))
   > ```
   > evaluates to
-  > ```nix
+  > ```bsd
   > {
-  >   "/nix/store/fvchh9cvcr7kdla6n860hshchsba305w-hello-2.12.drv" = {
+  >   "/bsd/store/fvchh9cvcr7kdla6n860hshchsba305w-hello-2.12.drv" = {
   >     allOutputs = true;
   >   };
   > }
@@ -118,7 +118,7 @@ It creates an [attribute set] representing the string context, which can be insp
 [`builtins.unsafeDiscardStringContext`](./builtins.md#builtins-unsafeDiscardStringContext) will make a copy of a string, but with an empty string context.
 The returned string can be used in more ways, e.g. by operators that require the string context to be empty.
 The requirement to explicitly discard the string context in such use cases helps ensure that string context elements are not lost by mistake.
-The "unsafe" marker is only there to remind that Nix normally guarantees that dependencies are tracked, whereas the returned string has lost them.
+The "unsafe" marker is only there to remind that Bsd normally guarantees that dependencies are tracked, whereas the returned string has lost them.
 
 ## Constructing string contexts
 

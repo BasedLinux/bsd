@@ -1,12 +1,12 @@
-#include "nix/store/parsed-derivations.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/derivations.hh"
-#include "nix/store/derivation-options.hh"
+#include "bsd/store/parsed-derivations.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/derivation-options.hh"
 
 #include <nlohmann/json.hpp>
 #include <regex>
 
-namespace nix {
+namespace bsd {
 
 std::optional<StructuredAttrs> StructuredAttrs::tryParse(const StringPairs & env)
 {
@@ -49,7 +49,7 @@ static nlohmann::json pathInfoToJSON(
 
         auto & jsonPath = jsonList.emplace_back(json::object());
 
-        jsonPath["narHash"] = info->narHash.to_string(HashFormat::Nix32, true);
+        jsonPath["narHash"] = info->narHash.to_string(HashFormat::Bsd32, true);
         jsonPath["narSize"] = info->narSize;
 
         {

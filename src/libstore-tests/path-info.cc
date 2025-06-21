@@ -1,12 +1,12 @@
 #include <nlohmann/json.hpp>
 #include <gtest/gtest.h>
 
-#include "nix/store/path-info.hh"
+#include "bsd/store/path-info.hh"
 
-#include "nix/util/tests/characterization.hh"
-#include "nix/store/tests/libstore.hh"
+#include "bsd/util/tests/characterization.hh"
+#include "bsd/store/tests/libstore.hh"
 
-namespace nix {
+namespace bsd {
 
 using nlohmann::json;
 
@@ -32,7 +32,7 @@ static ValidPathInfo makeFullKeyed(const Store & store, bool includeImpureInfo)
         store,
         "foo",
         FixedOutputInfo {
-            .method = FileIngestionMethod::NixArchive,
+            .method = FileIngestionMethod::BsdArchive,
             .hash = hashString(HashAlgorithm::SHA256, "(...)"),
 
             .references = {
@@ -98,4 +98,4 @@ TEST_F(PathInfoTest, PathInfo_full_shortRefs) {
     ASSERT_EQ(*++refs.begin(), "n5wkd9frr45pa74if5gpz9j7mifg27fh-foo");
 }
 
-} // namespace nix
+} // namespace bsd

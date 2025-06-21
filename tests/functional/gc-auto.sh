@@ -4,13 +4,13 @@ source common.sh
 
 needLocalStore "“min-free” and “max-free” are daemon options"
 
-TODO_NixOS
+TODO_BasedLinux
 
 clearStore
 
-garbage1=$(nix store add-path --name garbage1 ./nar-access.sh)
-garbage2=$(nix store add-path --name garbage2 ./nar-access.sh)
-garbage3=$(nix store add-path --name garbage3 ./nar-access.sh)
+garbage1=$(bsd store add-path --name garbage1 ./nar-access.sh)
+garbage2=$(bsd store add-path --name garbage2 ./nar-access.sh)
+garbage3=$(bsd store add-path --name garbage3 ./nar-access.sh)
 
 ls -l $garbage3
 POSIXLY_CORRECT=1 du $garbage3
@@ -23,7 +23,7 @@ fifoLock=$TEST_ROOT/fifoLock
 mkfifo "$fifoLock"
 
 expr=$(cat <<EOF
-with import ${config_nix}; mkDerivation {
+with import ${config_bsd}; mkDerivation {
   name = "gc-A";
   buildCommand = ''
     set -x
@@ -51,7 +51,7 @@ EOF
 )
 
 expr2=$(cat <<EOF
-with import ${config_nix}; mkDerivation {
+with import ${config_bsd}; mkDerivation {
   name = "gc-B";
   buildCommand = ''
     set -x
@@ -65,11 +65,11 @@ with import ${config_nix}; mkDerivation {
 EOF
 )
 
-nix build --impure -v -o $TEST_ROOT/result-A -L --expr "$expr" \
+bsd build --impure -v -o $TEST_ROOT/result-A -L --expr "$expr" \
     --min-free 1K --max-free 2K --min-free-check-interval 1 &
 pid1=$!
 
-nix build --impure -v -o $TEST_ROOT/result-B -L --expr "$expr2" \
+bsd build --impure -v -o $TEST_ROOT/result-B -L --expr "$expr2" \
     --min-free 1K --max-free 2K --min-free-check-interval 1 &
 pid2=$!
 

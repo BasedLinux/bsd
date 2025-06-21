@@ -9,7 +9,7 @@ simpleTest () {
     local result=$1; shift
     # rest, extra args
 
-    [[ "$(nix eval --impure --raw "$@" --expr "$expr")" == "$result" ]]
+    [[ "$(bsd eval --impure --raw "$@" --expr "$expr")" == "$result" ]]
 }
 
 # `builtins.storeDir`

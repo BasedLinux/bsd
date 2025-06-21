@@ -1,9 +1,9 @@
-#! @ENV_PROG@ nix-shell
-#! nix-shell "{ script, path, ... }: assert path == ./shell.nix; script { }"
-#! nix-shell --no-substitute
-#! nix-shell --expr 
-#! nix-shell --arg script "import ./shell.nix"
-#! nix-shell --arg path "./shell.nix"
-#! nix-shell -A shellDrv
-#! nix-shell -i bash
+#! @ENV_PROG@ bsd-shell
+#! bsd-shell "{ script, path, ... }: assert path == ./shell.bsd; script { }"
+#! bsd-shell --no-substitute
+#! bsd-shell --expr 
+#! bsd-shell --arg script "import ./shell.bsd"
+#! bsd-shell --arg path "./shell.bsd"
+#! bsd-shell -A shellDrv
+#! bsd-shell -i bash
 echo "$FOO"

@@ -1,6 +1,6 @@
-#include "nix/util/hilite.hh"
+#include "bsd/util/hilite.hh"
 
-namespace nix {
+namespace bsd {
 
 std::string hiliteMatches(
     std::string_view s,

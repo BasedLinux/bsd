@@ -1,12 +1,12 @@
-Nix <nix version>
+Bsd <bsd version>
 Type :? for help.
 
-nix-repl> :l doc-comments.nix
+bsd-repl> :l doc-comments.bsd
 Added <number omitted> variables.
 
-nix-repl> :doc measurement
+bsd-repl> :doc measurement
 Function `measurement`\
-  … defined at /path/to/tests/functional/repl/doc-comments.nix:15:17
+  … defined at /path/to/tests/functional/repl/doc-comments.bsd:15:17
 
 
 👈 precisely this wide 👉

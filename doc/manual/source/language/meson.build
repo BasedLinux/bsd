@@ -4,17 +4,17 @@ builtins_md = custom_target(
     '@INPUT0@',
     '@OUTPUT@',
     '--'
-  ] + nix_eval_for_docs + [
+  ] + bsd_eval_for_docs + [
     '--expr',
     '(builtins.readFile @INPUT3@) + import @INPUT1@ (builtins.fromJSON (builtins.readFile ./@INPUT2@)) + (builtins.readFile @INPUT4@)',
   ],
   input : [
     '../../remove_before_wrapper.py',
-    '../../generate-builtins.nix',
+    '../../generate-builtins.bsd',
     language_json,
     'builtins-prefix.md',
     'builtins-suffix.md'
   ],
   output : 'builtins.md',
-  env : nix_env_for_docs,
+  env : bsd_env_for_docs,
 )

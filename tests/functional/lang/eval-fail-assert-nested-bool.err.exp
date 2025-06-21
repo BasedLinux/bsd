@@ -1,6 +1,6 @@
 error:
        … while evaluating the condition of the assertion '({ a = { b = [ ({ c = { d = true; }; }) ]; }; } == { a = { b = [ ({ c = { d = false; }; }) ]; }; })'
-         at /pwd/lang/eval-fail-assert-nested-bool.nix:1:1:
+         at /pwd/lang/eval-fail-assert-nested-bool.bsd:1:1:
             1| assert { a.b = [ { c.d = true; } ]; } == { a.b = [ { c.d = false; } ]; };
              | ^
             2|
@@ -8,13 +8,13 @@ error:
        … while comparing attribute 'a'
 
        … where left hand side is
-         at /pwd/lang/eval-fail-assert-nested-bool.nix:1:10:
+         at /pwd/lang/eval-fail-assert-nested-bool.bsd:1:10:
             1| assert { a.b = [ { c.d = true; } ]; } == { a.b = [ { c.d = false; } ]; };
              |          ^
             2|
 
        … where right hand side is
-         at /pwd/lang/eval-fail-assert-nested-bool.nix:1:44:
+         at /pwd/lang/eval-fail-assert-nested-bool.bsd:1:44:
             1| assert { a.b = [ { c.d = true; } ]; } == { a.b = [ { c.d = false; } ]; };
              |                                            ^
             2|
@@ -22,13 +22,13 @@ error:
        … while comparing attribute 'b'
 
        … where left hand side is
-         at /pwd/lang/eval-fail-assert-nested-bool.nix:1:10:
+         at /pwd/lang/eval-fail-assert-nested-bool.bsd:1:10:
             1| assert { a.b = [ { c.d = true; } ]; } == { a.b = [ { c.d = false; } ]; };
              |          ^
             2|
 
        … where right hand side is
-         at /pwd/lang/eval-fail-assert-nested-bool.nix:1:44:
+         at /pwd/lang/eval-fail-assert-nested-bool.bsd:1:44:
             1| assert { a.b = [ { c.d = true; } ]; } == { a.b = [ { c.d = false; } ]; };
              |                                            ^
             2|
@@ -38,13 +38,13 @@ error:
        … while comparing attribute 'c'
 
        … where left hand side is
-         at /pwd/lang/eval-fail-assert-nested-bool.nix:1:20:
+         at /pwd/lang/eval-fail-assert-nested-bool.bsd:1:20:
             1| assert { a.b = [ { c.d = true; } ]; } == { a.b = [ { c.d = false; } ]; };
              |                    ^
             2|
 
        … where right hand side is
-         at /pwd/lang/eval-fail-assert-nested-bool.nix:1:54:
+         at /pwd/lang/eval-fail-assert-nested-bool.bsd:1:54:
             1| assert { a.b = [ { c.d = true; } ]; } == { a.b = [ { c.d = false; } ]; };
              |                                                      ^
             2|
@@ -52,13 +52,13 @@ error:
        … while comparing attribute 'd'
 
        … where left hand side is
-         at /pwd/lang/eval-fail-assert-nested-bool.nix:1:20:
+         at /pwd/lang/eval-fail-assert-nested-bool.bsd:1:20:
             1| assert { a.b = [ { c.d = true; } ]; } == { a.b = [ { c.d = false; } ]; };
              |                    ^
             2|
 
        … where right hand side is
-         at /pwd/lang/eval-fail-assert-nested-bool.nix:1:54:
+         at /pwd/lang/eval-fail-assert-nested-bool.bsd:1:54:
             1| assert { a.b = [ { c.d = true; } ]; } == { a.b = [ { c.d = false; } ]; };
              |                                                      ^
             2|

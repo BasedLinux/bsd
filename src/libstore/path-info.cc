@@ -1,12 +1,12 @@
 #include <nlohmann/json.hpp>
 
-#include "nix/store/path-info.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/json-utils.hh"
-#include "nix/util/comparator.hh"
-#include "nix/util/strings.hh"
+#include "bsd/store/path-info.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/json-utils.hh"
+#include "bsd/util/comparator.hh"
+#include "bsd/util/strings.hh"
 
-namespace nix {
+namespace bsd {
 
 GENERATE_CMP_EXT(
     ,
@@ -29,7 +29,7 @@ std::string ValidPathInfo::fingerprint(const Store & store) const
             store.printStorePath(path));
     return
             "1;" + store.printStorePath(path) + ";"
-            + narHash.to_string(HashFormat::Nix32, true) + ";"
+            + narHash.to_string(HashFormat::Bsd32, true) + ";"
             + std::to_string(narSize) + ";"
         + concatStringsSep(",", store.printStorePathSet(references));
 }
@@ -64,7 +64,7 @@ std::optional<ContentAddressWithReferences> ValidPathInfo::contentAddressWithRef
         }
 
         case ContentAddressMethod::Raw::Flat:
-        case ContentAddressMethod::Raw::NixArchive:
+        case ContentAddressMethod::Raw::BsdArchive:
         case ContentAddressMethod::Raw::Git:
         default:
         {

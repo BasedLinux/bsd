@@ -1,55 +1,55 @@
 xp_features_json = custom_target(
-  command : [nix, '__dump-xp-features'],
+  command : [bsd, '__dump-xp-features'],
   capture : true,
   output : 'xp-features.json',
 )
 
 experimental_features_shortlist_md = custom_target(
-  command : nix_eval_for_docs + [
+  command : bsd_eval_for_docs + [
     '--expr',
     'import @INPUT0@ (builtins.fromJSON (builtins.readFile ./@INPUT1@))',
   ],
   input : [
-    '../../generate-xp-features-shortlist.nix',
+    '../../generate-xp-features-shortlist.bsd',
     xp_features_json,
   ],
   output : 'experimental-features-shortlist.md',
   capture : true,
-  env : nix_env_for_docs,
+  env : bsd_env_for_docs,
 )
 
-nix3_cli_files = custom_target(
+bsd3_cli_files = custom_target(
   command : [
     python.full_path(),
     '@INPUT0@',
     '@OUTPUT@',
     '--'
-  ] + nix_eval_for_docs + [
+  ] + bsd_eval_for_docs + [
     '--expr',
     'import @INPUT1@ true (builtins.readFile ./@INPUT2@)',
   ],
   input : [
     '../../remove_before_wrapper.py',
-    '../../generate-manpage.nix',
-    nix3_cli_json,
+    '../../generate-manpage.bsd',
+    bsd3_cli_json,
   ],
   output : 'new-cli',
-  env : nix_env_for_docs,
+  env : bsd_env_for_docs,
 )
 
 conf_file_md_body = custom_target(
   command : [
-    nix_eval_for_docs,
+    bsd_eval_for_docs,
     '--expr',
     'import @INPUT0@ { prefix = "conf"; } (builtins.fromJSON (builtins.readFile ./@INPUT1@))',
   ],
   capture : true,
   input : [
-    '../../generate-settings.nix',
+    '../../generate-settings.bsd',
     conf_file_json,
   ],
   output : 'conf-file.body.md',
-  env : nix_env_for_docs,
+  env : bsd_env_for_docs,
 )
 
 conf_file_md = custom_target(

@@ -1,9 +1,9 @@
-#include "nix/fetchers/input-cache.hh"
-#include "nix/fetchers/registry.hh"
-#include "nix/util/sync.hh"
-#include "nix/util/source-path.hh"
+#include "bsd/fetchers/input-cache.hh"
+#include "bsd/fetchers/registry.hh"
+#include "bsd/util/sync.hh"
+#include "bsd/util/source-path.hh"
 
-namespace nix::fetchers {
+namespace bsd::fetchers {
 
 InputCache::CachedResult
 InputCache::getAccessor(ref<Store> store, const Input & originalInput, UseRegistries useRegistries)

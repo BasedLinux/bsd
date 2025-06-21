@@ -6,11 +6,11 @@
 #include <openssl/md5.h>
 #include <openssl/sha.h>
 
-#include "nix/util/args.hh"
-#include "nix/util/hash.hh"
-#include "nix/util/archive.hh"
-#include "nix/util/configuration.hh"
-#include "nix/util/split.hh"
+#include "bsd/util/args.hh"
+#include "bsd/util/hash.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/util/configuration.hh"
+#include "bsd/util/split.hh"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -18,7 +18,7 @@
 
 #include <sodium.h>
 
-namespace nix {
+namespace bsd {
 
 static size_t regularHashSize(HashAlgorithm type) {
     switch (type) {
@@ -34,7 +34,7 @@ static size_t regularHashSize(HashAlgorithm type) {
 
 const StringSet hashAlgorithms = {"blake3", "md5", "sha1", "sha256", "sha512" };
 
-const StringSet hashFormats = {"base64", "nix32", "base16", "sri" };
+const StringSet hashFormats = {"base64", "bsd32", "base16", "sri" };
 
 Hash::Hash(HashAlgorithm algo, const ExperimentalFeatureSettings & xpSettings) : algo(algo)
 {
@@ -83,7 +83,7 @@ static std::string printHash16(const Hash & hash)
 
 
 // omitted: E O U T
-const std::string nix32Chars = "0123456789abcdfghijklmnpqrsvwxyz";
+const std::string bsd32Chars = "0123456789abcdfghijklmnpqrsvwxyz";
 
 
 static std::string printHash32(const Hash & hash)
@@ -102,7 +102,7 @@ static std::string printHash32(const Hash & hash)
         unsigned char c =
             (hash.hash[i] >> j)
             | (i >= hash.hashSize - 1 ? 0 : hash.hash[i + 1] << (8 - j));
-        s.push_back(nix32Chars[c & 0x1f]);
+        s.push_back(bsd32Chars[c & 0x1f]);
     }
 
     return s;
@@ -112,7 +112,7 @@ static std::string printHash32(const Hash & hash)
 std::string printHash16or32(const Hash & hash)
 {
     assert(static_cast<char>(hash.algo));
-    return hash.to_string(hash.algo == HashAlgorithm::MD5 ? HashFormat::Base16 : HashFormat::Nix32, false);
+    return hash.to_string(hash.algo == HashAlgorithm::MD5 ? HashFormat::Base16 : HashFormat::Bsd32, false);
 }
 
 
@@ -127,7 +127,7 @@ std::string Hash::to_string(HashFormat hashFormat, bool includeAlgo) const
     case HashFormat::Base16:
         s += printHash16(*this);
         break;
-    case HashFormat::Nix32:
+    case HashFormat::Bsd32:
         s += printHash32(*this);
         break;
     case HashFormat::Base64:
@@ -233,8 +233,8 @@ Hash::Hash(std::string_view rest, HashAlgorithm algo, bool isSRI)
         for (unsigned int n = 0; n < rest.size(); ++n) {
             char c = rest[rest.size() - n - 1];
             unsigned char digit;
-            for (digit = 0; digit < nix32Chars.size(); ++digit) /* !!! slow */
-                if (nix32Chars[digit] == c) break;
+            for (digit = 0; digit < bsd32Chars.size(); ++digit) /* !!! slow */
+                if (bsd32Chars[digit] == c) break;
             if (digit >= 32)
                 throw BadHash("invalid base-32 hash '%s'", rest);
             unsigned int b = n * 5;
@@ -310,7 +310,7 @@ static void start(HashAlgorithm ha, Ctx & ctx)
 // BLAKE3 data size threshold beyond which parallel hashing with TBB is likely faster.
 //
 // NOTE: This threshold is based on the recommended rule-of-thumb from the official BLAKE3 documentation for typical
-// x86_64 hardware as of 2025. In the future it may make sense to allow the user to tune this through nix.conf.
+// x86_64 hardware as of 2025. In the future it may make sense to allow the user to tune this through bsd.conf.
 const size_t blake3TbbThreshold = 128000;
 
 // Decide which BLAKE3 update strategy to use based on some heuristics. Currently this just checks the data size but in
@@ -390,7 +390,7 @@ HashResult HashSink::finish()
 {
     flush();
     Hash hash(ha);
-    nix::finish(ha, *ctx, hash.hash);
+    bsd::finish(ha, *ctx, hash.hash);
     return HashResult(hash, bytes);
 }
 
@@ -399,7 +399,7 @@ HashResult HashSink::currentHash()
     flush();
     Ctx ctx2 = *ctx;
     Hash hash(ha);
-    nix::finish(ha, ctx2, hash.hash);
+    bsd::finish(ha, ctx2, hash.hash);
     return HashResult(hash, bytes);
 }
 
@@ -417,10 +417,10 @@ Hash compressHash(const Hash & hash, unsigned int newSize)
 std::optional<HashFormat> parseHashFormatOpt(std::string_view hashFormatName)
 {
     if (hashFormatName == "base16") return HashFormat::Base16;
-    if (hashFormatName == "nix32") return HashFormat::Nix32;
+    if (hashFormatName == "bsd32") return HashFormat::Bsd32;
     if (hashFormatName == "base32") {
-        warn(R"("base32" is a deprecated alias for hash format "nix32".)");
-        return HashFormat::Nix32;
+        warn(R"("base32" is a deprecated alias for hash format "bsd32".)");
+        return HashFormat::Bsd32;
     }
     if (hashFormatName == "base64") return HashFormat::Base64;
     if (hashFormatName == "sri") return HashFormat::SRI;
@@ -440,8 +440,8 @@ std::string_view printHashFormat(HashFormat HashFormat)
     switch (HashFormat) {
     case HashFormat::Base64:
         return "base64";
-    case HashFormat::Nix32:
-        return "nix32";
+    case HashFormat::Bsd32:
+        return "bsd32";
     case HashFormat::Base16:
         return "base16";
     case HashFormat::SRI:

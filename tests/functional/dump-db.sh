@@ -2,25 +2,25 @@
 
 source common.sh
 
-TODO_NixOS
+TODO_BasedLinux
 
 needLocalStore "--dump-db requires a local store"
 
 clearStore
 
-path=$(nix-build dependencies.nix -o $TEST_ROOT/result)
+path=$(bsd-build dependencies.bsd -o $TEST_ROOT/result)
 
-deps="$(nix-store -qR $TEST_ROOT/result)"
+deps="$(bsd-store -qR $TEST_ROOT/result)"
 
-nix-store --dump-db > $TEST_ROOT/dump
+bsd-store --dump-db > $TEST_ROOT/dump
 
 rm -rf $NIX_STATE_DIR/db
 
-nix-store --load-db < $TEST_ROOT/dump
+bsd-store --load-db < $TEST_ROOT/dump
 
-deps2="$(nix-store -qR $TEST_ROOT/result)"
+deps2="$(bsd-store -qR $TEST_ROOT/result)"
 
 [ "$deps" = "$deps2" ];
 
-nix-store --dump-db > $TEST_ROOT/dump2
+bsd-store --dump-db > $TEST_ROOT/dump2
 cmp $TEST_ROOT/dump $TEST_ROOT/dump2

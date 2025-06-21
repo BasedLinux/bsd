@@ -1,7 +1,7 @@
-#include "nix/store/store-api.hh"
-#include "nix/expr/eval.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/expr/eval.hh"
 
-namespace nix {
+namespace bsd {
 
 SourcePath EvalState::rootPath(CanonPath path)
 {

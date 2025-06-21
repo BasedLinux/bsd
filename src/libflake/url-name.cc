@@ -1,8 +1,8 @@
-#include "nix/flake/url-name.hh"
+#include "bsd/flake/url-name.hh"
 #include <regex>
 #include <iostream>
 
-namespace nix {
+namespace bsd {
 
 static const std::string attributeNamePattern("[a-zA-Z0-9_-]+");
 static const std::regex lastAttributeRegex("^((?:" + attributeNamePattern + "\\.)*)(" + attributeNamePattern +")(\\^.*)?$");

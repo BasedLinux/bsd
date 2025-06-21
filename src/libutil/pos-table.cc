@@ -1,8 +1,8 @@
-#include "nix/util/pos-table.hh"
+#include "bsd/util/pos-table.hh"
 
 #include <algorithm>
 
-namespace nix {
+namespace bsd {
 
 /* Position table. */
 

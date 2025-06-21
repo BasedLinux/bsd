@@ -8,4 +8,4 @@ enableFeatures "ca-derivations dynamic-derivations"
 
 restartDaemon
 
-expectStderr 1 nix-instantiate --read-write-mode ./old-daemon-error-hack.nix | grepQuiet "the daemon is too old to understand dependencies on dynamic derivations"
+expectStderr 1 bsd-instantiate --read-write-mode ./old-daemon-error-hack.bsd | grepQuiet "the daemon is too old to understand dependencies on dynamic derivations"

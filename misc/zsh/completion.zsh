@@ -1,6 +1,6 @@
-#compdef nix
+#compdef bsd
 
-function _nix() {
+function _bsd() {
   local ifs_bk="$IFS"
   local input=("${(Q)words[@]}")
   IFS=$'\n'
@@ -18,7 +18,7 @@ function _nix() {
   elif [[ "$tpe" == attrs ]]; then
     args+=('-S' '')
   fi
-  compadd -J nix "${args[@]}" -a suggestions
+  compadd -J bsd "${args[@]}" -a suggestions
 }
 
-_nix "$@"
+_bsd "$@"

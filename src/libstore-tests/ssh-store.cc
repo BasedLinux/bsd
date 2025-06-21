@@ -3,9 +3,9 @@
 #if 0
 #  include <gtest/gtest.h>
 
-#  include "nix/store/ssh-store.hh"
+#  include "bsd/store/ssh-store.hh"
 
-namespace nix {
+namespace bsd {
 
 TEST(SSHStore, constructConfig)
 {

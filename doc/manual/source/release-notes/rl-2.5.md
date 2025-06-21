@@ -6,11 +6,11 @@
 
 * Binary cache stores now have a setting `compression-level`.
 
-* `nix develop` now has a flag `--unpack` to run `unpackPhase`.
+* `bsd develop` now has a flag `--unpack` to run `unpackPhase`.
 
 * Lists can now be compared lexicographically using the `<` operator.
 
 * New built-in function: `builtins.groupBy`, with the same functionality as
-  Nixpkgs' `lib.groupBy`, but faster.
+  Bsdpkgs' `lib.groupBy`, but faster.
 
-* `nix repl` now has a `:log` command.
+* `bsd repl` now has a `:log` command.

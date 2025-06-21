@@ -1,7 +1,7 @@
-#include "nix/util/config-global.hh"
-#include "nix/expr/primops.hh"
+#include "bsd/util/config-global.hh"
+#include "bsd/expr/primops.hh"
 
-using namespace nix;
+using namespace bsd;
 
 struct MySettings : Config
 {

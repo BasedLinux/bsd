@@ -2,7 +2,7 @@
 
 source ./common.sh
 
-TODO_NixOS
+TODO_BasedLinux
 
 createFlake1
 createFlake2
@@ -20,7 +20,7 @@ git -C "$nonFlakeDir" commit -m 'Initial'
 flake3Dir=$TEST_ROOT/flake3
 createGitRepo "$flake3Dir" ""
 
-cat > "$flake3Dir/flake.nix" <<EOF
+cat > "$flake3Dir/flake.bsd" <<EOF
 {
   inputs = {
     flake1 = {};
@@ -42,7 +42,7 @@ cat > "$flake3Dir/flake.nix" <<EOF
       flake = false;
     };
     relativeNonFlakeFile = {
-      url = ./config.nix;
+      url = ./config.bsd;
       flake = false;
     };
   };
@@ -54,12 +54,12 @@ cat > "$flake3Dir/flake.nix" <<EOF
     packages.$system.xyzzy = inputs.flake2.packages.$system.bar;
     packages.$system.sth = inputs.flake1.packages.$system.foo;
     packages.$system.fnord =
-      with import ./config.nix;
+      with import ./config.bsd;
       mkDerivation {
         inherit system;
         name = "fnord";
-        dummy = builtins.readFile (builtins.path { name = "source"; path = ./.; filter = path: type: baseNameOf path == "config.nix"; } + "/config.nix");
-        dummy2 = builtins.readFile (builtins.path { name = "source"; path = inputs.flake1; filter = path: type: baseNameOf path == "simple.nix"; } + "/simple.nix");
+        dummy = builtins.readFile (builtins.path { name = "source"; path = ./.; filter = path: type: baseNameOf path == "config.bsd"; } + "/config.bsd");
+        dummy2 = builtins.readFile (builtins.path { name = "source"; path = inputs.flake1; filter = path: type: baseNameOf path == "simple.bsd"; } + "/simple.bsd");
         buildCommand = ''
           cat \${inputs.nonFlake}/README.md > \$out
           [[ \$(cat \${inputs.nonFlake}/README.md) = \$(cat \${inputs.nonFlakeFile}) ]]
@@ -70,18 +70,18 @@ cat > "$flake3Dir/flake.nix" <<EOF
 }
 EOF
 
-cp "${config_nix}" "$flake3Dir"
+cp "${config_bsd}" "$flake3Dir"
 
-git -C "$flake3Dir" add flake.nix config.nix
+git -C "$flake3Dir" add flake.bsd config.bsd
 git -C "$flake3Dir" commit -m 'Add nonFlakeInputs'
 
-# Check whether `nix build` works with a lockfile which is missing a
+# Check whether `bsd build` works with a lockfile which is missing a
 # nonFlakeInputs.
-nix build -o "$TEST_ROOT/result" "$flake3Dir#sth" --commit-lock-file
+bsd build -o "$TEST_ROOT/result" "$flake3Dir#sth" --commit-lock-file
 
-nix registry add --registry "$registry" flake3 "git+file://$flake3Dir"
+bsd registry add --registry "$registry" flake3 "git+file://$flake3Dir"
 
-nix build -o "$TEST_ROOT/result" flake3#fnord
+bsd build -o "$TEST_ROOT/result" flake3#fnord
 [[ $(cat "$TEST_ROOT/result") = FNORD ]]
 
 # Check whether flake input fetching is lazy: flake3#sth does not
@@ -90,55 +90,55 @@ rm -rf "$TEST_HOME/.cache"
 clearStore
 mv "$flake2Dir" "$flake2Dir.tmp"
 mv "$nonFlakeDir" "$nonFlakeDir.tmp"
-nix build -o "$TEST_ROOT/result" flake3#sth
-(! nix build -o "$TEST_ROOT/result" flake3#xyzzy)
-(! nix build -o "$TEST_ROOT/result" flake3#fnord)
+bsd build -o "$TEST_ROOT/result" flake3#sth
+(! bsd build -o "$TEST_ROOT/result" flake3#xyzzy)
+(! bsd build -o "$TEST_ROOT/result" flake3#fnord)
 mv "$flake2Dir.tmp" "$flake2Dir"
 mv "$nonFlakeDir.tmp" "$nonFlakeDir"
-nix build -o "$TEST_ROOT/result" flake3#xyzzy flake3#fnord
+bsd build -o "$TEST_ROOT/result" flake3#xyzzy flake3#fnord
 
 # Check non-flake inputs have a sourceInfo and an outPath
 #
 # This may look redundant, but the other checks below happen in a command
 # substitution subshell, so failures there will not exit this shell
-nix eval --raw flake3#inputs.nonFlake.outPath
-nix eval --raw flake3#inputs.nonFlake.sourceInfo.outPath
-nix eval --raw flake3#inputs.nonFlakeFile.outPath
-nix eval --raw flake3#inputs.nonFlakeFile.sourceInfo.outPath
-nix eval --raw flake3#inputs.nonFlakeFile2.outPath
-nix eval --raw flake3#inputs.nonFlakeFile2.sourceInfo.outPath
-nix eval --raw flake3#inputs.nonFlakeFile3.outPath
-nix eval --raw flake3#inputs.nonFlakeFile3.sourceInfo.outPath
-nix eval --raw flake3#inputs.relativeNonFlakeFile.outPath
-nix eval --raw flake3#inputs.relativeNonFlakeFile.sourceInfo.outPath
+bsd eval --raw flake3#inputs.nonFlake.outPath
+bsd eval --raw flake3#inputs.nonFlake.sourceInfo.outPath
+bsd eval --raw flake3#inputs.nonFlakeFile.outPath
+bsd eval --raw flake3#inputs.nonFlakeFile.sourceInfo.outPath
+bsd eval --raw flake3#inputs.nonFlakeFile2.outPath
+bsd eval --raw flake3#inputs.nonFlakeFile2.sourceInfo.outPath
+bsd eval --raw flake3#inputs.nonFlakeFile3.outPath
+bsd eval --raw flake3#inputs.nonFlakeFile3.sourceInfo.outPath
+bsd eval --raw flake3#inputs.relativeNonFlakeFile.outPath
+bsd eval --raw flake3#inputs.relativeNonFlakeFile.sourceInfo.outPath
 
 # Check non-flake file inputs have the expected outPaths
 [[
-  $(nix eval --raw flake3#inputs.nonFlake.outPath) \
-  = $(nix eval --raw flake3#inputs.nonFlake.sourceInfo.outPath)
+  $(bsd eval --raw flake3#inputs.nonFlake.outPath) \
+  = $(bsd eval --raw flake3#inputs.nonFlake.sourceInfo.outPath)
 ]]
 [[
-  $(nix eval --raw flake3#inputs.nonFlakeFile.outPath) \
-  = $(nix eval --raw flake3#inputs.nonFlakeFile.sourceInfo.outPath)
+  $(bsd eval --raw flake3#inputs.nonFlakeFile.outPath) \
+  = $(bsd eval --raw flake3#inputs.nonFlakeFile.sourceInfo.outPath)
 ]]
 [[
-  $(nix eval --raw flake3#inputs.nonFlakeFile2.outPath) \
-  = $(nix eval --raw flake3#inputs.nonFlakeFile2.sourceInfo.outPath)
+  $(bsd eval --raw flake3#inputs.nonFlakeFile2.outPath) \
+  = $(bsd eval --raw flake3#inputs.nonFlakeFile2.sourceInfo.outPath)
 ]]
 [[
-  $(nix eval --raw flake3#inputs.nonFlakeFile3.outPath) \
-  = $(nix eval --raw flake3#inputs.nonFlakeFile3.sourceInfo.outPath)/README.md
+  $(bsd eval --raw flake3#inputs.nonFlakeFile3.outPath) \
+  = $(bsd eval --raw flake3#inputs.nonFlakeFile3.sourceInfo.outPath)/README.md
 ]]
 [[
-  $(nix eval --raw flake3#inputs.relativeNonFlakeFile.outPath) \
-  = $(nix eval --raw flake3#inputs.relativeNonFlakeFile.sourceInfo.outPath)/config.nix
+  $(bsd eval --raw flake3#inputs.relativeNonFlakeFile.outPath) \
+  = $(bsd eval --raw flake3#inputs.relativeNonFlakeFile.sourceInfo.outPath)/config.bsd
 ]]
 
 # Make branch "removeXyzzy" where flake3 doesn't have xyzzy anymore
 git -C "$flake3Dir" checkout -b removeXyzzy
-rm "$flake3Dir/flake.nix"
+rm "$flake3Dir/flake.bsd"
 
-cat > "$flake3Dir/flake.nix" <<EOF
+cat > "$flake3Dir/flake.bsd" <<EOF
 {
   inputs = {
     nonFlake = {
@@ -152,7 +152,7 @@ cat > "$flake3Dir/flake.nix" <<EOF
   outputs = { self, flake1, flake2, nonFlake }: rec {
     packages.$system.sth = flake1.packages.$system.foo;
     packages.$system.fnord =
-      with import ./config.nix;
+      with import ./config.bsd;
       mkDerivation {
         inherit system;
         name = "fnord";
@@ -163,12 +163,12 @@ cat > "$flake3Dir/flake.nix" <<EOF
   };
 }
 EOF
-nix flake lock "$flake3Dir"
-git -C "$flake3Dir" add flake.nix flake.lock
+bsd flake lock "$flake3Dir"
+git -C "$flake3Dir" add flake.bsd flake.lock
 git -C "$flake3Dir" commit -m 'Remove packages.xyzzy'
 git -C "$flake3Dir" checkout master
 
 # Test whether fuzzy-matching works for registry entries.
-nix registry add --registry "$registry" flake4 flake3
-(! nix build -o "$TEST_ROOT/result" flake4/removeXyzzy#xyzzy)
-nix build -o "$TEST_ROOT/result" flake4/removeXyzzy#sth
+bsd registry add --registry "$registry" flake4 flake3
+(! bsd build -o "$TEST_ROOT/result" flake4/removeXyzzy#xyzzy)
+bsd build -o "$TEST_ROOT/result" flake4/removeXyzzy#sth

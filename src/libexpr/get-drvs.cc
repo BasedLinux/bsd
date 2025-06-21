@@ -1,14 +1,14 @@
-#include "nix/expr/get-drvs.hh"
-#include "nix/expr/eval-inline.hh"
-#include "nix/store/derivations.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/path-with-outputs.hh"
+#include "bsd/expr/get-drvs.hh"
+#include "bsd/expr/eval-inline.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/path-with-outputs.hh"
 
 #include <cstring>
 #include <regex>
 
 
-namespace nix {
+namespace bsd {
 
 
 PackageInfo::PackageInfo(EvalState & state, std::string attrPath, const Bindings * attrs)
@@ -70,7 +70,7 @@ std::optional<StorePath> PackageInfo::queryDrvPath() const
 {
     if (!drvPath && attrs) {
         if (auto i = attrs->get(state->sDrvPath)) {
-            NixStringContext context;
+            BsdStringContext context;
             auto found = state->coerceToStorePath(i->pos, *i->value, context, "while evaluating the 'drvPath' attribute of a derivation");
             try {
                 found.requireDerivation();
@@ -98,7 +98,7 @@ StorePath PackageInfo::queryOutPath() const
 {
     if (!outPath && attrs) {
         auto i = attrs->find(state->sOutPath);
-        NixStringContext context;
+        BsdStringContext context;
         if (i != attrs->end())
             outPath = state->coerceToStorePath(i->pos, *i->value, context, "while evaluating the output path of a derivation");
     }
@@ -129,7 +129,7 @@ PackageInfo::Outputs PackageInfo::queryOutputs(bool withPaths, bool onlyOutputsT
                     /* And evaluate its ‘outPath’ attribute. */
                     auto outPath = out->value->attrs()->get(state->sOutPath);
                     if (!outPath) continue; // FIXME: throw error?
-                    NixStringContext context;
+                    BsdStringContext context;
                     outputs.emplace(output, state->coerceToStorePath(outPath->pos, *outPath->value, context, "while evaluating an output path of a derivation"));
                 } else
                     outputs.emplace(output, std::nullopt);
@@ -156,7 +156,7 @@ PackageInfo::Outputs PackageInfo::queryOutputs(bool withPaths, bool onlyOutputsT
         const Value * outTI = queryMeta("outputsToInstall");
         if (!outTI) return outputs;
         auto errMsg = Error("this derivation has bad 'meta.outputsToInstall'");
-            /* ^ this shows during `nix-env -i` right under the bad derivation */
+            /* ^ this shows during `bsd-env -i` right under the bad derivation */
         if (!outTI->isList()) throw errMsg;
         Outputs result;
         for (auto elem : outTI->listItems()) {
@@ -238,7 +238,7 @@ std::string PackageInfo::queryMetaString(const std::string & name)
 }
 
 
-NixInt PackageInfo::queryMetaInt(const std::string & name, NixInt def)
+BsdInt PackageInfo::queryMetaInt(const std::string & name, BsdInt def)
 {
     Value * v = queryMeta(name);
     if (!v) return def;
@@ -246,13 +246,13 @@ NixInt PackageInfo::queryMetaInt(const std::string & name, NixInt def)
     if (v->type() == nString) {
         /* Backwards compatibility with before we had support for
            integer meta fields. */
-        if (auto n = string2Int<NixInt::Inner>(v->c_str()))
-            return NixInt{*n};
+        if (auto n = string2Int<BsdInt::Inner>(v->c_str()))
+            return BsdInt{*n};
     }
     return def;
 }
 
-NixFloat PackageInfo::queryMetaFloat(const std::string & name, NixFloat def)
+BsdFloat PackageInfo::queryMetaFloat(const std::string & name, BsdFloat def)
 {
     Value * v = queryMeta(name);
     if (!v) return def;
@@ -260,7 +260,7 @@ NixFloat PackageInfo::queryMetaFloat(const std::string & name, NixFloat def)
     if (v->type() == nString) {
         /* Backwards compatibility with before we had support for
            float meta fields. */
-        if (auto n = string2Float<NixFloat>(v->c_str()))
+        if (auto n = string2Float<BsdFloat>(v->c_str()))
             return *n;
     }
     return def;
@@ -365,11 +365,11 @@ static void getDerivations(EvalState & state, Value & vIn,
     else if (v.type() == nAttrs) {
 
         /* !!! undocumented hackery to support combining channels in
-           nix-env.cc. */
+           bsd-env.cc. */
         bool combineChannels = v.attrs()->get(state.symbols.create("_combineChannels"));
 
         /* Consider the attributes in sorted order to get more
-           deterministic behaviour in nix-env operations (e.g. when
+           deterministic behaviour in bsd-env operations (e.g. when
            there are names clashes between derivations, the derivation
            bound to the attribute with the "lower" name should take
            precedence). */

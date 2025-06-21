@@ -1,24 +1,24 @@
-#include "nix/util/terminal.hh"
-#include "nix/flake/flake.hh"
-#include "nix/expr/eval.hh"
-#include "nix/expr/eval-settings.hh"
-#include "nix/flake/lockfile.hh"
-#include "nix/expr/primops.hh"
-#include "nix/expr/eval-inline.hh"
-#include "nix/store/store-api.hh"
-#include "nix/fetchers/fetchers.hh"
-#include "nix/util/finally.hh"
-#include "nix/fetchers/fetch-settings.hh"
-#include "nix/flake/settings.hh"
-#include "nix/expr/value-to-json.hh"
-#include "nix/store/local-fs-store.hh"
-#include "nix/fetchers/fetch-to-store.hh"
-#include "nix/util/memory-source-accessor.hh"
-#include "nix/fetchers/input-cache.hh"
+#include "bsd/util/terminal.hh"
+#include "bsd/flake/flake.hh"
+#include "bsd/expr/eval.hh"
+#include "bsd/expr/eval-settings.hh"
+#include "bsd/flake/lockfile.hh"
+#include "bsd/expr/primops.hh"
+#include "bsd/expr/eval-inline.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/fetchers/fetchers.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/fetchers/fetch-settings.hh"
+#include "bsd/flake/settings.hh"
+#include "bsd/expr/value-to-json.hh"
+#include "bsd/store/local-fs-store.hh"
+#include "bsd/fetchers/fetch-to-store.hh"
+#include "bsd/util/memory-source-accessor.hh"
+#include "bsd/fetchers/input-cache.hh"
 
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
 using namespace flake;
 
@@ -90,7 +90,7 @@ static void parseFlakeInputAttr(
         default:
             if (attr.name == state.symbols.create("publicKeys")) {
                 experimentalFeatureSettings.require(Xp::VerifiedFetches);
-                NixStringContext emptyContext = {};
+                BsdStringContext emptyContext = {};
                 attrs.emplace(state.symbols[attr.name], printValueAsJSON(state, true, *attr.value, attr.pos, emptyContext).dump());
             } else
                 state.error<TypeError>("flake input attribute '%s' is %s while a string, Boolean, or integer is expected",
@@ -221,7 +221,7 @@ static Flake readFlake(
     const InputAttrPath & lockRootAttrPath)
 {
     auto flakeDir = rootDir / CanonPath(resolvedRef.subdir);
-    auto flakePath = flakeDir / "flake.nix";
+    auto flakePath = flakeDir / "flake.bsd";
 
     // NOTE evalFile forces vInfo to be an attrset because mustBeTrivial is true.
     Value vInfo;
@@ -264,12 +264,12 @@ static Flake readFlake(
     } else
         throw Error("flake '%s' lacks attribute 'outputs'", resolvedRef);
 
-    auto sNixConfig = state.symbols.create("nixConfig");
+    auto sBsdConfig = state.symbols.create("bsdConfig");
 
-    if (auto nixConfig = vInfo.attrs()->get(sNixConfig)) {
-        expectType(state, nAttrs, *nixConfig->value, nixConfig->pos);
+    if (auto bsdConfig = vInfo.attrs()->get(sBsdConfig)) {
+        expectType(state, nAttrs, *bsdConfig->value, bsdConfig->pos);
 
-        for (auto & setting : *nixConfig->value->attrs()) {
+        for (auto & setting : *bsdConfig->value->attrs()) {
             forceTrivialValue(state, *setting.value, setting.pos);
             if (setting.value->type() == nString)
                 flake.config.settings.emplace(
@@ -309,7 +309,7 @@ static Flake readFlake(
         if (attr.name != state.sDescription &&
             attr.name != sInputs &&
             attr.name != sOutputs &&
-            attr.name != sNixConfig)
+            attr.name != sBsdConfig)
             throw Error("flake '%s' has an unsupported attribute '%s', at %s",
                 resolvedRef, state.symbols[attr.name], state.positions[attr.pos]);
     }
@@ -346,7 +346,7 @@ static Flake getFlake(
     auto resolvedRef = FlakeRef(std::move(cachedInput.resolvedInput), originalRef.subdir);
     auto lockedRef = FlakeRef(std::move(cachedInput.lockedInput), originalRef.subdir);
 
-    // Parse/eval flake.nix to get at the input.self attributes.
+    // Parse/eval flake.bsd to get at the input.self attributes.
     auto flake = readFlake(state, originalRef, resolvedRef, lockedRef, {cachedInput.accessor}, lockRootAttrPath);
 
     // Re-fetch the tree if necessary.
@@ -364,7 +364,7 @@ static Flake getFlake(
     // Copy the tree to the store.
     auto storePath = copyInputToStore(state, lockedRef.input, originalRef.input, cachedInput.accessor);
 
-    // Re-parse flake.nix from the store.
+    // Re-parse flake.bsd from the store.
     return readFlake(state, originalRef, resolvedRef, lockedRef, state.storePath(storePath), lockRootAttrPath);
 }
 
@@ -402,7 +402,7 @@ LockedFlake lockFlake(
         useRegistriesTop,
         {});
 
-    if (lockFlags.applyNixConfig) {
+    if (lockFlags.applyBsdConfig) {
         flake.config.apply(settings);
         state.store->setOptions();
     }
@@ -460,7 +460,7 @@ LockedFlake lockFlake(
             computeLocks;
 
         computeLocks = [&](
-            /* The inputs of this node, either from flake.nix or
+            /* The inputs of this node, either from flake.bsd or
                flake.lock. */
             const FlakeInputs & flakeInputs,
             /* The node whose locks are to be updated.*/
@@ -482,7 +482,7 @@ LockedFlake lockFlake(
             debug("computing lock file node '%s'", printInputAttrPath(inputAttrPathPrefix));
 
             /* Get the overrides (i.e. attributes of the form
-               'inputs.nixops.inputs.nixpkgs.url = ...'). */
+               'inputs.bsdops.inputs.bsdpkgs.url = ...'). */
             for (auto & [id, input] : flakeInputs) {
                 for (auto & [idOverride, inputOverride] : input.overrides) {
                     auto inputAttrPath(inputAttrPathPrefix);
@@ -882,8 +882,8 @@ static ref<SourceAccessor> makeInternalFS() {
     auto internalFS = make_ref<MemorySourceAccessor>(MemorySourceAccessor {});
     internalFS->setPathDisplay("«flakes-internal»", "");
     internalFS->addFile(
-        CanonPath("call-flake.nix"),
-        #include "call-flake.nix.gen.hh"
+        CanonPath("call-flake.bsd"),
+        #include "call-flake.bsd.gen.hh"
     );
     return internalFS;
 }
@@ -936,7 +936,7 @@ void callFlake(EvalState & state,
 
     auto & vOverrides = state.allocValue()->mkAttrs(overrides);
 
-    Value * vCallFlake = requireInternalFile(state, CanonPath("call-flake.nix"));
+    Value * vCallFlake = requireInternalFile(state, CanonPath("call-flake.bsd"));
 
     auto vLocks = state.allocValue();
     vLocks->mkString(lockFileStr);

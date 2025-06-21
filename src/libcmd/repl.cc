@@ -2,39 +2,39 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "nix/util/error.hh"
-#include "nix/cmd/repl-interacter.hh"
-#include "nix/cmd/repl.hh"
+#include "bsd/util/error.hh"
+#include "bsd/cmd/repl-interacter.hh"
+#include "bsd/cmd/repl.hh"
 
-#include "nix/util/ansicolor.hh"
-#include "nix/main/shared.hh"
-#include "nix/expr/eval.hh"
-#include "nix/expr/eval-settings.hh"
-#include "nix/expr/attr-path.hh"
-#include "nix/util/signals.hh"
-#include "nix/store/store-open.hh"
-#include "nix/store/log-store.hh"
-#include "nix/cmd/common-eval-args.hh"
-#include "nix/expr/get-drvs.hh"
-#include "nix/store/derivations.hh"
-#include "nix/store/globals.hh"
-#include "nix/flake/flake.hh"
-#include "nix/flake/lockfile.hh"
-#include "nix/util/users.hh"
-#include "nix/cmd/editor-for.hh"
-#include "nix/util/finally.hh"
-#include "nix/cmd/markdown.hh"
-#include "nix/store/local-fs-store.hh"
-#include "nix/expr/print.hh"
-#include "nix/util/ref.hh"
-#include "nix/expr/value.hh"
+#include "bsd/util/ansicolor.hh"
+#include "bsd/main/shared.hh"
+#include "bsd/expr/eval.hh"
+#include "bsd/expr/eval-settings.hh"
+#include "bsd/expr/attr-path.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/store/store-open.hh"
+#include "bsd/store/log-store.hh"
+#include "bsd/cmd/common-eval-args.hh"
+#include "bsd/expr/get-drvs.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/flake/flake.hh"
+#include "bsd/flake/lockfile.hh"
+#include "bsd/util/users.hh"
+#include "bsd/cmd/editor-for.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/cmd/markdown.hh"
+#include "bsd/store/local-fs-store.hh"
+#include "bsd/expr/print.hh"
+#include "bsd/util/ref.hh"
+#include "bsd/expr/value.hh"
 
-#include "nix/util/strings.hh"
+#include "bsd/util/strings.hh"
 
-namespace nix {
+namespace bsd {
 
 /**
- * Returned by `NixRepl::processLine`.
+ * Returned by `BsdRepl::processLine`.
  */
 enum class ProcessLineResult {
     /**
@@ -54,8 +54,8 @@ enum class ProcessLineResult {
     PromptAgain,
 };
 
-struct NixRepl
-    : AbstractNixRepl
+struct BsdRepl
+    : AbstractBsdRepl
     , detail::ReplCompleterMixin
     , gc
 {
@@ -74,15 +74,15 @@ struct NixRepl
     int displ;
     StringSet varNames;
 
-    RunNix * runNixPtr;
+    RunBsd * runBsdPtr;
 
-    void runNix(Path program, const Strings & args, const std::optional<std::string> & input = {});
+    void runBsd(Path program, const Strings & args, const std::optional<std::string> & input = {});
 
     std::unique_ptr<ReplInteracter> interacter;
 
-    NixRepl(const LookupPath & lookupPath, nix::ref<Store> store,ref<EvalState> state,
-            std::function<AnnotatedValues()> getValues, RunNix * runNix);
-    virtual ~NixRepl() = default;
+    BsdRepl(const LookupPath & lookupPath, bsd::ref<Store> store,ref<EvalState> state,
+            std::function<AnnotatedValues()> getValues, RunBsd * runBsd);
+    virtual ~BsdRepl() = default;
 
     ReplExitStatus mainLoop() override;
     void initEnv() override;
@@ -109,7 +109,7 @@ struct NixRepl
     {
         // Hide the progress bar during printing because it might interfere
         auto suspension = logger->suspend();
-        ::nix::printValue(*state, str, v, PrintOptions {
+        ::bsd::printValue(*state, str, v, PrintOptions {
             .ansiColors = true,
             .force = true,
             .derivationPaths = true,
@@ -129,13 +129,13 @@ std::string removeWhitespace(std::string s)
 }
 
 
-NixRepl::NixRepl(const LookupPath & lookupPath, nix::ref<Store> store, ref<EvalState> state,
-            std::function<NixRepl::AnnotatedValues()> getValues, RunNix * runNix)
-    : AbstractNixRepl(state)
+BsdRepl::BsdRepl(const LookupPath & lookupPath, bsd::ref<Store> store, ref<EvalState> state,
+            std::function<BsdRepl::AnnotatedValues()> getValues, RunBsd * runBsd)
+    : AbstractBsdRepl(state)
     , debugTraceIndex(0)
     , getValues(getValues)
     , staticEnv(new StaticEnv(nullptr, state->staticBaseEnv))
-    , runNixPtr{runNix}
+    , runBsdPtr{runBsd}
     , interacter(make_unique<ReadlineLikeInteracter>(getDataDir() + "/repl-history"))
 {
 }
@@ -164,14 +164,14 @@ MakeError(IncompleteReplExpr, ParseError);
 
 static bool isFirstRepl = true;
 
-ReplExitStatus NixRepl::mainLoop()
+ReplExitStatus BsdRepl::mainLoop()
 {
     if (isFirstRepl) {
         std::string_view debuggerNotice = "";
         if (state->debugRepl) {
             debuggerNotice = " debugger";
         }
-        notice("Nix %1%%2%\nType :? for help.", nixVersion, debuggerNotice);
+        notice("Bsd %1%%2%\nType :? for help.", bsdVersion, debuggerNotice);
     }
 
     isFirstRepl = false;
@@ -224,7 +224,7 @@ ReplExitStatus NixRepl::mainLoop()
     }
 }
 
-StringSet NixRepl::completePrefix(const std::string & prefix)
+StringSet BsdRepl::completePrefix(const std::string & prefix)
 {
     StringSet completions;
 
@@ -314,7 +314,7 @@ static bool isVarName(std::string_view s)
 }
 
 
-StorePath NixRepl::getDerivationPath(Value & v) {
+StorePath BsdRepl::getDerivationPath(Value & v) {
     auto packageInfo = getDerivation(*state, v, false);
     if (!packageInfo)
         throw Error("expression does not evaluate to a derivation, so I can't build it");
@@ -326,7 +326,7 @@ StorePath NixRepl::getDerivationPath(Value & v) {
     return *drvPath;
 }
 
-void NixRepl::loadDebugTraceEnv(DebugTrace & dt)
+void BsdRepl::loadDebugTraceEnv(DebugTrace & dt)
 {
     initEnv();
 
@@ -340,7 +340,7 @@ void NixRepl::loadDebugTraceEnv(DebugTrace & dt)
     }
 }
 
-ProcessLineResult NixRepl::processLine(std::string line)
+ProcessLineResult BsdRepl::processLine(std::string line)
 {
     line = trim(line);
     if (line.empty())
@@ -359,7 +359,7 @@ ProcessLineResult NixRepl::processLine(std::string line)
     }
 
     if (command == ":?" || command == ":help") {
-        // FIXME: convert to Markdown, include in the 'nix repl' manpage.
+        // FIXME: convert to Markdown, include in the 'bsd repl' manpage.
         std::cout
              << "The following commands are available:\n"
              << "\n"
@@ -372,17 +372,17 @@ ProcessLineResult NixRepl::processLine(std::string line)
              << "  :e, :edit <expr>             Open package or function in $EDITOR\n"
              << "  :i <expr>                    Build derivation, then install result into\n"
              << "                               current profile\n"
-             << "  :l, :load <path>             Load Nix expression and add it to scope\n"
-             << "  :lf, :load-flake <ref>       Load Nix flake and add it to scope\n"
+             << "  :l, :load <path>             Load Bsd expression and add it to scope\n"
+             << "  :lf, :load-flake <ref>       Load Bsd flake and add it to scope\n"
              << "  :ll, :last-loaded            Show most recently loaded variables added to scope\n"
              << "  :p, :print <expr>            Evaluate and print expression recursively\n"
              << "                               Strings are printed directly, without escaping.\n"
-             << "  :q, :quit                    Exit nix-repl\n"
+             << "  :q, :quit                    Exit bsd-repl\n"
              << "  :r, :reload                  Reload all files\n"
              << "  :sh <expr>                   Build dependencies of derivation, then start\n"
-             << "                               nix-shell\n"
+             << "                               bsd-shell\n"
              << "  :t <expr>                    Describe result of evaluation\n"
-             << "  :u <expr>                    Build derivation, then start nix-shell\n"
+             << "  :u <expr>                    Build derivation, then start bsd-shell\n"
              << "  :doc <expr>                  Show documentation of a builtin function\n"
              << "  :log <expr>                  Show logs for a derivation\n"
              << "  :te, :trace-enable [bool]    Enable, disable or toggle showing traces for\n"
@@ -480,7 +480,7 @@ ProcessLineResult NixRepl::processLine(std::string line)
 
         const auto [path, line] = [&] () -> std::pair<SourcePath, uint32_t> {
             if (v.type() == nPath || v.type() == nString) {
-                NixStringContext context;
+                BsdStringContext context;
                 auto path = state->coerceToPath(noPos, v, context, "while evaluating the filename to edit");
                 return {path, 0};
             } else if (v.isLambda()) {
@@ -518,11 +518,11 @@ ProcessLineResult NixRepl::processLine(std::string line)
     else if (command == ":u") {
         Value v, f, result;
         evalString(arg, v);
-        evalString("drv: (import <nixpkgs> {}).runCommand \"shell\" { buildInputs = [ drv ]; } \"\"", f);
+        evalString("drv: (import <bsdpkgs> {}).runCommand \"shell\" { buildInputs = [ drv ]; } \"\"", f);
         state->callFunction(f, v, result, PosIdx());
 
         StorePath drvPath = getDerivationPath(result);
-        runNix("nix-shell", {state->store->printStorePath(drvPath)});
+        runBsd("bsd-shell", {state->store->printStorePath(drvPath)});
     }
 
     else if (command == ":b" || command == ":bl" || command == ":i" || command == ":sh" || command == ":log") {
@@ -551,7 +551,7 @@ ProcessLineResult NixRepl::processLine(std::string line)
                 }
             }
         } else if (command == ":i") {
-            runNix("nix-env", {"-i", drvPathRaw});
+            runBsd("bsd-env", {"-i", drvPathRaw});
         } else if (command == ":log") {
             settings.readOnlyMode = true;
             Finally roModeReset([&]() {
@@ -581,7 +581,7 @@ ProcessLineResult NixRepl::processLine(std::string line)
             }
             if (!foundLog) throw Error("build log of '%s' is not available", drvPathRaw);
         } else {
-            runNix("nix-shell", {drvPathRaw});
+            runBsd("bsd-shell", {drvPathRaw});
         }
     }
 
@@ -622,7 +622,7 @@ ProcessLineResult NixRepl::processLine(std::string line)
                 // When missing, trigger the normal exception
                 // e.g. :doc builtins.foo
                 // behaves like
-                // nix-repl> builtins.foo<tab>
+                // bsd-repl> builtins.foo<tab>
                 // error: attribute 'foo' missing
                 evalString(arg, v);
                 assert(false);
@@ -706,7 +706,7 @@ ProcessLineResult NixRepl::processLine(std::string line)
     return ProcessLineResult::PromptAgain;
 }
 
-void NixRepl::loadFile(const Path & path)
+void BsdRepl::loadFile(const Path & path)
 {
     loadedFiles.remove(path);
     loadedFiles.push_back(path);
@@ -716,7 +716,7 @@ void NixRepl::loadFile(const Path & path)
     addAttrsToScope(v2);
 }
 
-void NixRepl::loadFlake(const std::string & flakeRefS)
+void BsdRepl::loadFlake(const std::string & flakeRefS)
 {
     if (flakeRefS.empty())
         throw Error("cannot use ':load-flake' without a path specified. (Use '.' for the current working directory.)");
@@ -749,7 +749,7 @@ void NixRepl::loadFlake(const std::string & flakeRefS)
 }
 
 
-void NixRepl::initEnv()
+void BsdRepl::initEnv()
 {
     env = &state->allocEnv(envSize);
     env->up = &state->baseEnv;
@@ -761,7 +761,7 @@ void NixRepl::initEnv()
         varNames.emplace(state->symbols[i.first]);
 }
 
-void NixRepl::showLastLoaded()
+void BsdRepl::showLastLoaded()
 {
     RunPager pager;
 
@@ -772,7 +772,7 @@ void NixRepl::showLastLoaded()
 }
 
 
-void NixRepl::reloadFilesAndFlakes()
+void BsdRepl::reloadFilesAndFlakes()
 {
     initEnv();
 
@@ -781,7 +781,7 @@ void NixRepl::reloadFilesAndFlakes()
 }
 
 
-void NixRepl::loadFiles()
+void BsdRepl::loadFiles()
 {
     Strings old = loadedFiles;
     loadedFiles.clear();
@@ -798,7 +798,7 @@ void NixRepl::loadFiles()
 }
 
 
-void NixRepl::loadFlakes()
+void BsdRepl::loadFlakes()
 {
     Strings old = loadedFlakes;
     loadedFlakes.clear();
@@ -810,7 +810,7 @@ void NixRepl::loadFlakes()
 }
 
 
-void NixRepl::addAttrsToScope(Value & attrs)
+void BsdRepl::addAttrsToScope(Value & attrs)
 {
     state->forceAttrs(attrs, [&]() { return attrs.determinePos(noPos); }, "while evaluating an attribute set to be merged in the global scope");
     if (displ + attrs.attrs()->size() >= envSize)
@@ -848,7 +848,7 @@ void NixRepl::addAttrsToScope(Value & attrs)
 }
 
 
-void NixRepl::addVarToScope(const Symbol name, Value & v)
+void BsdRepl::addVarToScope(const Symbol name, Value & v)
 {
     if (displ >= envSize)
         throw Error("environment full; cannot add more variables");
@@ -861,13 +861,13 @@ void NixRepl::addVarToScope(const Symbol name, Value & v)
 }
 
 
-Expr * NixRepl::parseString(std::string s)
+Expr * BsdRepl::parseString(std::string s)
 {
     return state->parseExprFromString(std::move(s), state->rootPath("."), staticEnv);
 }
 
 
-void NixRepl::evalString(std::string s, Value & v)
+void BsdRepl::evalString(std::string s, Value & v)
 {
     Expr * e;
     try {
@@ -885,44 +885,44 @@ void NixRepl::evalString(std::string s, Value & v)
 }
 
 
-void NixRepl::runNix(Path program, const Strings & args, const std::optional<std::string> & input)
+void BsdRepl::runBsd(Path program, const Strings & args, const std::optional<std::string> & input)
 {
-    if (runNixPtr)
-        (*runNixPtr)(program, args, input);
+    if (runBsdPtr)
+        (*runBsdPtr)(program, args, input);
     else
-        throw Error("Cannot run '%s' because no method of calling the Nix CLI was provided. This is a configuration problem pertaining to how this program was built. See Nix 2.25 release notes", program);
+        throw Error("Cannot run '%s' because no method of calling the Bsd CLI was provided. This is a configuration problem pertaining to how this program was built. See Bsd 2.25 release notes", program);
 }
 
 
-std::unique_ptr<AbstractNixRepl> AbstractNixRepl::create(
-   const LookupPath & lookupPath, nix::ref<Store> store, ref<EvalState> state,
-   std::function<AnnotatedValues()> getValues, RunNix * runNix)
+std::unique_ptr<AbstractBsdRepl> AbstractBsdRepl::create(
+   const LookupPath & lookupPath, bsd::ref<Store> store, ref<EvalState> state,
+   std::function<AnnotatedValues()> getValues, RunBsd * runBsd)
 {
-    return std::make_unique<NixRepl>(
+    return std::make_unique<BsdRepl>(
         lookupPath,
         std::move(store),
         state,
         getValues,
-        runNix
+        runBsd
     );
 }
 
 
-ReplExitStatus AbstractNixRepl::runSimple(
+ReplExitStatus AbstractBsdRepl::runSimple(
     ref<EvalState> evalState,
     const ValMap & extraEnv)
 {
-    auto getValues = [&]()->NixRepl::AnnotatedValues{
-        NixRepl::AnnotatedValues values;
+    auto getValues = [&]()->BsdRepl::AnnotatedValues{
+        BsdRepl::AnnotatedValues values;
         return values;
     };
     LookupPath lookupPath = {};
-    auto repl = std::make_unique<NixRepl>(
+    auto repl = std::make_unique<BsdRepl>(
             lookupPath,
             openStore(),
             evalState,
             getValues,
-            /*runNix=*/nullptr
+            /*runBsd=*/nullptr
         );
 
     repl->initEnv();

@@ -1,4 +1,4 @@
-# Nix release process
+# Bsd release process
 
 ## Release artifacts
 
@@ -7,21 +7,21 @@ release:
 
 * A Git tag
 
-* Binary tarballs in https://releases.nixos.org/?prefix=nix/
+* Binary tarballs in https://releases.basedlinux.org/?prefix=bsd/
 
 * Docker images
 
-* Closures in https://cache.nixos.org
+* Closures in https://cache.basedlinux.org
 
-* (Optionally) Updated `fallback-paths.nix` in Nixpkgs
+* (Optionally) Updated `fallback-paths.bsd` in Bsdpkgs
 
-* An updated manual on https://nix.dev/manual/nix/latest/
+* An updated manual on https://bsd.dev/manual/bsd/latest/
 
 ## Creating a new release from the `master` branch
 
-* Make sure that the [Hydra `master` jobset](https://hydra.nixos.org/jobset/nix/master) succeeds.
+* Make sure that the [Hydra `master` jobset](https://hydra.basedlinux.org/jobset/bsd/master) succeeds.
 
-* In a checkout of the Nix repo, make sure you're on `master` and run
+* In a checkout of the Bsd repo, make sure you're on `master` and run
   `git pull`.
 
 * Compile the release notes by running
@@ -64,11 +64,11 @@ release:
 * Mark the release as official:
 
   ```console
-  $ sed -e 's/officialRelease = false;/officialRelease = true;/' -i flake.nix
+  $ sed -e 's/officialRelease = false;/officialRelease = true;/' -i flake.bsd
   ```
 
   This removes the link to `rl-next.md` from the manual and sets
-  `officialRelease = true` in `flake.nix`.
+  `officialRelease = true` in `flake.bsd`.
 
 * Commit
 
@@ -81,7 +81,7 @@ release:
 * Create a jobset for the release branch on Hydra as follows:
 
   * Go to the jobset of the previous release
-  (e.g. https://hydra.nixos.org/jobset/nix/maintenance-2.11).
+  (e.g. https://hydra.basedlinux.org/jobset/bsd/maintenance-2.11).
 
   * Select `Actions -> Clone this jobset`.
 
@@ -89,7 +89,7 @@ release:
 
   * Set description to `$VERSION release branch`.
 
-  * Set flake URL to `github:NixOS/nix/$VERSION-maintenance`.
+  * Set flake URL to `github:BasedLinux/bsd/$VERSION-maintenance`.
 
   * Hit `Create jobset`.
 
@@ -99,25 +99,25 @@ release:
 
 * When the jobset evaluation has succeeded building, take note of the
   evaluation ID (e.g. `1780832` in
-  `https://hydra.nixos.org/eval/1780832`).
+  `https://hydra.basedlinux.org/eval/1780832`).
 
 * Tag the release and upload the release artifacts to
-  [`releases.nixos.org`](https://releases.nixos.org/) and [Docker Hub](https://hub.docker.com/):
+  [`releases.basedlinux.org`](https://releases.basedlinux.org/) and [Docker Hub](https://hub.docker.com/):
 
   ```console
   $ IS_LATEST=1 ./maintainers/upload-release.pl <EVAL-ID>
   ```
 
   Note: `IS_LATEST=1` causes the `latest-release` branch to be
-  force-updated. This is used by the `nixos.org` website to get the
-  [latest Nix manual](https://nixos.org/manual/nixpkgs/unstable/).
+  force-updated. This is used by the `basedlinux.org` website to get the
+  [latest Bsd manual](https://basedlinux.org/manual/bsdpkgs/unstable/).
 
   TODO: This script requires the right AWS credentials. Document.
 
   TODO: This script currently requires a
-  `/home/eelco/Dev/nix-pristine`.
+  `/home/eelco/Dev/bsd-pristine`.
 
-  TODO: trigger nixos.org netlify: https://docs.netlify.com/configure-builds/build-hooks/
+  TODO: trigger basedlinux.org netlify: https://docs.netlify.com/configure-builds/build-hooks/
 
 * Prepare for the next point release by editing `.version` to
   e.g.
@@ -148,7 +148,7 @@ release:
 
 * Add the new backport label to `.mergify.yml`.
 
-* Post an [announcement on Discourse](https://discourse.nixos.org/c/announcements/8), including the contents of
+* Post an [announcement on Discourse](https://discourse.basedlinux.org/c/announcements/8), including the contents of
   `rl-$VERSION.md`.
 
 ## Creating a point release
@@ -187,7 +187,7 @@ release:
   ```
 
   Omit `IS_LATEST=1` when creating a point release that is not on the
-  most recent stable branch. This prevents `nixos.org` to going back
+  most recent stable branch. This prevents `basedlinux.org` to going back
   to an older release.
 
 * Bump the version number of the release branch as above (e.g. to
@@ -205,7 +205,7 @@ Once a security fix is ready for merging:
 
 1. Summarize *all* past communication in the report.
 
-1. Request a CVE in the [GitHub security advisory](https://github.com/NixOS/nix/security/advisories) for the security fix.
+1. Request a CVE in the [GitHub security advisory](https://github.com/BasedLinux/bsd/security/advisories) for the security fix.
 
 1. Notify all collaborators on the advisory with a timeline for the release.
 
@@ -213,37 +213,37 @@ Once a security fix is ready for merging:
 
 1. [Make point releases](#creating-point-releases) for all affected versions.
 
-1. Update the affected Nix releases in Nixpkgs to the patched version.
+1. Update the affected Bsd releases in Bsdpkgs to the patched version.
 
-   For each Nix release, change the `version = ` strings and run
+   For each Bsd release, change the `version = ` strings and run
 
    ```shell-session
-   nix-build -A nixVersions.nix_<major>_<minor>
+   bsd-build -A bsdVersions.bsd_<major>_<minor>
    ```
 
    to get the correct hash for the `hash =` field.
 
 1. Once the release is built by Hydra, update fallback paths.
 
-   For the Nix release `${version}` shipped with Nixpkgs, run:
+   For the Bsd release `${version}` shipped with Bsdpkgs, run:
 
    ```shell-session
-   curl https://releases.nixos.org/nix/nix-${version}/fallback-paths.nix > nixos/modules/installer/tools/nix-fallback-paths.nix
+   curl https://releases.basedlinux.org/bsd/bsd-${version}/fallback-paths.bsd > bsdos/modules/installer/tools/bsd-fallback-paths.bsd
    ```
 
-   Starting with Nixpkgs 24.11, there is an automatic check that fallback paths with Nix binaries match the Nix release shipped with Nixpkgs.
+   Starting with Bsdpkgs 24.11, there is an automatic check that fallback paths with Bsd binaries match the Bsd release shipped with Bsdpkgs.
 
-1. Backport the updates to the two most recent stable releases of Nixpkgs.
+1. Backport the updates to the two most recent stable releases of Bsdpkgs.
 
    Add `backport release-<version>` labels, which will trigger GitHub Actions to attempt automatic backports.
 
-1. Once the pull request against `master` lands on `nixpkgs-unstable`, post a Discourse announcement with
+1. Once the pull request against `master` lands on `bsdpkgs-unstable`, post a Discourse announcement with
 
    - Links to the CVE and GitHub security advisory
    - A description of the vulnerability and its fix
    - Credits to the reporters of the vulnerability and contributors of the fix
-   - A list of affected and patched Nix releases
+   - A list of affected and patched Bsd releases
    - Instructions for updating
-   - A link to the [pull request tracker](https://nixpk.gs/pr-tracker.html) to follow when the patched Nix versions will appear on the various release channels
+   - A link to the [pull request tracker](https://bsdpk.gs/pr-tracker.html) to follow when the patched Bsd versions will appear on the various release channels
 
-   Check [past announcements](https://discourse.nixos.org/search?expanded=true&q=Security%20fix%20in%3Atitle%20order%3Alatest_topic) for reference.
+   Check [past announcements](https://discourse.basedlinux.org/search?expanded=true&q=Security%20fix%20in%3Atitle%20order%3Alatest_topic) for reference.

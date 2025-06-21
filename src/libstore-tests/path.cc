@@ -4,16 +4,16 @@
 #include <gtest/gtest.h>
 #include <rapidcheck/gtest.h>
 
-#include "nix/store/path-regex.hh"
-#include "nix/store/store-api.hh"
+#include "bsd/store/path-regex.hh"
+#include "bsd/store/store-api.hh"
 
-#include "nix/util/tests/hash.hh"
-#include "nix/store/tests/libstore.hh"
-#include "nix/store/tests/path.hh"
+#include "bsd/util/tests/hash.hh"
+#include "bsd/store/tests/libstore.hh"
+#include "bsd/store/tests/path.hh"
 
-namespace nix {
+namespace bsd {
 
-#define STORE_DIR "/nix/store/"
+#define STORE_DIR "/bsd/store/"
 #define HASH_PART "g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q"
 
 class StorePathTest : public LibStoreTest
@@ -36,7 +36,7 @@ static std::regex nameRegex { std::string { nameRegexStr } };
         std::string name { STR };                            \
         [&](){                                               \
             ASSERT_THROW(                                    \
-                nix::checkName(name),                        \
+                bsd::checkName(name),                        \
                 BadStorePathName);                           \
         }();                                                 \
         EXPECT_FALSE(std::regex_match(name, nameRegex));     \

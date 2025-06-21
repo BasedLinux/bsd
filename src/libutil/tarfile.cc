@@ -1,12 +1,12 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-#include "nix/util/finally.hh"
-#include "nix/util/serialise.hh"
-#include "nix/util/tarfile.hh"
-#include "nix/util/file-system.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/serialise.hh"
+#include "bsd/util/tarfile.hh"
+#include "bsd/util/file-system.hh"
 
-namespace nix {
+namespace bsd {
 
 namespace {
 

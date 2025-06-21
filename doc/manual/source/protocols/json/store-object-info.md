@@ -3,7 +3,7 @@
 > **Warning**
 >
 > This JSON format is currently
-> [**experimental**](@docroot@/development/experimental-features.md#xp-feature-nix-command)
+> [**experimental**](@docroot@/development/experimental-features.md#xp-feature-bsd-command)
 > and subject to change.
 
 Info about a [store object].
@@ -14,11 +14,11 @@ Info about a [store object].
 
 * `narHash`:
 
-  Hash of the [file system object] part of the store object when serialized as a [Nix Archive].
+  Hash of the [file system object] part of the store object when serialized as a [Bsd Archive].
 
 * `narSize`:
 
-  Size of the [file system object] part of the store object when serialized as a [Nix Archive].
+  Size of the [file system object] part of the store object when serialized as a [Bsd Archive].
 
 * `references`:
 
@@ -32,7 +32,7 @@ Info about a [store object].
 
 [store path]: @docroot@/store/store-path.md
 [file system object]: @docroot@/store/file-system-object.md
-[Nix Archive]: @docroot@/store/file-system-object/content-address.md#serial-nix-archive
+[Bsd Archive]: @docroot@/store/file-system-object/content-address.md#serial-bsd-archive
 
 ## Impure fields
 
@@ -66,7 +66,7 @@ In other words, the same store object residing in different store could have dif
 
 ### `.narinfo` extra fields
 
-This meta data is specific to the "binary cache" family of Nix store types.
+This meta data is specific to the "binary cache" family of Bsd store types.
 This information is not intrinsic to the store object, but about how it is stored.
 
 * `url`:

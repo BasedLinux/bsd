@@ -8,7 +8,7 @@ expect_trace() {
     expr="$1"
     expect="$2"
     actual=$(
-        nix-instantiate \
+        bsd-instantiate \
             --trace-function-calls \
             --expr "$expr" 2>&1 \
             | grep "function-trace" \

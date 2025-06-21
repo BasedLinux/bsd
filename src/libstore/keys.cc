@@ -1,8 +1,8 @@
-#include "nix/util/file-system.hh"
-#include "nix/store/globals.hh"
-#include "nix/store/keys.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/keys.hh"
 
-namespace nix {
+namespace bsd {
 
 PublicKeys getDefaultPublicKeys()
 {

@@ -5,29 +5,29 @@ source common.sh
 # The substituters didn't work prior to this time.
 requireDaemonNewerThan "2.18.0pre20230808"
 
-drv=$(nix-instantiate ./content-addressed.nix -A rootCA --arg seed 1)^out
-nix derivation show "$drv" --arg seed 1
+drv=$(bsd-instantiate ./content-addressed.bsd -A rootCA --arg seed 1)^out
+bsd derivation show "$drv" --arg seed 1
 
 buildAttr () {
     local derivationPath=$1
     local seedValue=$2
     shift; shift
-    local args=("./content-addressed.nix" "-A" "$derivationPath" --arg seed "$seedValue" "--no-out-link")
+    local args=("./content-addressed.bsd" "-A" "$derivationPath" --arg seed "$seedValue" "--no-out-link")
     args+=("$@")
-    nix-build "${args[@]}"
+    bsd-build "${args[@]}"
 }
 
 copyAttr () {
     local derivationPath=$1
     local seedValue=$2
     shift; shift
-    local args=("-f" "./content-addressed.nix" "$derivationPath" --arg seed "$seedValue")
+    local args=("-f" "./content-addressed.bsd" "$derivationPath" --arg seed "$seedValue")
     args+=("$@")
     # Note: to copy CA derivations, we need to copy the realisations, which
     # currently requires naming the installables, not just the derivation output
     # path.
 
-    nix copy --to "file://$cacheDir" "${args[@]}"
+    bsd copy --to "file://$cacheDir" "${args[@]}"
 }
 
 testRemoteCacheFor () {

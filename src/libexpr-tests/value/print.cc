@@ -1,9 +1,9 @@
-#include "nix/expr/tests/libexpr.hh"
+#include "bsd/expr/tests/libexpr.hh"
 
-#include "nix/expr/value.hh"
-#include "nix/expr/print.hh"
+#include "bsd/expr/value.hh"
+#include "bsd/expr/print.hh"
 
-namespace nix {
+namespace bsd {
 
 using namespace testing;
 
@@ -785,4 +785,4 @@ TEST_F(ValuePrintingTests, ansiColorsListElided)
     }
 }
 
-} // namespace nix
+} // namespace bsd

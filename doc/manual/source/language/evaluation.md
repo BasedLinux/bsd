@@ -1,6 +1,6 @@
 # Evaluation
 
-Evaluation is the process of turning a Nix expression into a [Nix value](types.md).
+Evaluation is the process of turning a Bsd expression into a [Bsd value](types.md).
 
 This happens by a number of rules, such as:
 - Constructing values from literals. 
@@ -12,22 +12,22 @@ This happens by a number of rules, such as:
 - Applying user-defined functions
   For example the expression `(x: x + 1) 10` can[*](#laziness) be thought of rewriting `x` in the function body to the argument, `10 + 1`, which is then evaluated to `11`.
 
-These rules are applied as needed, driven by the specific use of the expression. For example, this can occur in the Nix command line interface or interactively with the [repl (read-eval-print loop)](@docroot@/command-ref/new-cli/nix3-repl.md), which is a useful tool when learning about evaluation.
+These rules are applied as needed, driven by the specific use of the expression. For example, this can occur in the Bsd command line interface or interactively with the [repl (read-eval-print loop)](@docroot@/command-ref/new-cli/bsd3-repl.md), which is a useful tool when learning about evaluation.
 
 # Details
 
 ## Values {#values}
 
-Nix values can be thought of as a subset of Nix expressions.
+Bsd values can be thought of as a subset of Bsd expressions.
 For example, the expression `1 + 2` is not a value, because it can be reduced to `3`. The expression `3` is a value, because it cannot be reduced any further.
 
 Evaluation normally happens by applying rules to the "head" of the expression, which is the outermost part of the expression. The head of an expression like `[ 1 2 ]` is the list literal (`[ a1 a2 ]`), for `1 + 2` it is the addition operator (`+`), and for `f 1` it is the function application "operator" (` `).
 
-After applying all possible rules to the head until no rules can be applied, the expression is in "weak head normal form" (WHNF). This means that the outermost constructor of the expression is evaluated, but the inner values may or may not be. "Weak" only signifies that the expression may be a function. This is an historical or academic artifact, and Nix has no use for the non-weak "head normal form".
+After applying all possible rules to the head until no rules can be applied, the expression is in "weak head normal form" (WHNF). This means that the outermost constructor of the expression is evaluated, but the inner values may or may not be. "Weak" only signifies that the expression may be a function. This is an historical or academic artifact, and Bsd has no use for the non-weak "head normal form".
 
 ## Laziness and thunks {#laziness}
 
-The Nix language implements _call by need_ (as opposed to _call by value_ or _call by reference_). <!-- No wikipedia link, which would be a huge distraction. --> Call by need is commonly known as laziness in functional programming, as it is a specific implementation of the concept where evaluation is deferred until the result is required, aiming to only evaluate the parts of an expression that are needed to produce the final result.
+The Bsd language implements _call by need_ (as opposed to _call by value_ or _call by reference_). <!-- No wikipedia link, which would be a huge distraction. --> Call by need is commonly known as laziness in functional programming, as it is a specific implementation of the concept where evaluation is deferred until the result is required, aiming to only evaluate the parts of an expression that are needed to produce the final result.
 
 Furthermore, the result of evaluation is preserved, in values, in `let` bindings, in function _parameters_, which behave a lot like `let` bindings, but with the notable exception of function _calls_. Results of function calls rely on being put into `let` bindings, etc to be reused. <!-- which would be prohibitively expensive and too strict, or we wouldn't have a cache key for the argument -->
 
@@ -43,7 +43,7 @@ This term is used in functional programming to refer to the opposite of laziness
 Statements about strictness usually implicitly refer to weak head normal form.
 For example, we can say that the following function is strict in its argument:
 
-```nix
+```bsd
 x: isAttrs x || isFunction x
 ```
 
@@ -51,7 +51,7 @@ The above function must be strict in its argument `x` because determining its ty
 
 The following function is not strict in its argument:
 
-```nix
+```bsd
 x: { isOk = isAttrs x || isFunction x; }
 ```
 
@@ -60,7 +60,7 @@ The attribute value for `isOk` _is_ strict in `x`.
 
 A function with a _set pattern_ is always strict in its argument, as a consequence of checking the argument's type and/or attribute names:
 
-```nix
+```bsd
 let f = { ... }: "ok";
 in f (throw "kablam")
 => error: kablam
@@ -68,7 +68,7 @@ in f (throw "kablam")
 
 However, a set pattern does not add any strictness beyond WHNF of the attribute set argument.
 
-```nix
+```bsd
 let f = orig@{ x, ... }: "ok";
 in f { x = throw "error"; y = throw "error"; }
 => "ok"

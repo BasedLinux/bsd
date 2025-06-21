@@ -88,7 +88,7 @@ Pure integer operations will always return integers, whereas any operation invol
 
 Evaluation of the following numeric operations throws an evaluation error:
 - Division by zero
-- Integer overflow, that is, any operation yielding a result outside of the representable range of [Nix language integers](./syntax.md#number-literal)
+- Integer overflow, that is, any operation yielding a result outside of the representable range of [Bsd language integers](./syntax.md#number-literal)
 
 See also [Comparison] and [Equality].
 
@@ -208,10 +208,10 @@ Equivalent to `!`*b1* `||` *b2*  (or `if` *b1* `then` *b2* `else true`)
 > **Example**
 >
 > ```
-> nix-repl> 1 |> builtins.add 2 |> builtins.mul 3
+> bsd-repl> 1 |> builtins.add 2 |> builtins.mul 3
 > 9
 >
-> nix-repl> builtins.add 1 <| builtins.mul 2 <| 3
+> bsd-repl> builtins.add 1 <| builtins.mul 2 <| 3
 > 7
 > ```
 
@@ -224,7 +224,7 @@ Equivalent to `!`*b1* `||` *b2*  (or `if` *b1* `then` *b2* `else true`)
 > To use this syntax, make sure the
 > [`pipe-operators` experimental feature](@docroot@/development/experimental-features.md#xp-feature-pipe-operators)
 > is enabled.
-> For example, include the following in [`nix.conf`](@docroot@/command-ref/conf-file.md):
+> For example, include the following in [`bsd.conf`](@docroot@/command-ref/conf-file.md):
 >
 > ```
 > extra-experimental-features = pipe-operators

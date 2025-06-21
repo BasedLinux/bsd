@@ -3,10 +3,10 @@
 
 #include <gtest/gtest.h>
 
-#include "nix/util/error.hh"
-#include "nix/util/json-utils.hh"
+#include "bsd/util/error.hh"
+#include "bsd/util/json-utils.hh"
 
-namespace nix {
+namespace bsd {
 
 /* Test `to_json` and `from_json` with `std::optional` types.
  * We are specifically interested in whether we can _nest_ optionals in STL
@@ -195,4 +195,4 @@ TEST(getNullable, empty) {
     ASSERT_EQ(*p, R"({})"_json);
 }
 
-} /* namespace nix */
+} /* namespace bsd */

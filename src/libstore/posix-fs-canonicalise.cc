@@ -1,9 +1,9 @@
-#include "nix/store/posix-fs-canonicalise.hh"
-#include "nix/util/file-system.hh"
-#include "nix/util/signals.hh"
-#include "nix/util/util.hh"
-#include "nix/store/globals.hh"
-#include "nix/store/store-api.hh"
+#include "bsd/store/posix-fs-canonicalise.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/util.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/store-api.hh"
 
 #include "store-config-private.hh"
 
@@ -11,7 +11,7 @@
 # include <sys/xattr.h>
 #endif
 
-namespace nix {
+namespace bsd {
 
 const time_t mtimeStore = 1; /* 1 second into the epoch */
 
@@ -120,8 +120,8 @@ static void canonicalisePathMetaData_(
        lchown if available, otherwise don't bother.  Wrong ownership
        of a symlink doesn't matter, since the owning user can't change
        the symlink and can't delete it because the directory is not
-       writable.  The only exception is top-level paths in the Nix
-       store (since that directory is group-writable for the Nix build
+       writable.  The only exception is top-level paths in the Bsd
+       store (since that directory is group-writable for the Bsd build
        users group); we check for this case below. */
     if (st.st_uid != geteuid()) {
 #if HAVE_LCHOWN

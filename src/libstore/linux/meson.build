@@ -3,4 +3,4 @@ sources += files(
   # hack for trailing newline
 )
 
-subdir('include/nix/store')
+subdir('include/bsd/store')

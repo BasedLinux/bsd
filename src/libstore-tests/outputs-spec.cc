@@ -1,10 +1,10 @@
-#include "nix/store/tests/outputs-spec.hh"
+#include "bsd/store/tests/outputs-spec.hh"
 
 #include <nlohmann/json.hpp>
 #include <gtest/gtest.h>
 #include <rapidcheck/gtest.h>
 
-namespace nix {
+namespace bsd {
 
 TEST(OutputsSpec, no_empty_names) {
     ASSERT_DEATH(OutputsSpec::Names { StringSet { } }, "");

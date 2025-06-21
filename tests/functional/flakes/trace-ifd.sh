@@ -9,9 +9,9 @@ flake1Dir="$TEST_ROOT/flake"
 createGitRepo "$flake1Dir"
 createSimpleGitFlake "$flake1Dir"
 
-cat > "$flake1Dir/flake.nix" <<'EOF'
+cat > "$flake1Dir/flake.bsd" <<'EOF'
 {
-  outputs = { self }: let inherit (import ./config.nix) mkDerivation; in {
+  outputs = { self }: let inherit (import ./config.bsd) mkDerivation; in {
     drv = mkDerivation {
       name = "drv";
       buildCommand = ''
@@ -29,5 +29,5 @@ cat > "$flake1Dir/flake.nix" <<'EOF'
 }
 EOF
 
-nix build --no-link "$flake1Dir#ifd" --option trace-import-from-derivation true 2>&1 \
+bsd build --no-link "$flake1Dir#ifd" --option trace-import-from-derivation true 2>&1 \
   | grepQuiet 'warning: built .* during evaluation due to an import from derivation'

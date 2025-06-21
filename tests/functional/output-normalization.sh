@@ -3,9 +3,9 @@
 source common.sh
 
 testNormalization () {
-    TODO_NixOS
+    TODO_BasedLinux
     clearStore
-    outPath=$(nix-build ./simple.nix --no-out-link)
+    outPath=$(bsd-build ./simple.bsd --no-out-link)
     test "$(stat -c %Y $outPath)" -eq 1
 }
 

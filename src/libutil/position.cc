@@ -1,6 +1,6 @@
-#include "nix/util/position.hh"
+#include "bsd/util/position.hh"
 
-namespace nix {
+namespace bsd {
 
 Pos::operator std::shared_ptr<const Pos>() const
 {
@@ -95,7 +95,7 @@ void Pos::LinesIterator::bump(bool atFirst)
             input.remove_prefix(1);
     }
 
-    // nix line endings are not only \n as eg std::getline assumes, but also
+    // bsd line endings are not only \n as eg std::getline assumes, but also
     // \r\n **and \r alone**. not treating them all the same causes error
     // reports to not match with line numbers as the parser expects them.
     auto eol = input.find_first_of("\r\n");

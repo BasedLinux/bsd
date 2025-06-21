@@ -1,7 +1,7 @@
-#include "nix/util/lru-cache.hh"
+#include "bsd/util/lru-cache.hh"
 #include <gtest/gtest.h>
 
-namespace nix {
+namespace bsd {
 
     /* ----------------------------------------------------------------------------
      * size

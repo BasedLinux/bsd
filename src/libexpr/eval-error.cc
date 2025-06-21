@@ -1,8 +1,8 @@
-#include "nix/expr/eval-error.hh"
-#include "nix/expr/eval.hh"
-#include "nix/expr/value.hh"
+#include "bsd/expr/eval-error.hh"
+#include "bsd/expr/eval.hh"
+#include "bsd/expr/value.hh"
 
-namespace nix {
+namespace bsd {
 
 template<class T>
 EvalErrorBuilder<T> & EvalErrorBuilder<T>::withExitStatus(unsigned int exitStatus)
@@ -96,7 +96,7 @@ template<class T>
 void EvalErrorBuilder<T>::panic()
 {
     logError(error.info());
-    printError("This is a bug! An unexpected condition occurred, causing the Nix evaluator to have to stop. If you could share a reproducible example or a core dump, please open an issue at https://github.com/NixOS/nix/issues");
+    printError("This is a bug! An unexpected condition occurred, causing the Bsd evaluator to have to stop. If you could share a reproducible example or a core dump, please open an issue at https://github.com/BasedLinux/bsd/issues");
     abort();
 }
 

@@ -1,11 +1,11 @@
-#include "nix/store/globals.hh"
-#include "nix/util/config-global.hh"
-#include "nix/util/current-process.hh"
-#include "nix/util/archive.hh"
-#include "nix/util/args.hh"
-#include "nix/util/abstract-setting-to-json.hh"
-#include "nix/util/compute-levels.hh"
-#include "nix/util/signals.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/util/config-global.hh"
+#include "bsd/util/current-process.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/util/args.hh"
+#include "bsd/util/abstract-setting-to-json.hh"
+#include "bsd/util/compute-levels.hh"
+#include "bsd/util/signals.hh"
 
 #include <algorithm>
 #include <map>
@@ -26,10 +26,10 @@
 #endif
 
 #ifdef __APPLE__
-# include "nix/util/processes.hh"
+# include "bsd/util/processes.hh"
 #endif
 
-#include "nix/util/config-impl.hh"
+#include "bsd/util/config-impl.hh"
 
 #ifdef __APPLE__
 #include <sys/sysctl.h>
@@ -37,12 +37,12 @@
 
 #include "store-config-private.hh"
 
-namespace nix {
+namespace bsd {
 
 
-/* The default location of the daemon socket, relative to nixStateDir.
+/* The default location of the daemon socket, relative to bsdStateDir.
    The socket is in a directory to allow you to control access to the
-   Nix daemon by setting the mode/ownership of the directory
+   Bsd daemon by setting the mode/ownership of the directory
    appropriately.  (This wouldn't work on the socket itself since it
    must be deleted and recreated on startup.) */
 #define DEFAULT_SOCKET_PATH "/daemon-socket/socket"
@@ -52,23 +52,23 @@ Settings settings;
 static GlobalConfig::Register rSettings(&settings);
 
 Settings::Settings()
-    : nixPrefix(NIX_PREFIX)
-    , nixStore(
+    : bsdPrefix(NIX_PREFIX)
+    , bsdStore(
 #ifndef _WIN32
-        // On Windows `/nix/store` is not a canonical path, but we dont'
+        // On Windows `/bsd/store` is not a canonical path, but we dont'
         // want to deal with that yet.
         canonPath
 #endif
         (getEnvNonEmpty("NIX_STORE_DIR").value_or(getEnvNonEmpty("NIX_STORE").value_or(NIX_STORE_DIR))))
-    , nixDataDir(canonPath(getEnvNonEmpty("NIX_DATA_DIR").value_or(NIX_DATA_DIR)))
-    , nixLogDir(canonPath(getEnvNonEmpty("NIX_LOG_DIR").value_or(NIX_LOG_DIR)))
-    , nixStateDir(canonPath(getEnvNonEmpty("NIX_STATE_DIR").value_or(NIX_STATE_DIR)))
-    , nixConfDir(canonPath(getEnvNonEmpty("NIX_CONF_DIR").value_or(NIX_CONF_DIR)))
-    , nixUserConfFiles(getUserConfigFiles())
-    , nixDaemonSocketFile(canonPath(getEnvNonEmpty("NIX_DAEMON_SOCKET_PATH").value_or(nixStateDir + DEFAULT_SOCKET_PATH)))
+    , bsdDataDir(canonPath(getEnvNonEmpty("NIX_DATA_DIR").value_or(NIX_DATA_DIR)))
+    , bsdLogDir(canonPath(getEnvNonEmpty("NIX_LOG_DIR").value_or(NIX_LOG_DIR)))
+    , bsdStateDir(canonPath(getEnvNonEmpty("NIX_STATE_DIR").value_or(NIX_STATE_DIR)))
+    , bsdConfDir(canonPath(getEnvNonEmpty("NIX_CONF_DIR").value_or(NIX_CONF_DIR)))
+    , bsdUserConfFiles(getUserConfigFiles())
+    , bsdDaemonSocketFile(canonPath(getEnvNonEmpty("NIX_DAEMON_SOCKET_PATH").value_or(bsdStateDir + DEFAULT_SOCKET_PATH)))
 {
 #ifndef _WIN32
-    buildUsersGroup = isRootUser() ? "nixbld" : "";
+    buildUsersGroup = isRootUser() ? "bsdbld" : "";
 #endif
     allowSymlinkedStore = getEnv("NIX_IGNORE_SYMLINK_STORE") == "1";
 
@@ -105,20 +105,20 @@ void loadConfFile(AbstractConfig & config)
         } catch (SystemError &) { }
     };
 
-    applyConfigFile(settings.nixConfDir + "/nix.conf");
+    applyConfigFile(settings.bsdConfDir + "/bsd.conf");
 
     /* We only want to send overrides to the daemon, i.e. stuff from
-       ~/.nix/nix.conf or the command line. */
+       ~/.bsd/bsd.conf or the command line. */
     config.resetOverridden();
 
-    auto files = settings.nixUserConfFiles;
+    auto files = settings.bsdUserConfFiles;
     for (auto file = files.rbegin(); file != files.rend(); file++) {
         applyConfigFile(*file);
     }
 
-    auto nixConfEnv = getEnv("NIX_CONFIG");
-    if (nixConfEnv.has_value()) {
-        config.applyConfig(nixConfEnv.value(), "NIX_CONFIG");
+    auto bsdConfEnv = getEnv("NIX_CONFIG");
+    if (bsdConfEnv.has_value()) {
+        config.applyConfig(bsdConfEnv.value(), "NIX_CONFIG");
     }
 
 }
@@ -126,16 +126,16 @@ void loadConfFile(AbstractConfig & config)
 std::vector<Path> getUserConfigFiles()
 {
     // Use the paths specified in NIX_USER_CONF_FILES if it has been defined
-    auto nixConfFiles = getEnv("NIX_USER_CONF_FILES");
-    if (nixConfFiles.has_value()) {
-        return tokenizeString<std::vector<std::string>>(nixConfFiles.value(), ":");
+    auto bsdConfFiles = getEnv("NIX_USER_CONF_FILES");
+    if (bsdConfFiles.has_value()) {
+        return tokenizeString<std::vector<std::string>>(bsdConfFiles.value(), ":");
     }
 
     // Use the paths specified by the XDG spec
     std::vector<Path> files;
     auto dirs = getConfigDirs();
     for (auto & dir : dirs) {
-        files.insert(files.end(), dir + "/nix.conf");
+        files.insert(files.end(), dir + "/bsd.conf");
     }
     return files;
 }
@@ -177,9 +177,9 @@ static bool hasVirt() {
 StringSet Settings::getDefaultSystemFeatures()
 {
     /* For backwards compatibility, accept some "features" that are
-       used in Nixpkgs to route builds to certain machines but don't
+       used in Bsdpkgs to route builds to certain machines but don't
        actually require anything special on the machines. */
-    StringSet features{"nixos-test", "benchmark", "big-parallel"};
+    StringSet features{"bsdos-test", "benchmark", "big-parallel"};
 
     #ifdef __linux__
     features.insert("uid-range");
@@ -237,12 +237,12 @@ bool Settings::isWSL1()
 
 Path Settings::getDefaultSSLCertFile()
 {
-    for (auto & fn : {"/etc/ssl/certs/ca-certificates.crt", "/nix/var/nix/profiles/default/etc/ssl/certs/ca-bundle.crt"})
+    for (auto & fn : {"/etc/ssl/certs/ca-certificates.crt", "/bsd/var/bsd/profiles/default/etc/ssl/certs/ca-bundle.crt"})
         if (pathAccessible(fn)) return fn;
     return "";
 }
 
-std::string nixVersion = PACKAGE_VERSION;
+std::string bsdVersion = PACKAGE_VERSION;
 
 NLOHMANN_JSON_SERIALIZE_ENUM(SandboxMode, {
     {SandboxMode::smEnabled, true},
@@ -327,7 +327,7 @@ static void preloadNSS()
          * But now we have a new problem, we need to make sure the nss_dns backend that
          * does the dns lookups when nscd is not available is loaded or available.
          *
-         * We can't make it available without leaking nix's environment, so instead we'll
+         * We can't make it available without leaking bsd's environment, so instead we'll
          * load the backend, and configure nss so it does not try to run dns lookups
          * through nscd.
          *
@@ -348,7 +348,7 @@ static bool initLibStoreDone = false;
 
 void assertLibStoreInitialized() {
     if (!initLibStoreDone) {
-        printError("The program must call nix::initNix() before calling any libstore library functions.");
+        printError("The program must call bsd::initBsd() before calling any libstore library functions.");
         abort();
     };
 }
@@ -366,7 +366,7 @@ void initLibStore(bool loadConfig) {
     /* Because of an objc quirk[1], calling curl_global_init for the first time
        after fork() will always result in a crash.
        Up until now the solution has been to set OBJC_DISABLE_INITIALIZE_FORK_SAFETY
-       for every nix process to ignore that error.
+       for every bsd process to ignore that error.
        Instead of working around that error we address it at the core -
        by calling curl_global_init here, which should mean curl will already
        have been initialized by the time we try to do so in a forked process.
@@ -377,7 +377,7 @@ void initLibStore(bool loadConfig) {
 #ifdef __APPLE__
     /* On macOS, don't use the per-session TMPDIR (as set e.g. by
        sshd). This breaks build users because they don't have access
-       to the TMPDIR, in particular in ‘nix-store --serve’. */
+       to the TMPDIR, in particular in ‘bsd-store --serve’. */
     if (hasPrefix(defaultTempDir(), "/var/folders/"))
         unsetenv("TMPDIR");
 #endif

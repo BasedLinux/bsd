@@ -1,6 +1,6 @@
-#include "nix/util/terminal.hh"
-#include "nix/util/environment-variables.hh"
-#include "nix/util/sync.hh"
+#include "bsd/util/terminal.hh"
+#include "bsd/util/environment-variables.hh"
+#include "bsd/util/sync.hh"
 
 #ifdef _WIN32
 # include <io.h>
@@ -59,7 +59,7 @@ inline std::pair<int, size_t> charWidthUTF8Helper(std::string_view s)
 
 }
 
-namespace nix {
+namespace bsd {
 
 bool isTTY()
 {

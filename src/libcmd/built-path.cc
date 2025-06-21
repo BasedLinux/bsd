@@ -1,13 +1,13 @@
-#include "nix/cmd/built-path.hh"
-#include "nix/store/derivations.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/comparator.hh"
+#include "bsd/cmd/built-path.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/comparator.hh"
 
 #include <nlohmann/json.hpp>
 
 #include <optional>
 
-namespace nix {
+namespace bsd {
 
 // Custom implementation to avoid `ref` ptr equality
 GENERATE_CMP_EXT(

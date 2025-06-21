@@ -1,4 +1,4 @@
-project('nix-main', 'cpp',
+project('bsd-main', 'cpp',
   version : files('.version'),
   default_options : [
     'cpp_std=c++2a',
@@ -12,21 +12,21 @@ project('nix-main', 'cpp',
 
 cxx = meson.get_compiler('cpp')
 
-subdir('nix-meson-build-support/deps-lists')
+subdir('bsd-meson-build-support/deps-lists')
 
 configdata = configuration_data()
 
 deps_private_maybe_subproject = [
 ]
 deps_public_maybe_subproject = [
-  dependency('nix-util'),
-  dependency('nix-store'),
+  dependency('bsd-util'),
+  dependency('bsd-store'),
   # FIXME: This is only here for the NIX_USE_BOEHMGC macro dependency
-  #        Removing nix-expr will make the build more concurrent and is
+  #        Removing bsd-expr will make the build more concurrent and is
   #        architecturally nice, perhaps.
-  dependency('nix-expr'),
+  dependency('bsd-expr'),
 ]
-subdir('nix-meson-build-support/subprojects')
+subdir('bsd-meson-build-support/subprojects')
 
 pubsetbuf_test = '''
 #include <iostream>
@@ -51,7 +51,7 @@ config_priv_h = configure_file(
   output : 'main-config-private.hh',
 )
 
-subdir('nix-meson-build-support/common')
+subdir('bsd-meson-build-support/common')
 
 sources = files(
   'common-args.cc',
@@ -63,17 +63,17 @@ sources = files(
 
 if host_machine.system() != 'windows'
   sources += files(
-    'unix/stack.cc',
+    'ubsd/stack.cc',
   )
 endif
 
-subdir('include/nix/main')
+subdir('include/bsd/main')
 
-subdir('nix-meson-build-support/export-all-symbols')
-subdir('nix-meson-build-support/windows-version')
+subdir('bsd-meson-build-support/export-all-symbols')
+subdir('bsd-meson-build-support/windows-version')
 
 this_library = library(
-  'nixmain',
+  'bsdmain',
   sources,
   config_priv_h,
   dependencies : deps_public + deps_private + deps_other,
@@ -83,8 +83,8 @@ this_library = library(
   install : true,
 )
 
-install_headers(headers, subdir : 'nix/main', preserve_path : true)
+install_headers(headers, subdir : 'bsd/main', preserve_path : true)
 
 libraries_private = []
 
-subdir('nix-meson-build-support/export')
+subdir('bsd-meson-build-support/export')

@@ -1,9 +1,9 @@
-#include "nix/util/file-system.hh"
-#include "nix/util/signals.hh"
-#include "nix/util/finally.hh"
-#include "nix/util/serialise.hh"
-#include "nix/util/windows-error.hh"
-#include "nix/util/file-path.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/serialise.hh"
+#include "bsd/util/windows-error.hh"
+#include "bsd/util/file-path.hh"
 
 #ifdef _WIN32
 #include <fileapi.h>
@@ -13,9 +13,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-namespace nix {
+namespace bsd {
 
-using namespace nix::windows;
+using namespace bsd::windows;
 
 std::string readFile(HANDLE handle)
 {

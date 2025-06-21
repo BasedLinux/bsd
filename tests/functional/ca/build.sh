@@ -2,16 +2,16 @@
 
 source common.sh
 
-drv=$(nix-instantiate ./content-addressed.nix -A rootCA --arg seed 1)^out
-nix derivation show "$drv" --arg seed 1
+drv=$(bsd-instantiate ./content-addressed.bsd -A rootCA --arg seed 1)^out
+bsd derivation show "$drv" --arg seed 1
 
 buildAttr () {
     local derivationPath=$1
     local seedValue=$2
     shift; shift
-    local args=("./content-addressed.nix" "-A" "$derivationPath" --arg seed "$seedValue" "--no-out-link")
+    local args=("./content-addressed.bsd" "-A" "$derivationPath" --arg seed "$seedValue" "--no-out-link")
     args+=("$@")
-    nix-build "${args[@]}"
+    bsd-build "${args[@]}"
 }
 
 testDeterministicCA () {
@@ -38,20 +38,20 @@ testCutoff () {
 }
 
 testGC () {
-    nix-instantiate ./content-addressed.nix -A rootCA --arg seed 5
-    nix-collect-garbage --option keep-derivations true
+    bsd-instantiate ./content-addressed.bsd -A rootCA --arg seed 5
+    bsd-collect-garbage --option keep-derivations true
     clearStore
     buildAttr rootCA 1 --out-link "$TEST_ROOT"/rootCA
-    nix-collect-garbage
+    bsd-collect-garbage
     buildAttr rootCA 1 -j0
 }
 
-testNixCommand () {
+testBsdCommand () {
     clearStore
-    nix build --file ./content-addressed.nix --no-link
+    bsd build --file ./content-addressed.bsd --no-link
 }
 
-# Regression test for https://github.com/NixOS/nix/issues/4775
+# Regression test for https://github.com/BasedLinux/bsd/issues/4775
 testNormalization () {
     clearStore
     outPath=$(buildAttr rootCA 1)
@@ -64,4 +64,4 @@ testDeterministicCA
 clearStore
 testCutoff
 testGC
-testNixCommand
+testBsdCommand

@@ -1,6 +1,6 @@
-#include "nix/fetchers/fetch-settings.hh"
+#include "bsd/fetchers/fetch-settings.hh"
 
-namespace nix::fetchers {
+namespace bsd::fetchers {
 
 Settings::Settings()
 {

@@ -1,9 +1,9 @@
-#include "nix/store/tests/outputs-spec.hh"
+#include "bsd/store/tests/outputs-spec.hh"
 
 #include <rapidcheck.h>
 
 namespace rc {
-using namespace nix;
+using namespace bsd;
 
 Gen<OutputsSpec> Arbitrary<OutputsSpec>::arbitrary()
 {

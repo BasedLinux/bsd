@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "nix/expr/search-path.hh"
+#include "bsd/expr/search-path.hh"
 
-namespace nix {
+namespace bsd {
 
 TEST(LookupPathElem, parse_justPath) {
     ASSERT_EQ(

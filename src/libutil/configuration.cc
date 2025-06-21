@@ -1,18 +1,18 @@
-#include "nix/util/configuration.hh"
-#include "nix/util/args.hh"
-#include "nix/util/abstract-setting-to-json.hh"
-#include "nix/util/environment-variables.hh"
-#include "nix/util/experimental-features.hh"
-#include "nix/util/util.hh"
-#include "nix/util/file-system.hh"
+#include "bsd/util/configuration.hh"
+#include "bsd/util/args.hh"
+#include "bsd/util/abstract-setting-to-json.hh"
+#include "bsd/util/environment-variables.hh"
+#include "bsd/util/experimental-features.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/file-system.hh"
 
-#include "nix/util/config-impl.hh"
+#include "bsd/util/config-impl.hh"
 
 #include <nlohmann/json.hpp>
 
-#include "nix/util/strings.hh"
+#include "bsd/util/strings.hh"
 
-namespace nix {
+namespace bsd {
 
 Config::Config(StringMap initials)
     : AbstractConfig(std::move(initials))
@@ -176,7 +176,7 @@ void AbstractConfig::applyConfig(const std::string & contents, const std::string
     // but at the time of writing it's not worth building that for just one thing
     for (const auto & [name, value] : parsedContents) {
         if (name != "experimental-features" && name != "extra-experimental-features") {
-            if ((name == "nix-path" || name == "extra-nix-path")
+            if ((name == "bsd-path" || name == "extra-bsd-path")
                 && getEnv("NIX_PATH").has_value()) {
                 continue;
             }

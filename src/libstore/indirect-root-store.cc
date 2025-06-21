@@ -1,6 +1,6 @@
-#include "nix/store/indirect-root-store.hh"
+#include "bsd/store/indirect-root-store.hh"
 
-namespace nix {
+namespace bsd {
 
 void IndirectRootStore::makeSymlink(const Path & link, const Path & target)
 {
@@ -21,8 +21,8 @@ Path IndirectRootStore::addPermRoot(const StorePath & storePath, const Path & _g
 
     if (isInStore(gcRoot))
         throw Error(
-            "creating a garbage collector root (%1%) in the Nix store is forbidden "
-            "(are you running nix-build inside the store?)",
+            "creating a garbage collector root (%1%) in the Bsd store is forbidden "
+            "(are you running bsd-build inside the store?)",
             gcRoot);
 
     /* Register this root with the garbage collector, if it's
@@ -32,7 +32,7 @@ Path IndirectRootStore::addPermRoot(const StorePath & storePath, const Path & _g
     addTempRoot(storePath);
 
     /* Don't clobber the link if it already exists and doesn't
-       point to the Nix store. */
+       point to the Bsd store. */
     if (pathExists(gcRoot) && (!std::filesystem::is_symlink(gcRoot) || !isInStore(readLink(gcRoot))))
         throw Error("cannot create symlink '%1%'; already exists", gcRoot);
 

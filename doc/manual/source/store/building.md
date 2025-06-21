@@ -38,8 +38,8 @@ The [`builder`](./derivation/index.md#builder) is executed as follows:
     set, it is used as the location of the home directory, even if
     it points to a non-existent path.
 
-  - `NIX_STORE` is set to the path of the top-level Nix store
-    directory (typically, `/nix/store`).
+  - `NIX_STORE` is set to the path of the top-level Bsd store
+    directory (typically, `/bsd/store`).
 
   - `NIX_ATTRS_JSON_FILE` & `NIX_ATTRS_SH_FILE` if `__structuredAttrs`
     is set to `true` for the derivation. A detailed explanation of this
@@ -48,17 +48,17 @@ The [`builder`](./derivation/index.md#builder) is executed as follows:
 
   - For each output declared in `outputs`, the corresponding
     environment variable is set to point to the intended path in the
-    Nix store for that output. Each output path is a concatenation
+    Bsd store for that output. Each output path is a concatenation
     of the cryptographic hash of all build inputs, the `name`
     attribute and the output name. (The output name is omitted if
     it’s `out`.)
 
 - If an output path already exists, it is removed. Also, locks are
-  acquired to prevent multiple [Nix instances][Nix instance] from performing the same
+  acquired to prevent multiple [Bsd instances][Bsd instance] from performing the same
   build at the same time.
 
 - A log of the combined standard output and error is written to
-  `/nix/var/log/nix`.
+  `/bsd/var/log/bsd`.
 
 - The builder is executed with the arguments specified by the
   attribute `args`. If it exits with exit code 0, it is considered to
@@ -73,7 +73,7 @@ If the builder exited successfully, the following steps happen in order to turn 
 
 - **Normalize the file permissions**
 
-  Nix sets the last-modified timestamp on all files
+  Bsd sets the last-modified timestamp on all files
   in the build result to 1 (00:00:01 1/1/1970 UTC), sets the group to
   the default group, and sets the mode of the file to 0444 or 0555
   (i.e., read-only, with execute permission enabled if the file was
@@ -82,19 +82,19 @@ If the builder exited successfully, the following steps happen in order to turn 
 
   > **Note**
   >
-  > Setuid and setgid programs are not currently supported by Nix.
-  > This is because the Nix archives used in deployment have no concept of ownership information,
+  > Setuid and setgid programs are not currently supported by Bsd.
+  > This is because the Bsd archives used in deployment have no concept of ownership information,
   > and because it makes the build result dependent on the user performing the build.
 
 - **Calculate the references**
 
-  Nix scans each output path for
+  Bsd scans each output path for
   references to input paths by looking for the hash parts of the input
-  paths. Since these are potential runtime dependencies, Nix registers
+  paths. Since these are potential runtime dependencies, Bsd registers
   them as dependencies of the output paths.
 
-  Nix also scans for references to other outputs' paths in the same way, because outputs are allowed to refer to each other.
+  Bsd also scans for references to other outputs' paths in the same way, because outputs are allowed to refer to each other.
   If the outputs' references to each other form a cycle, this is an error, because the references of store objects much be acyclic.
 
 
-[Nix instance]: @docroot@/glossary.md#gloss-nix-instance
+[Bsd instance]: @docroot@/glossary.md#gloss-bsd-instance

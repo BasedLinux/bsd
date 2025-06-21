@@ -1,4 +1,4 @@
-project('nix-expr', 'cpp',
+project('bsd-expr', 'cpp',
   version : files('.version'),
   default_options : [
     'cpp_std=c++2a',
@@ -12,7 +12,7 @@ project('nix-expr', 'cpp',
 
 cxx = meson.get_compiler('cpp')
 
-subdir('nix-meson-build-support/deps-lists')
+subdir('bsd-meson-build-support/deps-lists')
 
 configdata_pub = configuration_data()
 configdata_priv = configuration_data()
@@ -20,12 +20,12 @@ configdata_priv = configuration_data()
 deps_private_maybe_subproject = [
 ]
 deps_public_maybe_subproject = [
-  dependency('nix-util'),
-  dependency('nix-store'),
-  dependency('nix-fetchers'),
+  dependency('bsd-util'),
+  dependency('bsd-store'),
+  dependency('bsd-fetchers'),
 ]
-subdir('nix-meson-build-support/subprojects')
-subdir('nix-meson-build-support/big-objs')
+subdir('bsd-meson-build-support/subprojects')
+subdir('bsd-meson-build-support/big-objs')
 
 # Check for each of these functions, and create a define like `#define HAVE_LCHOWN 1`.
 check_funcs = [
@@ -79,7 +79,7 @@ config_priv_h = configure_file(
   output : 'expr-config-private.hh',
 )
 
-subdir('nix-meson-build-support/common')
+subdir('bsd-meson-build-support/common')
 
 parser_tab = custom_target(
   input : 'parser.y',
@@ -98,7 +98,7 @@ parser_tab = custom_target(
   # NOTE(Qyriad): Meson doesn't support installing only part of a custom target, so we add
   # an install script below which removes parser-tab.cc.
   install : true,
-  install_dir : get_option('includedir') / 'nix',
+  install_dir : get_option('includedir') / 'bsd',
 )
 
 lexer_tab = custom_target(
@@ -121,15 +121,15 @@ lexer_tab = custom_target(
   # NOTE(Qyriad): Meson doesn't support installing only part of a custom target, so we add
   # an install script below which removes lexer-tab.cc.
   install : true,
-  install_dir : get_option('includedir') / 'nix',
+  install_dir : get_option('includedir') / 'bsd',
 )
 
-subdir('nix-meson-build-support/generate-header')
+subdir('bsd-meson-build-support/generate-header')
 
 generated_headers = []
 foreach header : [
-  'imported-drv-to-derivation.nix',
-  'fetchurl.nix',
+  'imported-drv-to-derivation.bsd',
+  'fetchurl.bsd',
 ]
   generated_headers += gen_header.process(header)
 endforeach
@@ -148,7 +148,7 @@ sources = files(
   'get-drvs.cc',
   'json-to-value.cc',
   'lexer-helpers.cc',
-  'nixexpr.cc',
+  'bsdexpr.cc',
   'paths.cc',
   'primops.cc',
   'print-ambiguous.cc',
@@ -159,15 +159,15 @@ sources = files(
   'value/context.cc',
 )
 
-subdir('include/nix/expr')
+subdir('include/bsd/expr')
 
 subdir('primops')
 
-subdir('nix-meson-build-support/export-all-symbols')
-subdir('nix-meson-build-support/windows-version')
+subdir('bsd-meson-build-support/export-all-symbols')
+subdir('bsd-meson-build-support/windows-version')
 
 this_library = library(
-  'nixexpr',
+  'bsdexpr',
   sources,
   config_priv_h,
   parser_tab,
@@ -180,8 +180,8 @@ this_library = library(
   install : true,
 )
 
-install_headers(headers, subdir : 'nix/expr', preserve_path : true)
+install_headers(headers, subdir : 'bsd/expr', preserve_path : true)
 
 libraries_private = []
 
-subdir('nix-meson-build-support/export')
+subdir('bsd-meson-build-support/export')

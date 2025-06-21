@@ -1,8 +1,8 @@
-#include "nix/util/references.hh"
+#include "bsd/util/references.hh"
 
 #include <gtest/gtest.h>
 
-namespace nix {
+namespace bsd {
 
 TEST(references, scan)
 {

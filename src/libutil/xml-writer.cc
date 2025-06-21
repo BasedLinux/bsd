@@ -1,9 +1,9 @@
 #include <cassert>
 
-#include "nix/util/xml-writer.hh"
+#include "bsd/util/xml-writer.hh"
 
 
-namespace nix {
+namespace bsd {
 
 
 XMLWriter::XMLWriter(bool indent, std::ostream & output)

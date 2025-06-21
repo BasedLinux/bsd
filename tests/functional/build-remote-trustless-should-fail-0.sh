@@ -4,7 +4,7 @@ source common.sh
 
 enableFeatures "daemon-trust-override"
 
-TODO_NixOS
+TODO_BasedLinux
 restartDaemon
 
 requireSandboxSupport
@@ -16,21 +16,21 @@ unset NIX_STATE_DIR
 
 # We first build a dependency of the derivation we eventually want to
 # build.
-nix-build build-hook.nix -A passthru.input2 \
+bsd-build build-hook.bsd -A passthru.input2 \
   -o "$TEST_ROOT/input2" \
   --arg busybox "$busybox" \
   --store "$TEST_ROOT/local" \
   --option system-features bar
 
-# Now when we go to build that downstream derivation, Nix will try to
+# Now when we go to build that downstream derivation, Bsd will try to
 # copy our already-build `input2` to the remote store. That store object
 # is input-addressed, so this will fail.
 
 # For script below
 # shellcheck disable=SC2034
-file=build-hook.nix
+file=build-hook.bsd
 # shellcheck disable=SC2034
-prog=$(readlink -e ./nix-daemon-untrusting.sh)
+prog=$(readlink -e ./bsd-daemon-untrusting.sh)
 # shellcheck disable=SC2034
 proto=ssh-ng
 

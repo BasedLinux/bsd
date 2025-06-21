@@ -1,18 +1,18 @@
 #include <gtest/gtest.h>
 #include <optional>
 
-#include "nix/util/experimental-features.hh"
-#include "nix/store/derivations.hh"
-#include "nix/store/derivations.hh"
-#include "nix/store/derivation-options.hh"
-#include "nix/store/parsed-derivations.hh"
-#include "nix/util/types.hh"
-#include "nix/util/json-utils.hh"
+#include "bsd/util/experimental-features.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/derivation-options.hh"
+#include "bsd/store/parsed-derivations.hh"
+#include "bsd/util/types.hh"
+#include "bsd/util/json-utils.hh"
 
-#include "nix/store/tests/libstore.hh"
-#include "nix/util/tests/characterization.hh"
+#include "bsd/store/tests/libstore.hh"
+#include "bsd/util/tests/characterization.hh"
 
-namespace nix {
+namespace bsd {
 
 using nlohmann::json;
 
@@ -204,13 +204,13 @@ TEST_F(DerivationAdvancedAttrsTest, advancedAttributes)
                 {
                     "refs1",
                     {
-                        "/nix/store/p0hax2lzvjpfc2gwkk62xdglz0fcqfzn-foo",
+                        "/bsd/store/p0hax2lzvjpfc2gwkk62xdglz0fcqfzn-foo",
                     },
                 },
                 {
                     "refs2",
                     {
-                        "/nix/store/vj2i49jm2868j2fmqvxm70vlzmzvgv14-bar.drv",
+                        "/bsd/store/vj2i49jm2868j2fmqvxm70vlzmzvgv14-bar.drv",
                     },
                 },
             }));
@@ -221,15 +221,15 @@ TEST_F(DerivationAdvancedAttrsTest, advancedAttributes)
             auto & checksForAllOutputs = *checksForAllOutputs_;
 
             EXPECT_EQ(
-                checksForAllOutputs.allowedReferences, StringSet{"/nix/store/p0hax2lzvjpfc2gwkk62xdglz0fcqfzn-foo"});
+                checksForAllOutputs.allowedReferences, StringSet{"/bsd/store/p0hax2lzvjpfc2gwkk62xdglz0fcqfzn-foo"});
             EXPECT_EQ(
                 checksForAllOutputs.allowedRequisites,
-                StringSet{"/nix/store/z0rjzy29v9k5qa4nqpykrbzirj7sd43v-foo-dev"});
+                StringSet{"/bsd/store/z0rjzy29v9k5qa4nqpykrbzirj7sd43v-foo-dev"});
             EXPECT_EQ(
-                checksForAllOutputs.disallowedReferences, StringSet{"/nix/store/r5cff30838majxk5mp3ip2diffi8vpaj-bar"});
+                checksForAllOutputs.disallowedReferences, StringSet{"/bsd/store/r5cff30838majxk5mp3ip2diffi8vpaj-bar"});
             EXPECT_EQ(
                 checksForAllOutputs.disallowedRequisites,
-                StringSet{"/nix/store/9b61w26b4avv870dw0ymb6rw4r1hzpws-bar-dev"});
+                StringSet{"/bsd/store/9b61w26b4avv870dw0ymb6rw4r1hzpws-bar-dev"});
         }
 
         StringSet systemFeatures{"rainbow", "uid-range"};
@@ -260,7 +260,7 @@ TEST_F(CaDerivationAdvancedAttrsTest, advancedAttributes)
                 {
                     "refs2",
                     {
-                        "/nix/store/qnml92yh97a6fbrs2m5qg5cqlc8vni58-bar.drv",
+                        "/bsd/store/qnml92yh97a6fbrs2m5qg5cqlc8vni58-bar.drv",
                     },
                 },
             }));
@@ -403,13 +403,13 @@ TEST_F(DerivationAdvancedAttrsTest, advancedAttributes_structuredAttrs)
                 {
                     "refs1",
                     {
-                        "/nix/store/p0hax2lzvjpfc2gwkk62xdglz0fcqfzn-foo",
+                        "/bsd/store/p0hax2lzvjpfc2gwkk62xdglz0fcqfzn-foo",
                     },
                 },
                 {
                     "refs2",
                     {
-                        "/nix/store/vj2i49jm2868j2fmqvxm70vlzmzvgv14-bar.drv",
+                        "/bsd/store/vj2i49jm2868j2fmqvxm70vlzmzvgv14-bar.drv",
                     },
                 },
             }));
@@ -420,8 +420,8 @@ TEST_F(DerivationAdvancedAttrsTest, advancedAttributes_structuredAttrs)
                 ASSERT_TRUE(output_);
                 auto & output = *output_;
 
-                EXPECT_EQ(output.allowedReferences, StringSet{"/nix/store/p0hax2lzvjpfc2gwkk62xdglz0fcqfzn-foo"});
-                EXPECT_EQ(output.allowedRequisites, StringSet{"/nix/store/z0rjzy29v9k5qa4nqpykrbzirj7sd43v-foo-dev"});
+                EXPECT_EQ(output.allowedReferences, StringSet{"/bsd/store/p0hax2lzvjpfc2gwkk62xdglz0fcqfzn-foo"});
+                EXPECT_EQ(output.allowedRequisites, StringSet{"/bsd/store/z0rjzy29v9k5qa4nqpykrbzirj7sd43v-foo-dev"});
             }
 
             {
@@ -429,9 +429,9 @@ TEST_F(DerivationAdvancedAttrsTest, advancedAttributes_structuredAttrs)
                 ASSERT_TRUE(output_);
                 auto & output = *output_;
 
-                EXPECT_EQ(output.disallowedReferences, StringSet{"/nix/store/r5cff30838majxk5mp3ip2diffi8vpaj-bar"});
+                EXPECT_EQ(output.disallowedReferences, StringSet{"/bsd/store/r5cff30838majxk5mp3ip2diffi8vpaj-bar"});
                 EXPECT_EQ(
-                    output.disallowedRequisites, StringSet{"/nix/store/9b61w26b4avv870dw0ymb6rw4r1hzpws-bar-dev"});
+                    output.disallowedRequisites, StringSet{"/bsd/store/9b61w26b4avv870dw0ymb6rw4r1hzpws-bar-dev"});
             }
         }
 
@@ -463,7 +463,7 @@ TEST_F(CaDerivationAdvancedAttrsTest, advancedAttributes_structuredAttrs)
                 {
                     "refs2",
                     {
-                        "/nix/store/qnml92yh97a6fbrs2m5qg5cqlc8vni58-bar.drv",
+                        "/bsd/store/qnml92yh97a6fbrs2m5qg5cqlc8vni58-bar.drv",
                     },
                 },
             }));

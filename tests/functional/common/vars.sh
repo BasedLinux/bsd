@@ -23,14 +23,14 @@ export PAGER=cat
 source "$commonDir/paths.sh"
 source "$commonDir/test-root.sh"
 
-test_nix_conf_dir=$TEST_ROOT/etc
+test_bsd_conf_dir=$TEST_ROOT/etc
 # Used in other files
 # shellcheck disable=SC2034
-test_nix_conf=$test_nix_conf_dir/nix.conf
+test_bsd_conf=$test_bsd_conf_dir/bsd.conf
 
 export TEST_HOME=$TEST_ROOT/test-home
 
-if ! isTestOnNixOS; then
+if ! isTestOnBasedLinux; then
   export NIX_STORE_DIR
   if ! NIX_STORE_DIR=$(readlink -f "$TEST_ROOT/store" 2> /dev/null); then
       # Maybe the build directory is symlinked.
@@ -38,9 +38,9 @@ if ! isTestOnNixOS; then
       NIX_STORE_DIR=$TEST_ROOT/store
   fi
   export NIX_LOCALSTATE_DIR=$TEST_ROOT/var
-  export NIX_LOG_DIR=$TEST_ROOT/var/log/nix
-  export NIX_STATE_DIR=$TEST_ROOT/var/nix
-  export NIX_CONF_DIR=$test_nix_conf_dir
+  export NIX_LOG_DIR=$TEST_ROOT/var/log/bsd
+  export NIX_STATE_DIR=$TEST_ROOT/var/bsd
+  export NIX_CONF_DIR=$test_bsd_conf_dir
   export NIX_DAEMON_SOCKET_PATH=$TEST_ROOT/dSocket
   unset NIX_USER_CONF_FILES
   export _NIX_TEST_SHARED=$TEST_ROOT/shared
@@ -51,7 +51,7 @@ if ! isTestOnNixOS; then
   export _NIX_TEST_NO_LSOF=1
   export NIX_REMOTE=${NIX_REMOTE_-}
 
-fi # ! isTestOnNixOS
+fi # ! isTestOnBasedLinux
 
 unset NIX_PATH
 export HOME=$TEST_HOME
@@ -76,6 +76,6 @@ fi
 # Very common, shorthand helps
 # Used in other files
 # shellcheck disable=SC2034
-config_nix="${_NIX_TEST_BUILD_DIR}/config.nix"
+config_bsd="${_NIX_TEST_BUILD_DIR}/config.bsd"
 
 fi # COMMON_VARS_SH_SOURCED

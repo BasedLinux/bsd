@@ -1,10 +1,10 @@
 #include <unordered_set>
 
-#include "nix/fetchers/fetch-settings.hh"
-#include "nix/flake/settings.hh"
-#include "nix/flake/lockfile.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/strings.hh"
+#include "bsd/fetchers/fetch-settings.hh"
+#include "bsd/flake/settings.hh"
+#include "bsd/flake/lockfile.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/strings.hh"
 
 #include <algorithm>
 #include <iomanip>
@@ -13,7 +13,7 @@
 #include <nlohmann/json.hpp>
 
 
-namespace nix::flake {
+namespace bsd::flake {
 
 static FlakeRef getFlakeRef(
     const fetchers::Settings & fetchSettings,

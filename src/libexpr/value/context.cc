@@ -1,11 +1,11 @@
-#include "nix/util/util.hh"
-#include "nix/expr/value/context.hh"
+#include "bsd/util/util.hh"
+#include "bsd/expr/value/context.hh"
 
 #include <optional>
 
-namespace nix {
+namespace bsd {
 
-NixStringContextElem NixStringContextElem::parse(
+BsdStringContextElem BsdStringContextElem::parse(
     std::string_view s0,
     const ExperimentalFeatureSettings & xpSettings)
 {
@@ -33,7 +33,7 @@ NixStringContextElem NixStringContextElem::parse(
     };
 
     if (s.size() == 0) {
-        throw BadNixStringContextElem(s0,
+        throw BadBsdStringContextElem(s0,
             "String context element should never be an empty string");
     }
 
@@ -44,33 +44,33 @@ NixStringContextElem NixStringContextElem::parse(
 
         // Find *second* '!'
         if (s.find("!") == std::string_view::npos) {
-            throw BadNixStringContextElem(s0,
+            throw BadBsdStringContextElem(s0,
                 "String content element beginning with '!' should have a second '!'");
         }
 
         return std::visit(
-            [&](auto x) -> NixStringContextElem { return std::move(x); },
+            [&](auto x) -> BsdStringContextElem { return std::move(x); },
             parseRest());
     }
     case '=': {
-        return NixStringContextElem::DrvDeep {
+        return BsdStringContextElem::DrvDeep {
             .drvPath = StorePath { s.substr(1) },
         };
     }
     default: {
         // Ensure no '!'
         if (s.find("!") != std::string_view::npos) {
-            throw BadNixStringContextElem(s0,
+            throw BadBsdStringContextElem(s0,
                 "String content element not beginning with '!' should not have a second '!'");
         }
         return std::visit(
-            [&](auto x) -> NixStringContextElem { return std::move(x); },
+            [&](auto x) -> BsdStringContextElem { return std::move(x); },
             parseRest());
     }
     }
 }
 
-std::string NixStringContextElem::to_string() const
+std::string BsdStringContextElem::to_string() const
 {
     std::string res;
 
@@ -89,14 +89,14 @@ std::string NixStringContextElem::to_string() const
     };
 
     std::visit(overloaded {
-        [&](const NixStringContextElem::Built & b) {
+        [&](const BsdStringContextElem::Built & b) {
             res += '!';
             toStringRest(b);
         },
-        [&](const NixStringContextElem::Opaque & o) {
+        [&](const BsdStringContextElem::Opaque & o) {
             toStringRest(o);
         },
-        [&](const NixStringContextElem::DrvDeep & d) {
+        [&](const BsdStringContextElem::DrvDeep & d) {
             res += '=';
             res += d.drvPath.to_string();
         },

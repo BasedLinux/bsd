@@ -1,15 +1,15 @@
 #include <nlohmann/json.hpp>
 
-#include "nix/main/common-args.hh"
-#include "nix/util/args/root.hh"
-#include "nix/util/config-global.hh"
-#include "nix/store/globals.hh"
-#include "nix/util/logging.hh"
-#include "nix/main/loggers.hh"
-#include "nix/util/util.hh"
-#include "nix/main/plugin.hh"
+#include "bsd/main/common-args.hh"
+#include "bsd/util/args/root.hh"
+#include "bsd/util/config-global.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/util/logging.hh"
+#include "bsd/main/loggers.hh"
+#include "bsd/util/util.hh"
+#include "bsd/main/plugin.hh"
 
-namespace nix {
+namespace bsd {
 
 MixCommonArgs::MixCommonArgs(const std::string & programName)
     : programName(programName)
@@ -40,7 +40,7 @@ MixCommonArgs::MixCommonArgs(const std::string & programName)
 
     addFlag({
         .longName = "option",
-        .description = "Set the Nix configuration setting *name* to *value* (overriding `nix.conf`).",
+        .description = "Set the Bsd configuration setting *name* to *value* (overriding `bsd.conf`).",
         .category = miscCategory,
         .labels = {"name", "value"},
         .handler = {[this](std::string name, std::string value) {
@@ -83,8 +83,8 @@ MixCommonArgs::MixCommonArgs(const std::string & programName)
     std::string cat = "Options to override configuration settings";
     globalConfig.convertToArgs(*this, cat);
 
-    // Backward compatibility hack: nix-env already had a --system flag.
-    if (programName == "nix-env") longFlags.erase("system");
+    // Backward compatibility hack: bsd-env already had a --system flag.
+    if (programName == "bsd-env") longFlags.erase("system");
 
     hiddenCategories.insert(cat);
 }
@@ -109,4 +109,4 @@ void MixPrintJSON::printJSON(const T /* nlohmann::json */ & json)
 template void MixPrintJSON::printJSON(const nlohmann::json & json);
 
 
-} // namespace nix
+} // namespace bsd

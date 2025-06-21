@@ -1,10 +1,10 @@
 # Contributing documentation
 
-Improvements to documentation are very much appreciated, and a good way to start out with contributing to Nix.
+Improvements to documentation are very much appreciated, and a good way to start out with contributing to Bsd.
 
 This is how you can help:
-- Address [open issues with documentation](https://github.com/NixOS/nix/issues?q=is%3Aissue+is%3Aopen+label%3Adocumentation)
-- Review [pull requests concerning documentation](https://github.com/NixOS/nix/pulls?q=is%3Apr+is%3Aopen+label%3Adocumentation)
+- Address [open issues with documentation](https://github.com/BasedLinux/bsd/issues?q=is%3Aissue+is%3Aopen+label%3Adocumentation)
+- Review [pull requests concerning documentation](https://github.com/BasedLinux/bsd/pulls?q=is%3Apr+is%3Aopen+label%3Adocumentation)
 
 Incremental refactorings of the documentation build setup to make it faster or easier to understand and maintain are also welcome.
 
@@ -13,16 +13,16 @@ Incremental refactorings of the documentation build setup to make it faster or e
 Build the manual from scratch:
 
 ```console
-nix-build -E '(import ./.).packages.${builtins.currentSystem}.nix.doc'
+bsd-build -E '(import ./.).packages.${builtins.currentSystem}.bsd.doc'
 ```
 
 or
 
 ```console
-nix build .#nix-manual
+bsd build .#bsd-manual
 ```
 
-and open `./result/share/doc/nix/manual/index.html`.
+and open `./result/share/doc/bsd/manual/index.html`.
 
 
 To build the manual incrementally, [enter the development shell](./building.md) and run:
@@ -33,7 +33,7 @@ make manual-html-open -j $NIX_BUILD_CORES
 
 In order to reflect changes to the [Makefile for the manual], clear all generated files before re-building:
 
-[Makefile for the manual]: https://github.com/NixOS/nix/blob/master/doc/manual/local.mk
+[Makefile for the manual]: https://github.com/BasedLinux/bsd/blob/master/doc/manual/local.mk
 
 ```console
 rm $(git ls-files doc/manual/ -o | grep -F '.md') && rmdir doc/manual/source/command-ref/new-cli && make manual-html -j $NIX_BUILD_CORES
@@ -85,17 +85,17 @@ It should therefore aim to be correct, consistent, complete, and easy to navigat
 
 - Use British English.
 
-  This is a somewhat arbitrary choice to force consistency, and accounts for the fact that a majority of Nix users and developers are from Europe.
+  This is a somewhat arbitrary choice to force consistency, and accounts for the fact that a majority of Bsd users and developers are from Europe.
 
 ### Links and anchors
 
 Reference documentation must be readable in arbitrary order.
-Readers cannot be expected to have any particular prerequisite knowledge about Nix.
+Readers cannot be expected to have any particular prerequisite knowledge about Bsd.
 While the table of contents can provide guidance and full-text search can help, they are most likely to find what they need by following sensible cross-references.
 
 - Link to technical terms
 
-  When mentioning Nix-specific concepts, commands, options, settings, etc., link to appropriate documentation.
+  When mentioning Bsd-specific concepts, commands, options, settings, etc., link to appropriate documentation.
   Also link to external tools or concepts, especially if their meaning may be ambiguous.
   You may also want to link to definitions of less common technical terms.
 
@@ -111,11 +111,11 @@ While the table of contents can provide guidance and full-text search can help, 
   There are countless links in the wild pointing to old versions of the manual.
   We want people to find up-to-date documentation when following popular advice.
 
-  - When moving files, update [redirects on nixos.org](https://github.com/NixOS/nixos-homepage/blob/master/netlify.toml).
+  - When moving files, update [redirects on basedlinux.org](https://github.com/BasedLinux/bsdos-homepage/blob/master/netlify.toml).
 
-    This is especially important when moving information out of the Nix manual to other resources.
+    This is especially important when moving information out of the Bsd manual to other resources.
 
-  - When changing anchors, update [client-side redirects](https://github.com/NixOS/nix/blob/master/doc/manual/redirects.js)
+  - When changing anchors, update [client-side redirects](https://github.com/BasedLinux/bsd/blob/master/doc/manual/redirects.js)
 
   The current setup is cumbersome, and help making better automation is appreciated.
 
@@ -167,7 +167,7 @@ Please observe these guidelines to ease reviews:
   > **Example**
   >
   > ```console
-  > $ nix --version
+  > $ bsd --version
   > ```
   ````
 
@@ -194,14 +194,14 @@ Regular markdown files used for the manual have a base path of their own and the
 [Doxygen API documentation] is available online.
 You can also build and view it yourself:
 
-[Doxygen API documentation]: https://hydra.nixos.org/job/nix/master/internal-api-docs/latest/download-by-type/doc/internal-api-docs
+[Doxygen API documentation]: https://hydra.basedlinux.org/job/bsd/master/internal-api-docs/latest/download-by-type/doc/internal-api-docs
 
 ```console
-$ nix build .#hydraJobs.internal-api-docs
-$ xdg-open ./result/share/doc/nix/internal-api/html/index.html
+$ bsd build .#hydraJobs.internal-api-docs
+$ xdg-open ./result/share/doc/bsd/internal-api/html/index.html
 ```
 
-or inside `nix-shell` or `nix develop`:
+or inside `bsd-shell` or `bsd develop`:
 
 ```console
 $ configurePhase
@@ -215,14 +215,14 @@ Note that the C API is not yet stable.
 [C API documentation] is available online.
 You can also build and view it yourself:
 
-[C API documentation]: https://hydra.nixos.org/job/nix/master/external-api-docs/latest/download-by-type/doc/external-api-docs
+[C API documentation]: https://hydra.basedlinux.org/job/bsd/master/external-api-docs/latest/download-by-type/doc/external-api-docs
 
 ```console
-$ nix build .#hydraJobs.external-api-docs
-$ xdg-open ./result/share/doc/nix/external-api/html/index.html
+$ bsd build .#hydraJobs.external-api-docs
+$ xdg-open ./result/share/doc/bsd/external-api/html/index.html
 ```
 
-or inside `nix-shell` or `nix develop`:
+or inside `bsd-shell` or `bsd develop`:
 
 ```
 $ configurePhase

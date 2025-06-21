@@ -1,13 +1,13 @@
 #include <nlohmann/json.hpp>
 #include <gtest/gtest.h>
 
-#include "nix/util/experimental-features.hh"
-#include "nix/store/derivations.hh"
+#include "bsd/util/experimental-features.hh"
+#include "bsd/store/derivations.hh"
 
-#include "nix/store/tests/libstore.hh"
-#include "nix/util/tests/characterization.hh"
+#include "bsd/store/tests/libstore.hh"
+#include "bsd/util/tests/characterization.hh"
 
-namespace nix {
+namespace bsd {
 
 using nlohmann::json;
 
@@ -101,7 +101,7 @@ TEST_F(DynDerivationTest, BadATerm_oldVersionDynDeps) {
 
 TEST_JSON(DerivationTest, inputAddressed,
     (DerivationOutput::InputAddressed {
-        .path = store->parseStorePath("/nix/store/c015dhfh5l0lp6wxyvdn7bmwhbbr6hr9-drv-name-output-name"),
+        .path = store->parseStorePath("/bsd/store/c015dhfh5l0lp6wxyvdn7bmwhbbr6hr9-drv-name-output-name"),
     }),
     "drv-name", "output-name")
 
@@ -117,7 +117,7 @@ TEST_JSON(DerivationTest, caFixedFlat,
 TEST_JSON(DerivationTest, caFixedNAR,
     (DerivationOutput::CAFixed {
         .ca = {
-            .method = ContentAddressMethod::Raw::NixArchive,
+            .method = ContentAddressMethod::Raw::BsdArchive,
             .hash = Hash::parseAnyPrefixed("sha256-iUUXyRY8iW7DGirb0zwGgf1fRbLA7wimTJKgP7l/OQ8="),
         },
     }),
@@ -134,7 +134,7 @@ TEST_JSON(DynDerivationTest, caFixedText,
 
 TEST_JSON(CaDerivationTest, caFloating,
     (DerivationOutput::CAFloating {
-        .method = ContentAddressMethod::Raw::NixArchive,
+        .method = ContentAddressMethod::Raw::BsdArchive,
         .hashAlgo = HashAlgorithm::SHA256,
     }),
     "drv-name", "output-name")
@@ -145,7 +145,7 @@ TEST_JSON(DerivationTest, deferred,
 
 TEST_JSON(ImpureDerivationTest, impure,
     (DerivationOutput::Impure {
-        .method = ContentAddressMethod::Raw::NixArchive,
+        .method = ContentAddressMethod::Raw::BsdArchive,
         .hashAlgo = HashAlgorithm::SHA256,
     }),
     "drv-name", "output-name")
@@ -199,12 +199,12 @@ Derivation makeSimpleDrv(const Store & store) {
     Derivation drv;
     drv.name = "simple-derivation";
     drv.inputSrcs = {
-        store.parseStorePath("/nix/store/c015dhfh5l0lp6wxyvdn7bmwhbbr6hr9-dep1"),
+        store.parseStorePath("/bsd/store/c015dhfh5l0lp6wxyvdn7bmwhbbr6hr9-dep1"),
     };
     drv.inputDrvs = {
         .map = {
             {
-                store.parseStorePath("/nix/store/c015dhfh5l0lp6wxyvdn7bmwhbbr6hr9-dep2.drv"),
+                store.parseStorePath("/bsd/store/c015dhfh5l0lp6wxyvdn7bmwhbbr6hr9-dep2.drv"),
                 {
                     .value = {
                         "cat",
@@ -239,12 +239,12 @@ Derivation makeDynDepDerivation(const Store & store) {
     Derivation drv;
     drv.name = "dyn-dep-derivation";
     drv.inputSrcs = {
-        store.parseStorePath("/nix/store/c015dhfh5l0lp6wxyvdn7bmwhbbr6hr9-dep1"),
+        store.parseStorePath("/bsd/store/c015dhfh5l0lp6wxyvdn7bmwhbbr6hr9-dep1"),
     };
     drv.inputDrvs = {
         .map = {
             {
-                store.parseStorePath("/nix/store/c015dhfh5l0lp6wxyvdn7bmwhbbr6hr9-dep2.drv"),
+                store.parseStorePath("/bsd/store/c015dhfh5l0lp6wxyvdn7bmwhbbr6hr9-dep2.drv"),
                 DerivedPathMap<StringSet>::ChildNode {
                     .value = {
                         "cat",

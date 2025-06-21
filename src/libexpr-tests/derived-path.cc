@@ -2,10 +2,10 @@
 #include <gtest/gtest.h>
 #include <rapidcheck/gtest.h>
 
-#include "nix/store/tests/derived-path.hh"
-#include "nix/expr/tests/libexpr.hh"
+#include "bsd/store/tests/derived-path.hh"
+#include "bsd/expr/tests/libexpr.hh"
 
-namespace nix {
+namespace bsd {
 
 // Testing of trivial expressions
 class DerivedPathExpressionTest : public LibExprTest {};
@@ -68,4 +68,4 @@ RC_GTEST_FIXTURE_PROP(
 
 #endif
 
-} /* namespace nix */
+} /* namespace bsd */

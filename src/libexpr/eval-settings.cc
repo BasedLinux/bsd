@@ -1,14 +1,14 @@
-#include "nix/util/users.hh"
-#include "nix/store/globals.hh"
-#include "nix/store/profiles.hh"
-#include "nix/expr/eval.hh"
-#include "nix/expr/eval-settings.hh"
+#include "bsd/util/users.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/profiles.hh"
+#include "bsd/expr/eval.hh"
+#include "bsd/expr/eval-settings.hh"
 
-namespace nix {
+namespace bsd {
 
 /* Very hacky way to parse $NIX_PATH, which is colon-separated, but
-   can contain URLs (e.g. "nixpkgs=https://bla...:foo=https://"). */
-Strings EvalSettings::parseNixPath(const std::string & s)
+   can contain URLs (e.g. "bsdpkgs=https://bla...:foo=https://"). */
+Strings EvalSettings::parseBsdPath(const std::string & s)
 {
     Strings res;
 
@@ -53,7 +53,7 @@ EvalSettings::EvalSettings(bool & readOnlyMode, EvalSettings::LookupPathHooks lo
         builtinsAbortOnWarn = true;
 }
 
-Strings EvalSettings::getDefaultNixPath()
+Strings EvalSettings::getDefaultBsdPath()
 {
     Strings res;
     auto add = [&](const Path & p, const std::string & s = std::string()) {
@@ -66,8 +66,8 @@ Strings EvalSettings::getDefaultNixPath()
         }
     };
 
-    add(getNixDefExpr() + "/channels");
-    add(rootChannelsDir() + "/nixpkgs", "nixpkgs");
+    add(getBsdDefExpr() + "/channels");
+    add(rootChannelsDir() + "/bsdpkgs", "bsdpkgs");
     add(rootChannelsDir());
 
     return res;
@@ -85,7 +85,7 @@ bool EvalSettings::isPseudoUrl(std::string_view s)
 std::string EvalSettings::resolvePseudoUrl(std::string_view url)
 {
     if (hasPrefix(url, "channel:"))
-        return "https://nixos.org/channels/" + std::string(url.substr(8)) + "/nixexprs.tar.xz";
+        return "https://basedlinux.org/channels/" + std::string(url.substr(8)) + "/bsdexprs.tar.xz";
     else
         return std::string(url);
 }
@@ -96,11 +96,11 @@ const std::string & EvalSettings::getCurrentSystem() const
     return evalSystem != "" ? evalSystem : settings.thisSystem.get();
 }
 
-Path getNixDefExpr()
+Path getBsdDefExpr()
 {
     return settings.useXDGBaseDirectories
         ? getStateDir() + "/defexpr"
-        : getHome() + "/.nix-defexpr";
+        : getHome() + "/.bsd-defexpr";
 }
 
-} // namespace nix
+} // namespace bsd

@@ -1,5 +1,5 @@
 generated_headers += gen_header.process(
-  'derivation.nix',
+  'derivation.bsd',
   preserve_path_from : meson.project_source_root(),
 )
 

@@ -1,15 +1,15 @@
-#include "nix/util/serialise.hh"
-#include "nix/store/path-with-outputs.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/build-result.hh"
-#include "nix/store/serve-protocol.hh"
-#include "nix/store/serve-protocol-impl.hh"
-#include "nix/util/archive.hh"
-#include "nix/store/path-info.hh"
+#include "bsd/util/serialise.hh"
+#include "bsd/store/path-with-outputs.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/build-result.hh"
+#include "bsd/store/serve-protocol.hh"
+#include "bsd/store/serve-protocol-impl.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/store/path-info.hh"
 
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
 /* protocol-specific definitions */
 
@@ -58,7 +58,7 @@ void ServeProto::Serialise<BuildResult>::write(const StoreDirConfig & store, Ser
 
 UnkeyedValidPathInfo ServeProto::Serialise<UnkeyedValidPathInfo>::read(const StoreDirConfig & store, ReadConn conn)
 {
-    /* Hash should be set below unless very old `nix-store --serve`.
+    /* Hash should be set below unless very old `bsd-store --serve`.
        Caller should assert that it did set it. */
     UnkeyedValidPathInfo info { Hash::dummy };
 
@@ -93,7 +93,7 @@ void ServeProto::Serialise<UnkeyedValidPathInfo>::write(const StoreDirConfig & s
         << info.narSize;
     if (GET_PROTOCOL_MINOR(conn.version) >= 4)
         conn.to
-            << info.narHash.to_string(HashFormat::Nix32, true)
+            << info.narHash.to_string(HashFormat::Bsd32, true)
             << renderContentAddress(info.ca)
             << info.sigs;
 }

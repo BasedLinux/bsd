@@ -1,11 +1,11 @@
-#include "nix/util/environment-variables.hh"
-#include "nix/util/file-system.hh"
-#include "nix/util/file-path.hh"
-#include "nix/util/file-path-impl.hh"
-#include "nix/util/signals.hh"
-#include "nix/util/finally.hh"
-#include "nix/util/serialise.hh"
-#include "nix/util/util.hh"
+#include "bsd/util/environment-variables.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/util/file-path.hh"
+#include "bsd/util/file-path-impl.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/serialise.hh"
+#include "bsd/util/util.hh"
 
 #include <atomic>
 #include <random>
@@ -32,7 +32,7 @@
 # include <io.h>
 #endif
 
-namespace nix {
+namespace bsd {
 
 DirectoryIterator::DirectoryIterator(const std::filesystem::path& p) {
     try {
@@ -429,7 +429,7 @@ static void _deletePath(Descriptor parentfd, const std::filesystem::path & path,
 
 #ifdef __FreeBSD__
     // In case of emergency (unmount fails for some reason) not recurse into mountpoints.
-    // This prevents us from tearing up the nullfs-mounted nix store.
+    // This prevents us from tearing up the nullfs-mounted bsd store.
     if (mountedPaths.find(path) != mountedPaths.end()) {
         return;
     }
@@ -685,7 +685,7 @@ std::pair<AutoCloseFD, Path> createTempFile(const Path & prefix)
     if (!fd)
         throw SysError("creating temporary file '%s'", tmpl);
 #ifndef _WIN32
-    unix::closeOnExec(fd.get());
+    ubsd::closeOnExec(fd.get());
 #endif
     return {std::move(fd), tmpl};
 }
@@ -835,4 +835,4 @@ bool chmodIfNeeded(const std::filesystem::path & path, mode_t mode, mode_t mask)
     return true;
 }
 
-} // namespace nix
+} // namespace bsd

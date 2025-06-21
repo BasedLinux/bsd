@@ -1,12 +1,12 @@
-#include "nix/store/nar-info-disk-cache.hh"
+#include "bsd/store/nar-info-disk-cache.hh"
 
 #include <gtest/gtest.h>
 #include <rapidcheck/gtest.h>
-#include "nix/store/sqlite.hh"
+#include "bsd/store/sqlite.hh"
 #include <sqlite3.h>
 
 
-namespace nix {
+namespace bsd {
 
 TEST(NarInfoDiskCacheImpl, create_and_read) {
     // This is a large single test to avoid some setup overhead.
@@ -28,15 +28,15 @@ TEST(NarInfoDiskCacheImpl, create_and_read) {
 
         // Set up "background noise" and check that different caches receive different ids
         {
-            auto bc1 = cache->createCache("https://bar", "/nix/storedir", wantMassQuery, prio);
-            auto bc2 = cache->createCache("https://xyz", "/nix/storedir", false, 12);
+            auto bc1 = cache->createCache("https://bar", "/bsd/storedir", wantMassQuery, prio);
+            auto bc2 = cache->createCache("https://xyz", "/bsd/storedir", false, 12);
             ASSERT_NE(bc1, bc2);
             barId = bc1;
         }
 
         // Check that the fields are saved and returned correctly. This does not test
         // the select statement yet, because of in-memory caching.
-        savedId = cache->createCache("http://foo", "/nix/storedir", wantMassQuery, prio);;
+        savedId = cache->createCache("http://foo", "/bsd/storedir", wantMassQuery, prio);;
         {
             auto r = cache->upToDateCacheExists("http://foo");
             ASSERT_TRUE(r);
@@ -80,7 +80,7 @@ TEST(NarInfoDiskCacheImpl, create_and_read) {
         }
 
         // "Update", same data, check that the id number is reused
-        cache2->createCache("http://foo", "/nix/storedir", wantMassQuery, prio);
+        cache2->createCache("http://foo", "/bsd/storedir", wantMassQuery, prio);
 
         {
             auto r = cache2->upToDateCacheExists("http://foo");
@@ -103,7 +103,7 @@ TEST(NarInfoDiskCacheImpl, create_and_read) {
             auto r0 = cache2->upToDateCacheExists("https://bar");
             ASSERT_FALSE(r0);
 
-            cache2->createCache("https://bar", "/nix/storedir", !wantMassQuery, prio + 10);
+            cache2->createCache("https://bar", "/bsd/storedir", !wantMassQuery, prio + 10);
             auto r = cache2->upToDateCacheExists("https://bar");
             ASSERT_EQ(r->wantMassQuery, !wantMassQuery);
             ASSERT_EQ(r->priority, prio + 10);
@@ -112,7 +112,7 @@ TEST(NarInfoDiskCacheImpl, create_and_read) {
 
         // // Force update (no use case yet; we only retrieve cache metadata when stale based on timestamp)
         // {
-        //     cache2->createCache("https://bar", "/nix/storedir", wantMassQuery, prio + 20);
+        //     cache2->createCache("https://bar", "/bsd/storedir", wantMassQuery, prio + 20);
         //     auto r = cache2->upToDateCacheExists("https://bar");
         //     ASSERT_EQ(r->wantMassQuery, wantMassQuery);
         //     ASSERT_EQ(r->priority, prio + 20);

@@ -3,13 +3,13 @@
 
 #include <rapidcheck.h>
 
-#include "nix/store/path-regex.hh"
-#include "nix/store/store-api.hh"
+#include "bsd/store/path-regex.hh"
+#include "bsd/store/store-api.hh"
 
-#include "nix/util/tests/hash.hh"
-#include "nix/store/tests/path.hh"
+#include "bsd/util/tests/hash.hh"
+#include "bsd/store/tests/path.hh"
 
-namespace nix {
+namespace bsd {
 
 void showValue(const StorePath & p, std::ostream & os)
 {
@@ -19,7 +19,7 @@ void showValue(const StorePath & p, std::ostream & os)
 }
 
 namespace rc {
-using namespace nix;
+using namespace bsd;
 
 Gen<char> storePathChar()
 {

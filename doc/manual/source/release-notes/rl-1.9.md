@@ -4,82 +4,82 @@ In addition to the usual bug fixes, this release has the following new
 features:
 
   - Signed binary cache support. You can enable signature checking by
-    adding the following to `nix.conf`:
+    adding the following to `bsd.conf`:
     
         signed-binary-caches = *
-        binary-cache-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+        binary-cache-public-keys = cache.basedlinux.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
     
-    This will prevent Nix from downloading any binary from the cache
+    This will prevent Bsd from downloading any binary from the cache
     that is not signed by one of the keys listed in
     `binary-cache-public-keys`.
     
-    Signature checking is only supported if you built Nix with the
+    Signature checking is only supported if you built Bsd with the
     `libsodium` package.
     
-    Note that while Nix has had experimental support for signed binary
+    Note that while Bsd has had experimental support for signed binary
     caches since version 1.7, this release changes the signature format
     in a backwards-incompatible way.
 
-  - Automatic downloading of Nix expression tarballs. In various places,
-    you can now specify the URL of a tarball containing Nix expressions
-    (such as Nixpkgs), which will be downloaded and unpacked
+  - Automatic downloading of Bsd expression tarballs. In various places,
+    you can now specify the URL of a tarball containing Bsd expressions
+    (such as Bsdpkgs), which will be downloaded and unpacked
     automatically. For example:
     
-      - In `nix-env`:
+      - In `bsd-env`:
         
-            $ nix-env -f https://github.com/NixOS/nixpkgs-channels/archive/nixos-14.12.tar.gz -iA firefox
+            $ bsd-env -f https://github.com/BasedLinux/bsdpkgs-channels/archive/bsdos-14.12.tar.gz -iA firefox
         
         This installs Firefox from the latest tested and built revision
-        of the NixOS 14.12 channel.
+        of the BasedLinux 14.12 channel.
     
-      - In `nix-build` and `nix-shell`:
+      - In `bsd-build` and `bsd-shell`:
         
-            $ nix-build https://github.com/NixOS/nixpkgs/archive/master.tar.gz -A hello
+            $ bsd-build https://github.com/BasedLinux/bsdpkgs/archive/master.tar.gz -A hello
         
-        This builds GNU Hello from the latest revision of the Nixpkgs
+        This builds GNU Hello from the latest revision of the Bsdpkgs
         master branch.
     
-      - In the Nix search path (as specified via `NIX_PATH` or `-I`).
+      - In the Bsd search path (as specified via `NIX_PATH` or `-I`).
         For example, to start a shell containing the Pan package from a
-        specific version of Nixpkgs:
+        specific version of Bsdpkgs:
         
-            $ nix-shell -p pan -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/8a3eea054838b55aca962c3fbde9c83c102b8bf2.tar.gz
+            $ bsd-shell -p pan -I bsdpkgs=https://github.com/BasedLinux/bsdpkgs-channels/archive/8a3eea054838b55aca962c3fbde9c83c102b8bf2.tar.gz
     
-      - In `nixos-rebuild` (on NixOS):
+      - In `bsdos-rebuild` (on BasedLinux):
         
-            $ nixos-rebuild test -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz
+            $ bsdos-rebuild test -I bsdpkgs=https://github.com/BasedLinux/bsdpkgs-channels/archive/bsdos-unstable.tar.gz
     
-      - In Nix expressions, via the new builtin function `fetchTarball`:
+      - In Bsd expressions, via the new builtin function `fetchTarball`:
         
-            with import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-14.12.tar.gz) {}; …
+            with import (fetchTarball https://github.com/BasedLinux/bsdpkgs-channels/archive/bsdos-14.12.tar.gz) {}; …
         
         (This is not allowed in restricted mode.)
 
-  - `nix-shell` improvements:
+  - `bsd-shell` improvements:
     
-      - `nix-shell` now has a flag `--run` to execute a command in the
-        `nix-shell` environment, e.g. `nix-shell --run make`. This is
+      - `bsd-shell` now has a flag `--run` to execute a command in the
+        `bsd-shell` environment, e.g. `bsd-shell --run make`. This is
         like the existing `--command` flag, except that it uses a
         non-interactive shell (ensuring that hitting Ctrl-C won’t drop
         you into the child shell).
     
-      - `nix-shell` can now be used as a `#!`-interpreter. This allows
+      - `bsd-shell` can now be used as a `#!`-interpreter. This allows
         you to write scripts that dynamically fetch their own
         dependencies. For example, here is a Haskell script that, when
         invoked, first downloads GHC and the Haskell packages on which
         it depends:
         
-            #! /usr/bin/env nix-shell
-            #! nix-shell -i runghc -p haskellPackages.ghc haskellPackages.HTTP
+            #! /usr/bin/env bsd-shell
+            #! bsd-shell -i runghc -p haskellPackages.ghc haskellPackages.HTTP
             
             import Network.HTTP
             
             main = do
-              resp <- Network.HTTP.simpleHTTP (getRequest "http://nixos.org/")
+              resp <- Network.HTTP.simpleHTTP (getRequest "http://basedlinux.org/")
               body <- getResponseBody resp
               print (take 100 body)
         
-        Of course, the dependencies are cached in the Nix store, so the
+        Of course, the dependencies are cached in the Bsd store, so the
         second invocation of this script will be much faster.
 
   - Chroot improvements:
@@ -95,37 +95,37 @@ features:
     
       - On Linux, if chroots are enabled, builds are performed in a
         private PID namespace once again. (This functionality was lost
-        in Nix 1.8.)
+        in Bsd 1.8.)
     
       - Store paths listed in `build-chroot-dirs` are now automatically
         expanded to their closure. For instance, if you want
-        `/nix/store/…-bash/bin/sh` mounted in your chroot as `/bin/sh`,
+        `/bsd/store/…-bash/bin/sh` mounted in your chroot as `/bin/sh`,
         you only need to say `build-chroot-dirs =
-                                                        /bin/sh=/nix/store/…-bash/bin/sh`; it is no longer necessary to
+                                                        /bin/sh=/bsd/store/…-bash/bin/sh`; it is no longer necessary to
         specify the dependencies of Bash.
 
   - The new derivation attribute `passAsFile` allows you to specify that
     the contents of derivation attributes should be passed via files
     rather than environment variables. This is useful if you need to
     pass very long strings that exceed the size limit of the
-    environment. The Nixpkgs function `writeTextFile` uses this.
+    environment. The Bsdpkgs function `writeTextFile` uses this.
 
-  - You can now use `~` in Nix file names to refer to your home
+  - You can now use `~` in Bsd file names to refer to your home
     directory, e.g. `import
-            ~/.nixpkgs/config.nix`.
+            ~/.bsdpkgs/config.bsd`.
 
-  - Nix has a new option `restrict-eval` that allows limiting what paths
-    the Nix evaluator has access to. By passing `--option restrict-eval
-    true` to Nix, the evaluator will throw an exception if an attempt is
-    made to access any file outside of the Nix search path. This is
+  - Bsd has a new option `restrict-eval` that allows limiting what paths
+    the Bsd evaluator has access to. By passing `--option restrict-eval
+    true` to Bsd, the evaluator will throw an exception if an attempt is
+    made to access any file outside of the Bsd search path. This is
     primarily intended for Hydra to ensure that a Hydra jobset only
     refers to its declared inputs (and is therefore reproducible).
 
-  - `nix-env` now only creates a new “generation” symlink in
-    `/nix/var/nix/profiles` if something actually changed.
+  - `bsd-env` now only creates a new “generation” symlink in
+    `/bsd/var/bsd/profiles` if something actually changed.
 
   - The environment variable `NIX_PAGER` can now be set to override
-    `PAGER`. You can set it to `cat` to disable paging for Nix commands
+    `PAGER`. You can set it to `cat` to disable paging for Bsd commands
     only.
 
   - Failing `<...>` lookups now show position information.

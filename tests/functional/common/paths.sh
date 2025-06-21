@@ -8,14 +8,14 @@ COMMON_PATHS_SH_SOURCED=1
 
 commonDir="$(readlink -f "$(dirname "${BASH_SOURCE[0]-$0}")")"
 
-# Just for `isTestOnNixOS`
+# Just for `isTestOnBasedLinux`
 source "$commonDir/functions.sh"
 # shellcheck disable=SC1091
 source "${_NIX_TEST_BUILD_DIR}/common/subst-vars.sh"
 # Make sure shellcheck knows this will be defined by the above generated snippet
 : "${bash?}" "${bindir?}"
 
-if ! isTestOnNixOS; then
+if ! isTestOnBasedLinux; then
   export SHELL="$bash"
   export PATH="$bindir:$PATH"
 fi

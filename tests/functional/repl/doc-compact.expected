@@ -1,12 +1,12 @@
-Nix <nix version>
+Bsd <bsd version>
 Type :? for help.
 
-nix-repl> :l doc-comments.nix
+bsd-repl> :l doc-comments.bsd
 Added <number omitted> variables.
 
-nix-repl> :doc compact
+bsd-repl> :doc compact
 Function `compact`\
-  … defined at /path/to/tests/functional/repl/doc-comments.nix:27:5
+  … defined at /path/to/tests/functional/repl/doc-comments.bsd:27:5
 
 
 boom

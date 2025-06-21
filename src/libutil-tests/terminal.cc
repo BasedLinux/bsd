@@ -1,14 +1,14 @@
-#include "nix/util/util.hh"
-#include "nix/util/types.hh"
-#include "nix/util/terminal.hh"
-#include "nix/util/strings.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/types.hh"
+#include "bsd/util/terminal.hh"
+#include "bsd/util/strings.hh"
 
 #include <limits.h>
 #include <gtest/gtest.h>
 
 #include <numeric>
 
-namespace nix {
+namespace bsd {
 
 /* ----------------------------------------------------------------------------
  * filterANSIEscapes
@@ -74,4 +74,4 @@ TEST(filterANSIEscapes, osc8_bell_as_sep)
     ASSERT_EQ(filterANSIEscapes("\e]8;;http://example.com\a\\This is a link\e]8;;\a"), "\\This is a link");
 }
 
-} // namespace nix
+} // namespace bsd

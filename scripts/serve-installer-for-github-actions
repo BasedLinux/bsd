@@ -18,5 +18,5 @@ while ! curl -s "http://localhost:$PORT"; do
   fi
 done
 
-echo 'To install nix, run the following command:'
+echo 'To install bsd, run the following command:'
 echo "sh <(curl http://localhost:$PORT/install) --tarball-url-prefix http://localhost:$PORT"

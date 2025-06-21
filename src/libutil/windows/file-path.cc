@@ -3,11 +3,11 @@
 #include <iostream>
 #include <locale>
 
-#include "nix/util/file-path.hh"
-#include "nix/util/file-path-impl.hh"
-#include "nix/util/util.hh"
+#include "bsd/util/file-path.hh"
+#include "bsd/util/file-path-impl.hh"
+#include "bsd/util/util.hh"
 
-namespace nix {
+namespace bsd {
 
 std::optional<std::filesystem::path> maybePath(PathView path)
 {

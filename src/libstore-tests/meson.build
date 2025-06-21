@@ -1,4 +1,4 @@
-project('nix-store-tests', 'cpp',
+project('bsd-store-tests', 'cpp',
   version : files('.version'),
   default_options : [
     'cpp_std=c++2a',
@@ -12,21 +12,21 @@ project('nix-store-tests', 'cpp',
 
 cxx = meson.get_compiler('cpp')
 
-subdir('nix-meson-build-support/deps-lists')
+subdir('bsd-meson-build-support/deps-lists')
 
-nix_store = dependency('nix-store')
+bsd_store = dependency('bsd-store')
 
 deps_private_maybe_subproject = [
-  nix_store,
-  dependency('nix-store-c'),
-  dependency('nix-store-test-support'),
+  bsd_store,
+  dependency('bsd-store-c'),
+  dependency('bsd-store-test-support'),
 ]
 deps_public_maybe_subproject = [
 ]
-subdir('nix-meson-build-support/subprojects')
+subdir('bsd-meson-build-support/subprojects')
 
-subdir('nix-meson-build-support/export-all-symbols')
-subdir('nix-meson-build-support/windows-version')
+subdir('bsd-meson-build-support/export-all-symbols')
+subdir('bsd-meson-build-support/windows-version')
 
 sqlite = dependency('sqlite3', 'sqlite', version : '>=3.6.19')
 deps_private += sqlite
@@ -40,7 +40,7 @@ deps_private += gtest
 configdata = configuration_data()
 configdata.set_quoted('PACKAGE_VERSION', meson.project_version())
 
-configdata.set_quoted('NIX_STORE_DIR', nix_store.get_variable('storedir'))
+configdata.set_quoted('NIX_STORE_DIR', bsd_store.get_variable('storedir'))
 
 config_priv_h = configure_file(
   configuration : configdata,
@@ -50,7 +50,7 @@ config_priv_h = configure_file(
 gtest = dependency('gmock')
 deps_private += gtest
 
-subdir('nix-meson-build-support/common')
+subdir('bsd-meson-build-support/common')
 
 sources = files(
   'common-protocol.cc',
@@ -67,7 +67,7 @@ sources = files(
   'machines.cc',
   'nar-info-disk-cache.cc',
   'nar-info.cc',
-  'nix_api_store.cc',
+  'bsd_api_store.cc',
   'outputs-spec.cc',
   'path-info.cc',
   'path.cc',

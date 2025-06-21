@@ -1,6 +1,6 @@
 configure_file(
-  input : 'config.nix.in',
-  output : 'config.nix',
+  input : 'config.bsd.in',
+  output : 'config.bsd',
   configuration : test_confdata,
 )
 
@@ -19,9 +19,9 @@ suites += {
     'gc.sh',
     'import-from-derivation.sh',
     'new-build-cmd.sh',
-    'nix-copy.sh',
-    'nix-run.sh',
-    'nix-shell.sh',
+    'bsd-copy.sh',
+    'bsd-run.sh',
+    'bsd-shell.sh',
     'post-hook.sh',
     'recursive.sh',
     'repl.sh',

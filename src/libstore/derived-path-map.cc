@@ -1,7 +1,7 @@
-#include "nix/store/derived-path-map.hh"
-#include "nix/util/util.hh"
+#include "bsd/store/derived-path-map.hh"
+#include "bsd/util/util.hh"
 
-namespace nix {
+namespace bsd {
 
 template<typename V>
 typename DerivedPathMap<V>::ChildNode & DerivedPathMap<V>::ensureSlot(const SingleDerivedPath & k)
@@ -52,8 +52,8 @@ typename DerivedPathMap<V>::ChildNode * DerivedPathMap<V>::findSlot(const Single
 
 // instantiations
 
-#include "nix/store/build/derivation-goal.hh"
-namespace nix {
+#include "bsd/store/build/derivation-goal.hh"
+namespace bsd {
 
 template<>
 bool DerivedPathMap<StringSet>::ChildNode::operator == (

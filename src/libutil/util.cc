@@ -1,7 +1,7 @@
-#include "nix/util/util.hh"
-#include "nix/util/fmt.hh"
-#include "nix/util/file-path.hh"
-#include "nix/util/signals.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/fmt.hh"
+#include "bsd/util/file-path.hh"
+#include "bsd/util/signals.hh"
 
 #include <array>
 #include <cctype>
@@ -13,10 +13,10 @@
 #include <stdint.h>
 
 #ifdef NDEBUG
-#error "Nix may not be built with assertions disabled (i.e. with -DNDEBUG)."
+#error "Bsd may not be built with assertions disabled (i.e. with -DNDEBUG)."
 #endif
 
-namespace nix {
+namespace bsd {
 
 void initLibUtil() {
     // Check that exception handling works. Exception handling has been observed
@@ -27,11 +27,11 @@ void initLibUtil() {
     // When exception handling fails, the message tends to be printed by the
     // C++ runtime, followed by an abort.
     // For example on macOS we might see an error such as
-    // libc++abi: terminating with uncaught exception of type nix::SystemError: error: C++ exception handling is broken. This would appear to be a problem with the way Nix was compiled and/or linked and/or loaded.
+    // libc++abi: terminating with uncaught exception of type bsd::SystemError: error: C++ exception handling is broken. This would appear to be a problem with the way Bsd was compiled and/or linked and/or loaded.
     bool caught = false;
     try {
         throwExceptionSelfCheck();
-    } catch (const nix::Error & _e) {
+    } catch (const bsd::Error & _e) {
         caught = true;
     }
     // This is not actually the main point of this check, but let's make sure anyway:

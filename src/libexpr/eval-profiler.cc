@@ -1,9 +1,9 @@
-#include "nix/expr/eval-profiler.hh"
-#include "nix/expr/nixexpr.hh"
-#include "nix/expr/eval.hh"
-#include "nix/util/lru-cache.hh"
+#include "bsd/expr/eval-profiler.hh"
+#include "bsd/expr/bsdexpr.hh"
+#include "bsd/expr/eval.hh"
+#include "bsd/util/lru-cache.hh"
 
-namespace nix {
+namespace bsd {
 
 void EvalProfiler::preFunctionCallHook(EvalState & state, const Value & v, std::span<Value *> args, const PosIdx pos) {}
 
@@ -176,7 +176,7 @@ private:
 FrameInfo SampleStack::getPrimOpFrameInfo(const PrimOp & primOp, std::span<Value *> args, PosIdx pos)
 {
     auto derivationInfo = [&]() -> std::optional<FrameInfo> {
-        /* Here we rely a bit on the implementation details of libexpr/primops/derivation.nix
+        /* Here we rely a bit on the implementation details of libexpr/primops/derivation.bsd
            and derivationStrict primop. This is not ideal, but is necessary for
            the usefulness of the profiler. This might actually affect the evaluation,
            but the cost shouldn't be that high as to make the traces entirely inaccurate. */

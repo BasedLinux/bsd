@@ -6,13 +6,13 @@ clearStoreIfPossible
 
 RESULT=$TEST_ROOT/result
 
-nix-build -o "$RESULT" check-reqs.nix -A test1
+bsd-build -o "$RESULT" check-reqs.bsd -A test1
 
-(! nix-build -o "$RESULT" check-reqs.nix -A test2)
-(! nix-build -o "$RESULT" check-reqs.nix -A test3)
-(! nix-build -o "$RESULT" check-reqs.nix -A test4) 2>&1 | grepQuiet 'check-reqs-dep1'
-(! nix-build -o "$RESULT" check-reqs.nix -A test4) 2>&1 | grepQuiet 'check-reqs-dep2'
-(! nix-build -o "$RESULT" check-reqs.nix -A test5)
-(! nix-build -o "$RESULT" check-reqs.nix -A test6)
+(! bsd-build -o "$RESULT" check-reqs.bsd -A test2)
+(! bsd-build -o "$RESULT" check-reqs.bsd -A test3)
+(! bsd-build -o "$RESULT" check-reqs.bsd -A test4) 2>&1 | grepQuiet 'check-reqs-dep1'
+(! bsd-build -o "$RESULT" check-reqs.bsd -A test4) 2>&1 | grepQuiet 'check-reqs-dep2'
+(! bsd-build -o "$RESULT" check-reqs.bsd -A test5)
+(! bsd-build -o "$RESULT" check-reqs.bsd -A test6)
 
-nix-build -o "$RESULT" check-reqs.nix -A test7
+bsd-build -o "$RESULT" check-reqs.bsd -A test7

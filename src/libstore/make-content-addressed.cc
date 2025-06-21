@@ -1,7 +1,7 @@
-#include "nix/store/make-content-addressed.hh"
-#include "nix/util/references.hh"
+#include "bsd/store/make-content-addressed.hh"
+#include "bsd/util/references.hh"
 
-namespace nix {
+namespace bsd {
 
 std::map<StorePath, StorePath> makeContentAddressed(
     Store & srcStore,
@@ -52,7 +52,7 @@ std::map<StorePath, StorePath> makeContentAddressed(
             dstStore,
             path.name(),
             FixedOutputInfo {
-                .method = FileIngestionMethod::NixArchive,
+                .method = FileIngestionMethod::BsdArchive,
                 .hash = narModuloHash,
                 .references = std::move(refs),
             },

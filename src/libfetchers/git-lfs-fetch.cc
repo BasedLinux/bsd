@@ -1,10 +1,10 @@
-#include "nix/fetchers/git-lfs-fetch.hh"
-#include "nix/fetchers/git-utils.hh"
-#include "nix/store/filetransfer.hh"
-#include "nix/util/processes.hh"
-#include "nix/util/url.hh"
-#include "nix/util/users.hh"
-#include "nix/util/hash.hh"
+#include "bsd/fetchers/git-lfs-fetch.hh"
+#include "bsd/fetchers/git-utils.hh"
+#include "bsd/store/filetransfer.hh"
+#include "bsd/util/processes.hh"
+#include "bsd/util/url.hh"
+#include "bsd/util/users.hh"
+#include "bsd/util/hash.hh"
 
 #include <git2/attr.h>
 #include <git2/config.h>
@@ -13,7 +13,7 @@
 
 #include <nlohmann/json.hpp>
 
-namespace nix::lfs {
+namespace bsd::lfs {
 
 // if authHeader is "", downloadToSink assumes no auth is expected
 static void downloadToSink(
@@ -153,7 +153,7 @@ Fetch::Fetch(git_repository * repo, git_oid rev)
 
     const auto remoteUrl = lfs::getLfsEndpointUrl(repo);
 
-    this->url = nix::parseURL(nix::fixGitURL(remoteUrl)).canonicalise();
+    this->url = bsd::parseURL(bsd::fixGitURL(remoteUrl)).canonicalise();
 }
 
 bool Fetch::shouldFetch(const CanonPath & path) const
@@ -277,4 +277,4 @@ void Fetch::fetch(
     }
 }
 
-} // namespace nix::lfs
+} // namespace bsd::lfs

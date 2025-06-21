@@ -1,10 +1,10 @@
-#include "nix/util/experimental-features.hh"
-#include "nix/util/fmt.hh"
-#include "nix/util/util.hh"
+#include "bsd/util/experimental-features.hh"
+#include "bsd/util/fmt.hh"
+#include "bsd/util/util.hh"
 
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
 struct ExperimentalFeatureDetails
 {
@@ -37,7 +37,7 @@ constexpr std::array<ExperimentalFeatureDetails, numXpFeatures> xpFeatureDetails
             [__contentAddressed](@docroot@/language/advanced-attributes.md#adv-attr-__contentAddressed)
             for details.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/35",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/35",
     },
     {
         .tag = Xp::ImpureDerivations,
@@ -68,22 +68,22 @@ constexpr std::array<ExperimentalFeatureDetails, numXpFeatures> xpFeatureDetails
 
             This is a more explicit alternative to using [`builtins.currentTime`](@docroot@/language/builtins.md#builtins-currentTime).
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/42",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/42",
     },
     {
         .tag = Xp::Flakes,
         .name = "flakes",
         .description = R"(
-            Enable flakes. See the manual entry for [`nix
-            flake`](@docroot@/command-ref/new-cli/nix3-flake.md) for details.
+            Enable flakes. See the manual entry for [`bsd
+            flake`](@docroot@/command-ref/new-cli/bsd3-flake.md) for details.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/27",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/27",
     },
     {
         .tag = Xp::FetchTree,
         .name = "fetch-tree",
         .description = R"(
-            Enable the use of the [`fetchTree`](@docroot@/language/builtins.md#builtins-fetchTree) built-in function in the Nix language.
+            Enable the use of the [`fetchTree`](@docroot@/language/builtins.md#builtins-fetchTree) built-in function in the Bsd language.
 
             `fetchTree` exposes a generic interface for fetching remote file system trees from different types of remote sources.
             The [`flakes`](#xp-feature-flakes) feature flag always enables `fetch-tree`.
@@ -91,47 +91,47 @@ constexpr std::array<ExperimentalFeatureDetails, numXpFeatures> xpFeatureDetails
 
             Enabling just this feature serves as a "release candidate", allowing users to try it out in isolation.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/31",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/31",
     },
     {
-        .tag = Xp::NixCommand,
-        .name = "nix-command",
+        .tag = Xp::BsdCommand,
+        .name = "bsd-command",
         .description = R"(
-            Enable the new `nix` subcommands. See the manual on
-            [`nix`](@docroot@/command-ref/new-cli/nix.md) for details.
+            Enable the new `bsd` subcommands. See the manual on
+            [`bsd`](@docroot@/command-ref/new-cli/bsd.md) for details.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/28",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/28",
     },
     {
         .tag = Xp::GitHashing,
         .name = "git-hashing",
         .description = R"(
             Allow creating (content-addressed) store objects which are hashed via Git's hashing algorithm.
-            These store objects aren't understandable by older versions of Nix.
+            These store objects aren't understandable by older versions of Bsd.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/41",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/41",
     },
     {
-        .tag = Xp::RecursiveNix,
-        .name = "recursive-nix",
+        .tag = Xp::RecursiveBsd,
+        .name = "recursive-bsd",
         .description = R"(
-            Allow derivation builders to call Nix, and thus build derivations
+            Allow derivation builders to call Bsd, and thus build derivations
             recursively.
 
             Example:
 
             ```
-            with import <nixpkgs> {};
+            with import <bsdpkgs> {};
 
             runCommand "foo"
               {
-                 # Optional: let Nix know "foo" requires the experimental feature
-                 requiredSystemFeatures = [ "recursive-nix" ];
-                 buildInputs = [ nix jq ];
-                 NIX_PATH = "nixpkgs=${<nixpkgs>}";
+                 # Optional: let Bsd know "foo" requires the experimental feature
+                 requiredSystemFeatures = [ "recursive-bsd" ];
+                 buildInputs = [ bsd jq ];
+                 NIX_PATH = "bsdpkgs=${<bsdpkgs>}";
               }
               ''
-                hello=$(nix-build -E '(import <nixpkgs> {}).hello.overrideDerivation (args: { name = "recursive-hello"; })')
+                hello=$(bsd-build -E '(import <bsdpkgs> {}).hello.overrideDerivation (args: { name = "recursive-hello"; })')
 
                 mkdir -p $out/bin
                 ln -s $hello/bin/hello $out/bin/hello
@@ -142,42 +142,42 @@ constexpr std::array<ExperimentalFeatureDetails, numXpFeatures> xpFeatureDetails
             arbitrary substitutions. For example, running
 
             ```
-            nix-store -r /nix/store/kmwd1hq55akdb9sc7l3finr175dajlby-hello-2.10
+            bsd-store -r /bsd/store/kmwd1hq55akdb9sc7l3finr175dajlby-hello-2.10
             ```
 
             in the above `runCommand` script would be disallowed, as this could
             lead to derivations with hidden dependencies or breaking
-            reproducibility by relying on the current state of the Nix store. An
+            reproducibility by relying on the current state of the Bsd store. An
             exception would be if
-            `/nix/store/kmwd1hq55akdb9sc7l3finr175dajlby-hello-2.10` were
-            already in the build inputs or built by a previous recursive Nix
+            `/bsd/store/kmwd1hq55akdb9sc7l3finr175dajlby-hello-2.10` were
+            already in the build inputs or built by a previous recursive Bsd
             call.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/47",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/47",
     },
     {
         .tag = Xp::NoUrlLiterals,
         .name = "no-url-literals",
         .description = R"(
-            Disallow unquoted URLs as part of the Nix language syntax. The Nix
+            Disallow unquoted URLs as part of the Bsd language syntax. The Bsd
             language allows for URL literals, like so:
 
             ```
-            $ nix repl
-            Welcome to Nix 2.15.0. Type :? for help.
+            $ bsd repl
+            Welcome to Bsd 2.15.0. Type :? for help.
 
-            nix-repl> http://foo
+            bsd-repl> http://foo
             "http://foo"
             ```
 
-            But enabling this experimental feature will cause the Nix parser to
+            But enabling this experimental feature will cause the Bsd parser to
             throw an error when encountering a URL literal:
 
             ```
-            $ nix repl --extra-experimental-features 'no-url-literals'
-            Welcome to Nix 2.15.0. Type :? for help.
+            $ bsd repl --extra-experimental-features 'no-url-literals'
+            Welcome to Bsd 2.15.0. Type :? for help.
 
-            nix-repl> http://foo
+            bsd-repl> http://foo
             error: URL literals are disabled
 
             at «string»:1:1:
@@ -195,44 +195,44 @@ constexpr std::array<ExperimentalFeatureDetails, numXpFeatures> xpFeatureDetails
             containing parameters have to be quoted anyway, and unquoted URLs
             may confuse external tooling.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/44",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/44",
     },
     {
         .tag = Xp::FetchClosure,
         .name = "fetch-closure",
         .description = R"(
-            Enable the use of the [`fetchClosure`](@docroot@/language/builtins.md#builtins-fetchClosure) built-in function in the Nix language.
+            Enable the use of the [`fetchClosure`](@docroot@/language/builtins.md#builtins-fetchClosure) built-in function in the Bsd language.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/40",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/40",
     },
     {
         .tag = Xp::AutoAllocateUids,
         .name = "auto-allocate-uids",
         .description = R"(
-            Allows Nix to automatically pick UIDs for builds, rather than creating
-            `nixbld*` user accounts. See the [`auto-allocate-uids`](@docroot@/command-ref/conf-file.md#conf-auto-allocate-uids) setting for details.
+            Allows Bsd to automatically pick UIDs for builds, rather than creating
+            `bsdbld*` user accounts. See the [`auto-allocate-uids`](@docroot@/command-ref/conf-file.md#conf-auto-allocate-uids) setting for details.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/34",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/34",
     },
     {
         .tag = Xp::Cgroups,
         .name = "cgroups",
         .description = R"(
-            Allows Nix to execute builds inside cgroups. See
+            Allows Bsd to execute builds inside cgroups. See
             the [`use-cgroups`](@docroot@/command-ref/conf-file.md#conf-use-cgroups) setting for details.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/36",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/36",
     },
     {
         .tag = Xp::DaemonTrustOverride,
         .name = "daemon-trust-override",
         .description = R"(
             Allow forcing trusting or not trusting clients with
-            `nix-daemon`. This is useful for testing, but possibly also
-            useful for various experiments with `nix-daemon --stdio`
+            `bsd-daemon`. This is useful for testing, but possibly also
+            useful for various experiments with `bsd-daemon --stdio`
             networking.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/38",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/38",
     },
     {
         .tag = Xp::DynamicDerivations,
@@ -246,7 +246,7 @@ constexpr std::array<ExperimentalFeatureDetails, numXpFeatures> xpFeatureDetails
               - dependencies in derivations on the outputs of
                 derivations that are themselves derivations outputs.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/39",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/39",
     },
     {
         .tag = Xp::ParseTomlTimestamps,
@@ -254,7 +254,7 @@ constexpr std::array<ExperimentalFeatureDetails, numXpFeatures> xpFeatureDetails
         .description = R"(
             Allow parsing of timestamps in builtins.fromTOML.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/45",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/45",
     },
     {
         .tag = Xp::ReadOnlyLocalStore,
@@ -262,15 +262,15 @@ constexpr std::array<ExperimentalFeatureDetails, numXpFeatures> xpFeatureDetails
         .description = R"(
             Allow the use of the `read-only` parameter in [local store](@docroot@/store/types/local-store.md) URIs.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/46",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/46",
     },
     {
         .tag = Xp::LocalOverlayStore,
         .name = "local-overlay-store",
         .description = R"(
-            Allow the use of [local overlay store](@docroot@/command-ref/new-cli/nix3-help-stores.md#local-overlay-store).
+            Allow the use of [local overlay store](@docroot@/command-ref/new-cli/bsd3-help-stores.md#local-overlay-store).
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/50",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/50",
     },
     {
         .tag = Xp::ConfigurableImpureEnv,
@@ -278,15 +278,15 @@ constexpr std::array<ExperimentalFeatureDetails, numXpFeatures> xpFeatureDetails
         .description = R"(
             Allow the use of the [impure-env](@docroot@/command-ref/conf-file.md#conf-impure-env) setting.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/37",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/37",
     },
     {
         .tag = Xp::MountedSSHStore,
         .name = "mounted-ssh-store",
         .description = R"(
-            Allow the use of the [`mounted SSH store`](@docroot@/command-ref/new-cli/nix3-help-stores.html#experimental-ssh-store-with-filesystem-mounted).
+            Allow the use of the [`mounted SSH store`](@docroot@/command-ref/new-cli/bsd3-help-stores.html#experimental-ssh-store-with-filesystem-mounted).
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/43",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/43",
     },
     {
         .tag = Xp::VerifiedFetches,
@@ -294,15 +294,15 @@ constexpr std::array<ExperimentalFeatureDetails, numXpFeatures> xpFeatureDetails
         .description = R"(
             Enables verification of git commit signatures through the [`fetchGit`](@docroot@/language/builtins.md#builtins-fetchGit) built-in.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/48",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/48",
     },
     {
         .tag = Xp::PipeOperators,
         .name = "pipe-operators",
         .description = R"(
-            Add `|>` and `<|` operators to the Nix language.
+            Add `|>` and `<|` operators to the Bsd language.
         )",
-        .trackingUrl = "https://github.com/NixOS/nix/milestone/55",
+        .trackingUrl = "https://github.com/BasedLinux/bsd/milestone/55",
     },
     {
         .tag = Xp::BLAKE3Hashes,
@@ -368,7 +368,7 @@ std::set<ExperimentalFeature> parseFeatures(const StringSet & rawFeatures)
 }
 
 MissingExperimentalFeature::MissingExperimentalFeature(ExperimentalFeature feature)
-    : Error("experimental Nix feature '%1%' is disabled; add '--extra-experimental-features %1%' to enable it", showExperimentalFeature(feature))
+    : Error("experimental Bsd feature '%1%' is disabled; add '--extra-experimental-features %1%' to enable it", showExperimentalFeature(feature))
     , missingFeature(feature)
 {}
 

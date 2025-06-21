@@ -1,13 +1,13 @@
-# Nix Release Notes
+# Bsd Release Notes
 
-The Nix release cycle is calendar-based as follows:
+The Bsd release cycle is calendar-based as follows:
 
-Nix has a release cycle of roughly 6 weeks.
+Bsd has a release cycle of roughly 6 weeks.
 Notable changes and additions are announced in the release notes for each version.
 
-The supported Nix versions are:
+The supported Bsd versions are:
 - The latest release
-- The version used in the stable NixOS release, which is announced in the [NixOS release notes](https://nixos.org/manual/nixos/stable/release-notes.html#ch-release-notes).
+- The version used in the stable BasedLinux release, which is announced in the [BasedLinux release notes](https://basedlinux.org/manual/bsdos/stable/release-notes.html#ch-release-notes).
 
 Bugfixes and security issues are backported to every supported version.
 Patch releases are published as needed.

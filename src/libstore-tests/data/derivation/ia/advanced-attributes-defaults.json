@@ -7,7 +7,7 @@
   "env": {
     "builder": "/bin/bash",
     "name": "advanced-attributes-defaults",
-    "out": "/nix/store/1qsc7svv43m4dw2prh6mvyf7cai5czji-advanced-attributes-defaults",
+    "out": "/bsd/store/1qsc7svv43m4dw2prh6mvyf7cai5czji-advanced-attributes-defaults",
     "system": "my-system"
   },
   "inputDrvs": {},
@@ -15,7 +15,7 @@
   "name": "advanced-attributes-defaults",
   "outputs": {
     "out": {
-      "path": "/nix/store/1qsc7svv43m4dw2prh6mvyf7cai5czji-advanced-attributes-defaults"
+      "path": "/bsd/store/1qsc7svv43m4dw2prh6mvyf7cai5czji-advanced-attributes-defaults"
     }
   },
   "system": "my-system"

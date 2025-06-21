@@ -18,17 +18,17 @@ extern "C" {
 }
 #endif
 
-#include "nix/util/signals.hh"
-#include "nix/util/finally.hh"
-#include "nix/cmd/repl-interacter.hh"
-#include "nix/util/file-system.hh"
-#include "nix/cmd/repl.hh"
-#include "nix/util/environment-variables.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/cmd/repl-interacter.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/cmd/repl.hh"
+#include "bsd/util/environment-variables.hh"
 
-namespace nix {
+namespace bsd {
 
 namespace {
-// Used to communicate to NixRepl::getLine whether a signal occurred in ::readline.
+// Used to communicate to BsdRepl::getLine whether a signal occurred in ::readline.
 volatile sig_atomic_t g_signal_received = 0;
 
 void sigintHandler(int signo)
@@ -110,8 +110,8 @@ static int listPossibleCallback(char * s, char *** avp)
 
 ReadlineLikeInteracter::Guard ReadlineLikeInteracter::init(detail::ReplCompleterMixin * repl)
 {
-    // Allow nix-repl specific settings in .inputrc
-    rl_readline_name = "nix-repl";
+    // Allow bsd-repl specific settings in .inputrc
+    rl_readline_name = "bsd-repl";
     try {
         createDirs(dirOf(historyFile));
     } catch (SystemError & e) {
@@ -135,7 +135,7 @@ static constexpr const char * promptForType(ReplPromptType promptType)
 {
     switch (promptType) {
     case ReplPromptType::ReplPrompt:
-        return "nix-repl> ";
+        return "bsd-repl> ";
     case ReplPromptType::ContinuationPrompt:
         return "        > "; // 9 spaces + >
     }

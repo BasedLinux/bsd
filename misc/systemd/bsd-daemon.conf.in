@@ -1,0 +1,1 @@
+d @localstatedir@/bsd/daemon-socket 0755 root root - -

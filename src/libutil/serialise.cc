@@ -1,6 +1,6 @@
-#include "nix/util/serialise.hh"
-#include "nix/util/signals.hh"
-#include "nix/util/util.hh"
+#include "bsd/util/serialise.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/util.hh"
 
 #include <cstring>
 #include <cerrno>
@@ -11,13 +11,13 @@
 #ifdef _WIN32
 # include <fileapi.h>
 # include <winsock2.h>
-# include "nix/util/windows-error.hh"
+# include "bsd/util/windows-error.hh"
 #else
 # include <poll.h>
 #endif
 
 
-namespace nix {
+namespace bsd {
 
 
 void BufferedSink::operator () (std::string_view data)

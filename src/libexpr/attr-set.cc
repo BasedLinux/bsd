@@ -1,10 +1,10 @@
-#include "nix/expr/attr-set.hh"
-#include "nix/expr/eval-inline.hh"
+#include "bsd/expr/attr-set.hh"
+#include "bsd/expr/eval-inline.hh"
 
 #include <algorithm>
 
 
-namespace nix {
+namespace bsd {
 
 
 

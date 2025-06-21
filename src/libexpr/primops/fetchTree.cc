@@ -1,15 +1,15 @@
-#include "nix/fetchers/attrs.hh"
-#include "nix/expr/primops.hh"
-#include "nix/expr/eval-inline.hh"
-#include "nix/expr/eval-settings.hh"
-#include "nix/store/store-api.hh"
-#include "nix/fetchers/fetchers.hh"
-#include "nix/store/filetransfer.hh"
-#include "nix/fetchers/registry.hh"
-#include "nix/fetchers/tarball.hh"
-#include "nix/util/url.hh"
-#include "nix/expr/value-to-json.hh"
-#include "nix/fetchers/fetch-to-store.hh"
+#include "bsd/fetchers/attrs.hh"
+#include "bsd/expr/primops.hh"
+#include "bsd/expr/eval-inline.hh"
+#include "bsd/expr/eval-settings.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/fetchers/fetchers.hh"
+#include "bsd/store/filetransfer.hh"
+#include "bsd/fetchers/registry.hh"
+#include "bsd/fetchers/tarball.hh"
+#include "bsd/util/url.hh"
+#include "bsd/expr/value-to-json.hh"
+#include "bsd/fetchers/fetch-to-store.hh"
 
 #include <nlohmann/json.hpp>
 
@@ -17,7 +17,7 @@
 #include <iomanip>
 #include <regex>
 
-namespace nix {
+namespace bsd {
 
 void emitTreeAttrs(
     EvalState & state,
@@ -88,7 +88,7 @@ static void fetchTree(
     const FetchTreeParams & params = FetchTreeParams{}
 ) {
     fetchers::Input input { state.fetchSettings };
-    NixStringContext context;
+    BsdStringContext context;
     std::optional<std::string> type;
     auto fetcher = params.isFetchGit ? "fetchGit" : "fetchTree";
     if (params.isFetchGit) type = "git";
@@ -223,7 +223,7 @@ static RegisterPrimOp primop_fetchTree({
       Fetch a file system tree or a plain file using one of the supported backends and return an attribute set with:
 
       - the resulting fixed-output [store path](@docroot@/store/store-path.md)
-      - the corresponding [NAR](@docroot@/store/file-system-object/content-address.md#serial-nix-archive) hash
+      - the corresponding [NAR](@docroot@/store/file-system-object/content-address.md#serial-bsd-archive) hash
       - backend-specific metadata (currently not documented). <!-- TODO: document output attributes -->
 
       *input* must be an attribute set with the following attributes:
@@ -237,12 +237,12 @@ static RegisterPrimOp primop_fetchTree({
 
         The `narHash` parameter can be used to substitute the source of the tree.
         It also allows for verification of tree contents that may not be provided by the underlying transfer mechanism.
-        If `narHash` is set, the source is first looked up is the Nix store and [substituters](@docroot@/command-ref/conf-file.md#conf-substituters), and only fetched if not available.
+        If `narHash` is set, the source is first looked up is the Bsd store and [substituters](@docroot@/command-ref/conf-file.md#conf-substituters), and only fetched if not available.
 
       A subset of the output attributes of `fetchTree` can be re-used for subsequent calls to `fetchTree` to produce the same result again.
       That is, `fetchTree` is idempotent.
 
-      Downloads are cached in `$XDG_CACHE_HOME/nix`.
+      Downloads are cached in `$XDG_CACHE_HOME/bsd`.
       The remote source is fetched from the network if both are true:
       - A NAR hash is supplied and the corresponding store path is not [valid](@docroot@/glossary.md#gloss-validity), that is, not available in the store
 
@@ -262,7 +262,7 @@ static RegisterPrimOp primop_fetchTree({
 
       - `"file"`
 
-        Place a plain file into the Nix store.
+        Place a plain file into the Bsd store.
         This is similar to [`builtins.fetchurl`](@docroot@/language/builtins.md#builtins-fetchurl)
 
         - `url` (String, required)
@@ -273,7 +273,7 @@ static RegisterPrimOp primop_fetchTree({
 
             > **Example**
             >
-            > ```nix
+            > ```bsd
             > fetchTree {
             >   type = "file";
             >   url = "https://example.com/index.html";
@@ -295,32 +295,32 @@ static RegisterPrimOp primop_fetchTree({
 
             > **Example**
             >
-            > ```nix
+            > ```bsd
             > fetchTree {
             >   type = "file";
-            >   url = "file:///home/eelco/nix/README.md";
+            >   url = "file:///home/eelco/bsd/README.md";
             > }
             > ```
 
       - `"tarball"`
 
-        Download a tar archive and extract it into the Nix store.
+        Download a tar archive and extract it into the Bsd store.
         This has the same underlying implementation as [`builtins.fetchTarball`](@docroot@/language/builtins.md#builtins-fetchTarball)
 
         - `url` (String, required)
 
            > **Example**
            >
-           > ```nix
+           > ```bsd
            > fetchTree {
            >   type = "tarball";
-           >   url = "https://github.com/NixOS/nixpkgs/tarball/nixpkgs-23.11";
+           >   url = "https://github.com/BasedLinux/bsdpkgs/tarball/bsdpkgs-23.11";
            > }
            > ```
 
       - `"git"`
 
-        Fetch a Git tree and copy it to the Nix store.
+        Fetch a Git tree and copy it to the Bsd store.
         This is similar to [`builtins.fetchGit`](@docroot@/language/builtins.md#builtins-fetchGit).
 
         - `url` (String, required)
@@ -329,16 +329,16 @@ static RegisterPrimOp primop_fetchTree({
 
           > **Example**
           >
-          > ```nix
+          > ```bsd
           > fetchTree {
           >   type = "git";
-          >   url = "git@github.com:NixOS/nixpkgs.git";
+          >   url = "git@github.com:BasedLinux/bsdpkgs.git";
           > }
           > ```
 
           > **Note**
           >
-          > If the URL points to a local directory, and no `ref` or `rev` is given, Nix only considers files added to the Git index, as listed by `git ls-files` but use the *current file contents* of the Git working directory.
+          > If the URL points to a local directory, and no `ref` or `rev` is given, Bsd only considers files added to the Git index, as listed by `git ls-files` but use the *current file contents* of the Git working directory.
 
         - `ref` (String, optional)
 
@@ -385,7 +385,7 @@ static RegisterPrimOp primop_fetchTree({
 
         - `lastModified` (Integer, optional)
 
-          Unix timestamp of the fetched commit.
+          Ubsd timestamp of the fetched commit.
 
           If set, pass through the value to the output attribute set.
           Otherwise, generated from the fetched Git tree.
@@ -405,30 +405,30 @@ static RegisterPrimOp primop_fetchTree({
       - `"sourcehut"`
       - `"mercurial"`
 
-     *input* can also be a [URL-like reference](@docroot@/command-ref/new-cli/nix3-flake.md#flake-references).
+     *input* can also be a [URL-like reference](@docroot@/command-ref/new-cli/bsd3-flake.md#flake-references).
      The additional input types and the URL-like syntax requires the [`flakes` experimental feature](@docroot@/development/experimental-features.md#xp-feature-flakes) to be enabled.
 
       > **Example**
       >
       > Fetch a GitHub repository using the attribute set representation:
       >
-      > ```nix
+      > ```bsd
       > builtins.fetchTree {
       >   type = "github";
-      >   owner = "NixOS";
-      >   repo = "nixpkgs";
+      >   owner = "BasedLinux";
+      >   repo = "bsdpkgs";
       >   rev = "ae2e6b3958682513d28f7d633734571fb18285dd";
       > }
       > ```
       >
       > This evaluates to the following attribute set:
       >
-      > ```nix
+      > ```bsd
       > {
       >   lastModified = 1686503798;
       >   lastModifiedDate = "20230611171638";
       >   narHash = "sha256-rA9RqKP9OlBrgGCPvfd5HVAXDOy8k2SmPtB/ijShNXc=";
-      >   outPath = "/nix/store/l5m6qlvfs9sdw14ja3qbzpglcjlb6j1x-source";
+      >   outPath = "/bsd/store/l5m6qlvfs9sdw14ja3qbzpglcjlb6j1x-source";
       >   rev = "ae2e6b3958682513d28f7d633734571fb18285dd";
       >   shortRev = "ae2e6b3";
       > }
@@ -438,8 +438,8 @@ static RegisterPrimOp primop_fetchTree({
       >
       > Fetch the same GitHub repository using the URL-like syntax:
       >
-      >   ```nix
-      >   builtins.fetchTree "github:NixOS/nixpkgs/ae2e6b3958682513d28f7d633734571fb18285dd"
+      >   ```bsd
+      >   builtins.fetchTree "github:BasedLinux/bsdpkgs/ae2e6b3958682513d28f7d633734571fb18285dd"
       >   ```
     )",
     .fun = prim_fetchTree,
@@ -521,7 +521,7 @@ static void fetch(EvalState & state, const PosIdx pos, Value * * args, Value & v
         auto expectedPath = state.store->makeFixedOutputPath(
             name,
             FixedOutputInfo {
-                .method = unpack ? FileIngestionMethod::NixArchive : FileIngestionMethod::Flat,
+                .method = unpack ? FileIngestionMethod::BsdArchive : FileIngestionMethod::Flat,
                 .hash = *expectedHash,
                 .references = {}
             });
@@ -533,7 +533,7 @@ static void fetch(EvalState & state, const PosIdx pos, Value * * args, Value & v
     }
 
     // TODO: fetching may fail, yet the path may be substitutable.
-    //       https://github.com/NixOS/nix/issues/4313
+    //       https://github.com/BasedLinux/bsd/issues/4313
     auto storePath =
         unpack
         ? fetchToStore(
@@ -552,8 +552,8 @@ static void fetch(EvalState & state, const PosIdx pos, Value * * args, Value & v
             state.error<EvalError>(
                 "hash mismatch in file downloaded from '%s':\n  specified: %s\n  got:       %s",
                 *url,
-                expectedHash->to_string(HashFormat::Nix32, true),
-                hash.to_string(HashFormat::Nix32, true)
+                expectedHash->to_string(HashFormat::Bsd32, true),
+                hash.to_string(HashFormat::Bsd32, true)
             ).withExitStatus(102)
             .debugThrow();
         }
@@ -602,31 +602,31 @@ static RegisterPrimOp primop_fetchTarball({
       with `gzip`, `bzip2` or `xz`. If the tarball consists of a
       single directory, then the top-level path component of the files
       in the tarball is removed. The typical use of the function is to
-      obtain external Nix expression dependencies, such as a
-      particular version of Nixpkgs, e.g.
+      obtain external Bsd expression dependencies, such as a
+      particular version of Bsdpkgs, e.g.
 
-      ```nix
-      with import (fetchTarball https://github.com/NixOS/nixpkgs/archive/nixos-14.12.tar.gz) {};
+      ```bsd
+      with import (fetchTarball https://github.com/BasedLinux/bsdpkgs/archive/bsdos-14.12.tar.gz) {};
 
       stdenv.mkDerivation { … }
       ```
 
       The fetched tarball is cached for a certain amount of time (1
-      hour by default) in `~/.cache/nix/tarballs/`. You can change the
+      hour by default) in `~/.cache/bsd/tarballs/`. You can change the
       cache timeout either on the command line with `--tarball-ttl`
-      *number-of-seconds* or in the Nix configuration file by adding
+      *number-of-seconds* or in the Bsd configuration file by adding
       the line `tarball-ttl = ` *number-of-seconds*.
 
-      Note that when obtaining the hash with `nix-prefetch-url` the
+      Note that when obtaining the hash with `bsd-prefetch-url` the
       option `--unpack` is required.
 
       This function can also verify the contents against a hash. In that
       case, the function takes a set instead of a URL. The set requires
       the attribute `url` and the attribute `sha256`, e.g.
 
-      ```nix
+      ```bsd
       with import (fetchTarball {
-        url = "https://github.com/NixOS/nixpkgs/archive/nixos-14.12.tar.gz";
+        url = "https://github.com/BasedLinux/bsdpkgs/archive/bsdos-14.12.tar.gz";
         sha256 = "1jppksrfvbk5ypiqdz4cddxdl8z6zyzdb2srq8fcffr327ld5jj2";
       }) {};
 
@@ -681,7 +681,7 @@ static RegisterPrimOp primop_fetchGit({
         This option has no effect once `shallow` cloning is enabled.
 
         By default, the `ref` value is prefixed with `refs/heads/`.
-        As of 2.3.0, Nix doesn't prefix `refs/heads/` if `ref` starts with `refs/`.
+        As of 2.3.0, Bsd doesn't prefix `refs/heads/` if `ref` starts with `refs/`.
 
       - `submodules` (default: `false`)
 
@@ -741,7 +741,7 @@ static RegisterPrimOp primop_fetchGit({
         The public keys against which `rev` is verified if `verifyCommit` is enabled.
         Must be given as a list of attribute sets with the following form:
 
-        ```nix
+        ```bsd
         {
           key = "<public key>";
           type = "<key type>"; # optional, default: "ssh-ed25519"
@@ -755,7 +755,7 @@ static RegisterPrimOp primop_fetchGit({
 
         - To fetch a private repository over SSH:
 
-          ```nix
+          ```bsd
           builtins.fetchGit {
             url = "git@github.com:my-secret/repository.git";
             ref = "master";
@@ -765,9 +765,9 @@ static RegisterPrimOp primop_fetchGit({
 
         - To fetch an arbitrary reference:
 
-          ```nix
+          ```bsd
           builtins.fetchGit {
-            url = "https://github.com/NixOS/nix.git";
+            url = "https://github.com/BasedLinux/bsd.git";
             ref = "refs/heads/0.5-release";
           }
           ```
@@ -780,9 +780,9 @@ static RegisterPrimOp primop_fetchGit({
           branch for the non-default branch you will need to specify the
           the `ref` attribute as well.
 
-          ```nix
+          ```bsd
           builtins.fetchGit {
-            url = "https://github.com/nixos/nix.git";
+            url = "https://github.com/bsdos/bsd.git";
             rev = "841fcbd04755c7a2865c51c1e2d3b045976b7452";
             ref = "1.11-maintenance";
           }
@@ -800,36 +800,36 @@ static RegisterPrimOp primop_fetchGit({
         - If the revision you're looking for is in the default branch of
           the git repository you may omit the `ref` attribute.
 
-          ```nix
+          ```bsd
           builtins.fetchGit {
-            url = "https://github.com/nixos/nix.git";
+            url = "https://github.com/bsdos/bsd.git";
             rev = "841fcbd04755c7a2865c51c1e2d3b045976b7452";
           }
           ```
 
         - To fetch a specific tag:
 
-          ```nix
+          ```bsd
           builtins.fetchGit {
-            url = "https://github.com/nixos/nix.git";
+            url = "https://github.com/bsdos/bsd.git";
             ref = "refs/tags/1.9";
           }
           ```
 
         - To fetch the latest version of a remote branch:
 
-          ```nix
+          ```bsd
           builtins.fetchGit {
-            url = "ssh://git@github.com/nixos/nix.git";
+            url = "ssh://git@github.com/bsdos/bsd.git";
             ref = "master";
           }
           ```
 
         - To verify the commit signature:
 
-          ```nix
+          ```bsd
           builtins.fetchGit {
-            url = "ssh://git@github.com/nixos/nix.git";
+            url = "ssh://git@github.com/bsdos/bsd.git";
             verifyCommit = true;
             publicKeys = [
                 {
@@ -840,13 +840,13 @@ static RegisterPrimOp primop_fetchGit({
           }
           ```
 
-          Nix refetches the branch according to the [`tarball-ttl`](@docroot@/command-ref/conf-file.md#conf-tarball-ttl) setting.
+          Bsd refetches the branch according to the [`tarball-ttl`](@docroot@/command-ref/conf-file.md#conf-tarball-ttl) setting.
 
           This behavior is disabled in [pure evaluation mode](@docroot@/command-ref/conf-file.md#conf-pure-eval).
 
         - To fetch the content of a checked-out work directory:
 
-          ```nix
+          ```bsd
           builtins.fetchGit ./work-dir
           ```
 

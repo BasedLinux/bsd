@@ -1,11 +1,11 @@
-#include "nix/util/users.hh"
-#include "nix/util/config-global.hh"
-#include "nix/flake/settings.hh"
-#include "nix/flake/flake.hh"
+#include "bsd/util/users.hh"
+#include "bsd/util/config-global.hh"
+#include "bsd/flake/settings.hh"
+#include "bsd/flake/flake.hh"
 
 #include <nlohmann/json.hpp>
 
-namespace nix::flake {
+namespace bsd::flake {
 
 // setting name -> setting value -> allow or ignore.
 typedef std::map<std::string, std::map<std::string, bool>> TrustedList;
@@ -57,7 +57,7 @@ void ConfigFile::apply(const Settings & flakeSettings)
             auto tlname = get(trustedList, name);
             if (auto saved = tlname ? get(*tlname, valueS) : nullptr) {
                 trusted = *saved;
-                printInfo("Using saved setting for '%s = %s' from ~/.local/share/nix/trusted-settings.json.", name, valueS);
+                printInfo("Using saved setting for '%s = %s' from ~/.local/share/bsd/trusted-settings.json.", name, valueS);
             } else {
                 // FIXME: filter ANSI escapes, newlines, \r, etc.
                 if (std::tolower(logger->ask(fmt("do you want to allow configuration setting '%s' to be set to '" ANSI_RED "%s" ANSI_NORMAL "' (y/N)?", name, valueS)).value_or('n')) == 'y') {

@@ -1,6 +1,6 @@
 # Language Constructs
 
-This section covers syntax and semantics of the Nix language.
+This section covers syntax and semantics of the Bsd language.
 
 ## Basic Literals
 
@@ -15,7 +15,7 @@ See [String literals](string-literals.md).
   Numbers, which can be *integers* (like `123`) or *floating point*
   (like `123.43` or `.27e13`).
 
-  Integers in the Nix language are 64-bit [two's complement] signed integers, with a range of -9223372036854775808 to 9223372036854775807, inclusive.
+  Integers in the Bsd language are 64-bit [two's complement] signed integers, with a range of -9223372036854775808 to 9223372036854775807, inclusive.
 
   [two's complement]: https://en.wikipedia.org/wiki/Two%27s_complement
 
@@ -58,23 +58,23 @@ See [String literals](string-literals.md).
   `a.${foo}/b.${bar}` is a syntactically valid number division operation.
   `./a.${foo}/b.${bar}` is a path.
 
-  [Lookup path](./constructs/lookup-path.md) literals such as `<nixpkgs>` also resolve to path values.
+  [Lookup path](./constructs/lookup-path.md) literals such as `<bsdpkgs>` also resolve to path values.
 
 ## List {#list-literal}
 
 Lists are formed by enclosing a whitespace-separated list of values
 between square brackets. For example,
 
-```nix
-[ 123 ./foo.nix "abc" (f { x = y; }) ]
+```bsd
+[ 123 ./foo.bsd "abc" (f { x = y; }) ]
 ```
 
 defines a list of four elements, the last being the result of a call to
 the function `f`. Note that function calls have to be enclosed in
 parentheses. If they had been omitted, e.g.,
 
-```nix
-[ 123 ./foo.nix "abc" f { x = y; } ]
+```bsd
+[ 123 ./foo.bsd "abc" f { x = y; } ]
 ```
 
 the result would be a list of five elements, the fourth one being a
@@ -110,7 +110,7 @@ An attribute name may only occur once in each attribute set.
 > - `text` with the value `"Hello"`, a string
 > - `y` where the value is the result of applying the function `f` to the attribute set `{ bla = 456; }`
 >
-> ```nix
+> ```bsd
 > {
 >   x = 123;
 >   text = "Hello";
@@ -134,7 +134,7 @@ An attribute path is a dot-separated list of [names][name].
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > { a.b.c = 1; a.b.d = 2; }
 > ```
 >
@@ -151,7 +151,7 @@ Attribute names can also be set implicitly by using the [`inherit` keyword](#inh
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > { inherit (builtins) true; }
 > ```
 >
@@ -161,7 +161,7 @@ Attributes can be accessed with the [`.` operator](./operators.md#attribute-sele
 
 Example:
 
-```nix
+```bsd
 { a = "Foo"; b = "Bar"; }.a
 ```
 
@@ -171,11 +171,11 @@ It is possible to provide a default value in an attribute selection using the `o
 
 Example:
 
-```nix
+```bsd
 { a = "Foo"; b = "Bar"; }.c or "Xyzzy"
 ```
 
-```nix
+```bsd
 { a = "Foo"; b = "Bar"; }.c.d.e.f.g or "Xyzzy"
 ```
 
@@ -183,11 +183,11 @@ will both evaluate to `"Xyzzy"` because there is no `c` attribute in the set.
 
 You can use arbitrary double-quoted strings as attribute names:
 
-```nix
+```bsd
 { "$!@#?" = 123; }."$!@#?"
 ```
 
-```nix
+```bsd
 let bar = "bar"; in
 { "foo ${bar}" = 123; }."foo ${bar}"
 ```
@@ -196,12 +196,12 @@ Both will evaluate to `123`.
 
 Attribute names support [string interpolation]:
 
-```nix
+```bsd
 let bar = "foo"; in
 { foo = 123; }.${bar}
 ```
 
-```nix
+```bsd
 let bar = "foo"; in
 { ${bar} = 123; }.foo
 ```
@@ -212,7 +212,7 @@ In the special case where an attribute name inside of a set declaration
 evaluates to `null` (which is normally an error, as `null` cannot be coerced to
 a string), that attribute is simply not added to the set:
 
-```nix
+```bsd
 { ${if foo then "bar" else null} = true; }
 ```
 
@@ -223,7 +223,7 @@ itself a function or a set with a `__functor` attribute whose value is
 callable) can be applied as if it were a function, with the set itself
 passed in first , e.g.,
 
-```nix
+```bsd
 let add = { __functor = self: x: x + self.x; };
     inc = add // { x = 1; }; # inc is { x = 1; __functor = (...) }
 in inc 1 # equivalent of `add.__functor add 1` i.e. `1 + self.x`
@@ -241,7 +241,7 @@ Recursive sets are like normal [attribute sets](./types.md#attribute-set), but t
 
 Example:
 
-```nix
+```bsd
 rec {
   x = y;
   y = 123;
@@ -259,7 +259,7 @@ recursive set, they are.
 Recursive sets of course introduce the danger of infinite recursion. For
 example, the expression
 
-```nix
+```bsd
 rec {
   x = y;
   y = x;
@@ -276,7 +276,7 @@ A let-expression allows you to define local variables for an expression.
 
 Example:
 
-```nix
+```bsd
 let
   x = "foo";
   y = "bar";
@@ -292,7 +292,7 @@ This can be shortened using the `inherit` keyword.
 
 Example:
 
-```nix
+```bsd
 let x = 123; in
 {
   inherit x;
@@ -302,7 +302,7 @@ let x = 123; in
 
 is equivalent to
 
-```nix
+```bsd
 let x = 123; in
 {
   x = x;
@@ -320,9 +320,9 @@ It is also possible to inherit attributes from another attribute set.
 
 Example:
 
-In this fragment from `all-packages.nix`,
+In this fragment from `all-packages.bsd`,
 
-```nix
+```bsd
 graphviz = (import ../tools/graphics/graphviz) {
   inherit fetchurl stdenv libpng libjpeg expat x11 yacc;
   inherit (xorg) libXaw;
@@ -346,7 +346,7 @@ surrounding scope (`fetchurl` ... `yacc`), but also inherits `libXaw`
 
 Summarizing the fragment
 
-```nix
+```bsd
 ...
 inherit x y z;
 inherit (src-set) a b c;
@@ -355,7 +355,7 @@ inherit (src-set) a b c;
 
 is equivalent to
 
-```nix
+```bsd
 ...
 x = x; y = y; z = z;
 a = src-set.a; b = src-set.b; c = src-set.c;
@@ -368,7 +368,7 @@ defining a set.
 In a `let` expression, `inherit` can be used to selectively bring specific attributes of a set into scope. For example
 
 
-```nix
+```bsd
 let
   x = { a = 1; b = 2; };
   inherit (builtins) attrNames;
@@ -380,7 +380,7 @@ in
 
 is equivalent to
 
-```nix
+```bsd
 let
   x = { a = 1; b = 2; };
 in
@@ -395,7 +395,7 @@ both evaluate to `{ names = [ "a" "b" ]; }`.
 
 Functions have the following form:
 
-```nix
+```bsd
 pattern: body
 ```
 
@@ -406,7 +406,7 @@ three kinds of patterns:
   - If a pattern is a single identifier, then the function matches any
     argument. Example:
 
-    ```nix
+    ```bsd
     let negate = x: !x;
         concat = x: y: x + y;
     in if negate true then concat "foo" "bar" else ""
@@ -417,7 +417,7 @@ three kinds of patterns:
     parameterisation (i.e., only filling some of the arguments of a
     function); e.g.,
 
-    ```nix
+    ```bsd
     map (concat "foo") [ "bar" "bla" "abc" ]
     ```
 
@@ -428,7 +428,7 @@ three kinds of patterns:
     attributes to variables in the function body. For example, the
     function
 
-    ```nix
+    ```bsd
     { x, y, z }: z + y + x
     ```
 
@@ -436,7 +436,7 @@ three kinds of patterns:
     `y` and `z`. No other attributes are allowed. If you want to allow
     additional arguments, you can use an ellipsis (`...`):
 
-    ```nix
+    ```bsd
     { x, y, z, ... }: z + y + x
     ```
 
@@ -448,7 +448,7 @@ three kinds of patterns:
     specified by writing `name ?  e`, where *e* is an arbitrary
     expression. For example,
 
-    ```nix
+    ```bsd
     { x, y ? "foo", z ? "bar" }: z + y + x
     ```
 
@@ -458,13 +458,13 @@ three kinds of patterns:
   - An `@`-pattern provides a means of referring to the whole value
     being matched:
 
-    ```nix
+    ```bsd
     args@{ x, y, z, ... }: z + y + x + args.a
     ```
 
     but can also be written as:
 
-    ```nix
+    ```bsd
     { x, y, z, ... } @ args: z + y + x + args.a
     ```
 
@@ -481,7 +481,7 @@ three kinds of patterns:
     >
     > For instance
     >
-    > ```nix
+    > ```bsd
     > let
     >   f = args@{ a ? 23, ... }: [ a args ];
     > in
@@ -490,7 +490,7 @@ three kinds of patterns:
     >
     > is equivalent to
     >
-    > ```nix
+    > ```bsd
     > let
     >   f = args @ { ... }: [ (args.a or 23) args ];
     > in
@@ -499,7 +499,7 @@ three kinds of patterns:
     >
     > and both expressions will evaluate to:
     >
-    > ```nix
+    > ```bsd
     > [ 23 {} ]
     > ```
 
@@ -510,7 +510,7 @@ three kinds of patterns:
     >
     > A parameter (`x`), is used in the default value for another parameter (`y`):
     >
-    > ```nix
+    > ```bsd
     > let
     >   f = { x, y ? [x] }: { inherit y; };
     > in
@@ -519,7 +519,7 @@ three kinds of patterns:
     >
     > This evaluates to:
     >
-    > ```nix
+    > ```bsd
     > {
     >   y = [ 3 ];
     > }
@@ -529,7 +529,7 @@ three kinds of patterns:
     >
     > The binding of an `@` pattern, `args`, is used in the default value for a parameter, `x`:
     >
-    > ```nix
+    > ```bsd
     > let
     >   f = args@{ x ? args.a, ... }: x;
     > in
@@ -538,14 +538,14 @@ three kinds of patterns:
     >
     > This evaluates to:
     >
-    > ```nix
+    > ```bsd
     > 1
     > ```
 
 Note that functions do not have names. If you want to give them a name,
 you can bind them to an attribute, e.g.,
 
-```nix
+```bsd
 let concat = { x, y }: x + y;
 in concat { x = "foo"; y = "bar"; }
 ```
@@ -554,7 +554,7 @@ in concat { x = "foo"; y = "bar"; }
 
 Conditionals look like this:
 
-```nix
+```bsd
 if e1 then e2 else e3
 ```
 
@@ -566,7 +566,7 @@ where *e1* is an expression that should evaluate to a Boolean value
 Assertions are generally used to check that certain requirements on or
 between features and dependencies hold. They look like this:
 
-```nix
+```bsd
 assert e1; e2
 ```
 
@@ -574,10 +574,10 @@ where *e1* is an expression that should evaluate to a Boolean value. If
 it evaluates to `true`, *e2* is returned; otherwise expression
 evaluation is aborted and a backtrace is printed.
 
-Here is a Nix expression for the Subversion package that shows how
+Here is a Bsd expression for the Subversion package that shows how
 assertions can be used:.
 
-```nix
+```bsd
 { localServer ? false
 , httpServer ? false
 , sslSupport ? false
@@ -638,14 +638,14 @@ The points of interest are:
 
 A *with-expression*,
 
-```nix
+```bsd
 with e1; e2
 ```
 
 introduces the set *e1* into the lexical scope of the expression *e2*.
 For instance,
 
-```nix
+```bsd
 let as = { x = "foo"; y = "bar"; };
 in with as; x + y
 ```
@@ -654,29 +654,29 @@ evaluates to `"foobar"` since the `with` adds the `x` and `y` attributes
 of `as` to the lexical scope in the expression `x + y`. The most common
 use of `with` is in conjunction with the `import` function. E.g.,
 
-```nix
-with (import ./definitions.nix); ...
+```bsd
+with (import ./definitions.bsd); ...
 ```
 
-makes all attributes defined in the file `definitions.nix` available as
+makes all attributes defined in the file `definitions.bsd` available as
 if they were defined locally in a `let`-expression.
 
 The bindings introduced by `with` do not shadow bindings introduced by
 other means, e.g.
 
-```nix
+```bsd
 let a = 3; in with { a = 1; }; let a = 4; in with { a = 2; }; ...
 ```
 
 establishes the same scope as
 
-```nix
+```bsd
 let a = 1; in let a = 2; in let a = 3; in let a = 4; in ...
 ```
 
 Variables coming from outer `with` expressions *are* shadowed:
 
-```nix
+```bsd
 with { a = "outer"; };
 with { a = "inner"; };
 a
@@ -690,7 +690,7 @@ Does evaluate to `"inner"`.
 
   > **Example**
   >
-  > ```nix
+  > ```bsd
   > # A number
   > 2 # Equals 1 + 1
   > ```
@@ -703,7 +703,7 @@ Does evaluate to `"inner"`.
 
   > **Example**
   >
-  > ```nix
+  > ```bsd
   > /*
   > Block comments
   > can span multiple lines.
@@ -718,7 +718,7 @@ Does evaluate to `"inner"`.
 
   > **Example**
   >
-  > ```nix
+  > ```bsd
   > /* /* nope */ */ 1
   > ```
   >
@@ -735,7 +735,7 @@ Does evaluate to `"inner"`.
 
   > **Example**
   >
-  > ```nix
+  > ```bsd
   > /* /* nested *\/ */ 1
   > ```
   >

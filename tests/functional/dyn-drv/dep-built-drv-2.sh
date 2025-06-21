@@ -5,12 +5,12 @@ source common.sh
 # Store layer needs bugfix
 requireDaemonNewerThan "2.30pre20250515"
 
-TODO_NixOS # can't enable a sandbox feature easily
+TODO_BasedLinux # can't enable a sandbox feature easily
 
-enableFeatures 'recursive-nix'
+enableFeatures 'recursive-bsd'
 restartDaemon
 
-NIX_BIN_DIR="$(dirname "$(type -p nix)")"
+NIX_BIN_DIR="$(dirname "$(type -p bsd)")"
 export NIX_BIN_DIR
 
-nix build -L --file ./non-trivial.nix --no-link
+bsd build -L --file ./non-trivial.bsd --no-link

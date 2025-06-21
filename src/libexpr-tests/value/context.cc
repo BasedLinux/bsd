@@ -2,52 +2,52 @@
 #include <gtest/gtest.h>
 #include <rapidcheck/gtest.h>
 
-#include "nix/store/tests/path.hh"
-#include "nix/expr/tests/libexpr.hh"
-#include "nix/expr/tests/value/context.hh"
+#include "bsd/store/tests/path.hh"
+#include "bsd/expr/tests/libexpr.hh"
+#include "bsd/expr/tests/value/context.hh"
 
-namespace nix {
+namespace bsd {
 
 // Test a few cases of invalid string context elements.
 
-TEST(NixStringContextElemTest, empty_invalid) {
+TEST(BsdStringContextElemTest, empty_invalid) {
     EXPECT_THROW(
-        NixStringContextElem::parse(""),
-        BadNixStringContextElem);
+        BsdStringContextElem::parse(""),
+        BadBsdStringContextElem);
 }
 
-TEST(NixStringContextElemTest, single_bang_invalid) {
+TEST(BsdStringContextElemTest, single_bang_invalid) {
     EXPECT_THROW(
-        NixStringContextElem::parse("!"),
-        BadNixStringContextElem);
+        BsdStringContextElem::parse("!"),
+        BadBsdStringContextElem);
 }
 
-TEST(NixStringContextElemTest, double_bang_invalid) {
+TEST(BsdStringContextElemTest, double_bang_invalid) {
     EXPECT_THROW(
-        NixStringContextElem::parse("!!/"),
+        BsdStringContextElem::parse("!!/"),
         BadStorePath);
 }
 
-TEST(NixStringContextElemTest, eq_slash_invalid) {
+TEST(BsdStringContextElemTest, eq_slash_invalid) {
     EXPECT_THROW(
-        NixStringContextElem::parse("=/"),
+        BsdStringContextElem::parse("=/"),
         BadStorePath);
 }
 
-TEST(NixStringContextElemTest, slash_invalid) {
+TEST(BsdStringContextElemTest, slash_invalid) {
     EXPECT_THROW(
-        NixStringContextElem::parse("/"),
+        BsdStringContextElem::parse("/"),
         BadStorePath);
 }
 
 /**
  * Round trip (string <-> data structure) test for
- * `NixStringContextElem::Opaque`.
+ * `BsdStringContextElem::Opaque`.
  */
-TEST(NixStringContextElemTest, opaque) {
+TEST(BsdStringContextElemTest, opaque) {
     std::string_view opaque = "g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x";
-    auto elem = NixStringContextElem::parse(opaque);
-    auto * p = std::get_if<NixStringContextElem::Opaque>(&elem.raw);
+    auto elem = BsdStringContextElem::parse(opaque);
+    auto * p = std::get_if<BsdStringContextElem::Opaque>(&elem.raw);
     ASSERT_TRUE(p);
     ASSERT_EQ(p->path, StorePath { opaque });
     ASSERT_EQ(elem.to_string(), opaque);
@@ -55,12 +55,12 @@ TEST(NixStringContextElemTest, opaque) {
 
 /**
  * Round trip (string <-> data structure) test for
- * `NixStringContextElem::DrvDeep`.
+ * `BsdStringContextElem::DrvDeep`.
  */
-TEST(NixStringContextElemTest, drvDeep) {
+TEST(BsdStringContextElemTest, drvDeep) {
     std::string_view drvDeep = "=g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x.drv";
-    auto elem = NixStringContextElem::parse(drvDeep);
-    auto * p = std::get_if<NixStringContextElem::DrvDeep>(&elem.raw);
+    auto elem = BsdStringContextElem::parse(drvDeep);
+    auto * p = std::get_if<BsdStringContextElem::DrvDeep>(&elem.raw);
     ASSERT_TRUE(p);
     ASSERT_EQ(p->drvPath, StorePath { drvDeep.substr(1) });
     ASSERT_EQ(elem.to_string(), drvDeep);
@@ -68,12 +68,12 @@ TEST(NixStringContextElemTest, drvDeep) {
 
 /**
  * Round trip (string <-> data structure) test for a simpler
- * `NixStringContextElem::Built`.
+ * `BsdStringContextElem::Built`.
  */
-TEST(NixStringContextElemTest, built_opaque) {
+TEST(BsdStringContextElemTest, built_opaque) {
     std::string_view built = "!foo!g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x.drv";
-    auto elem = NixStringContextElem::parse(built);
-    auto * p = std::get_if<NixStringContextElem::Built>(&elem.raw);
+    auto elem = BsdStringContextElem::parse(built);
+    auto * p = std::get_if<BsdStringContextElem::Built>(&elem.raw);
     ASSERT_TRUE(p);
     ASSERT_EQ(p->output, "foo");
     ASSERT_EQ(*p->drvPath, ((SingleDerivedPath) SingleDerivedPath::Opaque {
@@ -84,9 +84,9 @@ TEST(NixStringContextElemTest, built_opaque) {
 
 /**
  * Round trip (string <-> data structure) test for a more complex,
- * inductive `NixStringContextElem::Built`.
+ * inductive `BsdStringContextElem::Built`.
  */
-TEST(NixStringContextElemTest, built_built) {
+TEST(BsdStringContextElemTest, built_built) {
     /**
      * We set these in tests rather than the regular globals so we don't have
      * to worry about race conditions if the tests run concurrently.
@@ -95,8 +95,8 @@ TEST(NixStringContextElemTest, built_built) {
     mockXpSettings.set("experimental-features", "dynamic-derivations ca-derivations");
 
     std::string_view built = "!foo!bar!g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x.drv";
-    auto elem = NixStringContextElem::parse(built, mockXpSettings);
-    auto * p = std::get_if<NixStringContextElem::Built>(&elem.raw);
+    auto elem = BsdStringContextElem::parse(built, mockXpSettings);
+    auto * p = std::get_if<BsdStringContextElem::Built>(&elem.raw);
     ASSERT_TRUE(p);
     ASSERT_EQ(p->output, "foo");
     auto * drvPath = std::get_if<SingleDerivedPath::Built>(&*p->drvPath);
@@ -112,21 +112,21 @@ TEST(NixStringContextElemTest, built_built) {
  * Without the right experimental features enabled, we cannot parse a
  * complex inductive string context element.
  */
-TEST(NixStringContextElemTest, built_built_xp) {
+TEST(BsdStringContextElemTest, built_built_xp) {
     ASSERT_THROW(
-        NixStringContextElem::parse("!foo!bar!g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x.drv"),        MissingExperimentalFeature);
+        BsdStringContextElem::parse("!foo!bar!g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x.drv"),        MissingExperimentalFeature);
 }
 
 #ifndef COVERAGE
 
 RC_GTEST_PROP(
-    NixStringContextElemTest,
+    BsdStringContextElemTest,
     prop_round_rip,
-    (const NixStringContextElem & o))
+    (const BsdStringContextElem & o))
 {
     ExperimentalFeatureSettings xpSettings;
     xpSettings.set("experimental-features", "dynamic-derivations");
-    RC_ASSERT(o == NixStringContextElem::parse(o.to_string(), xpSettings));
+    RC_ASSERT(o == BsdStringContextElem::parse(o.to_string(), xpSettings));
 }
 
 #endif

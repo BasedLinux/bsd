@@ -2,7 +2,7 @@
 
 This release has the following improvements:
 
-  - On Linux, when doing a chroot build, Nix now uses various namespace
+  - On Linux, when doing a chroot build, Bsd now uses various namespace
     features provided by the Linux kernel to improve build isolation.
     Namely:
     
@@ -25,37 +25,37 @@ This release has the following improvements:
       - The UTS namespace ensures that builders see a hostname of
         `localhost` rather than the actual hostname.
     
-      - The private mount namespace was already used by Nix to ensure
+      - The private mount namespace was already used by Bsd to ensure
         that the bind-mounts used to set up the chroot are cleaned up
         automatically.
 
-  - Build logs are now compressed using `bzip2`. The command `nix-store
+  - Build logs are now compressed using `bzip2`. The command `bsd-store
                     -l` decompresses them on the fly. This can be disabled by setting
     the option `build-compress-log` to `false`.
 
-  - The creation of build logs in `/nix/var/log/nix/drvs` can be
+  - The creation of build logs in `/bsd/var/log/bsd/drvs` can be
     disabled by setting the new option `build-keep-log` to `false`. This
     is useful, for instance, for Hydra build machines.
 
-  - Nix now reserves some space in `/nix/var/nix/db/reserved` to ensure
+  - Bsd now reserves some space in `/bsd/var/bsd/db/reserved` to ensure
     that the garbage collector can run successfully if the disk is full.
     This is necessary because SQLite transactions fail if the disk is
     full.
 
   - Added a basic `fetchurl` function. This is not intended to replace
-    the `fetchurl` in Nixpkgs, but is useful for bootstrapping; e.g., it
-    will allow us to get rid of the bootstrap binaries in the Nixpkgs
+    the `fetchurl` in Bsdpkgs, but is useful for bootstrapping; e.g., it
+    will allow us to get rid of the bootstrap binaries in the Bsdpkgs
     source tree and download them instead. You can use it by doing
-    `import <nix/fetchurl.nix> { url =
+    `import <bsd/fetchurl.bsd> { url =
                     url; sha256 =
                     "hash"; }`. (Shea Levy)
 
   - Improved RPM spec file. (Michel Alexandre Salim)
 
-  - Support for on-demand socket-based activation in the Nix daemon with
+  - Support for on-demand socket-based activation in the Bsd daemon with
     `systemd`.
 
-  - Added a manpage for nix.conf5.
+  - Added a manpage for bsd.conf5.
 
-  - When using the Nix daemon, the `-s` flag in `nix-env -qa` is now
+  - When using the Bsd daemon, the `-s` flag in `bsd-env -qa` is now
     much faster.

@@ -5,23 +5,23 @@ if [[ $(uname) != Linux ]]; then skipTest "Not running Linux"; fi
 
 export NIX_TESTS_CA_BY_DEFAULT=1
 
-enableFeatures 'recursive-nix'
+enableFeatures 'recursive-bsd'
 restartDaemon
 
 clearStore
 
 rm -f $TEST_ROOT/result
 
-EXTRA_PATH=$(dirname $(type -p nix)):$(dirname $(type -p jq))
+EXTRA_PATH=$(dirname $(type -p bsd)):$(dirname $(type -p jq))
 export EXTRA_PATH
 
 # Will produce a drv
-metaDrv=$(nix-instantiate ./recursive-mod-json.nix)
+metaDrv=$(bsd-instantiate ./recursive-mod-json.bsd)
 
 # computed "dynamic" derivation
-drv=$(nix-store -r $metaDrv)
+drv=$(bsd-store -r $metaDrv)
 
 # build that dyn drv
-res=$(nix-store -r $drv)
+res=$(bsd-store -r $drv)
 
 grep 'I am alive!' $res/hello

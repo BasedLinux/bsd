@@ -1,10 +1,10 @@
-#include "nix/expr/primops.hh"
-#include "nix/store/store-open.hh"
-#include "nix/store/realisation.hh"
-#include "nix/store/make-content-addressed.hh"
-#include "nix/util/url.hh"
+#include "bsd/expr/primops.hh"
+#include "bsd/store/store-open.hh"
+#include "bsd/store/realisation.hh"
+#include "bsd/store/make-content-addressed.hh"
+#include "bsd/util/url.hh"
 
-namespace nix {
+namespace bsd {
 
 /**
  * Handler for the content addressed case.
@@ -52,7 +52,7 @@ static void runFetchClosureWithRewrite(EvalState & state, const PosIdx pos, Stor
         throw Error({
             .msg = HintFmt(
                 "The 'toPath' value '%s' is input-addressed, so it can't possibly be the result of rewriting to a content-addressed path.\n\n"
-                "Set 'toPath' to an empty string to make Nix report the correct content-addressed path.",
+                "Set 'toPath' to an empty string to make Bsd report the correct content-addressed path.",
                 state.store->printStorePath(toPath)),
             .pos = state.positions[pos]
         });
@@ -128,7 +128,7 @@ static void prim_fetchClosure(EvalState & state, const PosIdx pos, Value * * arg
         };
 
         if (attrName == "fromPath") {
-            NixStringContext context;
+            BsdStringContext context;
             fromPath = state.coerceToStorePath(attr.pos, *attr.value, context, attrHint());
         }
 
@@ -139,7 +139,7 @@ static void prim_fetchClosure(EvalState & state, const PosIdx pos, Value * * arg
                 toPath = StorePathOrGap {};
             }
             else {
-                NixStringContext context;
+                BsdStringContext context;
                 toPath = state.coerceToStorePath(attr.pos, *attr.value, context, attrHint());
             }
         }
@@ -220,10 +220,10 @@ static RegisterPrimOp primop_fetchClosure({
 
       Example:
 
-      ```nix
+      ```bsd
       builtins.fetchClosure {
-        fromStore = "https://cache.nixos.org";
-        fromPath = /nix/store/ldbhlwhh39wha58rm61bkiiwm6j7211j-git-2.33.1;
+        fromStore = "https://cache.basedlinux.org";
+        fromPath = /bsd/store/ldbhlwhh39wha58rm61bkiiwm6j7211j-git-2.33.1;
       }
       ```
 
@@ -235,26 +235,26 @@ static RegisterPrimOp primop_fetchClosure({
 
       Example:
 
-      ```nix
+      ```bsd
       builtins.fetchClosure {
-        fromStore = "https://cache.nixos.org";
-        fromPath = /nix/store/r2jd6ygnmirm2g803mksqqjm4y39yi6i-git-2.33.1;
-        toPath = /nix/store/ldbhlwhh39wha58rm61bkiiwm6j7211j-git-2.33.1;
+        fromStore = "https://cache.basedlinux.org";
+        fromPath = /bsd/store/r2jd6ygnmirm2g803mksqqjm4y39yi6i-git-2.33.1;
+        toPath = /bsd/store/ldbhlwhh39wha58rm61bkiiwm6j7211j-git-2.33.1;
       }
       ```
 
-      This example fetches `/nix/store/r2jd...` from the specified binary cache,
+      This example fetches `/bsd/store/r2jd...` from the specified binary cache,
       and rewrites it into the content-addressed store path
-      `/nix/store/ldbh...`.
+      `/bsd/store/ldbh...`.
 
       Like the previous example, no extra configuration or privileges are required.
 
       To find out the correct value for `toPath` given a `fromPath`,
-      use [`nix store make-content-addressed`](@docroot@/command-ref/new-cli/nix3-store-make-content-addressed.md):
+      use [`bsd store make-content-addressed`](@docroot@/command-ref/new-cli/bsd3-store-make-content-addressed.md):
 
       ```console
-      # nix store make-content-addressed --from https://cache.nixos.org /nix/store/r2jd6ygnmirm2g803mksqqjm4y39yi6i-git-2.33.1
-      rewrote '/nix/store/r2jd6ygnmirm2g803mksqqjm4y39yi6i-git-2.33.1' to '/nix/store/ldbhlwhh39wha58rm61bkiiwm6j7211j-git-2.33.1'
+      # bsd store make-content-addressed --from https://cache.basedlinux.org /bsd/store/r2jd6ygnmirm2g803mksqqjm4y39yi6i-git-2.33.1
+      rewrote '/bsd/store/r2jd6ygnmirm2g803mksqqjm4y39yi6i-git-2.33.1' to '/bsd/store/ldbhlwhh39wha58rm61bkiiwm6j7211j-git-2.33.1'
       ```
 
       Alternatively, set `toPath = ""` and find the correct `toPath` in the error message.
@@ -263,20 +263,20 @@ static RegisterPrimOp primop_fetchClosure({
 
       Example:
 
-      ```nix
+      ```bsd
       builtins.fetchClosure {
-        fromStore = "https://cache.nixos.org";
-        fromPath = /nix/store/r2jd6ygnmirm2g803mksqqjm4y39yi6i-git-2.33.1;
+        fromStore = "https://cache.basedlinux.org";
+        fromPath = /bsd/store/r2jd6ygnmirm2g803mksqqjm4y39yi6i-git-2.33.1;
         inputAddressed = true;
       }
       ```
 
       It is possible to fetch an [input-addressed store path](@docroot@/glossary.md#gloss-input-addressed-store-object) and return it as is.
-      However, this is the least preferred way of invoking `fetchClosure`, because it requires that the input-addressed paths are trusted by the Nix configuration.
+      However, this is the least preferred way of invoking `fetchClosure`, because it requires that the input-addressed paths are trusted by the Bsd configuration.
 
       **`builtins.storePath`**
 
-      `fetchClosure` is similar to [`builtins.storePath`](#builtins-storePath) in that it allows you to use a previously built store path in a Nix expression.
+      `fetchClosure` is similar to [`builtins.storePath`](#builtins-storePath) in that it allows you to use a previously built store path in a Bsd expression.
       However, `fetchClosure` is more reproducible because it specifies a binary cache from which the path can be fetched.
       Also, using content-addressed store paths does not require users to configure [`trusted-public-keys`](@docroot@/command-ref/conf-file.md#conf-trusted-public-keys) to ensure their authenticity.
     )",

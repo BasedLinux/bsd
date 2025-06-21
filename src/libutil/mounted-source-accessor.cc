@@ -1,6 +1,6 @@
-#include "nix/util/source-accessor.hh"
+#include "bsd/util/source-accessor.hh"
 
-namespace nix {
+namespace bsd {
 
 struct MountedSourceAccessor : SourceAccessor
 {

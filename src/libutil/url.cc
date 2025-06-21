@@ -1,10 +1,10 @@
-#include "nix/util/url.hh"
-#include "nix/util/url-parts.hh"
-#include "nix/util/util.hh"
-#include "nix/util/split.hh"
-#include "nix/util/canon-path.hh"
+#include "bsd/util/url.hh"
+#include "bsd/util/url-parts.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/split.hh"
+#include "bsd/util/canon-path.hh"
 
-namespace nix {
+namespace bsd {
 
 std::regex refRegex(refRegexS, std::regex::ECMAScript);
 std::regex badGitRefRegex(badGitRefRegexS, std::regex::ECMAScript);

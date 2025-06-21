@@ -1,6 +1,6 @@
-#include "nix/store/store-dir-config.hh"
+#include "bsd/store/store-dir-config.hh"
 
-namespace nix {
+namespace bsd {
 
 void checkName(std::string_view name)
 {
@@ -52,7 +52,7 @@ StorePath::StorePath(std::string_view _baseName)
 }
 
 StorePath::StorePath(const Hash & hash, std::string_view _name)
-    : baseName((hash.to_string(HashFormat::Nix32, false) + "-").append(std::string(_name)))
+    : baseName((hash.to_string(HashFormat::Bsd32, false) + "-").append(std::string(_name)))
 {
     checkPathName(baseName, name());
 }
@@ -77,11 +77,11 @@ StorePath StorePath::random(std::string_view name)
 
 StorePath MixStoreDirMethods::parseStorePath(std::string_view path) const
 {
-    // On Windows, `/nix/store` is not a canonical path. More broadly it
+    // On Windows, `/bsd/store` is not a canonical path. More broadly it
     // is unclear whether this function should be using the native
     // notion of a canonical path at all. For example, it makes to
     // support remote stores whose store dir is a non-native path (e.g.
-    // Windows <-> Unix ssh-ing).
+    // Windows <-> Ubsd ssh-ing).
     auto p =
 #ifdef _WIN32
         path
@@ -90,7 +90,7 @@ StorePath MixStoreDirMethods::parseStorePath(std::string_view path) const
 #endif
         ;
     if (dirOf(p) != storeDir)
-        throw BadStorePath("path '%s' is not in the Nix store", p);
+        throw BadStorePath("path '%s' is not in the Bsd store", p);
     return StorePath(baseNameOf(p));
 }
 

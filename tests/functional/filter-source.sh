@@ -20,8 +20,8 @@ checkFilter() {
     test ! -L "$1/link"
 }
 
-nix-build ./filter-source.nix -o "$TEST_ROOT/filterout1"
+bsd-build ./filter-source.bsd -o "$TEST_ROOT/filterout1"
 checkFilter "$TEST_ROOT/filterout1"
 
-nix-build ./path.nix -o "$TEST_ROOT/filterout2"
+bsd-build ./path.bsd -o "$TEST_ROOT/filterout2"
 checkFilter "$TEST_ROOT/filterout2"

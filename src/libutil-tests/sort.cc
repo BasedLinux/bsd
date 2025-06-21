@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 #include <rapidcheck/gtest.h>
-#include "nix/util/sort.hh"
+#include "bsd/util/sort.hh"
 
 #include <vector>
 #include <list>
 #include <algorithm>
 #include <random>
 
-namespace nix {
+namespace bsd {
 
 struct MonotonicSubranges : public ::testing::Test
 {
@@ -271,4 +271,4 @@ RC_GTEST_TYPED_FIXTURE_PROP(SortProperty, peeksortSortedLinearComparisonComplexi
     RC_ASSERT(comparisonCount <= vec.size());
 }
 
-} // namespace nix
+} // namespace bsd

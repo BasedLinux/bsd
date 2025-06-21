@@ -1,16 +1,16 @@
-#include "nix/store/local-store.hh"
-#include "nix/store/machines.hh"
-#include "nix/store/build/worker.hh"
-#include "nix/store/build/substitution-goal.hh"
-#include "nix/store/build/drv-output-substitution-goal.hh"
-#include "nix/store/build/derivation-goal.hh"
-#include "nix/store/build/derivation-building-goal.hh"
+#include "bsd/store/local-store.hh"
+#include "bsd/store/machines.hh"
+#include "bsd/store/build/worker.hh"
+#include "bsd/store/build/substitution-goal.hh"
+#include "bsd/store/build/drv-output-substitution-goal.hh"
+#include "bsd/store/build/derivation-goal.hh"
+#include "bsd/store/build/derivation-building-goal.hh"
 #ifndef _WIN32 // TODO Enable building on Windows
-#  include "nix/store/build/hook-instance.hh"
+#  include "bsd/store/build/hook-instance.hh"
 #endif
-#include "nix/util/signals.hh"
+#include "bsd/util/signals.hh"
 
-namespace nix {
+namespace bsd {
 
 Worker::Worker(Store & store, Store & evalStore)
     : act(*logger, actRealise)
@@ -165,13 +165,13 @@ static void removeGoal(std::shared_ptr<DerivationGoal> goal, std::map<K, Derived
 void Worker::removeGoal(GoalPtr goal)
 {
     if (auto drvGoal = std::dynamic_pointer_cast<DerivationGoal>(goal))
-        nix::removeGoal(drvGoal, derivationGoals.map);
+        bsd::removeGoal(drvGoal, derivationGoals.map);
     else if (auto drvBuildingGoal = std::dynamic_pointer_cast<DerivationBuildingGoal>(goal))
-        nix::removeGoal(drvBuildingGoal, derivationBuildingGoals);
+        bsd::removeGoal(drvBuildingGoal, derivationBuildingGoals);
     else if (auto subGoal = std::dynamic_pointer_cast<PathSubstitutionGoal>(goal))
-        nix::removeGoal(subGoal, substitutionGoals);
+        bsd::removeGoal(subGoal, substitutionGoals);
     else if (auto subGoal = std::dynamic_pointer_cast<DrvOutputSubstitutionGoal>(goal))
-        nix::removeGoal(subGoal, drvOutputSubstitutionGoals);
+        bsd::removeGoal(subGoal, drvOutputSubstitutionGoals);
     else
         assert(false);
 
@@ -308,7 +308,7 @@ void Worker::waitForAWhile(GoalPtr goal)
 
 void Worker::run(const Goals & _topGoals)
 {
-    std::vector<nix::DerivedPath> topPaths;
+    std::vector<bsd::DerivedPath> topPaths;
 
     for (auto & i : _topGoals) {
         topGoals.insert(i);
@@ -366,7 +366,7 @@ void Worker::run(const Goals & _topGoals)
                     Unable to start any build;
                     either increase '--max-jobs' or enable remote builds.
 
-                    For more information run 'man nix.conf' and search for '/machines'.
+                    For more information run 'man bsd.conf' and search for '/machines'.
                     )"
                 );
             else
@@ -375,7 +375,7 @@ void Worker::run(const Goals & _topGoals)
                     Unable to start any build;
                     remote machines may not have all required system features.
 
-                    For more information run 'man nix.conf' and search for '/machines'.
+                    For more information run 'man bsd.conf' and search for '/machines'.
                     )"
                 );
 
@@ -547,7 +547,7 @@ bool Worker::pathContentsGood(const StorePath & path)
     else {
         auto current = hashPath(
             {store.getFSAccessor(), CanonPath(path.to_string())},
-            FileIngestionMethod::NixArchive, info->narHash.algo).first;
+            FileIngestionMethod::BsdArchive, info->narHash.algo).first;
         Hash nullHash(HashAlgorithm::SHA256);
         res = info->narHash == nullHash || info->narHash == current;
     }

@@ -1,7 +1,7 @@
-#include "nix/util/suggestions.hh"
+#include "bsd/util/suggestions.hh"
 #include <gtest/gtest.h>
 
-namespace nix {
+namespace bsd {
 
     struct LevenshteinDistanceParam {
         std::string s1, s2;

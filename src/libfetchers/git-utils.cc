@@ -1,13 +1,13 @@
-#include "nix/fetchers/git-utils.hh"
-#include "nix/fetchers/git-lfs-fetch.hh"
-#include "nix/fetchers/cache.hh"
-#include "nix/fetchers/fetch-settings.hh"
-#include "nix/util/finally.hh"
-#include "nix/util/processes.hh"
-#include "nix/util/signals.hh"
-#include "nix/util/users.hh"
-#include "nix/util/fs-sink.hh"
-#include "nix/util/sync.hh"
+#include "bsd/fetchers/git-utils.hh"
+#include "bsd/fetchers/git-lfs-fetch.hh"
+#include "bsd/fetchers/cache.hh"
+#include "bsd/fetchers/fetch-settings.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/processes.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/users.hh"
+#include "bsd/util/fs-sink.hh"
+#include "bsd/util/sync.hh"
 
 #include <git2/attr.h>
 #include <git2/blob.h>
@@ -58,7 +58,7 @@ bool operator == (const git_oid & oid1, const git_oid & oid2)
     return git_oid_equal(&oid1, &oid2);
 }
 
-namespace nix {
+namespace bsd {
 
 struct GitSourceAccessor;
 
@@ -609,7 +609,7 @@ struct GitRepoImpl : GitRepo, std::enable_shared_from_this<GitRepoImpl>
             } catch (Error & e) {
                 e.addTrace({}, "while decoding public key '%s' used for git signature", k.key);
             }
-            auto fingerprint = trim(hashString(HashAlgorithm::SHA256, keyDecoded).to_string(nix::HashFormat::Base64, false), "=");
+            auto fingerprint = trim(hashString(HashAlgorithm::SHA256, keyDecoded).to_string(bsd::HashFormat::Base64, false), "=");
             auto escaped_fingerprint = std::regex_replace(fingerprint, std::regex("\\+"), "\\+" );
             re += "(" + escaped_fingerprint + ")";
         }
@@ -1273,7 +1273,7 @@ std::vector<std::tuple<GitRepoImpl::Submodule, Hash>> GitRepoImpl::getSubmodules
     /* Parse it and get the revision of each submodule. */
     auto configS = accessor->readFile(modulesFile);
 
-    auto [fdTemp, pathTemp] = createTempFile("nix-git-submodules");
+    auto [fdTemp, pathTemp] = createTempFile("bsd-git-submodules");
     try {
         writeFull(fdTemp.get(), configS);
     } catch (SysError & e) {

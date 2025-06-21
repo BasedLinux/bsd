@@ -1,6 +1,6 @@
 # Data Types
 
-Every value in the Nix language has one of the following types:
+Every value in the Bsd language has one of the following types:
 
 * [Integer](#type-int)
 * [Float](#type-float)
@@ -17,7 +17,7 @@ Every value in the Nix language has one of the following types:
 
 ### Integer {#type-int}
 
-An _integer_ in the Nix language is a signed 64-bit integer.
+An _integer_ in the Bsd language is a signed 64-bit integer.
 
 Non-negative integers can be expressed as [integer literals](syntax.md#number-literal).
 Negative integers are created with the [arithmetic negation operator](./operators.md#arithmetic).
@@ -25,7 +25,7 @@ The function [`builtins.isInt`](builtins.md#builtins-isInt) can be used to deter
 
 ### Float {#type-float}
 
-A _float_ in the Nix language is a 64-bit [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754) floating-point number.
+A _float_ in the Bsd language is a 64-bit [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754) floating-point number.
 
 Most non-negative floats can be expressed as [float literals](syntax.md#number-literal).
 Negative floats are created with the [arithmetic negation operator](./operators.md#arithmetic).
@@ -33,7 +33,7 @@ The function [`builtins.isFloat`](builtins.md#builtins-isFloat) can be used to d
 
 ### Boolean {#type-bool}
 
-A _boolean_ in the Nix language is one of _true_ or _false_.
+A _boolean_ in the Bsd language is one of _true_ or _false_.
 
 <!-- TODO: mention the top-level environment -->
 
@@ -42,15 +42,15 @@ The function [`builtins.isBool`](builtins.md#builtins-isBool) can be used to det
 
 ### String {#type-string}
 
-A _string_ in the Nix language is an immutable, finite-length sequence of bytes, along with a [string context](string-context.md).
-Nix does not assume or support working natively with character encodings.
+A _string_ in the Bsd language is an immutable, finite-length sequence of bytes, along with a [string context](string-context.md).
+Bsd does not assume or support working natively with character encodings.
 
 String values without string context can be expressed as [string literals](string-literals.md).
 The function [`builtins.isString`](builtins.md#builtins-isString) can be used to determine if a value is a string.
 
 ### Path {#type-path}
 
-A _path_ in the Nix language is an immutable, finite-length sequence of bytes starting with `/`, representing a POSIX-style, canonical file system path.
+A _path_ in the Bsd language is an immutable, finite-length sequence of bytes starting with `/`, representing a POSIX-style, canonical file system path.
 Path values are distinct from string values, even if they contain the same sequence of bytes.
 Operations that produce paths will simplify the result as the standard C function [`realpath`] would, except that there is no symbolic link resolution.
 
@@ -63,8 +63,8 @@ Paths are suitable for referring to local files, and are often preferable over s
 
 [base directory]: @docroot@/glossary.md#gloss-base-directory
 
-A file is not required to exist at a given path in order for that path value to be valid, but a path that is converted to a string with [string interpolation] or [string-and-path concatenation] must resolve to a readable file or directory which will be copied into the Nix store.
-For instance, evaluating `"${./foo.txt}"` will cause `foo.txt` from the same directory to be copied into the Nix store and result in the string `"/nix/store/<hash>-foo.txt"`.
+A file is not required to exist at a given path in order for that path value to be valid, but a path that is converted to a string with [string interpolation] or [string-and-path concatenation] must resolve to a readable file or directory which will be copied into the Bsd store.
+For instance, evaluating `"${./foo.txt}"` will cause `foo.txt` from the same directory to be copied into the Bsd store and result in the string `"/bsd/store/<hash>-foo.txt"`.
 Operations such as [`import`] can also expect a path to resolve to a readable file or directory.
 
 [string interpolation]: string-interpolation.md#interpolated-expression
@@ -73,9 +73,9 @@ Operations such as [`import`] can also expect a path to resolve to a readable fi
 
 > **Note**
 >
-> The Nix language assumes that all input files will remain _unchanged_ while evaluating a Nix expression.
-> For example, assume you used a file path in an interpolated string during a `nix repl` session.
-> Later in the same session, after having changed the file contents, evaluating the interpolated string with the file path again might not return a new [store path], since Nix might not re-read the file contents.
+> The Bsd language assumes that all input files will remain _unchanged_ while evaluating a Bsd expression.
+> For example, assume you used a file path in an interpolated string during a `bsd repl` session.
+> Later in the same session, after having changed the file contents, evaluating the interpolated string with the file path again might not return a new [store path], since Bsd might not re-read the file contents.
 > Use `:r` to reset the repl as needed.
 
 [store path]: @docroot@/store/store-path.md
@@ -85,7 +85,7 @@ The function [`builtins.isPath`](builtins.md#builtins-isPath) can be used to det
 
 ### Null {#type-null}
 
-There is a single value of type _null_ in the Nix language.
+There is a single value of type _null_ in the Bsd language.
 
 <!-- TODO: mention the top-level environment -->
 
@@ -116,5 +116,5 @@ The function [`builtins.isFunction`](builtins.md#builtins-isFunction) can be use
 
 ## External {#type-external}
 
-An _external_ value is an opaque value created by a Nix [plugin](../command-ref/conf-file.md#conf-plugin-files).
-Such a value can be substituted in Nix expressions but only created and used by plugin code.
+An _external_ value is an opaque value created by a Bsd [plugin](../command-ref/conf-file.md#conf-plugin-files).
+Such a value can be substituted in Bsd expressions but only created and used by plugin code.

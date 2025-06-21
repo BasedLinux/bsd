@@ -6,22 +6,22 @@ set -o pipefail
 # System specific settings
 export NIX_FIRST_BUILD_UID="${NIX_FIRST_BUILD_UID:-30001}"
 export NIX_BUILD_GROUP_ID="${NIX_BUILD_GROUP_ID:-30000}"
-export NIX_BUILD_USER_NAME_TEMPLATE="nixbld%d"
+export NIX_BUILD_USER_NAME_TEMPLATE="bsdbld%d"
 
-readonly SERVICE_SRC=/lib/systemd/system/nix-daemon.service
-readonly SERVICE_DEST=/etc/systemd/system/nix-daemon.service
+readonly SERVICE_SRC=/lib/systemd/system/bsd-daemon.service
+readonly SERVICE_DEST=/etc/systemd/system/bsd-daemon.service
 
-readonly SOCKET_SRC=/lib/systemd/system/nix-daemon.socket
-readonly SOCKET_DEST=/etc/systemd/system/nix-daemon.socket
+readonly SOCKET_SRC=/lib/systemd/system/bsd-daemon.socket
+readonly SOCKET_DEST=/etc/systemd/system/bsd-daemon.socket
 
-readonly TMPFILES_SRC=/lib/tmpfiles.d/nix-daemon.conf
-readonly TMPFILES_DEST=/etc/tmpfiles.d/nix-daemon.conf
+readonly TMPFILES_SRC=/lib/tmpfiles.d/bsd-daemon.conf
+readonly TMPFILES_DEST=/etc/tmpfiles.d/bsd-daemon.conf
 
 # Path for the systemd override unit file to contain the proxy settings
 readonly SERVICE_OVERRIDE=${SERVICE_DEST}.d/override.conf
 
 create_systemd_override() {
-     header "Configuring proxy for the nix-daemon service"
+     header "Configuring proxy for the bsd-daemon service"
     _sudo "create directory for systemd unit override" mkdir -p "$(dirname "$SERVICE_OVERRIDE")"
     cat <<EOF | _sudo "create systemd unit override" tee "$SERVICE_OVERRIDE"
 [Service]
@@ -58,18 +58,18 @@ poly_cure_artifacts() {
 }
 
 poly_service_installed_check() {
-    [ "$(systemctl is-enabled nix-daemon.service)" = "linked" ] \
-        || [ "$(systemctl is-enabled nix-daemon.socket)" = "enabled" ]
+    [ "$(systemctl is-enabled bsd-daemon.service)" = "linked" ] \
+        || [ "$(systemctl is-enabled bsd-daemon.socket)" = "enabled" ]
 }
 
 poly_service_uninstall_directions() {
         cat <<EOF
 $1. Delete the systemd service and socket units
 
-  sudo systemctl stop nix-daemon.socket
-  sudo systemctl stop nix-daemon.service
-  sudo systemctl disable nix-daemon.socket
-  sudo systemctl disable nix-daemon.service
+  sudo systemctl stop bsd-daemon.socket
+  sudo systemctl stop bsd-daemon.service
+  sudo systemctl disable bsd-daemon.socket
+  sudo systemctl disable bsd-daemon.service
   sudo systemctl daemon-reload
 EOF
 }
@@ -77,7 +77,7 @@ EOF
 poly_service_setup_note() {
     cat <<EOF
  - load and start a service (at $SERVICE_DEST
-   and $SOCKET_DEST) for nix-daemon
+   and $SOCKET_DEST) for bsd-daemon
 
 EOF
 }
@@ -87,42 +87,42 @@ poly_extra_try_me_commands() {
         :
     else
         cat <<EOF
-  $ sudo nix-daemon
+  $ sudo bsd-daemon
 EOF
     fi
 }
 
-poly_configure_nix_daemon_service() {
+poly_configure_bsd_daemon_service() {
     if [ -e /run/systemd/system ]; then
-        task "Setting up the nix-daemon systemd service"
+        task "Setting up the bsd-daemon systemd service"
 
-        _sudo "to create parent of the nix-daemon tmpfiles config" \
+        _sudo "to create parent of the bsd-daemon tmpfiles config" \
               mkdir -p "$(dirname "$TMPFILES_DEST")"
 
-        _sudo "to create the nix-daemon tmpfiles config" \
-              ln -sfn "/nix/var/nix/profiles/default$TMPFILES_SRC" "$TMPFILES_DEST"
+        _sudo "to create the bsd-daemon tmpfiles config" \
+              ln -sfn "/bsd/var/bsd/profiles/default$TMPFILES_SRC" "$TMPFILES_DEST"
 
         _sudo "to run systemd-tmpfiles once to pick that path up" \
-             systemd-tmpfiles --create --prefix=/nix/var/nix
+             systemd-tmpfiles --create --prefix=/bsd/var/bsd
 
-        _sudo "to set up the nix-daemon service" \
-              systemctl link "/nix/var/nix/profiles/default$SERVICE_SRC"
+        _sudo "to set up the bsd-daemon service" \
+              systemctl link "/bsd/var/bsd/profiles/default$SERVICE_SRC"
 
-        _sudo "to set up the nix-daemon socket service" \
-              systemctl enable "/nix/var/nix/profiles/default$SOCKET_SRC"
+        _sudo "to set up the bsd-daemon socket service" \
+              systemctl enable "/bsd/var/bsd/profiles/default$SOCKET_SRC"
 
         handle_network_proxy
 
-        _sudo "to load the systemd unit for nix-daemon" \
+        _sudo "to load the systemd unit for bsd-daemon" \
               systemctl daemon-reload
 
-        _sudo "to start the nix-daemon.socket" \
-              systemctl start nix-daemon.socket
+        _sudo "to start the bsd-daemon.socket" \
+              systemctl start bsd-daemon.socket
 
-        _sudo "to start the nix-daemon.service" \
-              systemctl restart nix-daemon.service
+        _sudo "to start the bsd-daemon.service" \
+              systemctl restart bsd-daemon.service
     else
-        reminder "I don't support your init system yet; you may want to add nix-daemon manually."
+        reminder "I don't support your init system yet; you may want to add bsd-daemon manually."
     fi
 }
 
@@ -135,7 +135,7 @@ poly_group_id_get() {
 }
 
 poly_create_build_group() {
-    _sudo "Create the Nix build group, $NIX_BUILD_GROUP_NAME" \
+    _sudo "Create the Bsd build group, $NIX_BUILD_GROUP_NAME" \
           groupadd -g "$NIX_BUILD_GROUP_ID" --system \
           "$NIX_BUILD_GROUP_NAME" >&2
 }
@@ -197,7 +197,7 @@ poly_user_primary_group_get() {
 }
 
 poly_user_primary_group_set() {
-    _sudo "to let the nix daemon use this user for builds (this might seem redundant, but there are two concepts of group membership)" \
+    _sudo "to let the bsd daemon use this user for builds (this might seem redundant, but there are two concepts of group membership)" \
           usermod --gid "$2" "$1"
 
 }
@@ -207,10 +207,10 @@ poly_create_build_user() {
     uid=$2
     builder_num=$3
 
-    _sudo "Creating the Nix build user, $username" \
+    _sudo "Creating the Bsd build user, $username" \
           useradd \
           --home-dir /var/empty \
-          --comment "Nix build user $builder_num" \
+          --comment "Bsd build user $builder_num" \
           --gid "$NIX_BUILD_GROUP_ID" \
           --groups "$NIX_BUILD_GROUP_NAME" \
           --no-user-group \

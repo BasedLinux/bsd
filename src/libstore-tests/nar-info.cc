@@ -1,13 +1,13 @@
 #include <nlohmann/json.hpp>
 #include <gtest/gtest.h>
 
-#include "nix/store/path-info.hh"
-#include "nix/store/nar-info.hh"
+#include "bsd/store/path-info.hh"
+#include "bsd/store/nar-info.hh"
 
-#include "nix/util/tests/characterization.hh"
-#include "nix/store/tests/libstore.hh"
+#include "bsd/util/tests/characterization.hh"
+#include "bsd/store/tests/libstore.hh"
 
-namespace nix {
+namespace bsd {
 
 using nlohmann::json;
 
@@ -25,7 +25,7 @@ static NarInfo makeNarInfo(const Store & store, bool includeImpureInfo) {
         store,
         "foo",
         FixedOutputInfo {
-            .method = FileIngestionMethod::NixArchive,
+            .method = FileIngestionMethod::BsdArchive,
             .hash = hashString(HashAlgorithm::SHA256, "(...)"),
 
             .references = {

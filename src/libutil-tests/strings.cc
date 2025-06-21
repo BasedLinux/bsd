@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 #include <rapidcheck/gtest.h>
 
-#include "nix/util/strings.hh"
-#include "nix/util/error.hh"
+#include "bsd/util/strings.hh"
+#include "bsd/util/error.hh"
 
-namespace nix {
+namespace bsd {
 
 /* ----------------------------------------------------------------------------
  * concatStringsSep
@@ -484,4 +484,4 @@ TEST(shellSplitString, testUnbalancedQuotes)
     ASSERT_THROW(shellSplitString("foo\"bar\\\""), Error);
 }
 
-} // namespace nix
+} // namespace bsd

@@ -11,14 +11,14 @@ esac
 
 set -m # enable job control, needed for kill
 
-TODO_NixOS
+TODO_BasedLinux
 
 profiles="$NIX_STATE_DIR"/profiles
 rm -rf "$profiles"
 
-nix-env -p "$profiles/test" -f ./gc-runtime.nix -i gc-runtime
+bsd-env -p "$profiles/test" -f ./gc-runtime.bsd -i gc-runtime
 
-outPath=$(nix-env -p "$profiles/test" -q --no-name --out-path gc-runtime)
+outPath=$(bsd-env -p "$profiles/test" -q --no-name --out-path gc-runtime)
 echo "$outPath"
 
 echo "backgrounding program..."
@@ -27,10 +27,10 @@ sleep 2 # hack - wait for the program to get started
 child=$!
 echo PID=$child
 
-nix-env -p "$profiles/test" -e gc-runtime
-nix-env -p "$profiles/test" --delete-generations old
+bsd-env -p "$profiles/test" -e gc-runtime
+bsd-env -p "$profiles/test" --delete-generations old
 
-nix-store --gc
+bsd-store --gc
 
 kill -- -$child
 

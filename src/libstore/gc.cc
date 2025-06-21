@@ -1,16 +1,16 @@
-#include "nix/store/derivations.hh"
-#include "nix/store/globals.hh"
-#include "nix/store/local-store.hh"
-#include "nix/util/finally.hh"
-#include "nix/util/unix-domain-socket.hh"
-#include "nix/util/signals.hh"
-#include "nix/store/posix-fs-canonicalise.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/local-store.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/ubsd-domain-socket.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/store/posix-fs-canonicalise.hh"
 
 #include "store-config-private.hh"
 
 #if !defined(__linux__)
 // For shelling out to lsof
-#  include "nix/util/processes.hh"
+#  include "bsd/util/processes.hh"
 #endif
 
 #include <boost/regex.hpp>
@@ -35,7 +35,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-namespace nix {
+namespace bsd {
 
 static std::string gcSocketPath = "/gc-socket/socket";
 static std::string gcRootsDir = "gcroots";
@@ -43,7 +43,7 @@ static std::string gcRootsDir = "gcroots";
 
 void LocalStore::addIndirectRoot(const Path & path)
 {
-    std::string hash = hashString(HashAlgorithm::SHA1, path).to_string(HashFormat::Nix32, false);
+    std::string hash = hashString(HashAlgorithm::SHA1, path).to_string(HashFormat::Bsd32, false);
     Path realRoot = canonPath(fmt("%1%/%2%/auto/%3%", config->stateDir, gcRootsDir, hash));
     makeSymlink(realRoot, path);
 }
@@ -112,9 +112,9 @@ void LocalStore::addTempRoot(const StorePath & path)
         if (!*fdRootsSocket) {
             auto socketPath = config->stateDir.get() + gcSocketPath;
             debug("connecting to '%s'", socketPath);
-            *fdRootsSocket = createUnixDomainSocket();
+            *fdRootsSocket = createUbsdDomainSocket();
             try {
-                nix::connect(toSocket(fdRootsSocket->get()), socketPath);
+                bsd::connect(toSocket(fdRootsSocket->get()), socketPath);
             } catch (SysError & e) {
                 /* The garbage collector may have exited or not
                    created the socket yet, so we need to restart. */
@@ -410,7 +410,7 @@ void LocalStore::findRuntimeRoots(Roots & roots, bool censor)
 
 #if !defined(__linux__)
     // lsof is really slow on OS X. This actually causes the gc-concurrent.sh test to fail.
-    // See: https://github.com/NixOS/nix/issues/3011
+    // See: https://github.com/BasedLinux/bsd/issues/3011
     // Because of this we disable lsof when running the tests.
     if (getEnv("_NIX_TEST_NO_LSOF") != "1") {
         try {
@@ -501,7 +501,7 @@ void LocalStore::collectGarbage(const GCOptions & options, GCResults & results)
     /* Start the server for receiving new roots. */
     auto socketPath = config->stateDir.get() + gcSocketPath;
     createDirs(dirOf(socketPath));
-    auto fdServer = createUnixDomainSocket(socketPath, 0666);
+    auto fdServer = createUbsdDomainSocket(socketPath, 0666);
 
     // TODO nonblocking socket on windows?
 #ifdef _WIN32
@@ -776,7 +776,7 @@ void LocalStore::collectGarbage(const GCOptions & options, GCResults & results)
                     referrersCache.erase(path);
                 } catch (PathInUse &e) {
                     // If we end up here, it's likely a new occurrence
-                    // of https://github.com/NixOS/nix/issues/11923
+                    // of https://github.com/BasedLinux/bsd/issues/11923
                     printError("BUG: %s", e.what());
                 }
             }
@@ -793,7 +793,7 @@ void LocalStore::collectGarbage(const GCOptions & options, GCResults & results)
                 throw Error(
                     "Cannot delete path '%1%' since it is still alive. "
                     "To find out why, use: "
-                    "nix-store --query --roots and nix-store --query --referrers",
+                    "bsd-store --query --roots and bsd-store --query --referrers",
                     printStorePath(i));
         }
 
@@ -841,7 +841,7 @@ void LocalStore::collectGarbage(const GCOptions & options, GCResults & results)
         return;
     }
 
-    /* Unlink all files in /nix/store/.links that have a link count of 1,
+    /* Unlink all files in /bsd/store/.links that have a link count of 1,
        which indicates that there are no other links and so they can be
        safely deleted.  FIXME: race condition with optimisePath(): we
        might see a link count of 1 just before optimisePath() increases

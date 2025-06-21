@@ -3,8 +3,8 @@
 source common.sh
 
 # Remote trusts us
-file=build-hook.nix
-prog=nix-store
+file=build-hook.bsd
+prog=bsd-store
 proto=ssh
 
 source build-remote-trustless.sh

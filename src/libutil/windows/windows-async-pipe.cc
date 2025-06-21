@@ -1,9 +1,9 @@
-#include "nix/util/windows-async-pipe.hh"
-#include "nix/util/windows-error.hh"
+#include "bsd/util/windows-async-pipe.hh"
+#include "bsd/util/windows-error.hh"
 
 #ifdef _WIN32
 
-namespace nix::windows {
+namespace bsd::windows {
 
 void AsyncPipe::createAsyncPipe(HANDLE iocp)
 {
@@ -12,7 +12,7 @@ void AsyncPipe::createAsyncPipe(HANDLE iocp)
     buffer.resize(0x1000);
     memset(&overlapped, 0, sizeof(overlapped));
 
-    std::string pipeName = fmt("\\\\.\\pipe\\nix-%d-%p", GetCurrentProcessId(), (void *) this);
+    std::string pipeName = fmt("\\\\.\\pipe\\bsd-%d-%p", GetCurrentProcessId(), (void *) this);
 
     readSide = CreateNamedPipeA(
         pipeName.c_str(),

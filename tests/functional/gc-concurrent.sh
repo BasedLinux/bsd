@@ -2,21 +2,21 @@
 
 source common.sh
 
-TODO_NixOS
+TODO_BasedLinux
 
 clearStore
 
 lockFifo1=$TEST_ROOT/test1.fifo
 mkfifo "$lockFifo1"
 
-drvPath1=$(nix-instantiate gc-concurrent.nix -A test1 --argstr lockFifo "$lockFifo1")
-outPath1=$(nix-store -q $drvPath1)
+drvPath1=$(bsd-instantiate gc-concurrent.bsd -A test1 --argstr lockFifo "$lockFifo1")
+outPath1=$(bsd-store -q $drvPath1)
 
-drvPath2=$(nix-instantiate gc-concurrent.nix -A test2)
-outPath2=$(nix-store -q $drvPath2)
+drvPath2=$(bsd-instantiate gc-concurrent.bsd -A test2)
+outPath2=$(bsd-store -q $drvPath2)
 
-drvPath3=$(nix-instantiate simple.nix)
-outPath3=$(nix-store -r $drvPath3)
+drvPath3=$(bsd-instantiate simple.bsd)
+outPath3=$(bsd-store -r $drvPath3)
 
 (! test -e $outPath3.lock)
 touch $outPath3.lock
@@ -26,14 +26,14 @@ ln -s $drvPath2 "$NIX_STATE_DIR/gcroots/foo"
 ln -s $outPath3 "$NIX_STATE_DIR/gcroots/foo2"
 
 # Start build #1 in the background.  It starts immediately.
-nix-store -rvv "$drvPath1" &
+bsd-store -rvv "$drvPath1" &
 pid1=$!
 
 # Wait for the build of $drvPath1 to start
 cat $lockFifo1
 
 # Run the garbage collector while the build is running.
-nix-collect-garbage
+bsd-collect-garbage
 
 # Unlock the build of $drvPath1
 echo "" > $lockFifo1
@@ -48,7 +48,7 @@ cat $outPath1/input-2/bar
 
 # Check that the build build $drvPath2 succeeds.
 # It should succeed because the derivation is a GC root.
-nix-store -rvv "$drvPath2"
+bsd-store -rvv "$drvPath2"
 cat $outPath2/foobar
 
 rm -f "$NIX_STATE_DIR"/gcroots/foo*
@@ -58,6 +58,6 @@ rm -f "$NIX_STATE_DIR"/gcroots/foo*
 (! test -e $outPath3.lock)
 
 # If we run the collector now, it should delete outPath1/2.
-nix-collect-garbage
+bsd-collect-garbage
 (! test -e $outPath1)
 (! test -e $outPath2)

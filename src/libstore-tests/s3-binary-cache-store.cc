@@ -1,10 +1,10 @@
-#include "nix/store/s3-binary-cache-store.hh"
+#include "bsd/store/s3-binary-cache-store.hh"
 
 #if NIX_WITH_S3_SUPPORT
 
 #  include <gtest/gtest.h>
 
-namespace nix {
+namespace bsd {
 
 TEST(S3BinaryCacheStore, constructConfig)
 {
@@ -13,6 +13,6 @@ TEST(S3BinaryCacheStore, constructConfig)
     EXPECT_EQ(config.bucketName, "foobar");
 }
 
-} // namespace nix
+} // namespace bsd
 
 #endif

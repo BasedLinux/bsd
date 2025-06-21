@@ -1,6 +1,6 @@
 error:
        â€¦ while calling the 'toJSON' builtin
-         at /pwd/lang/eval-fail-toJSON-non-utf-8.nix:1:1:
+         at /pwd/lang/eval-fail-toJSON-non-utf-8.bsd:1:1:
             1| builtins.toJSON "_invalid UTF-8: ÿ_"
              | ^
             2|

@@ -1,7 +1,7 @@
-#include "nix/cmd/installable-derived-path.hh"
-#include "nix/store/derivations.hh"
+#include "bsd/cmd/installable-derived-path.hh"
+#include "bsd/store/derivations.hh"
 
-namespace nix {
+namespace bsd {
 
 std::string InstallableDerivedPath::what() const
 {

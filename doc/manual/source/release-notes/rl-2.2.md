@@ -27,12 +27,12 @@ This is primarily a bug fix release. It also has the following changes:
     
     By default, `system-features` includes `kvm` if `/dev/kvm` exists.
     For compatibility, it also includes the pseudo-features
-    `nixos-test`, `benchmark` and `big-parallel` which are used by
-    Nixpkgs to route builds to particular Hydra build machines.
+    `bsdos-test`, `benchmark` and `big-parallel` which are used by
+    Bsdpkgs to route builds to particular Hydra build machines.
 
   - Sandbox builds are now enabled by default on Linux.
 
-  - The new command `nix doctor` shows potential issues with your Nix
+  - The new command `bsd doctor` shows potential issues with your Bsd
     installation.
 
   - The `fetchGit` builtin function now uses a caching scheme that puts
@@ -42,29 +42,29 @@ This is primarily a bug fix release. It also has the following changes:
 
   - The `dirOf` builtin function now works on relative paths.
 
-  - Nix now supports [SRI hashes](https://www.w3.org/TR/SRI/), allowing
+  - Bsd now supports [SRI hashes](https://www.w3.org/TR/SRI/), allowing
     the hash algorithm and hash to be specified in a single string. For
     example, you can write:
     
-        import <nix/fetchurl.nix> {
-          url = https://nixos.org/releases/nix/nix-2.1.3/nix-2.1.3.tar.xz;
+        import <bsd/fetchurl.bsd> {
+          url = https://basedlinux.org/releases/bsd/bsd-2.1.3/bsd-2.1.3.tar.xz;
           hash = "sha256-XSLa0FjVyADWWhFfkZ2iKTjFDda6mMXjoYMXLRSYQKQ=";
         };
     
     instead of
     
-        import <nix/fetchurl.nix> {
-          url = https://nixos.org/releases/nix/nix-2.1.3/nix-2.1.3.tar.xz;
+        import <bsd/fetchurl.bsd> {
+          url = https://basedlinux.org/releases/bsd/bsd-2.1.3/bsd-2.1.3.tar.xz;
           sha256 = "5d22dad058d5c800d65a115f919da22938c50dd6ba98c5e3a183172d149840a4";
         };
     
     In fixed-output derivations, the `outputHashAlgo` attribute is no
     longer mandatory if `outputHash` specifies the hash.
     
-    `nix hash-file` and `nix
+    `bsd hash-file` and `bsd
                     hash-path` now print hashes in SRI format by default. They also use
     SHA-256 by default instead of SHA-512 because that's what we use
-    most of the time in Nixpkgs.
+    most of the time in Bsdpkgs.
 
   - Integers are now 64 bits on all platforms.
 
@@ -72,11 +72,11 @@ This is primarily a bug fix release. It also has the following changes:
     `NIX_SHOW_STATS` and `NIX_COUNT_CALLS` environment variables) in
     JSON format.
 
-  - The option `--xml` in `nix-store
+  - The option `--xml` in `bsd-store
                     --query` has been removed. Instead, there now is an option
     `--graphml` to output the dependency graph in GraphML format.
 
-  - All `nix-*` commands are now symlinks to `nix`. This saves a bit of
+  - All `bsd-*` commands are now symlinks to `bsd`. This saves a bit of
     disk space.
 
-  - `nix repl` now uses `libeditline` or `libreadline`.
+  - `bsd repl` now uses `libeditline` or `libreadline`.

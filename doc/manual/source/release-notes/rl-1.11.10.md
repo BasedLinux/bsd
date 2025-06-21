@@ -1,17 +1,17 @@
 # Release 1.11.10 (2017-06-12)
 
-This release fixes a security bug in Nix’s “build user” build isolation
-mechanism. Previously, Nix builders had the ability to create setuid
-binaries owned by a `nixbld` user. Such a binary could then be used by
-an attacker to assume a `nixbld` identity and interfere with subsequent
+This release fixes a security bug in Bsd’s “build user” build isolation
+mechanism. Previously, Bsd builders had the ability to create setuid
+binaries owned by a `bsdbld` user. Such a binary could then be used by
+an attacker to assume a `bsdbld` identity and interfere with subsequent
 builds running under the same UID.
 
-To prevent this issue, Nix now disallows builders to create setuid and
+To prevent this issue, Bsd now disallows builders to create setuid and
 setgid binaries. On Linux, this is done using a seccomp BPF filter. Note
 that this imposes a small performance penalty (e.g. 1% when building GNU
 Hello). Using seccomp, we now also prevent the creation of extended
 attributes and POSIX ACLs since these cannot be represented in the NAR
-format and (in the case of POSIX ACLs) allow bypassing regular Nix store
+format and (in the case of POSIX ACLs) allow bypassing regular Bsd store
 permissions. On macOS, the restriction is implemented using the existing
 sandbox mechanism, which now uses a minimal “allow all except the
 creation of setuid/setgid binaries” profile when regular sandboxing is

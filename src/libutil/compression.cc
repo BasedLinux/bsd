@@ -1,8 +1,8 @@
-#include "nix/util/compression.hh"
-#include "nix/util/signals.hh"
-#include "nix/util/tarfile.hh"
-#include "nix/util/finally.hh"
-#include "nix/util/logging.hh"
+#include "bsd/util/compression.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/tarfile.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/logging.hh"
 
 #include <archive.h>
 #include <archive_entry.h>
@@ -12,7 +12,7 @@
 #include <brotli/decode.h>
 #include <brotli/encode.h>
 
-namespace nix {
+namespace bsd {
 
 static const int COMPRESSION_LEVEL_DEFAULT = -1;
 

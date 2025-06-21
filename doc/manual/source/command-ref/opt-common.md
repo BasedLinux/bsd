@@ -4,7 +4,7 @@
 
 # Common Options
 
-Most Nix commands accept the following command-line options:
+Most Bsd commands accept the following command-line options:
 
 - <span id="opt-help">[`--help`](#opt-help)</span>
 
@@ -12,12 +12,12 @@ Most Nix commands accept the following command-line options:
 
 - <span id="opt-version">[`--version`](#opt-version)</span>
 
-  Prints out the Nix version number on standard output and exits.
+  Prints out the Bsd version number on standard output and exits.
 
 - <span id="opt-verbose">[`--verbose`](#opt-verbose)</span> / `-v`
 
   Increases the level of verbosity of diagnostic messages printed on standard error.
-  For each Nix operation, the information printed on standard output is well-defined;
+  For each Bsd operation, the information printed on standard output is well-defined;
   any diagnostic information is printed on standard error, never on standard output.
 
   This option may be specified repeatedly.
@@ -25,11 +25,11 @@ Most Nix commands accept the following command-line options:
 
   - `0` “Errors only”
 
-    Only print messages explaining why the Nix invocation failed.
+    Only print messages explaining why the Bsd invocation failed.
 
   - `1` “Informational”
 
-    Print *useful* messages about what Nix is doing.
+    Print *useful* messages about what Bsd is doing.
     This is the default.
 
   - `2` “Talkative”
@@ -62,7 +62,7 @@ Most Nix commands accept the following command-line options:
 
   - `raw`
 
-    This is the raw format, as outputted by nix-build.
+    This is the raw format, as outputted by bsd-build.
 
   - `internal-json`
 
@@ -84,13 +84,13 @@ Most Nix commands accept the following command-line options:
 
 - <span id="opt-no-build-output">[`--no-build-output`](#opt-no-build-output)</span> / `-Q`
 
-  By default, output written by builders to standard output and standard error is echoed to the Nix command's standard error.
+  By default, output written by builders to standard output and standard error is echoed to the Bsd command's standard error.
   This option suppresses this behaviour.
-  Note that the builder's standard output and error are always written to a log file in `prefix/nix/var/log/nix`.
+  Note that the builder's standard output and error are always written to a log file in `prefix/bsd/var/log/bsd`.
 
 - <span id="opt-max-jobs">[`--max-jobs`](#opt-max-jobs)</span> / `-j` *number*
 
-  Sets the maximum number of build jobs that Nix will perform in parallel to the specified number.
+  Sets the maximum number of build jobs that Bsd will perform in parallel to the specified number.
   Specify `auto` to use the number of CPUs in the system.
   The default is specified by the `max-jobs` configuration setting, which itself defaults to `1`.
   A higher value is useful on SMP systems or to exploit I/O latency.
@@ -101,7 +101,7 @@ Most Nix commands accept the following command-line options:
 
   Sets the value of the `NIX_BUILD_CORES` environment variable in the invocation of builders.
   Builders can use this variable at their discretion to control the maximum amount of parallelism.
-  For instance, in Nixpkgs, if the derivation attribute `enableParallelBuilding` is set to `true`, the builder passes the `-jN` flag to GNU Make.
+  For instance, in Bsdpkgs, if the derivation attribute `enableParallelBuilding` is set to `true`, the builder passes the `-jN` flag to GNU Make.
   It defaults to the value of the `cores` configuration setting, if set, or `1` otherwise.
   The value `0` means that the builder should use all available CPU cores in the system.
 
@@ -120,8 +120,8 @@ Most Nix commands accept the following command-line options:
 - <span id="opt-keep-going">[`--keep-going`](#opt-keep-going)</span> / `-k`
 
   Keep going in case of failed builds, to the greatest extent possible.
-  That is, if building an input of some derivation fails, Nix will still build the other inputs, but not the derivation itself.
-  Without this option, Nix stops if any build fails (except for builds of substitutes), possibly killing builds in progress (in case of parallel or distributed builds).
+  That is, if building an input of some derivation fails, Bsd will still build the other inputs, but not the derivation itself.
+  Without this option, Bsd stops if any build fails (except for builds of substitutes), possibly killing builds in progress (in case of parallel or distributed builds).
 
 - <span id="opt-keep-failed">[`--keep-failed`](#opt-keep-failed)</span> / `-K`
 
@@ -130,61 +130,61 @@ Most Nix commands accept the following command-line options:
 
 - <span id="opt-fallback">[`--fallback`](#opt-fallback)</span>
 
-  Whenever Nix attempts to build a derivation for which substitutes are known for each output path, but realising the output paths through the substitutes fails, fall back on building the derivation.
+  Whenever Bsd attempts to build a derivation for which substitutes are known for each output path, but realising the output paths through the substitutes fails, fall back on building the derivation.
 
   The most common scenario in which this is useful is when we have registered substitutes in order to perform binary distribution from, say, a network repository.
   If the repository is down, the realisation of the derivation will fail.
-  When this option is specified, Nix will build the derivation instead.
+  When this option is specified, Bsd will build the derivation instead.
   Thus, installation from binaries falls back on installation from source.
   This option is not the default since it is generally not desirable for a transient failure in obtaining the substitutes to lead to a full build from source (with the related consumption of resources).
 
 - <span id="opt-readonly-mode">[`--readonly-mode`](#opt-readonly-mode)</span>
 
-  When this option is used, no attempt is made to open the Nix database.
-  Most Nix operations do need database access, so those operations will fail.
+  When this option is used, no attempt is made to open the Bsd database.
+  Most Bsd operations do need database access, so those operations will fail.
 
 - <span id="opt-arg">[`--arg`](#opt-arg)</span> *name* *value*
 
-  This option is accepted by `nix-env`, `nix-instantiate`, `nix-shell` and `nix-build`.
-  When evaluating Nix expressions, the expression evaluator will automatically try to call functions that it encounters.
+  This option is accepted by `bsd-env`, `bsd-instantiate`, `bsd-shell` and `bsd-build`.
+  When evaluating Bsd expressions, the expression evaluator will automatically try to call functions that it encounters.
   It can automatically call functions for which every argument has a [default value](@docroot@/language/syntax.md#functions) (e.g., `{ argName ?  defaultValue }: ...`).
 
   With `--arg`, you can also call functions that have arguments without a default value (or override a default value).
   That is, if the evaluator encounters a function with an argument named *name*, it will call it with value *value*.
 
-  For instance, the top-level `default.nix` in Nixpkgs is actually a function:
+  For instance, the top-level `default.bsd` in Bsdpkgs is actually a function:
 
-  ```nix
+  ```bsd
   { # The system (e.g., `i686-linux') for which to build the packages.
     system ? builtins.currentSystem
     ...
   }: ...
   ```
 
-  So if you call this Nix expression (e.g., when you do `nix-env --install --attr pkgname`), the function will be called automatically using the value [`builtins.currentSystem`](@docroot@/language/builtins.md) for the `system` argument.
-  You can override this using `--arg`, e.g., `nix-env --install --attr pkgname --arg system \"i686-freebsd\"`.
-  (Note that since the argument is a Nix string literal, you have to escape the quotes.)
+  So if you call this Bsd expression (e.g., when you do `bsd-env --install --attr pkgname`), the function will be called automatically using the value [`builtins.currentSystem`](@docroot@/language/builtins.md) for the `system` argument.
+  You can override this using `--arg`, e.g., `bsd-env --install --attr pkgname --arg system \"i686-freebsd\"`.
+  (Note that since the argument is a Bsd string literal, you have to escape the quotes.)
 
 - <span id="opt-arg-from-file">[`--arg-from-file`](#opt-arg-from-file)</span> *name* *path*
 
-  Pass the contents of file *path* as the argument *name* to Nix functions.
+  Pass the contents of file *path* as the argument *name* to Bsd functions.
 
 - <span id="opt-arg-from-stdin">[`--arg-from-stdin`](#opt-arg-from-stdin)</span> *name*
 
-  Pass the contents of stdin as the argument *name* to Nix functions.
+  Pass the contents of stdin as the argument *name* to Bsd functions.
 
 - <span id="opt-argstr">[`--argstr`](#opt-argstr)</span> *name* *value*
 
-  This option is like `--arg`, only the value is not a Nix expression but a string.
+  This option is like `--arg`, only the value is not a Bsd expression but a string.
   So instead of `--arg system \"i686-linux\"` (the outer quotes are to keep the shell happy) you can say `--argstr system i686-linux`.
 
 - <span id="opt-attr">[`--attr`](#opt-attr)</span> / `-A` *attrPath*
 
-  Select an attribute from the top-level Nix expression being evaluated.
-  (`nix-env`, `nix-instantiate`, `nix-build` and `nix-shell` only.)
+  Select an attribute from the top-level Bsd expression being evaluated.
+  (`bsd-env`, `bsd-instantiate`, `bsd-build` and `bsd-shell` only.)
   The *attribute path* *attrPath* is a sequence of attribute names separated by dots.
-  For instance, given a top-level Nix expression *e*, the attribute path `xorg.xorgserver` would cause the expression `e.xorg.xorgserver` to be used.
-  See [`nix-env --install`](@docroot@/command-ref/nix-env/install.md) for some concrete examples.
+  For instance, given a top-level Bsd expression *e*, the attribute path `xorg.xorgserver` would cause the expression `e.xorg.xorgserver` to be used.
+  See [`bsd-env --install`](@docroot@/command-ref/bsd-env/install.md) for some concrete examples.
 
   In addition to attribute names, you can also specify array indices.
   For instance, the attribute path `foo.3.bar` selects the `bar`
@@ -193,22 +193,22 @@ Most Nix commands accept the following command-line options:
 
 - <span id="opt-eval-store">[`--eval-store`](#opt-eval-store)</span> *store-url*
 
-  The [URL to the Nix store](@docroot@/store/types/index.md#store-url-format) to use for evaluation, i.e. where to store derivations (`.drv` files) and inputs referenced by them.
+  The [URL to the Bsd store](@docroot@/store/types/index.md#store-url-format) to use for evaluation, i.e. where to store derivations (`.drv` files) and inputs referenced by them.
 
 - <span id="opt-expr">[`--expr`](#opt-expr)</span> / `-E`
 
-  Interpret the command line arguments as a list of Nix expressions to be parsed and evaluated, rather than as a list of file names of Nix expressions.
-  (`nix-instantiate`, `nix-build` and `nix-shell` only.)
+  Interpret the command line arguments as a list of Bsd expressions to be parsed and evaluated, rather than as a list of file names of Bsd expressions.
+  (`bsd-instantiate`, `bsd-build` and `bsd-shell` only.)
 
-  For `nix-shell`, this option is commonly used to give you a shell in which you can build the packages returned by the expression.
-  If you want to get a shell which contain the *built* packages ready for use, give your expression to the `nix-shell --packages ` convenience flag instead.
+  For `bsd-shell`, this option is commonly used to give you a shell in which you can build the packages returned by the expression.
+  If you want to get a shell which contain the *built* packages ready for use, give your expression to the `bsd-shell --packages ` convenience flag instead.
 
 - <span id="opt-I">[`-I` / `--include`](#opt-I)</span> *path*
 
   Add an entry to the list of search paths used to resolve [lookup paths](@docroot@/language/constructs/lookup-path.md).
   This option may be given multiple times.
 
-  Paths added through `-I` take precedence over the [`nix-path` configuration setting](@docroot@/command-ref/conf-file.md#conf-nix-path) and the [`NIX_PATH` environment variable](@docroot@/command-ref/env-common.md#env-NIX_PATH).
+  Paths added through `-I` take precedence over the [`bsd-path` configuration setting](@docroot@/command-ref/conf-file.md#conf-bsd-path) and the [`NIX_PATH` environment variable](@docroot@/command-ref/env-common.md#env-NIX_PATH).
 
 - <span id="opt-impure">[`--impure`](#opt-impure)</span>
 
@@ -216,15 +216,15 @@ Most Nix commands accept the following command-line options:
 
 - <span id="opt-option">[`--option`](#opt-option)</span> *name* *value*
 
-  Set the Nix configuration option *name* to *value*.
-  This overrides settings in the Nix configuration file (see nix.conf5).
+  Set the Bsd configuration option *name* to *value*.
+  This overrides settings in the Bsd configuration file (see bsd.conf5).
 
 - <span id="opt-repair">[`--repair`](#opt-repair)</span>
 
   Fix corrupted or missing store paths by redownloading or rebuilding them.
   Note that this is slow because it requires computing a cryptographic hash of the contents of every path in the closure of the build.
-  Also note the warning under `nix-store --repair-path`.
+  Also note the warning under `bsd-store --repair-path`.
 
 > **Note**
 >
-> See [`man nix.conf`](@docroot@/command-ref/conf-file.md#command-line-flags) for overriding configuration settings with command line flags.
+> See [`man bsd.conf`](@docroot@/command-ref/conf-file.md#command-line-flags) for overriding configuration settings with command line flags.

@@ -1,24 +1,24 @@
-#include "nix/store/local-store.hh"
-#include "nix/store/globals.hh"
-#include "nix/util/git.hh"
-#include "nix/util/archive.hh"
-#include "nix/store/pathlocks.hh"
-#include "nix/store/worker-protocol.hh"
-#include "nix/store/derivations.hh"
-#include "nix/store/realisation.hh"
-#include "nix/store/nar-info.hh"
-#include "nix/util/references.hh"
-#include "nix/util/callback.hh"
-#include "nix/util/topo-sort.hh"
-#include "nix/util/finally.hh"
-#include "nix/util/compression.hh"
-#include "nix/util/signals.hh"
-#include "nix/store/posix-fs-canonicalise.hh"
-#include "nix/util/posix-source-accessor.hh"
-#include "nix/store/keys.hh"
-#include "nix/util/users.hh"
-#include "nix/store/store-open.hh"
-#include "nix/store/store-registration.hh"
+#include "bsd/store/local-store.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/util/git.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/store/pathlocks.hh"
+#include "bsd/store/worker-protocol.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/realisation.hh"
+#include "bsd/store/nar-info.hh"
+#include "bsd/util/references.hh"
+#include "bsd/util/callback.hh"
+#include "bsd/util/topo-sort.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/compression.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/store/posix-fs-canonicalise.hh"
+#include "bsd/util/posix-source-accessor.hh"
+#include "bsd/store/keys.hh"
+#include "bsd/util/users.hh"
+#include "bsd/store/store-open.hh"
+#include "bsd/store/store-registration.hh"
 
 #include <iostream>
 #include <algorithm>
@@ -54,12 +54,12 @@
 
 #include <nlohmann/json.hpp>
 
-#include "nix/util/strings.hh"
+#include "bsd/util/strings.hh"
 
 #include "store-config-private.hh"
 
 
-namespace nix {
+namespace bsd {
 
 LocalStoreConfig::LocalStoreConfig(
     std::string_view scheme,
@@ -178,7 +178,7 @@ LocalStore::LocalStore(ref<const Config> config)
             if (std::filesystem::is_symlink(path))
                 throw Error(
                         "the path '%1%' is a symlink; "
-                        "this is not allowed for the Nix store and its parent directories",
+                        "this is not allowed for the Bsd store and its parent directories",
                         path);
             path = path.parent_path();
         }
@@ -225,46 +225,46 @@ LocalStore::LocalStore(ref<const Config> config)
     }
 
     if (!config->readOnly && !lockFile(globalLock.get(), ltRead, false)) {
-        printInfo("waiting for the big Nix store lock...");
+        printInfo("waiting for the big Bsd store lock...");
         lockFile(globalLock.get(), ltRead, true);
     }
 
     /* Check the current database schema and if necessary do an
        upgrade.  */
     int curSchema = getSchema();
-    if (config->readOnly && curSchema < nixSchemaVersion) {
+    if (config->readOnly && curSchema < bsdSchemaVersion) {
         debug("current schema version: %d", curSchema);
-        debug("supported schema version: %d", nixSchemaVersion);
+        debug("supported schema version: %d", bsdSchemaVersion);
         throw Error(curSchema == 0 ?
             "database does not exist, and cannot be created in read-only mode" :
             "database schema needs migrating, but this cannot be done in read-only mode");
     }
 
-    if (curSchema > nixSchemaVersion)
-        throw Error("current Nix store schema is version %1%, but I only support %2%",
-             curSchema, nixSchemaVersion);
+    if (curSchema > bsdSchemaVersion)
+        throw Error("current Bsd store schema is version %1%, but I only support %2%",
+             curSchema, bsdSchemaVersion);
 
     else if (curSchema == 0) { /* new store */
-        curSchema = nixSchemaVersion;
+        curSchema = bsdSchemaVersion;
         openDB(*state, true);
         writeFile(schemaPath, fmt("%1%", curSchema), 0666, true);
     }
 
-    else if (curSchema < nixSchemaVersion) {
+    else if (curSchema < bsdSchemaVersion) {
         if (curSchema < 5)
             throw Error(
-                "Your Nix store has a database in Berkeley DB format,\n"
+                "Your Bsd store has a database in Berkeley DB format,\n"
                 "which is no longer supported. To convert to the new format,\n"
-                "please upgrade Nix to version 0.12 first.");
+                "please upgrade Bsd to version 0.12 first.");
 
         if (curSchema < 6)
             throw Error(
-                "Your Nix store has a database in flat file format,\n"
+                "Your Bsd store has a database in flat file format,\n"
                 "which is no longer supported. To convert to the new format,\n"
-                "please upgrade Nix to version 1.11 first.");
+                "please upgrade Bsd to version 1.11 first.");
 
         if (!lockFile(globalLock.get(), ltWrite, false)) {
-            printInfo("waiting for exclusive access to the Nix store...");
+            printInfo("waiting for exclusive access to the Bsd store...");
             lockFile(globalLock.get(), ltNone, false); // We have acquired a shared lock; release it to prevent deadlocks
             lockFile(globalLock.get(), ltWrite, true);
         }
@@ -298,7 +298,7 @@ LocalStore::LocalStore(ref<const Config> config)
             txn.commit();
         }
 
-        writeFile(schemaPath, fmt("%1%", nixSchemaVersion), 0666, true);
+        writeFile(schemaPath, fmt("%1%", bsdSchemaVersion), 0666, true);
 
         lockFile(globalLock.get(), ltRead, true);
     }
@@ -453,9 +453,9 @@ void LocalStore::openDB(State & state, bool create)
     }
 
     if (access(dbDir.c_str(), R_OK | (config->readOnly ? 0 : W_OK)))
-        throw SysError("Nix database directory '%1%' is not writable", dbDir);
+        throw SysError("Bsd database directory '%1%' is not writable", dbDir);
 
-    /* Open the Nix database. */
+    /* Open the Bsd database. */
     std::string dbPath = dbDir + "/db.sqlite";
     auto & db(state.db);
     auto openMode = config->readOnly ? SQLiteOpenMode::Immutable
@@ -512,7 +512,7 @@ void LocalStore::openDB(State & state, bool create)
     }
 
     /* Increase the auto-checkpoint interval to 40000 pages.  This
-       seems enough to ensure that instantiating the NixOS system
+       seems enough to ensure that instantiating the BasedLinux system
        derivation is done in a single fsync(). */
     if (mode == "wal" && sqlite3_exec(db, "pragma wal_autocheckpoint = 40000;", 0, 0, 0) != SQLITE_OK)
         SQLiteError::throw_(db, "setting autocheckpoint interval");
@@ -546,7 +546,7 @@ void LocalStore::upgradeDBSchema(State & state)
         if (schemaMigrations.contains(migrationName))
             return;
 
-        debug("executing Nix database schema migration '%s'...", migrationName);
+        debug("executing Bsd database schema migration '%s'...", migrationName);
 
         SQLiteTxn txn(state.db);
         state.db.exec(stmt + fmt(";\ninsert into SchemaMigrations values('%s')", migrationName));
@@ -563,16 +563,16 @@ void LocalStore::upgradeDBSchema(State & state)
 }
 
 
-/* To improve purity, users may want to make the Nix store a read-only
-   bind mount.  So make the Nix store writable for this process. */
+/* To improve purity, users may want to make the Bsd store a read-only
+   bind mount.  So make the Bsd store writable for this process. */
 void LocalStore::makeStoreWritable()
 {
 #ifdef __linux__
     if (!isRootUser()) return;
-    /* Check if /nix/store is on a read-only mount. */
+    /* Check if /bsd/store is on a read-only mount. */
     struct statvfs stat;
     if (statvfs(config->realStoreDir.get().c_str(), &stat) != 0)
-        throw SysError("getting info about the Nix store mount point");
+        throw SysError("getting info about the Bsd store mount point");
 
     if (stat.f_flag & ST_RDONLY) {
         if (mount(0, config->realStoreDir.get().c_str(), "none", MS_REMOUNT | MS_BIND, 0) == -1)
@@ -665,7 +665,7 @@ uint64_t LocalStore::addValidPath(State & state,
     const ValidPathInfo & info, bool checkOutputs)
 {
     if (info.ca.has_value() && !info.isContentAddressed(*this))
-        throw Error("cannot add path '%s' to the Nix store because it claims to be content-addressed but isn't",
+        throw Error("cannot add path '%s' to the Bsd store because it claims to be content-addressed but isn't",
             printStorePath(info.path));
 
     state.stmts->RegisterValidPath.use()
@@ -1088,7 +1088,7 @@ void LocalStore::addToStore(const ValidPathInfo & info, Source & source,
 
                 if (hashResult.first != info.narHash)
                     throw Error("hash mismatch importing path '%s';\n  specified: %s\n  got:       %s",
-                                printStorePath(info.path), info.narHash.to_string(HashFormat::Nix32, true), hashResult.first.to_string(HashFormat::Nix32, true));
+                                printStorePath(info.path), info.narHash.to_string(HashFormat::Bsd32, true), hashResult.first.to_string(HashFormat::Bsd32, true));
 
                 if (hashResult.second != info.narSize)
                     throw Error("size mismatch importing path '%s';\n  specified: %s\n  got:       %s",
@@ -1103,7 +1103,7 @@ void LocalStore::addToStore(const ValidPathInfo & info, Source & source,
                         auto fim = specified.method.getFileIngestionMethod();
                         switch (fim) {
                         case FileIngestionMethod::Flat:
-                        case FileIngestionMethod::NixArchive:
+                        case FileIngestionMethod::BsdArchive:
                         {
                             HashModuloSink caSink {
                                 specified.hash.algo,
@@ -1125,8 +1125,8 @@ void LocalStore::addToStore(const ValidPathInfo & info, Source & source,
                     if (specified.hash != actualHash.hash) {
                         throw Error("ca hash mismatch importing path '%s';\n  specified: %s\n  got:       %s",
                             printStorePath(info.path),
-                            specified.hash.to_string(HashFormat::Nix32, true),
-                            actualHash.hash.to_string(HashFormat::Nix32, true));
+                            specified.hash.to_string(HashFormat::Bsd32, true),
+                            actualHash.hash.to_string(HashFormat::Bsd32, true));
                     }
                 }
 
@@ -1168,7 +1168,7 @@ StorePath LocalStore::addToStoreFromDump(
 
     /* Read the source path into memory, but only if it's up to
        narBufferSize bytes. If it's larger, write it to a temporary
-       location in the Nix store. If the subsequently computed
+       location in the Bsd store. If the subsequently computed
        destination store path is already valid, we just delete the
        temporary path. Otherwise, we move it to the destination store
        path. */
@@ -1271,7 +1271,7 @@ StorePath LocalStore::addToStoreFromDump(
                 auto fim = hashMethod.getFileIngestionMethod();
                 switch (fim) {
                 case FileIngestionMethod::Flat:
-                case FileIngestionMethod::NixArchive:
+                case FileIngestionMethod::BsdArchive:
                     restorePath(realPath, dumpSource, (FileSerialisationMethod) fim, settings.fsyncStorePaths);
                     break;
                 case FileIngestionMethod::Git:
@@ -1287,7 +1287,7 @@ StorePath LocalStore::addToStoreFromDump(
             /* For computing the nar hash. In recursive SHA-256 mode, this
                is the same as the store hash, so no need to do it again. */
             auto narHash = std::pair { dumpHash, size };
-            if (dumpMethod != FileSerialisationMethod::NixArchive || hashAlgo != HashAlgorithm::SHA256) {
+            if (dumpMethod != FileSerialisationMethod::BsdArchive || hashAlgo != HashAlgorithm::SHA256) {
                 HashSink narSink { HashAlgorithm::SHA256 };
                 dumpPath(realPath, narSink);
                 narHash = narSink.finish();
@@ -1364,7 +1364,7 @@ void LocalStore::invalidatePathChecked(const StorePath & path)
 
 bool LocalStore::verifyStore(bool checkContents, RepairFlag repair)
 {
-    printInfo("reading the Nix store...");
+    printInfo("reading the Bsd store...");
 
     /* Acquire the global GC lock to get a consistent snapshot of
        existing and valid paths. */
@@ -1385,7 +1385,7 @@ bool LocalStore::verifyStore(bool checkContents, RepairFlag repair)
             PosixSourceAccessor accessor;
             std::string hash = hashPath(
                 PosixSourceAccessor::createAtRoot(link.path()),
-                FileIngestionMethod::NixArchive, HashAlgorithm::SHA256).first.to_string(HashFormat::Nix32, false);
+                FileIngestionMethod::BsdArchive, HashAlgorithm::SHA256).first.to_string(HashFormat::Bsd32, false);
             if (hash != name.string()) {
                 printError("link '%s' was modified! expected hash '%s', got '%s'",
                     link.path(), name, hash);
@@ -1416,7 +1416,7 @@ bool LocalStore::verifyStore(bool checkContents, RepairFlag repair)
 
                 if (info->narHash != nullHash && info->narHash != current.first) {
                     printError("path '%s' was modified! expected hash '%s', got '%s'",
-                               printStorePath(i), info->narHash.to_string(HashFormat::Nix32, true), current.first.to_string(HashFormat::Nix32, true));
+                               printStorePath(i), info->narHash.to_string(HashFormat::Bsd32, true), current.first.to_string(HashFormat::Bsd32, true));
                     if (repair) repairPath(i); else errors = true;
                 } else {
 
@@ -1675,9 +1675,9 @@ void LocalStore::addBuildLog(const StorePath & drvPath, std::string_view log)
 
 std::optional<std::string> LocalStore::getVersion()
 {
-    return nixVersion;
+    return bsdVersion;
 }
 
 static RegisterStoreImplementation<LocalStore::Config> regLocalStore;
 
-}  // namespace nix
+}  // namespace bsd

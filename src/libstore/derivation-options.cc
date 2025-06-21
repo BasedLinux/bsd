@@ -1,17 +1,17 @@
-#include "nix/store/derivation-options.hh"
-#include "nix/util/json-utils.hh"
-#include "nix/store/parsed-derivations.hh"
-#include "nix/store/derivations.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/types.hh"
-#include "nix/util/util.hh"
+#include "bsd/store/derivation-options.hh"
+#include "bsd/util/json-utils.hh"
+#include "bsd/store/parsed-derivations.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/types.hh"
+#include "bsd/util/util.hh"
 
 #include <optional>
 #include <string>
 #include <variant>
 #include <regex>
 
-namespace nix {
+namespace bsd {
 
 static std::optional<std::string>
 getStringAttr(const StringMap & env, const StructuredAttrs * parsed, const std::string & name)
@@ -295,7 +295,7 @@ bool DerivationOptions::useUidRange(const BasicDerivation & drv) const
 
 namespace nlohmann {
 
-using namespace nix;
+using namespace bsd;
 
 DerivationOptions adl_serializer<DerivationOptions>::from_json(const json & json)
 {

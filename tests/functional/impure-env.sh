@@ -5,7 +5,7 @@ source common.sh
 # Needs the config option 'impure-env' to work
 requireDaemonNewerThan "2.19.0"
 
-TODO_NixOS
+TODO_BasedLinux
 
 enableFeatures "configurable-impure-env"
 restartDaemon
@@ -13,7 +13,7 @@ restartDaemon
 varTest() {
     local var="$1"; shift
     local value="$1"; shift
-    nix build --no-link -vL --argstr var "$var" --argstr value "$value" --impure "$@" --file impure-env.nix
+    bsd build --no-link -vL --argstr var "$var" --argstr value "$value" --impure "$@" --file impure-env.bsd
     clearStore
 }
 
@@ -22,13 +22,13 @@ startDaemon
 
 varTest env_name value --impure-env env_name=value
 
-echo 'impure-env = set_in_config=config_value' >> "$test_nix_conf"
+echo 'impure-env = set_in_config=config_value' >> "$test_bsd_conf"
 set_in_config=daemon_value restartDaemon
 
 varTest set_in_config config_value
 varTest set_in_config client_value --impure-env set_in_config=client_value
 
-sed -i -e '/^trusted-users =/d' "$test_nix_conf"
+sed -i -e '/^trusted-users =/d' "$test_bsd_conf"
 
 env_name=daemon_value restartDaemon
 

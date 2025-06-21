@@ -1,13 +1,13 @@
-#include "nix/expr/primops.hh"
-#include "nix/expr/eval-inline.hh"
-#include "nix/store/derivations.hh"
-#include "nix/store/store-api.hh"
+#include "bsd/expr/primops.hh"
+#include "bsd/expr/eval-inline.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/store-api.hh"
 
-namespace nix {
+namespace bsd {
 
 static void prim_unsafeDiscardStringContext(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
-    NixStringContext context;
+    BsdStringContext context;
     auto s = state.coerceToString(pos, *args[0], context, "while evaluating the argument passed to builtins.unsafeDiscardStringContext");
     v.mkString(*s);
 }
@@ -24,7 +24,7 @@ static RegisterPrimOp primop_unsafeDiscardStringContext({
 
 static void prim_hasContext(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
-    NixStringContext context;
+    BsdStringContext context;
     state.forceString(*args[0], context, pos, "while evaluating the argument passed to builtins.hasContext");
     v.mkBool(!context.empty());
 }
@@ -42,7 +42,7 @@ static RegisterPrimOp primop_hasContext({
       > Many operations require a string context to be empty because they are intended only to work with "regular" strings, and also to help users avoid unintentionally loosing track of string context elements.
       > `builtins.hasContext` can help create better domain-specific errors in those case.
       >
-      > ```nix
+      > ```bsd
       > name: meta:
       >
       > if builtins.hasContext name
@@ -56,13 +56,13 @@ static RegisterPrimOp primop_hasContext({
 
 static void prim_unsafeDiscardOutputDependency(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
-    NixStringContext context;
+    BsdStringContext context;
     auto s = state.coerceToString(pos, *args[0], context, "while evaluating the argument passed to builtins.unsafeDiscardOutputDependency");
 
-    NixStringContext context2;
+    BsdStringContext context2;
     for (auto && c : context) {
-        if (auto * ptr = std::get_if<NixStringContextElem::DrvDeep>(&c.raw)) {
-            context2.emplace(NixStringContextElem::Opaque {
+        if (auto * ptr = std::get_if<BsdStringContextElem::DrvDeep>(&c.raw)) {
+            context2.emplace(BsdStringContextElem::Opaque {
                 .path = ptr->drvPath
             });
         } else {
@@ -87,7 +87,7 @@ static RegisterPrimOp primop_unsafeDiscardOutputDependency({
       This is the opposite of [`builtins.addDrvOutputDependencies`](#builtins-addDrvOutputDependencies).
 
       This is unsafe because it allows us to "forget" store objects we would have otherwise referred to with the string context,
-      whereas Nix normally tracks all dependencies consistently.
+      whereas Bsd normally tracks all dependencies consistently.
       Safe operations "grow" but never "shrink" string contexts.
       [`builtins.addDrvOutputDependencies`] in contrast is safe because "derivation deep" string context element always refers to the underlying derivation (among many more things).
       Replacing a constant string context element with a "derivation deep" element is a safe operation that just enlargens the string context without forgetting anything.
@@ -100,7 +100,7 @@ static RegisterPrimOp primop_unsafeDiscardOutputDependency({
 
 static void prim_addDrvOutputDependencies(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
-    NixStringContext context;
+    BsdStringContext context;
     auto s = state.coerceToString(pos, *args[0], context, "while evaluating the argument passed to builtins.addDrvOutputDependencies");
 
 	auto contextSize = context.size();
@@ -111,26 +111,26 @@ static void prim_addDrvOutputDependencies(EvalState & state, const PosIdx pos, V
             contextSize
         ).atPos(pos).debugThrow();
     }
-    NixStringContext context2 {
-        (NixStringContextElem { std::visit(overloaded {
-            [&](const NixStringContextElem::Opaque & c) -> NixStringContextElem::DrvDeep {
+    BsdStringContext context2 {
+        (BsdStringContextElem { std::visit(overloaded {
+            [&](const BsdStringContextElem::Opaque & c) -> BsdStringContextElem::DrvDeep {
                 if (!c.path.isDerivation()) {
                     state.error<EvalError>(
                         "path '%s' is not a derivation",
                         state.store->printStorePath(c.path)
                     ).atPos(pos).debugThrow();
                 }
-                return NixStringContextElem::DrvDeep {
+                return BsdStringContextElem::DrvDeep {
                     .drvPath = c.path,
                 };
             },
-            [&](const NixStringContextElem::Built & c) -> NixStringContextElem::DrvDeep {
+            [&](const BsdStringContextElem::Built & c) -> BsdStringContextElem::DrvDeep {
                 state.error<EvalError>(
                     "`addDrvOutputDependencies` can only act on derivations, not on a derivation output such as '%1%'",
                     c.output
                 ).atPos(pos).debugThrow();
             },
-            [&](const NixStringContextElem::DrvDeep & c) -> NixStringContextElem::DrvDeep {
+            [&](const BsdStringContextElem::DrvDeep & c) -> BsdStringContextElem::DrvDeep {
                 /* Reuse original item because we want this to be idempotent. */
                 /* FIXME: Suspicious move out of const. This is actually a copy, so the comment
                  above does not make much sense. */
@@ -163,14 +163,14 @@ static RegisterPrimOp primop_addDrvOutputDependencies({
 });
 
 
-/* Extract the context of a string as a structured Nix value.
+/* Extract the context of a string as a structured Bsd value.
 
    The context is represented as an attribute set whose keys are the
    paths in the context set and whose values are attribute sets with
    the following keys:
      path: True if the relevant path is in the context as a plain store
            path (i.e. the kind of context you get when interpolating
-           a Nix path (e.g. ./.) into a string). False if missing.
+           a Bsd path (e.g. ./.) into a string). False if missing.
      allOutputs: True if the relevant path is a derivation and it is
                   in the context as a drv file with all of its outputs
                   (i.e. the kind of context you get when referencing
@@ -189,24 +189,24 @@ static void prim_getContext(EvalState & state, const PosIdx pos, Value * * args,
         bool allOutputs = false;
         Strings outputs;
     };
-    NixStringContext context;
+    BsdStringContext context;
     state.forceString(*args[0], context, pos, "while evaluating the argument passed to builtins.getContext");
     auto contextInfos = std::map<StorePath, ContextInfo>();
     for (auto && i : context) {
         std::visit(overloaded {
-            [&](NixStringContextElem::DrvDeep && d) {
+            [&](BsdStringContextElem::DrvDeep && d) {
                 contextInfos[std::move(d.drvPath)].allOutputs = true;
             },
-            [&](NixStringContextElem::Built && b) {
+            [&](BsdStringContextElem::Built && b) {
                 // FIXME should eventually show string context as is, no
                 // resolving here.
                 auto drvPath = resolveDerivedPath(*state.store, *b.drvPath);
                 contextInfos[std::move(drvPath)].outputs.emplace_back(std::move(b.output));
             },
-            [&](NixStringContextElem::Opaque && o) {
+            [&](BsdStringContextElem::Opaque && o) {
                 contextInfos[std::move(o.path)].path = true;
             },
-        }, ((NixStringContextElem &&) i).raw);
+        }, ((BsdStringContextElem &&) i).raw);
     }
 
     auto attrs = state.buildBindings(contextInfos.size());
@@ -243,14 +243,14 @@ static RegisterPrimOp primop_getContext({
       Using [string interpolation](@docroot@/language/string-interpolation.md) on a derivation adds that derivation to the string context.
       For example,
 
-      ```nix
+      ```bsd
       builtins.getContext "${derivation { name = "a"; builder = "b"; system = "c"; }}"
       ```
 
       evaluates to
 
       ```
-      { "/nix/store/arhvjaf6zmlyn8vh8fgn55rpwnxq0n7l-a.drv" = { outputs = [ "out" ]; }; }
+      { "/bsd/store/arhvjaf6zmlyn8vh8fgn55rpwnxq0n7l-a.drv" = { outputs = [ "out" ]; }; }
       ```
     )",
     .fun = prim_getContext
@@ -264,7 +264,7 @@ static RegisterPrimOp primop_getContext({
 */
 static void prim_appendContext(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
-    NixStringContext context;
+    BsdStringContext context;
     auto orig = state.forceString(*args[0], context, noPos, "while evaluating the first argument passed to builtins.appendContext");
 
     state.forceAttrs(*args[1], pos, "while evaluating the second argument passed to builtins.appendContext");
@@ -285,7 +285,7 @@ static void prim_appendContext(EvalState & state, const PosIdx pos, Value * * ar
 
         if (auto attr = i.value->attrs()->get(sPath)) {
             if (state.forceBool(*attr->value, attr->pos, "while evaluating the `path` attribute of a string context"))
-                context.emplace(NixStringContextElem::Opaque {
+                context.emplace(BsdStringContextElem::Opaque {
                     .path = namePath,
                 });
         }
@@ -298,7 +298,7 @@ static void prim_appendContext(EvalState & state, const PosIdx pos, Value * * ar
                         name
                     ).atPos(i.pos).debugThrow();
                 }
-                context.emplace(NixStringContextElem::DrvDeep {
+                context.emplace(BsdStringContextElem::DrvDeep {
                     .drvPath = namePath,
                 });
             }
@@ -314,7 +314,7 @@ static void prim_appendContext(EvalState & state, const PosIdx pos, Value * * ar
             }
             for (auto elem : attr->value->listItems()) {
                 auto outputName = state.forceStringNoCtx(*elem, attr->pos, "while evaluating an output name within a string context");
-                context.emplace(NixStringContextElem::Built {
+                context.emplace(BsdStringContextElem::Built {
                     .drvPath = makeConstantStorePathRef(namePath),
                     .output = std::string { outputName },
                 });

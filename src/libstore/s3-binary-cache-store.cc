@@ -1,17 +1,17 @@
-#include "nix/store/s3-binary-cache-store.hh"
+#include "bsd/store/s3-binary-cache-store.hh"
 
 #if NIX_WITH_S3_SUPPORT
 
 #include <assert.h>
 
-#include "nix/store/s3.hh"
-#include "nix/store/nar-info.hh"
-#include "nix/store/nar-info-disk-cache.hh"
-#include "nix/store/globals.hh"
-#include "nix/util/compression.hh"
-#include "nix/store/filetransfer.hh"
-#include "nix/util/signals.hh"
-#include "nix/store/store-registration.hh"
+#include "bsd/store/s3.hh"
+#include "bsd/store/nar-info.hh"
+#include "bsd/store/nar-info-disk-cache.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/util/compression.hh"
+#include "bsd/store/filetransfer.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/store/store-registration.hh"
 
 #include <aws/core/Aws.h>
 #include <aws/core/VersionConfig.h>
@@ -32,7 +32,7 @@
 
 using namespace Aws::Transfer;
 
-namespace nix {
+namespace bsd {
 
 struct S3Error : public Error
 {
@@ -89,7 +89,7 @@ struct CustomAwsCredentialsProviderChain : public Aws::Auth::AWSCredentialsProvi
             AddProvider(std::make_shared<Aws::Auth::STSProfileCredentialsProvider>());
         } else {
             // Override the profile name to retrieve from the AWS config and credentials. I believe this option
-            // comes from the ?profile querystring in nix.conf.
+            // comes from the ?profile querystring in bsd.conf.
             AddProvider(std::make_shared<Aws::Auth::ProfileConfigFileAWSCredentialsProvider>(profile.c_str()));
             AddProvider(std::make_shared<Aws::Auth::STSProfileCredentialsProvider>(profile));
         }
@@ -505,7 +505,7 @@ struct S3BinaryCacheStoreImpl : virtual S3BinaryCacheStore
     {
         auto compress = [&](std::string compression)
         {
-            auto compressed = nix::compress(compression, StreamToSourceAdapter(istream).drain());
+            auto compressed = bsd::compress(compression, StreamToSourceAdapter(istream).drain());
             return std::make_shared<std::stringstream>(std::move(compressed));
         };
 

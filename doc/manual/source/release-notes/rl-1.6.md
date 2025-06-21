@@ -3,30 +3,30 @@
 In addition to the usual bug fixes, this release has several new
 features:
 
-  - The command `nix-build --run-env` has been renamed to `nix-shell`.
+  - The command `bsd-build --run-env` has been renamed to `bsd-shell`.
 
-  - `nix-shell` now sources `$stdenv/setup` *inside* the interactive
+  - `bsd-shell` now sources `$stdenv/setup` *inside* the interactive
     shell, rather than in a parent shell. This ensures that shell
     functions defined by `stdenv` can be used in the interactive shell.
 
-  - `nix-shell` has a new flag `--pure` to clear the environment, so you
-    get an environment that more closely corresponds to the “real” Nix
+  - `bsd-shell` has a new flag `--pure` to clear the environment, so you
+    get an environment that more closely corresponds to the “real” Bsd
     build.
 
-  - `nix-shell` now sets the shell prompt (`PS1`) to ensure that Nix
+  - `bsd-shell` now sets the shell prompt (`PS1`) to ensure that Bsd
     shells are distinguishable from your regular shells.
 
-  - `nix-env` no longer requires a `*` argument to match all packages,
-    so `nix-env -qa` is equivalent to `nix-env
+  - `bsd-env` no longer requires a `*` argument to match all packages,
+    so `bsd-env -qa` is equivalent to `bsd-env
                     -qa '*'`.
 
-  - `nix-env -i` has a new flag `--remove-all` (`-r`) to remove all
+  - `bsd-env -i` has a new flag `--remove-all` (`-r`) to remove all
     previous packages from the profile. This makes it easier to do
-    declarative package management similar to NixOS’s
+    declarative package management similar to BasedLinux’s
     `environment.systemPackages`. For instance, if you have a
-    specification `my-packages.nix` like this:
+    specification `my-packages.bsd` like this:
     
-        with import <nixpkgs> {};
+        with import <bsdpkgs> {};
         [ thunderbird
           geeqie
           ...
@@ -34,7 +34,7 @@ features:
     
     then after any change to this file, you can run:
     
-        $ nix-env -f my-packages.nix -ir
+        $ bsd-env -f my-packages.bsd -ir
     
     to update your profile to match the specification.
 
@@ -50,18 +50,18 @@ features:
     This evaluates to `"new"`, while previously it gave an “infinite
     recursion” error.
 
-  - Nix now has proper integer arithmetic operators. For instance, you
+  - Bsd now has proper integer arithmetic operators. For instance, you
     can write `x + y` instead of `builtins.add x y`, or `x <
                     y` instead of `builtins.lessThan x y`. The comparison operators also
     work on strings.
 
-  - On 64-bit systems, Nix integers are now 64 bits rather than 32 bits.
+  - On 64-bit systems, Bsd integers are now 64 bits rather than 32 bits.
 
-  - When using the Nix daemon, the `nix-daemon` worker process now runs
+  - When using the Bsd daemon, the `bsd-daemon` worker process now runs
     on the same CPU as the client, on systems that support setting CPU
     affinity. This gives a significant speedup on some systems.
 
-  - If a stack overflow occurs in the Nix evaluator, you now get a
+  - If a stack overflow occurs in the Bsd evaluator, you now get a
     proper error message (rather than “Segmentation fault”) on some
     systems.
 

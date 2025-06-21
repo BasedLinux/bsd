@@ -1,9 +1,9 @@
-#include "nix/fetchers/attrs.hh"
-#include "nix/fetchers/fetchers.hh"
+#include "bsd/fetchers/attrs.hh"
+#include "bsd/fetchers/fetchers.hh"
 
 #include <nlohmann/json.hpp>
 
-namespace nix::fetchers {
+namespace bsd::fetchers {
 
 Attrs jsonToAttrs(const nlohmann::json & json)
 {

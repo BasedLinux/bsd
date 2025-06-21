@@ -1,12 +1,12 @@
-#include "nix/util/archive.hh"
-#include "nix/util/posix-source-accessor.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/local-fs-store.hh"
-#include "nix/store/globals.hh"
-#include "nix/util/compression.hh"
-#include "nix/store/derivations.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/util/posix-source-accessor.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/local-fs-store.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/util/compression.hh"
+#include "bsd/store/derivations.hh"
 
-namespace nix {
+namespace bsd {
 
 LocalFSStoreConfig::LocalFSStoreConfig(PathView rootDir, const Params & params)
     : StoreConfig(params)

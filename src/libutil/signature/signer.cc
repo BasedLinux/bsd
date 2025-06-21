@@ -1,9 +1,9 @@
-#include "nix/util/signature/signer.hh"
-#include "nix/util/error.hh"
+#include "bsd/util/signature/signer.hh"
+#include "bsd/util/error.hh"
 
 #include <sodium.h>
 
-namespace nix {
+namespace bsd {
 
 LocalSigner::LocalSigner(SecretKey && privateKey)
     : privateKey(privateKey)

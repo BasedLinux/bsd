@@ -1,4 +1,4 @@
-# Nix-Perl build options
+# Bsd-Perl build options
 #============================================================================
 
 
@@ -9,7 +9,7 @@ option(
   'tests',
   type : 'feature',
   value : 'disabled',
-  description : 'run nix-perl tests')
+  description : 'run bsd-perl tests')
 
 
 # Location of Perl Modules

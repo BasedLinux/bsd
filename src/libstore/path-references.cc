@@ -1,6 +1,6 @@
-#include "nix/store/path-references.hh"
-#include "nix/util/hash.hh"
-#include "nix/util/archive.hh"
+#include "bsd/store/path-references.hh"
+#include "bsd/util/hash.hh"
+#include "bsd/util/archive.hh"
 
 #include <map>
 #include <cstdlib>
@@ -8,7 +8,7 @@
 #include <algorithm>
 
 
-namespace nix {
+namespace bsd {
 
 
 PathRefScanSink::PathRefScanSink(StringSet && hashes, std::map<std::string, StorePath> && backMap)

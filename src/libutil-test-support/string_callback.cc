@@ -1,6 +1,6 @@
-#include "nix/util/tests/string_callback.hh"
+#include "bsd/util/tests/string_callback.hh"
 
-namespace nix::testing {
+namespace bsd::testing {
 
 void observe_string_cb(const char * start, unsigned int n, void * user_data)
 {

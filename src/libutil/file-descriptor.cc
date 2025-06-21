@@ -1,15 +1,15 @@
-#include "nix/util/serialise.hh"
-#include "nix/util/util.hh"
+#include "bsd/util/serialise.hh"
+#include "bsd/util/util.hh"
 
 #include <fcntl.h>
 #include <unistd.h>
 #ifdef _WIN32
 # include <winnt.h>
 # include <fileapi.h>
-# include "nix/util/windows-error.hh"
+# include "bsd/util/windows-error.hh"
 #endif
 
-namespace nix {
+namespace bsd {
 
 void writeLine(Descriptor fd, std::string s)
 {

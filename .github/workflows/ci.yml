@@ -13,8 +13,8 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - uses: cachix/install-nix-action@v31
-    - run: nix --experimental-features 'nix-command flakes' flake show --all-systems --json
+    - uses: cachix/install-bsd-action@v31
+    - run: bsd --experimental-features 'bsd-command flakes' flake show --all-systems --json
 
   tests:
     strategy:
@@ -34,13 +34,13 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - uses: cachix/install-nix-action@v31
+    - uses: cachix/install-bsd-action@v31
       with:
         # The sandbox would otherwise be disabled by default on Darwin
-        extra_nix_config: |
+        extra_bsd_config: |
           sandbox = true
           max-jobs = 1
-    - uses: DeterminateSystems/magic-nix-cache-action@main
+    - uses: DeterminateSystems/magic-bsd-cache-action@main
     # Since ubuntu 22.30, unprivileged usernamespaces are no longer allowed to map to the root user:
     # https://ubuntu.com/blog/ubuntu-23-10-restricted-unprivileged-user-namespaces
     - run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
@@ -77,7 +77,7 @@ jobs:
     - name: Serving installer
       id: serving_installer
       run: ./scripts/serve-installer-for-github-actions
-    - uses: cachix/install-nix-action@v31
+    - uses: cachix/install-bsd-action@v31
       with:
         install_url: 'http://localhost:8126/install'
         install_options: "--tarball-url-prefix http://localhost:8126/"
@@ -85,16 +85,16 @@ jobs:
       if: matrix.os == 'linux'
     - run: brew install fish
       if: matrix.os == 'darwin'
-    - run: exec bash -c "nix-instantiate -E 'builtins.currentTime' --eval"
-    - run: exec sh -c "nix-instantiate -E 'builtins.currentTime' --eval"
-    - run: exec zsh -c "nix-instantiate -E 'builtins.currentTime' --eval"
-    - run: exec fish -c "nix-instantiate -E 'builtins.currentTime' --eval"
-    - run: exec bash -c "nix-channel --add https://releases.nixos.org/nixos/unstable/nixos-23.05pre466020.60c1d71f2ba nixpkgs"
-    - run: exec bash -c "nix-channel --update && nix-env -iA nixpkgs.hello && hello"
+    - run: exec bash -c "bsd-instantiate -E 'builtins.currentTime' --eval"
+    - run: exec sh -c "bsd-instantiate -E 'builtins.currentTime' --eval"
+    - run: exec zsh -c "bsd-instantiate -E 'builtins.currentTime' --eval"
+    - run: exec fish -c "bsd-instantiate -E 'builtins.currentTime' --eval"
+    - run: exec bash -c "bsd-channel --add https://releases.basedlinux.org/bsdos/unstable/bsdos-23.05pre466020.60c1d71f2ba bsdpkgs"
+    - run: exec bash -c "bsd-channel --update && bsd-env -iA bsdpkgs.hello && hello"
 
   # Steps to test CI automation in your own fork.
   # 1. Sign-up for https://hub.docker.com/
-  # 2. Store your dockerhub username as DOCKERHUB_USERNAME in "Repository secrets" of your fork repository settings (https://github.com/$githubuser/nix/settings/secrets/actions)
+  # 2. Store your dockerhub username as DOCKERHUB_USERNAME in "Repository secrets" of your fork repository settings (https://github.com/$githubuser/bsd/settings/secrets/actions)
   # 3. Create an access token in https://hub.docker.com/settings/security and store it as DOCKERHUB_TOKEN in "Repository secrets" of your fork
   check_secrets:
     permissions:
@@ -131,15 +131,15 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - uses: cachix/install-nix-action@v31
+    - uses: cachix/install-bsd-action@v31
       with:
-        install_url: https://releases.nixos.org/nix/nix-2.20.3/install
-    - uses: DeterminateSystems/magic-nix-cache-action@main
-    - run: echo NIX_VERSION="$(nix --experimental-features 'nix-command flakes' eval .\#nix.version | tr -d \")" >> $GITHUB_ENV
-    - run: nix --experimental-features 'nix-command flakes' build .#dockerImage -L
+        install_url: https://releases.basedlinux.org/bsd/bsd-2.20.3/install
+    - uses: DeterminateSystems/magic-bsd-cache-action@main
+    - run: echo NIX_VERSION="$(bsd --experimental-features 'bsd-command flakes' eval .\#bsd.version | tr -d \")" >> $GITHUB_ENV
+    - run: bsd --experimental-features 'bsd-command flakes' build .#dockerImage -L
     - run: docker load -i ./result/image.tar.gz
-    - run: docker tag nix:$NIX_VERSION ${{ secrets.DOCKERHUB_USERNAME }}/nix:$NIX_VERSION
-    - run: docker tag nix:$NIX_VERSION ${{ secrets.DOCKERHUB_USERNAME }}/nix:master
+    - run: docker tag bsd:$NIX_VERSION ${{ secrets.DOCKERHUB_USERNAME }}/bsd:$NIX_VERSION
+    - run: docker tag bsd:$NIX_VERSION ${{ secrets.DOCKERHUB_USERNAME }}/bsd:master
     # We'll deploy the newly built image to both Docker Hub and Github Container Registry.
     #
     # Push to Docker Hub first
@@ -148,8 +148,8 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nix:$NIX_VERSION
-    - run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nix:master
+    - run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/bsd:$NIX_VERSION
+    - run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/bsd:master
     # Push to GitHub Container Registry as well
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
@@ -159,29 +159,29 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Push image
       run: |
-        IMAGE_ID=ghcr.io/${{ github.repository_owner }}/nix
+        IMAGE_ID=ghcr.io/${{ github.repository_owner }}/bsd
         # Change all uppercase to lowercase
         IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
-        docker tag nix:$NIX_VERSION $IMAGE_ID:$NIX_VERSION
-        docker tag nix:$NIX_VERSION $IMAGE_ID:latest
+        docker tag bsd:$NIX_VERSION $IMAGE_ID:$NIX_VERSION
+        docker tag bsd:$NIX_VERSION $IMAGE_ID:latest
         docker push $IMAGE_ID:$NIX_VERSION
         docker push $IMAGE_ID:latest
         # deprecated 2024-02-24
-        docker tag nix:$NIX_VERSION $IMAGE_ID:master
+        docker tag bsd:$NIX_VERSION $IMAGE_ID:master
         docker push $IMAGE_ID:master
 
   vm_tests:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - uses: DeterminateSystems/bsd-installer-action@main
+      - uses: DeterminateSystems/magic-bsd-cache-action@main
       - run: |
-          nix build -L \
+          bsd build -L \
             .#hydraJobs.tests.functional_user \
             .#hydraJobs.tests.githubFlakes \
-            .#hydraJobs.tests.nix-docker \
+            .#hydraJobs.tests.bsd-docker \
             .#hydraJobs.tests.tarballFlakes \
             ;
 
@@ -189,18 +189,18 @@ jobs:
     needs: vm_tests
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout nix
+      - name: Checkout bsd
         uses: actions/checkout@v4
       - name: Checkout flake-regressions
         uses: actions/checkout@v4
         with:
-          repository: NixOS/flake-regressions
+          repository: BasedLinux/flake-regressions
           path: flake-regressions
       - name: Checkout flake-regressions-data
         uses: actions/checkout@v4
         with:
-          repository: NixOS/flake-regressions-data
+          repository: BasedLinux/flake-regressions-data
           path: flake-regressions/tests
-      - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
-      - run: nix build -L --out-link ./new-nix && PATH=$(pwd)/new-nix/bin:$PATH MAX_FLAKES=25 flake-regressions/eval-all.sh
+      - uses: DeterminateSystems/bsd-installer-action@main
+      - uses: DeterminateSystems/magic-bsd-cache-action@main
+      - run: bsd build -L --out-link ./new-bsd && PATH=$(pwd)/new-bsd/bin:$PATH MAX_FLAKES=25 flake-regressions/eval-all.sh

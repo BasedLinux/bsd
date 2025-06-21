@@ -2,24 +2,24 @@
 
 source common.sh
 
-TODO_NixOS
+TODO_BasedLinux
 
 clearStore
 clearCache
 
 cacheURI="file://$cacheDir?compression=br"
 
-outPath=$(nix-build dependencies.nix --no-out-link)
+outPath=$(bsd-build dependencies.bsd --no-out-link)
 
-nix copy --to "$cacheURI" "$outPath"
+bsd copy --to "$cacheURI" "$outPath"
 
-HASH=$(nix hash path "$outPath")
+HASH=$(bsd hash path "$outPath")
 
 clearStore
 clearCacheCache
 
-nix copy --from "$cacheURI" "$outPath" --no-check-sigs
+bsd copy --from "$cacheURI" "$outPath" --no-check-sigs
 
-HASH2=$(nix hash path "$outPath")
+HASH2=$(bsd hash path "$outPath")
 
 [[ $HASH == "$HASH2" ]]

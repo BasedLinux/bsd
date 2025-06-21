@@ -1,4 +1,4 @@
-function _complete_nix {
+function _complete_bsd {
     local -a words
     local cword cur
     _get_comp_words_by_ref -n ':=&' words cword cur
@@ -26,4 +26,4 @@ function _complete_nix {
     __ltrim_colon_completions "$cur"
 }
 
-complete -F _complete_nix nix
+complete -F _complete_bsd bsd

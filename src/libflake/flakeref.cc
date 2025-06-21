@@ -1,10 +1,10 @@
-#include "nix/flake/flakeref.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/url.hh"
-#include "nix/util/url-parts.hh"
-#include "nix/fetchers/fetchers.hh"
+#include "bsd/flake/flakeref.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/url.hh"
+#include "bsd/util/url-parts.hh"
+#include "bsd/fetchers/fetchers.hh"
 
-namespace nix {
+namespace bsd {
 
 #if 0
 // 'dir' path elements cannot start with a '.'. We also reject
@@ -112,10 +112,10 @@ std::pair<FlakeRef, std::string> parsePathFlakeRefWithFragment(
         if (isFlake) {
 
             if (!S_ISDIR(lstat(path).st_mode)) {
-                if (baseNameOf(path) == "flake.nix") {
-                    // Be gentle with people who accidentally write `/foo/bar/flake.nix` instead of `/foo/bar`
+                if (baseNameOf(path) == "flake.bsd") {
+                    // Be gentle with people who accidentally write `/foo/bar/flake.bsd` instead of `/foo/bar`
                     warn(
-                        "Path '%s' should point at the directory containing the 'flake.nix' file, not the file itself. "
+                        "Path '%s' should point at the directory containing the 'flake.bsd' file, not the file itself. "
                         "Pretending that you meant '%s'"
                         , path, dirOf(path));
                     path = dirOf(path);
@@ -124,18 +124,18 @@ std::pair<FlakeRef, std::string> parsePathFlakeRefWithFragment(
                 }
             }
 
-            if (!allowMissing && !pathExists(path + "/flake.nix")){
-                notice("path '%s' does not contain a 'flake.nix', searching up",path);
+            if (!allowMissing && !pathExists(path + "/flake.bsd")){
+                notice("path '%s' does not contain a 'flake.bsd', searching up",path);
 
                 // Save device to detect filesystem boundary
                 dev_t device = lstat(path).st_dev;
                 bool found = false;
                 while (path != "/") {
-                    if (pathExists(path + "/flake.nix")) {
+                    if (pathExists(path + "/flake.bsd")) {
                         found = true;
                         break;
                     } else if (pathExists(path + "/.git"))
-                        throw Error("path '%s' is not part of a flake (neither it nor its parent directories contain a 'flake.nix' file)", path);
+                        throw Error("path '%s' is not part of a flake (neither it nor its parent directories contain a 'flake.bsd' file)", path);
                     else {
                         if (lstat(path).st_dev != device)
                             throw Error("unable to find a flake before encountering filesystem boundary at '%s'", path);
@@ -143,11 +143,11 @@ std::pair<FlakeRef, std::string> parsePathFlakeRefWithFragment(
                     path = dirOf(path);
                 }
                 if (!found)
-                    throw BadURL("could not find a flake.nix file");
+                    throw BadURL("could not find a flake.bsd file");
             }
 
-            if (!allowMissing && !pathExists(path + "/flake.nix"))
-                throw BadURL("path '%s' is not a flake (because it doesn't contain a 'flake.nix' file)", path);
+            if (!allowMissing && !pathExists(path + "/flake.bsd"))
+                throw BadURL("path '%s' is not a flake (because it doesn't contain a 'flake.bsd' file)", path);
 
             auto flakeRoot = path;
             std::string subdir;
@@ -293,7 +293,7 @@ FlakeRef FlakeRef::canonicalize() const
 {
     auto flakeRef(*this);
 
-    /* Backward compatibility hack: In old versions of Nix, if you had
+    /* Backward compatibility hack: In old versions of Bsd, if you had
        a flake input like
 
          inputs.foo.url = "git+https://foo/bar?dir=subdir";
@@ -306,7 +306,7 @@ FlakeRef FlakeRef::canonicalize() const
            "url": "https://foo/bar?dir=subdir"
          }
 
-       New versions of Nix remove `?dir=subdir` from the `url` field,
+       New versions of Bsd remove `?dir=subdir` from the `url` field,
        since the subdirectory is intended for `FlakeRef`, not the
        fetcher (and specifically the remote server), that is, the
        flakeref is parsed into
@@ -317,7 +317,7 @@ FlakeRef FlakeRef::canonicalize() const
            "url": "https://foo/bar"
          }
 
-       However, this causes new versions of Nix to consider the lock
+       However, this causes new versions of Bsd to consider the lock
        file entry to be stale since the `original` ref no longer
        matches exactly.
 

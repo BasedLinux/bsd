@@ -13,6 +13,6 @@ store+=$remote_store
 store+=$remote_store
 store+=$remote_store
 
-out=$(nix store add-path --store "$store" "$TEST_ROOT"/hello.sh)
+out=$(bsd store add-path --store "$store" "$TEST_ROOT"/hello.sh)
 
 [ foo = "$(< "$out")" ]

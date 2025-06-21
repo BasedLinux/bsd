@@ -1,6 +1,6 @@
 error:
        … while calling the 'fetchurl' builtin
-         at /pwd/lang/eval-fail-fetchurl-baseName.nix:1:1:
+         at /pwd/lang/eval-fail-fetchurl-baseName.bsd:1:1:
             1| builtins.fetchurl "https://example.com/~wiggle~"
              | ^
             2|

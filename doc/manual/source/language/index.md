@@ -1,24 +1,24 @@
-# Nix Language
+# Bsd Language
 
-The Nix language is designed for conveniently creating and composing [derivations](@docroot@/glossary.md#gloss-derivation) – precise descriptions of how contents of existing files are used to derive new files.
+The Bsd language is designed for conveniently creating and composing [derivations](@docroot@/glossary.md#gloss-derivation) – precise descriptions of how contents of existing files are used to derive new files.
 
 > **Tip**
 >
 > These pages are written as a reference.
-> If you are learning Nix, nix.dev has a good [introduction to the Nix language](https://nix.dev/tutorials/nix-language).
+> If you are learning Bsd, bsd.dev has a good [introduction to the Bsd language](https://bsd.dev/tutorials/bsd-language).
 
 The language is:
 
 - *domain-specific*
 
-  The Nix language is purpose-built for working with text files.
+  The Bsd language is purpose-built for working with text files.
   Its most characteristic features are:
 
   - [File system path primitives](@docroot@/language/types.md#type-path), for accessing source files
   - [Indented strings](@docroot@/language/string-literals.md) and [string interpolation](@docroot@/language/string-interpolation.md), for creating file contents
   - [Strings with contexts](@docroot@/language/string-context.md), for transparently linking files
 
-  It comes with [built-in functions](@docroot@/language/builtins.md) to integrate with the [Nix store](@docroot@/store/index.md), which manages files and enables [realising](@docroot@/glossary.md#gloss-realise) derivations declared in the Nix language.
+  It comes with [built-in functions](@docroot@/language/builtins.md) to integrate with the [Bsd store](@docroot@/store/index.md), which manages files and enables [realising](@docroot@/glossary.md#gloss-realise) derivations declared in the Bsd language.
 
 - *declarative*
 
@@ -125,7 +125,7 @@ This is an incomplete overview of language features, by example.
   </td>
   <td>
 
-   [String interpolation](@docroot@/language/string-interpolation.md) (expands to `"hello world"`, `"1 2 3"`, `"/nix/store/<hash>-bash-<version>/bin/sh"`)
+   [String interpolation](@docroot@/language/string-interpolation.md) (expands to `"hello world"`, `"1 2 3"`, `"/bsd/store/<hash>-bash-<version>/bin/sh"`)
 
   </td>
  </tr>
@@ -197,7 +197,7 @@ This is an incomplete overview of language features, by example.
   </td>
   <td>
 
-   A [path](@docroot@/language/types.md#type-path) relative to the file containing this Nix expression
+   A [path](@docroot@/language/types.md#type-path) relative to the file containing this Bsd expression
 
   </td>
  </tr>
@@ -216,12 +216,12 @@ This is an incomplete overview of language features, by example.
  <tr>
   <td>
 
-   `<nixpkgs>`
+   `<bsdpkgs>`
 
   </td>
   <td>
 
-   A [lookup path](@docroot@/language/constructs/lookup-path.md) for Nix files. Value determined by [`$NIX_PATH` environment variable](../command-ref/env-common.md#env-NIX_PATH).
+   A [lookup path](@docroot@/language/constructs/lookup-path.md) for Bsd files. Value determined by [`$NIX_PATH` environment variable](../command-ref/env-common.md#env-NIX_PATH).
 
   </td>
  </tr>
@@ -612,12 +612,12 @@ This is an incomplete overview of language features, by example.
  <tr>
   <td>
 
-   `import ./foo.nix`
+   `import ./foo.bsd`
 
   </td>
   <td>
 
-   Load and return Nix expression in given file.
+   Load and return Bsd expression in given file.
    See [import](@docroot@/language/builtins.md#builtins-import).
 
   </td>

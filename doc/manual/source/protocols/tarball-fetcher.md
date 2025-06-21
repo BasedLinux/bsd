@@ -7,7 +7,7 @@ the URL always produces the same tarball contents.
 
 An HTTP server can return an "immutable" HTTP URL appropriate for lock
 files. This allows users to specify a tarball flake input in
-`flake.nix` that requests the latest version of a flake
+`flake.bsd` that requests the latest version of a flake
 (e.g. `https://example.org/hello/latest.tar.gz`), while `flake.lock`
 will record a URL whose contents will not change
 (e.g. `https://example.org/hello/<revision>.tar.gz`). To do so, the
@@ -22,12 +22,12 @@ Link: <flakeref>; rel="immutable"
 
 *flakeref* must be a tarball flakeref. It can contain the tarball flake attributes
 `narHash`, `rev`, `revCount` and `lastModified`. If `narHash` is included, its
-value must be the [NAR hash][Nix Archive] of the unpacked tarball (as computed via
-`nix hash path`). Nix checks the contents of the returned tarball
+value must be the [NAR hash][Bsd Archive] of the unpacked tarball (as computed via
+`bsd hash path`). Bsd checks the contents of the returned tarball
 against the `narHash` attribute. The `rev` and `revCount` attributes
 are useful when the tarball flake is a mirror of a fetcher type that
 has those attributes, such as Git or GitHub. They are not checked by
-Nix.
+Bsd.
 
 ```
 Link: <https://example.org/hello/442793d9ec0584f6a6e82fa253850c8085bb150a.tar.gz
@@ -52,8 +52,8 @@ https://<domain name>/<owner>/<repo>/archive/<reference or revision>.tar.gz
 > **Example**
 >
 >
-> ```nix
-> # flake.nix
+> ```bsd
+> # flake.bsd
 > {
 >    inputs = {
 >      foo.url = "https://gitea.example.org/some-person/some-flake/archive/main.tar.gz";
@@ -67,4 +67,4 @@ https://<domain name>/<owner>/<repo>/archive/<reference or revision>.tar.gz
 > }
 ```
 
-[Nix Archive]: @docroot@/store/file-system-object/content-address.md#serial-nix-archive
+[Bsd Archive]: @docroot@/store/file-system-object/content-address.md#serial-bsd-archive

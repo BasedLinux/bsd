@@ -1,8 +1,8 @@
-#include "nix/util/processes.hh"
+#include "bsd/util/processes.hh"
 
 #include <gtest/gtest.h>
 
-namespace nix {
+namespace bsd {
 
 /* ----------------------------------------------------------------------------
  * statusOk
@@ -14,4 +14,4 @@ TEST(statusOk, zeroIsOk)
     ASSERT_EQ(statusOk(1), false);
 }
 
-} // namespace nix
+} // namespace bsd

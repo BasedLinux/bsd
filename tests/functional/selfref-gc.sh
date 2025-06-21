@@ -6,8 +6,8 @@ requireDaemonNewerThan "2.6.0pre20211215"
 
 clearStoreIfPossible
 
-nix-build --no-out-link -E '
-  with import '"${config_nix}"';
+bsd-build --no-out-link -E '
+  with import '"${config_bsd}"';
 
   let d1 = mkDerivation {
     name = "selfref-gc";
@@ -29,4 +29,4 @@ nix-build --no-out-link -E '
   }
 '
 
-nix-collect-garbage
+bsd-collect-garbage

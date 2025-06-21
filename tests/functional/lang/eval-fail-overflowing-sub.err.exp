@@ -1,6 +1,6 @@
 error:
        … while calling the 'sub' builtin
-         at /pwd/lang/eval-fail-overflowing-sub.nix:5:3:
+         at /pwd/lang/eval-fail-overflowing-sub.bsd:5:3:
             4| in
             5| a - b
              |   ^

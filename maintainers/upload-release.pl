@@ -1,5 +1,5 @@
-#! /usr/bin/env nix-shell
-#! nix-shell -i perl -p perl perlPackages.LWPUserAgent perlPackages.LWPProtocolHttps perlPackages.FileSlurp perlPackages.NetAmazonS3 gnupg1
+#! /usr/bin/env bsd-shell
+#! bsd-shell -i perl -p perl perlPackages.LWPUserAgent perlPackages.LWPProtocolHttps perlPackages.FileSlurp perlPackages.NetAmazonS3 gnupg1
 
 use strict;
 use Data::Dumper;
@@ -15,14 +15,14 @@ delete $ENV{'shell'}; # shut up a LWP::UserAgent.pm warning
 
 my $evalId = $ARGV[0] or die "Usage: $0 EVAL-ID\n";
 
-my $releasesBucketName = "nix-releases";
-my $channelsBucketName = "nix-channels";
+my $releasesBucketName = "bsd-releases";
+my $channelsBucketName = "bsd-channels";
 
 my $TMPDIR = $ENV{'TMPDIR'} // "/tmp";
 
 my $isLatest = ($ENV{'IS_LATEST'} // "") eq "1";
 
-# FIXME: cut&paste from nixos-channel-scripts.
+# FIXME: cut&paste from bsdos-channel-scripts.
 sub fetch {
     my ($url, $type) = @_;
 
@@ -35,31 +35,31 @@ sub fetch {
     return $response->decoded_content;
 }
 
-my $evalUrl = "https://hydra.nixos.org/eval/$evalId";
+my $evalUrl = "https://hydra.basedlinux.org/eval/$evalId";
 my $evalInfo = decode_json(fetch($evalUrl, 'application/json'));
 #print Dumper($evalInfo);
 my $flakeUrl = $evalInfo->{flake};
-my $flakeInfo = decode_json(`nix flake metadata --json "$flakeUrl"` or die) if $flakeUrl;
-my $nixRev = ($flakeInfo ? $flakeInfo->{revision} : $evalInfo->{jobsetevalinputs}->{nix}->{revision}) or die;
+my $flakeInfo = decode_json(`bsd flake metadata --json "$flakeUrl"` or die) if $flakeUrl;
+my $bsdRev = ($flakeInfo ? $flakeInfo->{revision} : $evalInfo->{jobsetevalinputs}->{bsd}->{revision}) or die;
 
-my $buildInfo = decode_json(fetch("$evalUrl/job/build.nix-everything.x86_64-linux", 'application/json'));
+my $buildInfo = decode_json(fetch("$evalUrl/job/build.bsd-everything.x86_64-linux", 'application/json'));
 #print Dumper($buildInfo);
 
-my $releaseName = $buildInfo->{nixname};
-$releaseName =~ /nix-(.*)$/ or die;
+my $releaseName = $buildInfo->{bsdname};
+$releaseName =~ /bsd-(.*)$/ or die;
 my $version = $1;
 
-print STDERR "Flake URL is $flakeUrl, Nix revision is $nixRev, version is $version\n";
+print STDERR "Flake URL is $flakeUrl, Bsd revision is $bsdRev, version is $version\n";
 
-my $releaseDir = "nix/$releaseName";
+my $releaseDir = "bsd/$releaseName";
 
-my $tmpDir = "$TMPDIR/nix-release/$releaseName";
+my $tmpDir = "$TMPDIR/bsd-release/$releaseName";
 File::Path::make_path($tmpDir);
 
 my $narCache = "$TMPDIR/nar-cache";
 File::Path::make_path($narCache);
 
-my $binaryCache = "https://cache.nixos.org/?local-nar-cache=$narCache";
+my $binaryCache = "https://cache.basedlinux.org/?local-nar-cache=$narCache";
 
 # S3 setup.
 my $aws_access_key_id = $ENV{'AWS_ACCESS_KEY_ID'} or die "No AWS_ACCESS_KEY_ID given.";
@@ -103,15 +103,15 @@ sub copyManual {
     print "$manualNar\n";
 
     unless (-e $manualNar) {
-        system("NIX_REMOTE=$binaryCache nix store dump-path '$manual' | xz > '$manualNar'.tmp") == 0
+        system("NIX_REMOTE=$binaryCache bsd store dump-path '$manual' | xz > '$manualNar'.tmp") == 0
             or die "unable to fetch $manual\n";
         rename("$manualNar.tmp", $manualNar) or die;
     }
 
     unless (-e "$tmpDir/manual") {
-        system("xz -d < '$manualNar' | nix-store --restore $tmpDir/manual.tmp") == 0
+        system("xz -d < '$manualNar' | bsd-store --restore $tmpDir/manual.tmp") == 0
             or die "unable to unpack $manualNar\n";
-        rename("$tmpDir/manual.tmp/share/doc/nix/manual", "$tmpDir/manual") or die;
+        rename("$tmpDir/manual.tmp/share/doc/bsd/manual", "$tmpDir/manual") or die;
         File::Path::remove_tree("$tmpDir/manual.tmp", {safe => 1});
     }
 
@@ -134,19 +134,19 @@ sub downloadFile {
     if (!-e $tmpFile) {
         print STDERR "downloading $srcFile to $tmpFile...\n";
 
-        my $fileInfo = decode_json(`NIX_REMOTE=$binaryCache nix store ls --json '$srcFile'`);
+        my $fileInfo = decode_json(`NIX_REMOTE=$binaryCache bsd store ls --json '$srcFile'`);
 
         $srcFile = $fileInfo->{target} if $fileInfo->{type} eq 'symlink';
 
         #print STDERR $srcFile, " ", Dumper($fileInfo), "\n";
 
-        system("NIX_REMOTE=$binaryCache nix store cat '$srcFile' > '$tmpFile'.tmp") == 0
+        system("NIX_REMOTE=$binaryCache bsd store cat '$srcFile' > '$tmpFile'.tmp") == 0
             or die "unable to fetch $srcFile\n";
         rename("$tmpFile.tmp", $tmpFile) or die;
     }
 
     my $sha256_expected = $buildInfo->{buildproducts}->{$productNr}->{sha256hash};
-    my $sha256_actual = `nix hash file --base16 --type sha256 '$tmpFile'`;
+    my $sha256_actual = `bsd hash file --base16 --type sha256 '$tmpFile'`;
     chomp $sha256_actual;
     if (defined($sha256_expected) && $sha256_expected ne $sha256_actual) {
         print STDERR "file $tmpFile is corrupt, got $sha256_actual, expected $sha256_expected\n";
@@ -185,7 +185,7 @@ my $haveDocker = 0;
 for my $platforms (["x86_64-linux", "amd64"], ["aarch64-linux", "arm64"]) {
     my $system = $platforms->[0];
     my $dockerPlatform = $platforms->[1];
-    my $fn = "nix-$version-docker-image-$dockerPlatform.tar.gz";
+    my $fn = "bsd-$version-docker-image-$dockerPlatform.tar.gz";
     eval {
         downloadFile("dockerImage.$system", "1", $fn);
     };
@@ -195,15 +195,15 @@ for my $platforms (["x86_64-linux", "amd64"], ["aarch64-linux", "arm64"]) {
     print STDERR "loading docker image for $dockerPlatform...\n";
     system("docker load -i $tmpDir/$fn") == 0 or die;
 
-    my $tag = "nixos/nix:$version-$dockerPlatform";
-    my $latestTag = "nixos/nix:latest-$dockerPlatform";
+    my $tag = "bsdos/bsd:$version-$dockerPlatform";
+    my $latestTag = "bsdos/bsd:latest-$dockerPlatform";
 
     print STDERR "tagging $version docker image for $dockerPlatform...\n";
-    system("docker tag nix:$version $tag") == 0 or die;
+    system("docker tag bsd:$version $tag") == 0 or die;
 
     if ($isLatest) {
         print STDERR "tagging latest docker image for $dockerPlatform...\n";
-        system("docker tag nix:$version $latestTag") == 0 or die;
+        system("docker tag bsd:$version $latestTag") == 0 or die;
     }
 
     print STDERR "pushing $version docker image for $dockerPlatform...\n";
@@ -220,32 +220,32 @@ for my $platforms (["x86_64-linux", "amd64"], ["aarch64-linux", "arm64"]) {
 
 if ($haveDocker) {
     print STDERR "creating multi-platform docker manifest...\n";
-    system("docker manifest rm nixos/nix:$version");
-    system("docker manifest create nixos/nix:$version $dockerManifest") == 0 or die;
+    system("docker manifest rm bsdos/bsd:$version");
+    system("docker manifest create bsdos/bsd:$version $dockerManifest") == 0 or die;
     if ($isLatest) {
         print STDERR "creating latest multi-platform docker manifest...\n";
-        system("docker manifest rm nixos/nix:latest");
-        system("docker manifest create nixos/nix:latest $dockerManifestLatest") == 0 or die;
+        system("docker manifest rm bsdos/bsd:latest");
+        system("docker manifest create bsdos/bsd:latest $dockerManifestLatest") == 0 or die;
     }
 
     print STDERR "pushing multi-platform docker manifest...\n";
-    system("docker manifest push nixos/nix:$version") == 0 or die;
+    system("docker manifest push bsdos/bsd:$version") == 0 or die;
 
     if ($isLatest) {
         print STDERR "pushing latest multi-platform docker manifest...\n";
-        system("docker manifest push nixos/nix:latest") == 0 or die;
+        system("docker manifest push bsdos/bsd:latest") == 0 or die;
     }
 }
 
-# Upload nix-fallback-paths.nix.
-write_file("$tmpDir/fallback-paths.nix",
+# Upload bsd-fallback-paths.bsd.
+write_file("$tmpDir/fallback-paths.bsd",
     "{\n" .
-    "  x86_64-linux = \"" . getStorePath("build.nix-everything.x86_64-linux") . "\";\n" .
-    "  i686-linux = \"" . getStorePath("build.nix-everything.i686-linux") . "\";\n" .
-    "  aarch64-linux = \"" . getStorePath("build.nix-everything.aarch64-linux") . "\";\n" .
-    "  riscv64-linux = \"" . getStorePath("buildCross.nix-everything.riscv64-unknown-linux-gnu.x86_64-linux") . "\";\n" .
-    "  x86_64-darwin = \"" . getStorePath("build.nix-everything.x86_64-darwin") . "\";\n" .
-    "  aarch64-darwin = \"" . getStorePath("build.nix-everything.aarch64-darwin") . "\";\n" .
+    "  x86_64-linux = \"" . getStorePath("build.bsd-everything.x86_64-linux") . "\";\n" .
+    "  i686-linux = \"" . getStorePath("build.bsd-everything.i686-linux") . "\";\n" .
+    "  aarch64-linux = \"" . getStorePath("build.bsd-everything.aarch64-linux") . "\";\n" .
+    "  riscv64-linux = \"" . getStorePath("buildCross.bsd-everything.riscv64-unknown-linux-gnu.x86_64-linux") . "\";\n" .
+    "  x86_64-darwin = \"" . getStorePath("build.bsd-everything.x86_64-darwin") . "\";\n" .
+    "  aarch64-darwin = \"" . getStorePath("build.bsd-everything.aarch64-darwin") . "\";\n" .
     "}\n");
 
 # Upload release files to S3.
@@ -259,7 +259,7 @@ for my $fn (glob "$tmpDir/*") {
         my $configuration = ();
         $configuration->{content_type} = "application/octet-stream";
 
-        if ($fn =~ /.sha256|install|\.nix$/) {
+        if ($fn =~ /.sha256|install|\.bsd$/) {
             $configuration->{content_type} = "text/plain";
         }
 
@@ -270,17 +270,17 @@ for my $fn (glob "$tmpDir/*") {
 
 # Update the "latest" symlink.
 $channelsBucket->add_key(
-    "nix-latest/install", "",
-    { "x-amz-website-redirect-location" => "https://releases.nixos.org/$releaseDir/install" })
+    "bsd-latest/install", "",
+    { "x-amz-website-redirect-location" => "https://releases.basedlinux.org/$releaseDir/install" })
     or die $channelsBucket->err . ": " . $channelsBucket->errstr
     if $isLatest;
 
 # Tag the release in Git.
-chdir("/home/eelco/Dev/nix-pristine") or die;
+chdir("/home/eelco/Dev/bsd-pristine") or die;
 system("git remote update origin") == 0 or die;
-system("git tag --force --sign $version $nixRev -m 'Tagging release $version'") == 0 or die;
+system("git tag --force --sign $version $bsdRev -m 'Tagging release $version'") == 0 or die;
 system("git push --tags") == 0 or die;
-system("git push --force-with-lease origin $nixRev:refs/heads/latest-release") == 0 or die if $isLatest;
+system("git push --force-with-lease origin $bsdRev:refs/heads/latest-release") == 0 or die if $isLatest;
 
 File::Path::remove_tree($narCache, {safe => 1});
 File::Path::remove_tree($tmpDir, {safe => 1});

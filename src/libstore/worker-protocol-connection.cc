@@ -1,9 +1,9 @@
-#include "nix/store/worker-protocol-connection.hh"
-#include "nix/store/worker-protocol-impl.hh"
-#include "nix/store/build-result.hh"
-#include "nix/store/derivations.hh"
+#include "bsd/store/worker-protocol-connection.hh"
+#include "bsd/store/worker-protocol-impl.hh"
+#include "bsd/store/build-result.hh"
+#include "bsd/store/derivations.hh"
 
-namespace nix {
+namespace bsd {
 
 const WorkerProto::FeatureSet WorkerProto::allFeatures{};
 
@@ -27,7 +27,7 @@ static Logger::Fields readFields(Source & from)
         else if (type == Logger::Field::tString)
             fields.push_back(readString(from));
         else
-            throw Error("got unsupported field type %x from Nix daemon", (int) type);
+            throw Error("got unsupported field type %x from Bsd daemon", (int) type);
     }
     return fields;
 }
@@ -105,7 +105,7 @@ WorkerProto::BasicClientConnection::processStderrReturn(Sink * sink, Source * so
         }
 
         else
-            throw Error("got unknown message type %x from Nix daemon", msg);
+            throw Error("got unknown message type %x from Bsd daemon", msg);
     }
 
     if (!ex) {
@@ -114,7 +114,7 @@ WorkerProto::BasicClientConnection::processStderrReturn(Sink * sink, Source * so
         try {
             std::rethrow_exception(ex);
         } catch (const Error & e) {
-            // Nix versions before #4628 did not have an adequate
+            // Bsd versions before #4628 did not have an adequate
             // behavior for reporting that the derivation format was
             // upgraded. To avoid having to add compatibility logic in
             // many places, we expect to catch almost all occurrences of
@@ -166,13 +166,13 @@ std::tuple<WorkerProto::Version, WorkerProto::FeatureSet> WorkerProto::BasicClie
 
     unsigned int magic = readInt(from);
     if (magic != WORKER_MAGIC_2)
-        throw Error("nix-daemon protocol mismatch from");
+        throw Error("bsd-daemon protocol mismatch from");
     auto daemonVersion = readInt(from);
 
     if (GET_PROTOCOL_MAJOR(daemonVersion) != GET_PROTOCOL_MAJOR(PROTOCOL_VERSION))
-        throw Error("Nix daemon protocol version not supported");
+        throw Error("Bsd daemon protocol version not supported");
     if (GET_PROTOCOL_MINOR(daemonVersion) < 10)
-        throw Error("the Nix daemon version is too old");
+        throw Error("the Bsd daemon version is too old");
 
     auto protoVersion = std::min(daemonVersion, localVersion);
 

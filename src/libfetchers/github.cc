@@ -1,21 +1,21 @@
-#include "nix/store/filetransfer.hh"
-#include "nix/fetchers/cache.hh"
-#include "nix/store/globals.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/types.hh"
-#include "nix/util/url-parts.hh"
-#include "nix/util/git.hh"
-#include "nix/fetchers/fetchers.hh"
-#include "nix/fetchers/fetch-settings.hh"
-#include "nix/fetchers/tarball.hh"
-#include "nix/util/tarfile.hh"
-#include "nix/fetchers/git-utils.hh"
+#include "bsd/store/filetransfer.hh"
+#include "bsd/fetchers/cache.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/types.hh"
+#include "bsd/util/url-parts.hh"
+#include "bsd/util/git.hh"
+#include "bsd/fetchers/fetchers.hh"
+#include "bsd/fetchers/fetch-settings.hh"
+#include "bsd/fetchers/tarball.hh"
+#include "bsd/util/tarfile.hh"
+#include "bsd/fetchers/git-utils.hh"
 
 #include <optional>
 #include <nlohmann/json.hpp>
 #include <fstream>
 
-namespace nix::fetchers {
+namespace bsd::fetchers {
 
 struct DownloadUrl
 {
@@ -238,7 +238,7 @@ struct GitArchiveInputScheme : InputScheme
         std::optional<Hash> treeHash;
     };
 
-    virtual RefInfo getRevFromRef(nix::ref<Store> store, const Input & input) const = 0;
+    virtual RefInfo getRevFromRef(bsd::ref<Store> store, const Input & input) const = 0;
 
     virtual DownloadUrl getDownloadUrl(const Input & input) const = 0;
 
@@ -393,7 +393,7 @@ struct GitHubInputScheme : GitArchiveInputScheme
         return getStrAttr(input.attrs, "repo");
     }
 
-    RefInfo getRevFromRef(nix::ref<Store> store, const Input & input) const override
+    RefInfo getRevFromRef(bsd::ref<Store> store, const Input & input) const override
     {
         auto host = getHost(input);
         auto url = fmt(
@@ -469,7 +469,7 @@ struct GitLabInputScheme : GitArchiveInputScheme
         return std::make_pair(token.substr(0,fldsplit), token.substr(fldsplit+1));
     }
 
-    RefInfo getRevFromRef(nix::ref<Store> store, const Input & input) const override
+    RefInfo getRevFromRef(bsd::ref<Store> store, const Input & input) const override
     {
         auto host = maybeGetStrAttr(input.attrs, "host").value_or("gitlab.com");
         // See rate limiting note below
@@ -535,7 +535,7 @@ struct SourceHutInputScheme : GitArchiveInputScheme
         // Once it is implemented, however, should work as expected.
     }
 
-    RefInfo getRevFromRef(nix::ref<Store> store, const Input & input) const override
+    RefInfo getRevFromRef(bsd::ref<Store> store, const Input & input) const override
     {
         // TODO: In the future, when the sourcehut graphql API is implemented for mercurial
         // and with anonymous access, this method should use it instead.

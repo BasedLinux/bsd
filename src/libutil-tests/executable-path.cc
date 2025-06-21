@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "nix/util/executable-path.hh"
+#include "bsd/util/executable-path.hh"
 
-namespace nix {
+namespace bsd {
 
 #ifdef WIN32
 #  define PATH_VAR_SEP L";"

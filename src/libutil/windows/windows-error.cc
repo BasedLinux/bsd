@@ -1,11 +1,11 @@
-#include "nix/util/windows-error.hh"
+#include "bsd/util/windows-error.hh"
 
 #ifdef _WIN32
 #include <error.h>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-namespace nix::windows {
+namespace bsd::windows {
 
 std::string WinError::renderError(DWORD lastError)
 {

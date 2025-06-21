@@ -3,19 +3,19 @@
 source common.sh
 
 # Tests that:
-# - flake.nix may reside inside of a git submodule
+# - flake.bsd may reside inside of a git submodule
 # - the flake can access content outside of the submodule
 #
 #   rootRepo
-#   ├── root.nix
+#   ├── root.bsd
 #   └── submodule
-#       ├── flake.nix
-#       └── sub.nix
+#       ├── flake.bsd
+#       └── sub.bsd
 
 
 requireGit
 
-TODO_NixOS
+TODO_BasedLinux
 
 clearStore
 
@@ -31,55 +31,55 @@ otherRepo=$TEST_ROOT/otherRepo
 
 
 createGitRepo "$subRepo"
-cat > "$subRepo"/flake.nix <<EOF
+cat > "$subRepo"/flake.bsd <<EOF
 {
     outputs = { self }: {
-        sub = import ./sub.nix;
-        root = import ../root.nix;
+        sub = import ./sub.bsd;
+        root = import ../root.bsd;
     };
 }
 EOF
-echo '"expression in submodule"' > "$subRepo"/sub.nix
-git -C "$subRepo" add flake.nix sub.nix
+echo '"expression in submodule"' > "$subRepo"/sub.bsd
+git -C "$subRepo" add flake.bsd sub.bsd
 git -C "$subRepo" commit -m Initial
 
 createGitRepo "$rootRepo"
 
 git -C "$rootRepo" submodule init
 git -C "$rootRepo" submodule add "$subRepo" submodule
-echo '"expression in root repo"' > "$rootRepo"/root.nix
-git -C "$rootRepo" add root.nix
-git -C "$rootRepo" commit -m "Add root.nix"
+echo '"expression in root repo"' > "$rootRepo"/root.bsd
+git -C "$rootRepo" add root.bsd
+git -C "$rootRepo" commit -m "Add root.bsd"
 
 flakeref=git+file://$rootRepo\?submodules=1\&dir=submodule
 
 # Flake can live inside a submodule and can be accessed via ?dir=submodule
-[[ $(nix eval --json "$flakeref#sub" ) = '"expression in submodule"' ]]
+[[ $(bsd eval --json "$flakeref#sub" ) = '"expression in submodule"' ]]
 
 # The flake can access content outside of the submodule
-[[ $(nix eval --json "$flakeref#root" ) = '"expression in root repo"' ]]
+[[ $(bsd eval --json "$flakeref#root" ) = '"expression in root repo"' ]]
 
 # Check that dirtying a submodule makes the entire thing dirty.
-[[ $(nix flake metadata --json "$flakeref" | jq -r .locked.rev) != null ]]
-echo '"foo"' > "$rootRepo"/submodule/sub.nix
-[[ $(nix eval --json "$flakeref#sub" ) = '"foo"' ]]
-[[ $(nix flake metadata --json "$flakeref" | jq -r .locked.rev) = null ]]
+[[ $(bsd flake metadata --json "$flakeref" | jq -r .locked.rev) != null ]]
+echo '"foo"' > "$rootRepo"/submodule/sub.bsd
+[[ $(bsd eval --json "$flakeref#sub" ) = '"foo"' ]]
+[[ $(bsd flake metadata --json "$flakeref" | jq -r .locked.rev) = null ]]
 
-# Test that `nix flake metadata` parses `submodule` correctly.
-cat > "$rootRepo"/flake.nix <<EOF
+# Test that `bsd flake metadata` parses `submodule` correctly.
+cat > "$rootRepo"/flake.bsd <<EOF
 {
     outputs = { self }: {
     };
 }
 EOF
-git -C "$rootRepo" add flake.nix
-git -C "$rootRepo" commit -m "Add flake.nix"
+git -C "$rootRepo" add flake.bsd
+git -C "$rootRepo" commit -m "Add flake.bsd"
 
-storePath=$(nix flake prefetch --json "$rootRepo?submodules=1" | jq -r .storePath)
+storePath=$(bsd flake prefetch --json "$rootRepo?submodules=1" | jq -r .storePath)
 [[ -e "$storePath/submodule" ]]
 
 # Test the use of inputs.self.
-cat > "$rootRepo"/flake.nix <<EOF
+cat > "$rootRepo"/flake.bsd <<EOF
 {
   inputs.self.submodules = true;
   outputs = { self }: {
@@ -89,13 +89,13 @@ cat > "$rootRepo"/flake.nix <<EOF
 EOF
 git -C "$rootRepo" commit -a -m "Bla"
 
-storePath=$(nix eval --raw "$rootRepo#foo")
+storePath=$(bsd eval --raw "$rootRepo#foo")
 [[ -e "$storePath/submodule" ]]
 
 
 # Test another repo referring to a repo that uses inputs.self.
 createGitRepo "$otherRepo"
-cat > "$otherRepo"/flake.nix <<EOF
+cat > "$otherRepo"/flake.bsd <<EOF
 {
   inputs.root.url = "git+file://$rootRepo";
   outputs = { self, root }: {
@@ -103,36 +103,36 @@ cat > "$otherRepo"/flake.nix <<EOF
   };
 }
 EOF
-git -C "$otherRepo" add flake.nix
+git -C "$otherRepo" add flake.bsd
 
 # The first call should refetch the root repo...
-expectStderr 0 nix eval --raw "$otherRepo#foo" -vvvvv | grepQuiet "refetching"
+expectStderr 0 bsd eval --raw "$otherRepo#foo" -vvvvv | grepQuiet "refetching"
 
 [[ $(jq .nodes.root_2.locked.submodules "$otherRepo/flake.lock") == true ]]
 
 # ... but the second call should have 'submodules = true' in flake.lock, so it should not refetch.
 rm -rf "$TEST_HOME/.cache"
 clearStore
-expectStderr 0 nix eval --raw "$otherRepo#foo" -vvvvv | grepQuietInverse "refetching"
+expectStderr 0 bsd eval --raw "$otherRepo#foo" -vvvvv | grepQuietInverse "refetching"
 
-storePath=$(nix eval --raw "$otherRepo#foo")
+storePath=$(bsd eval --raw "$otherRepo#foo")
 [[ -e "$storePath/submodule" ]]
 
 
 # The root repo may use the submodule repo as an input
 # through the relative path. This may change in the future;
-# see: https://discourse.nixos.org/t/57783 and #9708.
-cat > "$rootRepo"/flake.nix <<EOF
+# see: https://discourse.basedlinux.org/t/57783 and #9708.
+cat > "$rootRepo"/flake.bsd <<EOF
 {
     inputs.subRepo.url = "git+file:./submodule";
     outputs = { ... }: { };
 }
 EOF
-git -C "$rootRepo" add flake.nix
+git -C "$rootRepo" add flake.bsd
 git -C "$rootRepo" commit -m "Add subRepo input"
 (
   cd "$rootRepo"
   # The submodule must be locked to the relative path,
   # _not_ the absolute path:
-  [[ $(nix flake metadata --json | jq -r .locks.nodes.subRepo.locked.url) = "file:./submodule" ]]
+  [[ $(bsd flake metadata --json | jq -r .locks.nodes.subRepo.locked.url) = "file:./submodule" ]]
 )

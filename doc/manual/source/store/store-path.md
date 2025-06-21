@@ -2,11 +2,11 @@
 
 > **Example**
 >
-> `/nix/store/a040m110amc4h71lds2jmr8qrkj2jhxd-git-2.38.1`
+> `/bsd/store/a040m110amc4h71lds2jmr8qrkj2jhxd-git-2.38.1`
 >
 > A rendered store path
 
-Nix implements references to [store objects](./index.md#store-object) as *store paths*.
+Bsd implements references to [store objects](./index.md#store-object) as *store paths*.
 
 Think of a store path as an [opaque], [unique identifier]:
 The only way to obtain store path is by adding or building store objects.
@@ -29,7 +29,7 @@ To make store objects accessible to operating system processes, stores have to e
 
 A store path is rendered to a file system path as the concatenation of
 
-- [Store directory](#store-directory) (typically `/nix/store`)
+- [Store directory](#store-directory) (typically `/bsd/store`)
 - Path separator (`/`)
 - Digest rendered in a custom variant of [Base32](https://en.wikipedia.org/wiki/Base32) (20 arbitrary bytes become 32 ASCII characters)
 - Hyphen (`-`)
@@ -38,7 +38,7 @@ A store path is rendered to a file system path as the concatenation of
 > **Example**
 >
 > ```
->   /nix/store/b6gvzjyb2pg0kjfwrjmg1vfhh54ad73z-firefox-33.1
+>   /bsd/store/b6gvzjyb2pg0kjfwrjmg1vfhh54ad73z-firefox-33.1
 >   |--------| |------------------------------| |----------|
 > store directory            digest                 name
 > ```
@@ -49,7 +49,7 @@ That said, the manual has a full [specification of store path digests](@docroot@
 
 ## Store Directory
 
-Every [Nix store](./index.md) has a store directory.
+Every [Bsd store](./index.md) has a store directory.
 
 Not every store can be accessed through the file system.
 But if the store has a file system representation, the store directory contains the store’s [file system objects], which can be addressed by [store paths](#store-path).
@@ -60,11 +60,11 @@ This means a store path is not just derived from the referenced store object its
 
 > **Note**
 >
-> The store directory defaults to `/nix/store`, but is in principle arbitrary.
+> The store directory defaults to `/bsd/store`, but is in principle arbitrary.
 
 It is important which store a given store object belongs to:
 Files in the store object can contain store paths, and processes may read these paths.
-Nix can only guarantee referential integrity if store paths do not cross store boundaries.
+Bsd can only guarantee referential integrity if store paths do not cross store boundaries.
 
 Therefore one can only copy store objects to a different store if
 

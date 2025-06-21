@@ -1,11 +1,11 @@
-#include "nix/util/configuration.hh"
-#include "nix/util/args.hh"
+#include "bsd/util/configuration.hh"
+#include "bsd/util/args.hh"
 
 #include <sstream>
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
     /* ----------------------------------------------------------------------------
      * Config
@@ -283,7 +283,7 @@ namespace nix {
         ASSERT_THROW(config.applyConfig(
             "name-of-the-setting = value-from-file\n"
             "# name-of-the-setting = foo\n"
-            "include /nix/store/does/not/exist.nix"
+            "include /bsd/store/does/not/exist.bsd"
         ), Error);
     }
 

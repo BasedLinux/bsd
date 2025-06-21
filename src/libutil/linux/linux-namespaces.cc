@@ -1,18 +1,18 @@
-#include "nix/util/linux-namespaces.hh"
-#include "nix/util/current-process.hh"
-#include "nix/util/util.hh"
-#include "nix/util/finally.hh"
-#include "nix/util/file-system.hh"
-#include "nix/util/processes.hh"
-#include "nix/util/signals.hh"
+#include "bsd/util/linux-namespaces.hh"
+#include "bsd/util/current-process.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/util/processes.hh"
+#include "bsd/util/signals.hh"
 
 #include <mutex>
 #include <sys/resource.h>
-#include "nix/util/cgroup.hh"
+#include "bsd/util/cgroup.hh"
 
 #include <sys/mount.h>
 
-namespace nix {
+namespace bsd {
 
 bool userNamespacesSupported()
 {

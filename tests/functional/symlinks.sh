@@ -5,8 +5,8 @@ source common.sh
 # Check that when we have a derivation attribute that refers to a
 # symlink, we copy the symlink, not its target.
 # shellcheck disable=SC2016
-nix build --impure --no-link --expr '
-  with import ./config.nix;
+bsd build --impure --no-link --expr '
+  with import ./config.bsd;
 
   mkDerivation {
     name = "simple";

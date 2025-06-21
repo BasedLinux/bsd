@@ -1,8 +1,8 @@
-#include "nix/store/store-dir-config.hh"
-#include "nix/util/util.hh"
-#include "nix/store/globals.hh"
+#include "bsd/store/store-dir-config.hh"
+#include "bsd/util/util.hh"
+#include "bsd/store/globals.hh"
 
-namespace nix {
+namespace bsd {
 
 StoreDirConfig::StoreDirConfig(const Params & params)
     : StoreDirConfigBase(params)

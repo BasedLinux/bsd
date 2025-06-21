@@ -1,6 +1,6 @@
 # JSON guideline
 
-Nix consumes and produces JSON in a variety of contexts.
+Bsd consumes and produces JSON in a variety of contexts.
 These guidelines ensure consistent practices for all our JSON interfaces, for ease of use, and so that experience in one part carries over to another.
 
 ## Extensibility
@@ -79,7 +79,7 @@ However, simply converting everything to records is not enough, because the orde
 { "outputs": { "bin": {}, "out": {} } }
 ```
 
-The first item is the default output. Deriving this information from the outputs ordering is not great, but this is how Nix currently happens to work.
+The first item is the default output. Deriving this information from the outputs ordering is not great, but this is how Bsd currently happens to work.
 While it is possible for a JSON parser to preserve the order of fields, we can not rely on this capability to be present in all JSON libraries.
 
 This representation is extensible and preserves the ordering:

@@ -1,6 +1,6 @@
-#include "nix/util/source-path.hh"
+#include "bsd/util/source-path.hh"
 
-namespace nix {
+namespace bsd {
 
 std::string_view SourcePath::baseName() const
 { return path.baseName().value_or("source"); }

@@ -15,23 +15,23 @@ initLowerStore
 mountOverlayfs
 
 export NIX_REMOTE="$storeB"
-stateB="$storeBRoot/nix/var/nix"
-outPath=$(nix-build ../hermetic.nix --no-out-link --arg busybox "$busybox" --arg seed 2)
+stateB="$storeBRoot/bsd/var/bsd"
+outPath=$(bsd-build ../hermetic.bsd --no-out-link --arg busybox "$busybox" --arg seed 2)
 
 # Set a GC root.
 mkdir -p "$stateB"
 rm -f "$stateB/gcroots/foo"
 ln -sf $outPath "$stateB/gcroots/foo"
 
-[ "$(nix-store -q --roots $outPath)" = "$stateB/gcroots/foo -> $outPath" ]
+[ "$(bsd-store -q --roots $outPath)" = "$stateB/gcroots/foo -> $outPath" ]
 
-nix-store --gc --print-roots | grep $outPath
-nix-store --gc --print-live | grep $outPath
-if nix-store --gc --print-dead | grep -E $outPath$; then false; fi
+bsd-store --gc --print-roots | grep $outPath
+bsd-store --gc --print-live | grep $outPath
+if bsd-store --gc --print-dead | grep -E $outPath$; then false; fi
 
-nix-store --gc --print-dead
+bsd-store --gc --print-dead
 
-expect 1 nix-store --delete $outPath
+expect 1 bsd-store --delete $outPath
 test -e "$storeBRoot/$outPath"
 
 shopt -s nullglob
@@ -41,14 +41,14 @@ for i in $storeBRoot/*; do
     touch $i.chroot
 done
 
-nix-collect-garbage
+bsd-collect-garbage
 
 # Check that the root and its dependencies haven't been deleted.
 cat "$storeBRoot/$outPath"
 
 rm "$stateB/gcroots/foo"
 
-nix-collect-garbage
+bsd-collect-garbage
 
 # Check that the output has been GC'd.
 test ! -e $outPath

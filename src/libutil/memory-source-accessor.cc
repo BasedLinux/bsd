@@ -1,6 +1,6 @@
-#include "nix/util/memory-source-accessor.hh"
+#include "bsd/util/memory-source-accessor.hh"
 
-namespace nix {
+namespace bsd {
 
 MemorySourceAccessor::File *
 MemorySourceAccessor::open(const CanonPath & path, std::optional<File> create)

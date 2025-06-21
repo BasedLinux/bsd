@@ -1,12 +1,12 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "nix/expr/eval-settings.hh"
-#include "nix/util/memory-source-accessor.hh"
+#include "bsd/expr/eval-settings.hh"
+#include "bsd/util/memory-source-accessor.hh"
 
-#include "nix/expr/tests/libexpr.hh"
+#include "bsd/expr/tests/libexpr.hh"
 
-namespace nix {
+namespace bsd {
     class CaptureLogger : public Logger
     {
         std::ostringstream oss;
@@ -57,13 +57,13 @@ namespace nix {
         auto v = eval("builtins.ceil 1.9");
         ASSERT_THAT(v, IsIntEq(2));
         auto intMin = eval("builtins.ceil (-4611686018427387904 - 4611686018427387904)");
-        ASSERT_THAT(intMin, IsIntEq(std::numeric_limits<NixInt::Inner>::min()));
+        ASSERT_THAT(intMin, IsIntEq(std::numeric_limits<BsdInt::Inner>::min()));
         ASSERT_THROW(eval("builtins.ceil 1.0e200"), EvalError);
         ASSERT_THROW(eval("builtins.ceil -1.0e200"), EvalError);
         ASSERT_THROW(eval("builtins.ceil (1.0e200 * 1.0e200)"), EvalError); // inf
         ASSERT_THROW(eval("builtins.ceil (-1.0e200 * 1.0e200)"), EvalError); // -inf
         ASSERT_THROW(eval("builtins.ceil (1.0e200 * 1.0e200 - 1.0e200 * 1.0e200)"), EvalError); // nan
-        // bugs in previous Nix versions
+        // bugs in previous Bsd versions
         ASSERT_THROW(eval("builtins.ceil (4611686018427387904 + 4611686018427387903)"), EvalError);
         ASSERT_THROW(eval("builtins.ceil (-4611686018427387904 - 4611686018427387903)"), EvalError);
     }
@@ -72,13 +72,13 @@ namespace nix {
         auto v = eval("builtins.floor 1.9");
         ASSERT_THAT(v, IsIntEq(1));
         auto intMin = eval("builtins.ceil (-4611686018427387904 - 4611686018427387904)");
-        ASSERT_THAT(intMin, IsIntEq(std::numeric_limits<NixInt::Inner>::min()));
+        ASSERT_THAT(intMin, IsIntEq(std::numeric_limits<BsdInt::Inner>::min()));
         ASSERT_THROW(eval("builtins.ceil 1.0e200"), EvalError);
         ASSERT_THROW(eval("builtins.ceil -1.0e200"), EvalError);
         ASSERT_THROW(eval("builtins.ceil (1.0e200 * 1.0e200)"), EvalError); // inf
         ASSERT_THROW(eval("builtins.ceil (-1.0e200 * 1.0e200)"), EvalError); // -inf
         ASSERT_THROW(eval("builtins.ceil (1.0e200 * 1.0e200 - 1.0e200 * 1.0e200)"), EvalError); // nan
-        // bugs in previous Nix versions
+        // bugs in previous Bsd versions
         ASSERT_THROW(eval("builtins.ceil (4611686018427387904 + 4611686018427387903)"), EvalError);
         ASSERT_THROW(eval("builtins.ceil (-4611686018427387904 - 4611686018427387903)"), EvalError);
     }
@@ -161,14 +161,14 @@ namespace nix {
 
     TEST_F(PrimOpTest, getAttrNotFound) {
         // FIXME: TypeError is really bad here, also the error wording is worse
-        // than on Nix <=2.3
+        // than on Bsd <=2.3
         ASSERT_THROW(eval("builtins.getAttr \"y\" { }"), TypeError);
     }
 
     TEST_F(PrimOpTest, unsafeGetAttrPos) {
-        state.corepkgsFS->addFile(CanonPath("foo.nix"), "\n\r\n\r{ y = \"x\"; }");
+        state.corepkgsFS->addFile(CanonPath("foo.bsd"), "\n\r\n\r{ y = \"x\"; }");
 
-        auto expr = "builtins.unsafeGetAttrPos \"y\" (import <nix/foo.nix>)";
+        auto expr = "builtins.unsafeGetAttrPos \"y\" (import <bsd/foo.bsd>)";
         auto v = eval(expr);
         ASSERT_THAT(v, IsAttrsOfSize(3));
 
@@ -176,7 +176,7 @@ namespace nix {
         ASSERT_NE(file, nullptr);
         ASSERT_THAT(*file->value, IsString());
         auto s = baseNameOf(file->value->string_view());
-        ASSERT_EQ(s, "foo.nix");
+        ASSERT_EQ(s, "foo.bsd");
 
         auto line = v.attrs()->find(createSymbol("line"));
         ASSERT_NE(line, nullptr);
@@ -584,8 +584,8 @@ namespace nix {
 #undef CASE
 
     TEST_F(PrimOpTest, substring){
-        auto v = eval("builtins.substring 0 3 \"nixos\"");
-        ASSERT_THAT(v, IsStringEq("nix"));
+        auto v = eval("builtins.substring 0 3 \"bsdos\"");
+        ASSERT_THAT(v, IsStringEq("bsd"));
     }
 
     TEST_F(PrimOpTest, substringSmallerString){
@@ -594,13 +594,13 @@ namespace nix {
     }
 
     TEST_F(PrimOpTest, substringHugeStart){
-        auto v = eval("builtins.substring 4294967296 5 \"nixos\"");
+        auto v = eval("builtins.substring 4294967296 5 \"bsdos\"");
         ASSERT_THAT(v, IsStringEq(""));
     }
 
     TEST_F(PrimOpTest, substringHugeLength){
-        auto v = eval("builtins.substring 0 4294967296 \"nixos\"");
-        ASSERT_THAT(v, IsStringEq("nixos"));
+        auto v = eval("builtins.substring 0 4294967296 \"bsdos\"");
+        ASSERT_THAT(v, IsStringEq("bsdos"));
     }
 
     TEST_F(PrimOpTest, substringEmptyString){
@@ -636,8 +636,8 @@ namespace nix {
         ASSERT_THROW(eval("builtins.hashString \"foobar\" \"asdf\""), Error);
     }
 
-    TEST_F(PrimOpTest, nixPath) {
-        auto v = eval("builtins.nixPath");
+    TEST_F(PrimOpTest, bsdPath) {
+        auto v = eval("builtins.bsdPath");
         ASSERT_EQ(v.type(), nList);
         // We can't test much more as currently the EvalSettings are a global
         // that we can't easily swap / replace
@@ -650,12 +650,12 @@ namespace nix {
 
     TEST_F(PrimOpTest, storeDir) {
         auto v = eval("builtins.storeDir");
-        ASSERT_THAT(v, IsStringEq(settings.nixStore));
+        ASSERT_THAT(v, IsStringEq(settings.bsdStore));
     }
 
-    TEST_F(PrimOpTest, nixVersion) {
-        auto v = eval("builtins.nixVersion");
-        ASSERT_THAT(v, IsStringEq(nixVersion));
+    TEST_F(PrimOpTest, bsdVersion) {
+        auto v = eval("builtins.bsdVersion");
+        ASSERT_THAT(v, IsStringEq(bsdVersion));
     }
 
     TEST_F(PrimOpTest, currentSystem) {
@@ -706,7 +706,7 @@ namespace nix {
                 // be the same but they aren't.
                 CASE(1.0, 1.0.0, -1),
                 CASE(1.0.0, 1.0, 1),
-                // the following are from the nix-env manual:
+                // the following are from the bsd-env manual:
                 CASE(1.0, 2.3, -1),
                 CASE(2.1, 2.3, -1),
                 CASE(2.3, 2.3, 0),
@@ -748,7 +748,7 @@ namespace nix {
             parseDrvName,
             ParseDrvNamePrimOpTest,
             testing::Values(
-                std::make_tuple("nix-0.12pre12876", "nix", "0.12pre12876"),
+                std::make_tuple("bsd-0.12pre12876", "bsd", "0.12pre12876"),
                 std::make_tuple("a-b-c-1234pre5+git", "a-b-c", "1234pre5+git")
             )
     );
@@ -863,7 +863,7 @@ namespace nix {
     TEST_F(PrimOpTest, match5) {
         // The regex "\\{}" is valid and matches the string "{}".
         // Caused a regression before when trying to switch from std::regex to boost::regex.
-        // See https://github.com/NixOS/nix/pull/7762#issuecomment-1834303659
+        // See https://github.com/BasedLinux/bsd/pull/7762#issuecomment-1834303659
         auto v = eval("builtins.match \"\\\\{}\" \"{}\"");
         ASSERT_THAT(v, IsListOfSize(0));
     }
@@ -883,4 +883,4 @@ namespace nix {
         auto v = eval("builtins.genericClosure { startSet = []; }");
         ASSERT_THAT(v, IsListOfSize(0));
     }
-} /* namespace nix */
+} /* namespace bsd */

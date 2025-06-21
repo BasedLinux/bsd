@@ -1,9 +1,9 @@
-#include "nix/util/environment-variables.hh"
+#include "bsd/util/environment-variables.hh"
 
 #ifdef _WIN32
 #  include "processenv.h"
 
-namespace nix {
+namespace bsd {
 
 std::optional<OsString> getEnvOs(const OsString & key)
 {

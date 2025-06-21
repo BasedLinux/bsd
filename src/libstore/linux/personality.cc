@@ -1,12 +1,12 @@
-#include "nix/store/personality.hh"
-#include "nix/store/globals.hh"
+#include "bsd/store/personality.hh"
+#include "bsd/store/globals.hh"
 
 #include <sys/utsname.h>
 #include <sys/personality.h>
 
 #include <cstring>
 
-namespace nix::linux {
+namespace bsd::linux {
 
 void setPersonality(std::string_view system)
 {

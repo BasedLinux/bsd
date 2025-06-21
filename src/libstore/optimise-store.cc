@@ -1,8 +1,8 @@
-#include "nix/store/local-store.hh"
-#include "nix/store/globals.hh"
-#include "nix/util/signals.hh"
-#include "nix/store/posix-fs-canonicalise.hh"
-#include "nix/util/posix-source-accessor.hh"
+#include "bsd/store/local-store.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/store/posix-fs-canonicalise.hh"
+#include "bsd/util/posix-source-accessor.hh"
 
 #include <cstdlib>
 #include <cstring>
@@ -15,7 +15,7 @@
 
 #include "store-config-private.hh"
 
-namespace nix {
+namespace bsd {
 
 
 static void makeWritable(const Path & path)
@@ -101,8 +101,8 @@ void LocalStore::optimisePath_(Activity * act, OptimiseStats & stats,
     /* HFS/macOS has some undocumented security feature disabling hardlinking for
        special files within .app dirs. Known affected paths include
        *.app/Contents/{PkgInfo,Resources/\*.lproj,_CodeSignature} and .DS_Store.
-       See https://github.com/NixOS/nix/issues/1443 and
-       https://github.com/NixOS/nix/pull/2230 for more discussion. */
+       See https://github.com/BasedLinux/bsd/issues/1443 and
+       https://github.com/BasedLinux/bsd/pull/2230 for more discussion. */
 
     if (std::regex_search(path, std::regex("\\.app/Contents/.+$")))
     {
@@ -125,9 +125,9 @@ void LocalStore::optimisePath_(Activity * act, OptimiseStats & stats,
 #endif
         ) return;
 
-    /* Sometimes SNAFUs can cause files in the Nix store to be
+    /* Sometimes SNAFUs can cause files in the Bsd store to be
        modified, in particular when running programs as root under
-       NixOS (example: $fontconfig/var/cache being modified).  Skip
+       BasedLinux (example: $fontconfig/var/cache being modified).  Skip
        those files.  FIXME: check the modification time. */
     if (S_ISREG(st.st_mode) && (st.st_mode & S_IWUSR)) {
         warn("skipping suspicious writable file '%1%'", path);
@@ -152,12 +152,12 @@ void LocalStore::optimisePath_(Activity * act, OptimiseStats & stats,
     Hash hash = ({
         hashPath(
             {make_ref<PosixSourceAccessor>(), CanonPath(path)},
-            FileSerialisationMethod::NixArchive, HashAlgorithm::SHA256).first;
+            FileSerialisationMethod::BsdArchive, HashAlgorithm::SHA256).first;
     });
-    debug("'%1%' has hash '%2%'", path, hash.to_string(HashFormat::Nix32, true));
+    debug("'%1%' has hash '%2%'", path, hash.to_string(HashFormat::Bsd32, true));
 
     /* Check if this is a known hash. */
-    std::filesystem::path linkPath = std::filesystem::path{linksDir} / hash.to_string(HashFormat::Nix32, false);
+    std::filesystem::path linkPath = std::filesystem::path{linksDir} / hash.to_string(HashFormat::Bsd32, false);
 
     /* Maybe delete the link, if it has been corrupted. */
     if (std::filesystem::exists(std::filesystem::symlink_status(linkPath))) {
@@ -166,13 +166,13 @@ void LocalStore::optimisePath_(Activity * act, OptimiseStats & stats,
             || (repair && hash != ({
                 hashPath(
                     PosixSourceAccessor::createAtRoot(linkPath),
-                    FileSerialisationMethod::NixArchive, HashAlgorithm::SHA256).first;
+                    FileSerialisationMethod::BsdArchive, HashAlgorithm::SHA256).first;
            })))
         {
             // XXX: Consider overwriting linkPath with our valid version.
             warn("removing corrupted link %s", linkPath);
             warn("There may be more corrupted paths."
-                 "\nYou should run `nix-store --verify --check-contents --repair` to fix them all");
+                 "\nYou should run `bsd-store --verify --check-contents --repair` to fix them all");
             std::filesystem::remove(linkPath);
         }
     }

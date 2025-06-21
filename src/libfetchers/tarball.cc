@@ -1,17 +1,17 @@
-#include "nix/fetchers/tarball.hh"
-#include "nix/fetchers/fetchers.hh"
-#include "nix/fetchers/cache.hh"
-#include "nix/store/filetransfer.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/archive.hh"
-#include "nix/util/tarfile.hh"
-#include "nix/util/types.hh"
-#include "nix/fetchers/store-path-accessor.hh"
-#include "nix/store/store-api.hh"
-#include "nix/fetchers/git-utils.hh"
-#include "nix/fetchers/fetch-settings.hh"
+#include "bsd/fetchers/tarball.hh"
+#include "bsd/fetchers/fetchers.hh"
+#include "bsd/fetchers/cache.hh"
+#include "bsd/store/filetransfer.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/util/tarfile.hh"
+#include "bsd/util/types.hh"
+#include "bsd/fetchers/store-path-accessor.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/fetchers/git-utils.hh"
+#include "bsd/fetchers/fetch-settings.hh"
 
-namespace nix::fetchers {
+namespace bsd::fetchers {
 
 DownloadFileResult downloadFile(
     ref<Store> store,
@@ -162,7 +162,7 @@ static DownloadTarballResult downloadTarball_(
                    symlinks in zip files correctly (#10649). So write
                    the entire file to disk so libarchive can access it
                    in random-access mode. */
-                auto [fdTemp, path] = createTempFile("nix-zipfile");
+                auto [fdTemp, path] = createTempFile("bsd-zipfile");
                 cleanupTemp.reset(path);
                 debug("downloading '%s' into '%s'...", url, path);
                 {
@@ -270,8 +270,8 @@ struct CurlInputScheme : InputScheme
                 input.attrs.insert_or_assign("lastModified", *n);
 
         /* The URL query parameters serve two roles: specifying fetch
-           settings for Nix itself, and arbitrary data as part of the
-           HTTP request. Now that we've processed the Nix-specific
+           settings for Bsd itself, and arbitrary data as part of the
+           HTTP request. Now that we've processed the Bsd-specific
            attributes above, remove them so we don't also send them as
            part of the HTTP request. */
         for (auto & param : allowedAttrs())
@@ -341,7 +341,7 @@ struct FileInputScheme : CurlInputScheme
         auto input(_input);
 
         /* Unlike TarballInputScheme, this stores downloaded files in
-           the Nix store directly, since there is little deduplication
+           the Bsd store directly, since there is little deduplication
            benefit in using the Git cache for single big files like
            tarballs. */
         auto file = downloadFile(store, *input.settings, getStrAttr(input.attrs, "url"), input.getName());

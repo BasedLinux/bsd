@@ -1,16 +1,16 @@
-#include "nix/util/current-process.hh"
-#include "nix/util/environment-variables.hh"
-#include "nix/util/error.hh"
-#include "nix/util/executable-path.hh"
-#include "nix/util/file-descriptor.hh"
-#include "nix/util/file-path.hh"
-#include "nix/util/signals.hh"
-#include "nix/util/processes.hh"
-#include "nix/util/finally.hh"
-#include "nix/util/serialise.hh"
-#include "nix/util/file-system.hh"
-#include "nix/util/util.hh"
-#include "nix/util/windows-error.hh"
+#include "bsd/util/current-process.hh"
+#include "bsd/util/environment-variables.hh"
+#include "bsd/util/error.hh"
+#include "bsd/util/executable-path.hh"
+#include "bsd/util/file-descriptor.hh"
+#include "bsd/util/file-path.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/processes.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/serialise.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/windows-error.hh"
 
 #include <cerrno>
 #include <cstdlib>
@@ -28,9 +28,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-namespace nix {
+namespace bsd {
 
-using namespace nix::windows;
+using namespace bsd::windows;
 
 Pid::Pid() {}
 
@@ -64,7 +64,7 @@ int Pid::kill()
 
 int Pid::wait()
 {
-    // https://github.com/nix-windows/nix/blob/windows-meson/src/libutil/util.cc#L1938
+    // https://github.com/bsd-windows/bsd/blob/windows-meson/src/libutil/util.cc#L1938
     assert(pid.get() != INVALID_DESCRIPTOR);
     DWORD status = WaitForSingleObject(pid.get(), INFINITE);
     if (status != WAIT_OBJECT_0) {
@@ -80,7 +80,7 @@ int Pid::wait()
     return exitCode;
 }
 
-// TODO: Merge this with Unix's runProgram since it's identical logic.
+// TODO: Merge this with Ubsd's runProgram since it's identical logic.
 std::string runProgram(
     Path program, bool lookupPath, const Strings & args, const std::optional<std::string> & input, bool isInteractive)
 {
@@ -106,7 +106,7 @@ std::optional<Path> getProgramInterpreter(const Path & program)
     throw UnimplementedError("getProgramInterpreter unimplemented");
 }
 
-// TODO: Not sure if this is needed in the unix version but it might be useful as a member func
+// TODO: Not sure if this is needed in the ubsd version but it might be useful as a member func
 void setFDInheritable(AutoCloseFD & fd, bool inherit)
 {
     if (fd.get() != INVALID_DESCRIPTOR) {
@@ -120,7 +120,7 @@ AutoCloseFD nullFD()
 {
     // Create null handle to discard reads / writes
     // https://stackoverflow.com/a/25609668
-    // https://github.com/nix-windows/nix/blob/windows-meson/src/libutil/util.cc#L2228
+    // https://github.com/bsd-windows/bsd/blob/windows-meson/src/libutil/util.cc#L2228
     AutoCloseFD nul = CreateFileW(
         L"NUL",
         GENERIC_READ | GENERIC_WRITE,
@@ -267,7 +267,7 @@ Pid spawnProcess(const Path & realProgram, const RunOptions & options, Pipe & ou
     return process;
 }
 
-// TODO: Merge this with Unix's runProgram since it's identical logic.
+// TODO: Merge this with Ubsd's runProgram since it's identical logic.
 // Output = error code + "standard out" output stream
 std::pair<int, std::string> runProgram(RunOptions && options)
 {
@@ -301,7 +301,7 @@ void runProgram2(const RunOptions & options)
 
     /* Create a pipe. */
     Pipe out, in;
-    // TODO: I copied this from unix but this is handled again in spawnProcess, so might be weird to split it up like
+    // TODO: I copied this from ubsd but this is handled again in spawnProcess, so might be weird to split it up like
     // this
     if (options.standardOut)
         out.create();
@@ -316,7 +316,7 @@ void runProgram2(const RunOptions & options)
 
     Pid pid = spawnProcess(interpreter.has_value() ? *interpreter : realProgram, options, out, in);
 
-    // TODO: This is identical to unix, deduplicate?
+    // TODO: This is identical to ubsd, deduplicate?
     out.writeSide.close();
 
     std::thread writerThread;

@@ -1,15 +1,15 @@
-#include "nix/util/util.hh"
-#include "nix/util/types.hh"
-#include "nix/util/file-system.hh"
-#include "nix/util/terminal.hh"
-#include "nix/util/strings.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/types.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/util/terminal.hh"
+#include "bsd/util/strings.hh"
 
 #include <limits.h>
 #include <gtest/gtest.h>
 
 #include <numeric>
 
-namespace nix {
+namespace bsd {
 
 /* ----------- tests for util.hh --------------------------------------------*/
 
@@ -382,4 +382,4 @@ TEST(getOr, getFromContainer)
     ASSERT_EQ(getOr(s, "one", "nope"), expected);
 }
 
-} // namespace nix
+} // namespace bsd

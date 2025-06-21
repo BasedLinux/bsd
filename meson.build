@@ -2,12 +2,12 @@
 # for development shell purposes
 
 project(
-  'nix-dev-shell',
+  'bsd-dev-shell',
   'cpp',
   version : files('.version'),
   subproject_dir : 'src',
   default_options : [
-    'localstatedir=/nix/var',
+    'localstatedir=/bsd/var',
     # hack for trailing newline
   ],
   meson_version : '>= 1.1',
@@ -23,14 +23,14 @@ subproject('libmain')
 subproject('libcmd')
 
 # Executables
-subproject('nix')
+subproject('bsd')
 
 # Docs
 if get_option('doc-gen')
   subproject('internal-api-docs')
   subproject('external-api-docs')
   if not meson.is_cross_build()
-    subproject('nix-manual')
+    subproject('bsd-manual')
   endif
 endif
 
@@ -58,4 +58,4 @@ if get_option('unit-tests')
   subproject('libexpr-tests')
   subproject('libflake-tests')
 endif
-subproject('nix-functional-tests')
+subproject('bsd-functional-tests')

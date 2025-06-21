@@ -1,16 +1,16 @@
-#include "nix/util/file-content-address.hh"
-#include "nix/util/archive.hh"
-#include "nix/util/git.hh"
-#include "nix/util/source-path.hh"
+#include "bsd/util/file-content-address.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/util/git.hh"
+#include "bsd/util/source-path.hh"
 
-namespace nix {
+namespace bsd {
 
 static std::optional<FileSerialisationMethod> parseFileSerialisationMethodOpt(std::string_view input)
 {
     if (input == "flat") {
         return FileSerialisationMethod::Flat;
     } else if (input == "nar") {
-        return FileSerialisationMethod::NixArchive;
+        return FileSerialisationMethod::BsdArchive;
     } else {
         return std::nullopt;
     }
@@ -45,7 +45,7 @@ std::string_view renderFileSerialisationMethod(FileSerialisationMethod method)
     switch (method) {
     case FileSerialisationMethod::Flat:
         return "flat";
-    case FileSerialisationMethod::NixArchive:
+    case FileSerialisationMethod::BsdArchive:
         return "nar";
     default:
         assert(false);
@@ -57,7 +57,7 @@ std::string_view renderFileIngestionMethod(FileIngestionMethod method)
 {
     switch (method) {
     case FileIngestionMethod::Flat:
-    case FileIngestionMethod::NixArchive:
+    case FileIngestionMethod::BsdArchive:
         return renderFileSerialisationMethod(
             static_cast<FileSerialisationMethod>(method));
     case FileIngestionMethod::Git:
@@ -78,7 +78,7 @@ void dumpPath(
     case FileSerialisationMethod::Flat:
         path.readFile(sink);
         break;
-    case FileSerialisationMethod::NixArchive:
+    case FileSerialisationMethod::BsdArchive:
         path.dumpPath(sink, filter);
         break;
     }
@@ -95,7 +95,7 @@ void restorePath(
     case FileSerialisationMethod::Flat:
         writeFile(path, source, 0666, startFsync);
         break;
-    case FileSerialisationMethod::NixArchive:
+    case FileSerialisationMethod::BsdArchive:
         restorePath(path, source, startFsync);
         break;
     }
@@ -120,7 +120,7 @@ std::pair<Hash, std::optional<uint64_t>> hashPath(
 {
     switch (method) {
     case FileIngestionMethod::Flat:
-    case FileIngestionMethod::NixArchive: {
+    case FileIngestionMethod::BsdArchive: {
         auto res = hashPath(path, (FileSerialisationMethod) method, ht, filter);
         return {res.first, {res.second}};
     }

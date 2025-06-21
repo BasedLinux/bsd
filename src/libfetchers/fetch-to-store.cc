@@ -1,8 +1,8 @@
-#include "nix/fetchers/fetch-to-store.hh"
-#include "nix/fetchers/fetchers.hh"
-#include "nix/fetchers/fetch-settings.hh"
+#include "bsd/fetchers/fetch-to-store.hh"
+#include "bsd/fetchers/fetchers.hh"
+#include "bsd/fetchers/fetch-settings.hh"
 
-namespace nix {
+namespace bsd {
 
 fetchers::Cache::Key makeFetchToStoreCacheKey(
     const std::string & name,

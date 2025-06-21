@@ -2,12 +2,12 @@
 
 #include <rapidcheck.h>
 
-#include "nix/util/hash.hh"
+#include "bsd/util/hash.hh"
 
-#include "nix/util/tests/hash.hh"
+#include "bsd/util/tests/hash.hh"
 
 namespace rc {
-using namespace nix;
+using namespace bsd;
 
 Gen<Hash> Arbitrary<Hash>::arbitrary()
 {

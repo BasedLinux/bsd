@@ -1,8 +1,8 @@
-#include "nix/fetchers/fetchers.hh"
-#include "nix/util/url-parts.hh"
-#include "nix/store/path.hh"
+#include "bsd/fetchers/fetchers.hh"
+#include "bsd/util/url-parts.hh"
+#include "bsd/store/path.hh"
 
-namespace nix::fetchers {
+namespace bsd::fetchers {
 
 std::regex flakeRegex("[a-zA-Z][a-zA-Z0-9_-]*", std::regex::ECMAScript);
 

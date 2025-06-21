@@ -1,9 +1,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "nix/util/file-content-address.hh"
+#include "bsd/util/file-content-address.hh"
 
-namespace nix {
+namespace bsd {
 
 /* ----------------------------------------------------------------------------
  * parseFileSerialisationMethod, renderFileSerialisationMethod
@@ -12,7 +12,7 @@ namespace nix {
 TEST(FileSerialisationMethod, testRoundTripPrintParse_1) {
     for (const FileSerialisationMethod fim : {
         FileSerialisationMethod::Flat,
-        FileSerialisationMethod::NixArchive,
+        FileSerialisationMethod::BsdArchive,
     }) {
         EXPECT_EQ(parseFileSerialisationMethod(renderFileSerialisationMethod(fim)), fim);
     }
@@ -41,7 +41,7 @@ TEST(FileSerialisationMethod, testParseFileSerialisationMethodOptException)
 TEST(FileIngestionMethod, testRoundTripPrintParse_1) {
     for (const FileIngestionMethod fim : {
         FileIngestionMethod::Flat,
-        FileIngestionMethod::NixArchive,
+        FileIngestionMethod::BsdArchive,
         FileIngestionMethod::Git,
     }) {
         EXPECT_EQ(parseFileIngestionMethod(renderFileIngestionMethod(fim)), fim);

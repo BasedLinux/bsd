@@ -18,7 +18,7 @@ In other words, when the derivation has finished [building](@docroot@/store/buil
 The output spec for an output with a fixed content addresses additionally contains:
 
 - *hash*, the hash expected from digesting the store object's file system objects.
-  This hash may be of a freely-chosen hash algorithm (that Nix supports)
+  This hash may be of a freely-chosen hash algorithm (that Bsd supports)
 
 > **Design note**
 >
@@ -76,7 +76,7 @@ In these cases, we then must update the call to `fetchurl`, e.g.,
 ```
 
 If a `fetchurl` derivation's outputs were [input-addressed][input addressing], the output paths of the derivation and of *all derivations depending on it* would change.
-For instance, if we were to change the URL of the Glibc source distribution in Nixpkgs (a package on which almost all other packages depend on Linux) massive rebuilds would be needed.
+For instance, if we were to change the URL of the Glibc source distribution in Bsdpkgs (a package on which almost all other packages depend on Linux) massive rebuilds would be needed.
 This is unfortunate for a change which we know cannot have a real effect as it propagates upwards through the dependency graph.
 
 For content-addressed outputs (fixed or floating), on the other hand, the outputs' store path only depends on the derivation's name, data, and the `method` of the outputs' specs.
@@ -94,7 +94,7 @@ The rest of the derivation is ignored for the purpose of computing the output pa
 >
 > To use this type of output addressing, you must enable the
 > [`ca-derivations`][xp-feature-ca-derivations] experimental feature.
-> For example, in [nix.conf](@docroot@/command-ref/conf-file.md) you could add:
+> For example, in [bsd.conf](@docroot@/command-ref/conf-file.md) you could add:
 >
 > ```
 > extra-experimental-features = ca-derivations
@@ -108,13 +108,13 @@ Because the derivation output is not fixed (just like with [input addressing]), 
 
 > **Configuration note**
 >
-> Strictly speaking, the extent to which sandboxing and deprivilaging is possible varies with the environment Nix is running in.
-> Nix's configuration settings indicate what level of sandboxing is required or enabled.
+> Strictly speaking, the extent to which sandboxing and deprivilaging is possible varies with the environment Bsd is running in.
+> Bsd's configuration settings indicate what level of sandboxing is required or enabled.
 > Builds of derivations will fail if they request an absence of sandboxing which is not allowed.
 > Builds of derivations will also fail if the level of sandboxing specified in the configure exceeds what is possible in the given environment.
 >
-> (The "environment", in this case, consists of attributes such as the Operating System Nix runs atop, along with the operating-system-specific privileges that Nix has been granted.
-> Because of how conventional operating systems like macos, Linux, etc. work, granting builders *fewer* privileges may ironically require that Nix be run with *more* privileges.)
+> (The "environment", in this case, consists of attributes such as the Operating System Bsd runs atop, along with the operating-system-specific privileges that Bsd has been granted.
+> Because of how conventional operating systems like macos, Linux, etc. work, granting builders *fewer* privileges may ironically require that Bsd be run with *more* privileges.)
 
 That said, derivations producing floating content-addressed outputs may declare their builders as impure (like the builders of derivations producing fixed outputs).
 This is provisionally supported as part of the [`impure-derivations`][xp-feature-impure-derivations] experimental feature.
@@ -123,12 +123,12 @@ This is provisionally supported as part of the [`impure-derivations`][xp-feature
 
 Any derivation producing a floating content-addressed output implicitly requires the `ca-derivations` [system feature](@docroot@/command-ref/conf-file.md#conf-system-features).
 This prevents scheduling the building of the derivation on a machine without the experimental feature enabled.
-Even once the experimental feature is stabilized, this is still useful in order to be allow using remote builder running odler versions of Nix, or alternative implementations that do not support floating content addressing.
+Even once the experimental feature is stabilized, this is still useful in order to be allow using remote builder running odler versions of Bsd, or alternative implementations that do not support floating content addressing.
 
 ### Determinism
 
 In the earlier [discussion of how self-references are handled when content-addressing store objects](@docroot@/store/store-object/content-address.html#self-references), it was pointed out that methods of producing store objects ought to be deterministic regardless of the choice of provisional store path.
-For store objects produced by manually inserting into the store to create a store object, the "method of production" is an informally concept --- formally, Nix has no idea where the store object came from, and content-addressing is crucial in order to ensure that the derivation is *intrinsically* tamper-proof.
+For store objects produced by manually inserting into the store to create a store object, the "method of production" is an informally concept --- formally, Bsd has no idea where the store object came from, and content-addressing is crucial in order to ensure that the derivation is *intrinsically* tamper-proof.
 But for store objects produced by derivation, the "method is quite formal" --- the whole point of derivations is to be a formal notion of building, after all.
 In this case, we can elevate this informal property to a formal one.
 
@@ -167,16 +167,16 @@ It is only in the potential for that check to fail that they are different.
 >
 > In a future world where floating content-addressing is also stable, we in principle no longer need separate [fixed](#fixed) content-addressing.
 > Instead, we could always use floating content-addressing, and separately assert the precise value content address of a given store object to be used as an input (of another derivation).
-> A stand-alone assertion object of this sort is not yet implemented, but its possible creation is tracked in [Issue #11955](https://github.com/NixOS/nix/issues/11955).
+> A stand-alone assertion object of this sort is not yet implemented, but its possible creation is tracked in [Issue #11955](https://github.com/BasedLinux/bsd/issues/11955).
 >
-> In the current version of Nix, fixed outputs which fail their hash check are still registered as valid store objects, just not registered as outputs of the derivation which produced them.
+> In the current version of Bsd, fixed outputs which fail their hash check are still registered as valid store objects, just not registered as outputs of the derivation which produced them.
 > This is an optimization that means if the wrong output hash is specified in a derivation, and then the derivation is recreated with the right output hash, derivation does not need to be rebuilt --- avoiding downloading potentially large amounts of data twice.
 > This optimisation prefigures the design above:
-> If the output hash assertion was removed outside the derivation itself, Nix could additionally not only register that outputted store object like today, but could also make note that derivation did in fact successfully download some data.
+> If the output hash assertion was removed outside the derivation itself, Bsd could additionally not only register that outputted store object like today, but could also make note that derivation did in fact successfully download some data.
 For example, for the "fetch URL" example above, making such a note is tantamount to recording what data is available at the time of download at the given URL.
-> It would only be when Nix subsequently tries to build something with that (refining our example) downloaded source code that Nix would be forced to check the output hash assertion, preventing it from e.g. building compromised malware.
+> It would only be when Bsd subsequently tries to build something with that (refining our example) downloaded source code that Bsd would be forced to check the output hash assertion, preventing it from e.g. building compromised malware.
 >
-> Recapping, Nix would
+> Recapping, Bsd would
 >
 > 1. successfully download data
 > 2. insert that data into the store

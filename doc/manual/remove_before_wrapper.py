@@ -8,13 +8,13 @@ import typing as t
 
 def main():
     if len(sys.argv) < 4 or '--' not in sys.argv:
-        print("Usage: remove-before-wrapper <output> -- <nix command...>")
+        print("Usage: remove-before-wrapper <output> -- <bsd command...>")
         sys.exit(1)
 
     # Extract the parts
     output: str = sys.argv[1]
-    nix_command_idx: int = sys.argv.index('--') + 1
-    nix_command: t.List[str] = sys.argv[nix_command_idx:]
+    bsd_command_idx: int = sys.argv.index('--') + 1
+    bsd_command: t.List[str] = sys.argv[bsd_command_idx:]
 
     output_temp: str = output + '.tmp'
 
@@ -22,9 +22,9 @@ def main():
     shutil.rmtree(output, ignore_errors=True)
     shutil.rmtree(output_temp, ignore_errors=True)
 
-    # Execute nix command with `--write-to` tempary output
-    nix_command_write_to = nix_command + ['--write-to', output_temp]
-    subprocess.run(nix_command_write_to, check=True)
+    # Execute bsd command with `--write-to` tempary output
+    bsd_command_write_to = bsd_command + ['--write-to', output_temp]
+    subprocess.run(bsd_command_write_to, check=True)
 
     # Move the temporary output to the intended location
     os.rename(output_temp, output)

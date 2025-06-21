@@ -1,10 +1,10 @@
-# Nix maintainers team
+# Bsd maintainers team
 
 ## Motivation
 
-The team's main responsibility is to guide and direct the development of Nix and ensure that the code is in good shape.
+The team's main responsibility is to guide and direct the development of Bsd and ensure that the code is in good shape.
 
-We aim to achieve this by improving the contributor experience and attracting more maintainers – that is, by helping other people contributing to Nix and eventually taking responsibility – in order to scale the development process to match users' needs.
+We aim to achieve this by improving the contributor experience and attracting more maintainers – that is, by helping other people contributing to Bsd and eventually taking responsibility – in order to scale the development process to match users' needs.
 
 ### Objectives
 
@@ -29,9 +29,9 @@ We aim to achieve this by improving the contributor experience and attracting mo
 
 ## Members
 
-See https://nixos.org/community/teams/nix/ for the current team membership.
+See https://basedlinux.org/community/teams/bsd/ for the current team membership.
 
-The team is on Github as [@NixOS/nix-team](https://github.com/orgs/NixOS/teams/nix-team).
+The team is on Github as [@BasedLinux/bsd-team](https://github.com/orgs/BasedLinux/teams/bsd-team).
 
 ## Meeting protocol
 
@@ -53,7 +53,7 @@ The team meets twice a week (times are denoted in the [Europe/Amsterdam](https:/
 
 Meeting notes are collected on a [collaborative scratchpad](https://pad.lassul.us/Cv7FpYx-Ri-4VjUykQOLAw).
 Notes on issues and pull requests are posted as comments and linked from the meeting notes, so they are can be found from both places.
-[All meeting notes](https://discourse.nixos.org/search?expanded=true&q=Nix%20team%20meeting%20minutes%20%23%20%23dev%3Anix%20in%3Atitle%20order%3Alatest_topic) are published on Discourse under the [Nix category](https://discourse.nixos.org/c/dev/nix/50).
+[All meeting notes](https://discourse.basedlinux.org/search?expanded=true&q=Bsd%20team%20meeting%20minutes%20%23%20%23dev%3Absd%20in%3Atitle%20order%3Alatest_topic) are published on Discourse under the [Bsd category](https://discourse.basedlinux.org/c/dev/bsd/50).
 
 Team meetings are generally open to anyone interested.
 We can make exceptions to discuss sensitive issues, such as security incidents or people matters.
@@ -64,7 +64,7 @@ Contact any team member to get a calendar invite for reminders and updates.
 
 ## Project board protocol
 
-The team uses a [GitHub project board](https://github.com/orgs/NixOS/projects/19/views/1) for tracking its work.
+The team uses a [GitHub project board](https://github.com/orgs/BasedLinux/projects/19/views/1) for tracking its work.
 
 Items on the board progress through the following states:
 
@@ -75,22 +75,22 @@ To be considered, issues and pull requests must have a high-level description to
 
 On every meeting, at least one item from each of the following categories is inspected:
 
-1. [critical](https://github.com/NixOS/nix/labels/critical)
-2. [security](https://github.com/NixOS/nix/labels/security)
-3. [regression](https://github.com/NixOS/nix/labels/regression)
-4. [bug](https://github.com/NixOS/nix/issues?q=is%3Aopen+label%3Abug+sort%3Areactions-%2B1-desc)
-5. [tests of existing functionality](https://github.com/NixOS/nix/issues?q=is%3Aopen+label%3Atests+-label%3Afeature+sort%3Areactions-%2B1-desc)
+1. [critical](https://github.com/BasedLinux/bsd/labels/critical)
+2. [security](https://github.com/BasedLinux/bsd/labels/security)
+3. [regression](https://github.com/BasedLinux/bsd/labels/regression)
+4. [bug](https://github.com/BasedLinux/bsd/issues?q=is%3Aopen+label%3Abug+sort%3Areactions-%2B1-desc)
+5. [tests of existing functionality](https://github.com/BasedLinux/bsd/issues?q=is%3Aopen+label%3Atests+-label%3Afeature+sort%3Areactions-%2B1-desc)
 
-- [oldest pull requests](https://github.com/NixOS/nix/pulls?q=is%3Apr+is%3Aopen+sort%3Acreated-asc)
-- [most popular pull requests](https://github.com/NixOS/nix/pulls?q=is%3Apr+is%3Aopen+sort%3Areactions-%2B1-desc)
-- [oldest issues](https://github.com/NixOS/nix/issues?q=is%3Aissue+is%3Aopen+sort%3Acreated-asc)
-- [most popular issues](https://github.com/NixOS/nix/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc)
+- [oldest pull requests](https://github.com/BasedLinux/bsd/pulls?q=is%3Apr+is%3Aopen+sort%3Acreated-asc)
+- [most popular pull requests](https://github.com/BasedLinux/bsd/pulls?q=is%3Apr+is%3Aopen+sort%3Areactions-%2B1-desc)
+- [oldest issues](https://github.com/BasedLinux/bsd/issues?q=is%3Aissue+is%3Aopen+sort%3Acreated-asc)
+- [most popular issues](https://github.com/BasedLinux/bsd/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc)
 
 Team members can also add pull requests or issues they would like the whole team to consider.
 To ensure process quality and reliability, all non-trivial pull requests must be triaged before merging.
 
 If there is disagreement on the general idea behind an issue or pull request, it is moved to [To discuss](#to-discuss).
-Otherwise, the issue or pull request in questions get the label [`idea approved`](https://github.com/NixOS/nix/labels/idea%20approved).
+Otherwise, the issue or pull request in questions get the label [`idea approved`](https://github.com/BasedLinux/bsd/labels/idea%20approved).
 For issues this means that an implementation is welcome and will be prioritised for review.
 For pull requests this means that:
 - Unfinished work is encouraged to be continued.

@@ -1,4 +1,4 @@
-project('nix-util', 'cpp',
+project('bsd-util', 'cpp',
   version : files('.version'),
   default_options : [
     'cpp_std=c++2a',
@@ -12,7 +12,7 @@ project('nix-util', 'cpp',
 
 cxx = meson.get_compiler('cpp')
 
-subdir('nix-meson-build-support/deps-lists')
+subdir('bsd-meson-build-support/deps-lists')
 
 configdata = configuration_data()
 
@@ -20,7 +20,7 @@ deps_private_maybe_subproject = [
 ]
 deps_public_maybe_subproject = [
 ]
-subdir('nix-meson-build-support/subprojects')
+subdir('bsd-meson-build-support/subprojects')
 
 # Check for each of these functions, and create a define like `#define
 # HAVE_POSIX_FALLOCATE 1`. The `#define` is unconditional, 0 for not
@@ -37,7 +37,7 @@ foreach funcspec : check_funcs
   configdata.set(define_name, define_value, description: funcspec[1])
 endforeach
 
-subdir('nix-meson-build-support/libatomic')
+subdir('bsd-meson-build-support/libatomic')
 
 if host_machine.system() == 'windows'
   socket = cxx.find_library('ws2_32')
@@ -106,7 +106,7 @@ config_priv_h = configure_file(
   output : 'util-config-private.hh',
 )
 
-subdir('nix-meson-build-support/common')
+subdir('bsd-meson-build-support/common')
 
 sources = [config_priv_h] + files(
   'archive.cc',
@@ -151,14 +151,14 @@ sources = [config_priv_h] + files(
   'terminal.cc',
   'thread-pool.cc',
   'union-source-accessor.cc',
-  'unix-domain-socket.cc',
+  'ubsd-domain-socket.cc',
   'url.cc',
   'users.cc',
   'util.cc',
   'xml-writer.cc',
 )
 
-subdir('include/nix/util')
+subdir('include/bsd/util')
 
 if not cxx.has_header('widechar_width.h', required : false)
   # use vendored widechar_width.h
@@ -176,14 +176,14 @@ endif
 if host_machine.system() == 'windows'
   subdir('windows')
 else
-  subdir('unix')
+  subdir('ubsd')
 endif
 
-subdir('nix-meson-build-support/export-all-symbols')
-subdir('nix-meson-build-support/windows-version')
+subdir('bsd-meson-build-support/export-all-symbols')
+subdir('bsd-meson-build-support/windows-version')
 
 this_library = library(
-  'nixutil',
+  'bsdutil',
   sources,
   dependencies : deps_public + deps_private + deps_other,
   include_directories : include_dirs,
@@ -192,7 +192,7 @@ this_library = library(
   install : true,
 )
 
-install_headers(headers, subdir : 'nix/util', preserve_path : true)
+install_headers(headers, subdir : 'bsd/util', preserve_path : true)
 
 libraries_private = []
 if host_machine.system() == 'windows'
@@ -201,4 +201,4 @@ if host_machine.system() == 'windows'
   libraries_private += ['-lws2_32']
 endif
 
-subdir('nix-meson-build-support/export')
+subdir('bsd-meson-build-support/export')

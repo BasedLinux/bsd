@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "nix/util/position.hh"
+#include "bsd/util/position.hh"
 
-namespace nix {
+namespace bsd {
 
 inline Pos::Origin makeStdin(std::string s)
 {
@@ -119,4 +119,4 @@ TEST(Position, example_1)
     ASSERT_EQ(start.getSnippetUpTo(end), "/** Very close */");
 }
 
-} // namespace nix
+} // namespace bsd

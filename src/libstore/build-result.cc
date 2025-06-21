@@ -1,6 +1,6 @@
-#include "nix/store/build-result.hh"
+#include "bsd/store/build-result.hh"
 
-namespace nix {
+namespace bsd {
 
 bool BuildResult::operator==(const BuildResult &) const noexcept = default;
 std::strong_ordering BuildResult::operator<=>(const BuildResult &) const noexcept = default;

@@ -4,19 +4,19 @@ source common.sh
 
 try () {
     printf "%s" "$2" > "$TEST_ROOT/vector"
-    hash="$(nix-hash --flat ${FORMAT+--$FORMAT} --type "$1" "$TEST_ROOT/vector")"
+    hash="$(bsd-hash --flat ${FORMAT+--$FORMAT} --type "$1" "$TEST_ROOT/vector")"
     if ! (( "${NO_TEST_CLASSIC-}" )) && test "$hash" != "$3"; then
-        echo "try nix-hash: hash $1, expected $3, got $hash"
+        echo "try bsd-hash: hash $1, expected $3, got $hash"
         exit 1
     fi
-    hash="$(nix hash file ${FORMAT+--$FORMAT} --type "$1" "$TEST_ROOT/vector")"
+    hash="$(bsd hash file ${FORMAT+--$FORMAT} --type "$1" "$TEST_ROOT/vector")"
     if ! (( "${NO_TEST_NIX_COMMAND-}" )) && test "$hash" != "$3"; then
-        echo "try nix hash: hash $1, expected $3, got $hash"
+        echo "try bsd hash: hash $1, expected $3, got $hash"
         exit 1
     fi
-    hash="$(nix hash path --mode flat ${FORMAT+--format $FORMAT} --algo "$1" "$TEST_ROOT/vector")"
+    hash="$(bsd hash path --mode flat ${FORMAT+--format $FORMAT} --algo "$1" "$TEST_ROOT/vector")"
     if ! (( "${NO_TEST_NIX_COMMAND-}" )) && test "$hash" != "$3"; then
-        echo "try nix hash: hash $1, expected $3, got $hash"
+        echo "try bsd hash: hash $1, expected $3, got $hash"
         exit 1
     fi
 }
@@ -54,21 +54,21 @@ try sha512 "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq" "sha512-IE
 try sha256 "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq" "sha256-JI1qYdIGOLjlwCaTDD5gOaM85Flk/yFn9uzt1BnbBsE="
 unset FORMAT
 
-# nix-hash [--flat] defaults to the Base16 format
+# bsd-hash [--flat] defaults to the Base16 format
 NO_TEST_NIX_COMMAND=1 try sha512 "abc" "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f"
 
-# nix hash [file|path] defaults to the SRI format
+# bsd hash [file|path] defaults to the SRI format
 NO_TEST_CLASSIC=1 try sha512 "abc" "sha512-3a81oZNherrMQXNJriBBMRLm+k6JqX6iCp7u5ktV05ohkpkqJ0/BqDa6PCOj/uu9RU1EI2Q86A4qmslPpUyknw=="
 
 try2 () {
-    hash=$(nix-hash --type "$1" "$TEST_ROOT/hash-path")
+    hash=$(bsd-hash --type "$1" "$TEST_ROOT/hash-path")
     if test "$hash" != "$2"; then
-        echo "try nix-hash; hash $1, expected $2, got $hash"
+        echo "try bsd-hash; hash $1, expected $2, got $hash"
         exit 1
     fi
-    hash="$(nix hash path --mode nar --format base16 --algo "$1" "$TEST_ROOT/hash-path")"
+    hash="$(bsd hash path --mode nar --format base16 --algo "$1" "$TEST_ROOT/hash-path")"
     if test "$hash" != "$2"; then
-        echo "try nix hash: hash $1, expected $2, got $hash"
+        echo "try bsd hash: hash $1, expected $2, got $hash"
         exit 1
     fi
 }
@@ -94,30 +94,30 @@ ln -s x "$TEST_ROOT/hash-path/hello"
 try2 md5 "f78b733a68f5edbdf9413899339eaa4a"
 
 # Flat mode supports process substitution
-h=$(nix hash path --mode flat --type sha256 --base32 <(printf "SMASH THE STATE"))
+h=$(bsd hash path --mode flat --type sha256 --base32 <(printf "SMASH THE STATE"))
 [[ 0d9n3r2i4m1zgy0wpqbsyabsfzgs952066bfp8gwvcg4mkr4r5g8 == "$h" ]]
 
 # Flat mode supports process substitution (hash file)
-h=$(nix hash file --type sha256 --base32 <(printf "SMASH THE STATE"))
+h=$(bsd hash file --type sha256 --base32 <(printf "SMASH THE STATE"))
 [[ 0d9n3r2i4m1zgy0wpqbsyabsfzgs952066bfp8gwvcg4mkr4r5g8 == "$h" ]]
 
 # Symlinks in the ancestry are ok and don't affect the result
 mkdir -p "$TEST_ROOT/simple" "$TEST_ROOT/try/to/mess/with/it"
 echo hi > "$TEST_ROOT/simple/hi"
 ln -s "$TEST_ROOT/simple" "$TEST_ROOT/try/to/mess/with/it/simple-link"
-h=$(nix hash path --type sha256 --base32 "$TEST_ROOT/simple/hi")
+h=$(bsd hash path --type sha256 --base32 "$TEST_ROOT/simple/hi")
 [[ 1xmr8jicvzszfzpz46g37mlpvbzjl2wpwvl2b05psipssyp1sm8h == "$h" ]]
-h=$(nix hash path --type sha256 --base32 "$TEST_ROOT/try/to/mess/with/it/simple-link/hi")
+h=$(bsd hash path --type sha256 --base32 "$TEST_ROOT/try/to/mess/with/it/simple-link/hi")
 [[ 1xmr8jicvzszfzpz46g37mlpvbzjl2wpwvl2b05psipssyp1sm8h == "$h" ]]
 
-# nix hash --mode nar does not canonicalize a symlink argument.
+# bsd hash --mode nar does not canonicalize a symlink argument.
 #   Otherwise it can't generate a NAR whose root is a symlink.
 #   If you want to follow the symlink, pass $(realpath -s ...) instead.
 ln -s /non-existent-48cujwe8ndf4as0bne "$TEST_ROOT/symlink-to-nowhere"
-h=$(nix hash path --mode nar --type sha256 --base32 "$TEST_ROOT/symlink-to-nowhere")
+h=$(bsd hash path --mode nar --type sha256 --base32 "$TEST_ROOT/symlink-to-nowhere")
 [[ 1bl5ry3x1fcbwgr5c2x50bn572iixh4j1p6ax5isxly2ddgn8pbp == "$h" ]]  # manually verified hash
 if [[ -e /bin ]]; then
     ln -s /bin "$TEST_ROOT/symlink-to-bin"
-    h=$(nix hash path --mode nar --type sha256 --base32 "$TEST_ROOT/symlink-to-bin")
+    h=$(bsd hash path --mode nar --type sha256 --base32 "$TEST_ROOT/symlink-to-bin")
     [[ 0z2mdmkd43l0ijdxfbj1y8vzli15yh9b09n3a3rrygmjshbyypsw == "$h" ]] # manually verified hash
 fi

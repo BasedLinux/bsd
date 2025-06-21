@@ -1,8 +1,8 @@
-#include "nix/main/progress-bar.hh"
-#include "nix/util/terminal.hh"
-#include "nix/util/sync.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/names.hh"
+#include "bsd/main/progress-bar.hh"
+#include "bsd/util/terminal.hh"
+#include "bsd/util/sync.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/names.hh"
 
 #include <atomic>
 #include <map>
@@ -11,7 +11,7 @@
 #include <iostream>
 #include <chrono>
 
-namespace nix {
+namespace bsd {
 
 static std::string_view getS(const std::vector<Logger::Field> & fields, size_t n)
 {
@@ -148,7 +148,7 @@ public:
     void resume() override {
         auto state (state_.lock());
         if (state->suspensions == 0) {
-            log(lvlError, "nix::ProgressBar: resume() called without a matching preceding pause(). This is a bug.");
+            log(lvlError, "bsd::ProgressBar: resume() called without a matching preceding pause(). This is a bug.");
             return;
         } else {
             state->suspensions--;

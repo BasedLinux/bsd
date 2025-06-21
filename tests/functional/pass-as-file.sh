@@ -4,8 +4,8 @@ source common.sh
 
 clearStoreIfPossible
 
-outPath=$(nix-build --no-out-link -E "
-with import ${config_nix};
+outPath=$(bsd-build --no-out-link -E "
+with import ${config_bsd};
 
 mkDerivation {
   name = \"pass-as-file\";

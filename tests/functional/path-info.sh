@@ -3,17 +3,17 @@
 source common.sh
 
 echo foo > $TEST_ROOT/foo
-foo=$(nix store add-file $TEST_ROOT/foo)
+foo=$(bsd store add-file $TEST_ROOT/foo)
 
 echo bar > $TEST_ROOT/bar
-bar=$(nix store add-file $TEST_ROOT/bar)
+bar=$(bsd store add-file $TEST_ROOT/bar)
 
 echo baz > $TEST_ROOT/baz
-baz=$(nix store add-file $TEST_ROOT/baz)
-nix-store --delete "$baz"
+baz=$(bsd store add-file $TEST_ROOT/baz)
+bsd-store --delete "$baz"
 
 diff --unified --color=always \
-    <(nix path-info --json "$foo" "$bar" "$baz" |
+    <(bsd path-info --json "$foo" "$bar" "$baz" |
         jq --sort-keys 'map_values(.narHash)') \
     <(jq --sort-keys <<-EOF
         {

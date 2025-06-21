@@ -1,6 +1,6 @@
-#include "nix/util/references.hh"
-#include "nix/util/hash.hh"
-#include "nix/util/archive.hh"
+#include "bsd/util/references.hh"
+#include "bsd/util/hash.hh"
+#include "bsd/util/archive.hh"
 
 #include <map>
 #include <cstdlib>
@@ -8,7 +8,7 @@
 #include <algorithm>
 
 
-namespace nix {
+namespace bsd {
 
 
 static size_t refLength = 32; /* characters */
@@ -23,8 +23,8 @@ static void search(
     static bool isBase32[256];
     std::call_once(initialised, [](){
         for (unsigned int i = 0; i < 256; ++i) isBase32[i] = false;
-        for (unsigned int i = 0; i < nix32Chars.size(); ++i)
-            isBase32[(unsigned char) nix32Chars[i]] = true;
+        for (unsigned int i = 0; i < bsd32Chars.size(); ++i)
+            isBase32[(unsigned char) bsd32Chars[i]] = true;
     });
 
     for (size_t i = 0; i + refLength <= s.size(); ) {

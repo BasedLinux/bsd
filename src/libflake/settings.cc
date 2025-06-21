@@ -1,15 +1,15 @@
-#include "nix/flake/settings.hh"
-#include "nix/flake/flake-primops.hh"
+#include "bsd/flake/settings.hh"
+#include "bsd/flake/flake-primops.hh"
 
-namespace nix::flake {
+namespace bsd::flake {
 
 Settings::Settings() {}
 
-void Settings::configureEvalSettings(nix::EvalSettings & evalSettings) const
+void Settings::configureEvalSettings(bsd::EvalSettings & evalSettings) const
 {
     evalSettings.extraPrimOps.emplace_back(primops::getFlake(*this));
     evalSettings.extraPrimOps.emplace_back(primops::parseFlakeRef);
     evalSettings.extraPrimOps.emplace_back(primops::flakeRefToString);
 }
 
-} // namespace nix
+} // namespace bsd

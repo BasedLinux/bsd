@@ -1,4 +1,4 @@
-project('nix-internal-api-docs',
+project('bsd-internal-api-docs',
   version : files('.version'),
   meson_version : '>= 1.1',
   license : 'LGPL-2.1-or-later',
@@ -27,6 +27,6 @@ custom_target(
   ],
   output : 'html',
   install : true,
-  install_dir : get_option('datadir') / 'doc/nix/internal-api',
+  install_dir : get_option('datadir') / 'doc/bsd/internal-api',
   build_always_stale : true,
 )

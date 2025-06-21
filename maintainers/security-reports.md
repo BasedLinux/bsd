@@ -1,10 +1,10 @@
 # Handling security reports
 
-Reports can be expected to be submitted following the [security policy](https://github.com/NixOS/nix/security/policy), but may reach maintainers on various other channels.
+Reports can be expected to be submitted following the [security policy](https://github.com/BasedLinux/bsd/security/policy), but may reach maintainers on various other channels.
 
 In case a vulnerability is reported:
 
-1. [Create a GitHub security advisory](https://github.com/NixOS/nix/security/advisories/new)
+1. [Create a GitHub security advisory](https://github.com/BasedLinux/bsd/security/advisories/new)
 
    > [!IMPORTANT]
    > Add the reporter as a collaborator so they get notified of all activities.
@@ -17,7 +17,7 @@ In case a vulnerability is reported:
    - Provide proof of concept code (if available).
    - Reference any further reading material that may be appropriate.
 
-1. Establish a private communication channel (e.g. a Matrix room) with the reporter and all Nix maintainers.
+1. Establish a private communication channel (e.g. a Matrix room) with the reporter and all Bsd maintainers.
 
 1. Communicate with the reporter which team members are assigned and when they are available.
 

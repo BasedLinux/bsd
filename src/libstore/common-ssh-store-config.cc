@@ -1,9 +1,9 @@
 #include <regex>
 
-#include "nix/store/common-ssh-store-config.hh"
-#include "nix/store/ssh.hh"
+#include "bsd/store/common-ssh-store-config.hh"
+#include "bsd/store/ssh.hh"
 
-namespace nix {
+namespace bsd {
 
 static std::string extractConnStr(std::string_view scheme, std::string_view _connStr)
 {

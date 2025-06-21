@@ -1,2 +1,2 @@
-:l doc-comments.nix
+:l doc-comments.bsd
 :doc floatedIn

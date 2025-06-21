@@ -1,22 +1,22 @@
 #include <algorithm>
 #include <nlohmann/json.hpp>
 
-#include "nix/cmd/command.hh"
-#include "nix/cmd/markdown.hh"
-#include "nix/store/store-open.hh"
-#include "nix/store/local-fs-store.hh"
-#include "nix/store/derivations.hh"
-#include "nix/expr/nixexpr.hh"
-#include "nix/store/profiles.hh"
-#include "nix/cmd/repl.hh"
-#include "nix/util/strings.hh"
-#include "nix/util/environment-variables.hh"
+#include "bsd/cmd/command.hh"
+#include "bsd/cmd/markdown.hh"
+#include "bsd/store/store-open.hh"
+#include "bsd/store/local-fs-store.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/expr/bsdexpr.hh"
+#include "bsd/store/profiles.hh"
+#include "bsd/cmd/repl.hh"
+#include "bsd/util/strings.hh"
+#include "bsd/util/environment-variables.hh"
 
-namespace nix {
+namespace bsd {
 
-nix::Commands RegisterCommand::getCommandsFor(const std::vector<std::string> & prefix)
+bsd::Commands RegisterCommand::getCommandsFor(const std::vector<std::string> & prefix)
 {
-    nix::Commands res;
+    bsd::Commands res;
     for (auto & [name, command] : RegisterCommand::commands())
         if (name.size() == prefix.size() + 1) {
             bool equal = true;
@@ -29,20 +29,20 @@ nix::Commands RegisterCommand::getCommandsFor(const std::vector<std::string> & p
     return res;
 }
 
-nlohmann::json NixMultiCommand::toJSON()
+nlohmann::json BsdMultiCommand::toJSON()
 {
     // FIXME: use Command::toJSON() as well.
     return MultiCommand::toJSON();
 }
 
-void NixMultiCommand::run()
+void BsdMultiCommand::run()
 {
     if (!command) {
         StringSet subCommandTextLines;
         for (auto & [name, _] : commands)
             subCommandTextLines.insert(fmt("- `%s`", name));
         std::string markdownError =
-            fmt("`nix %s` requires a sub-command. Available sub-commands:\n\n%s\n",
+            fmt("`bsd %s` requires a sub-command. Available sub-commands:\n\n%s\n",
                 commandName,
                 concatStringsSep("\n", subCommandTextLines));
         throw UsageError(renderMarkdownToTerminal(markdownError));
@@ -73,14 +73,14 @@ CopyCommand::CopyCommand()
 {
     addFlag({
         .longName = "from",
-        .description = "URL of the source Nix store.",
+        .description = "URL of the source Bsd store.",
         .labels = {"store-uri"},
         .handler = {&srcUri},
     });
 
     addFlag({
         .longName = "to",
-        .description = "URL of the destination Nix store.",
+        .description = "URL of the destination Bsd store.",
         .labels = {"store-uri"},
         .handler = {&dstUri},
     });
@@ -131,7 +131,7 @@ ref<EvalState> EvalCommand::getEvalState()
         evalState->repair = repair;
 
         if (startReplOnEvalErrors) {
-            evalState->debugRepl = &AbstractNixRepl::runSimple;
+            evalState->debugRepl = &AbstractBsdRepl::runSimple;
         };
     }
     return ref<EvalState>(evalState);
@@ -250,7 +250,7 @@ void MixProfile::updateProfile(const StorePath & storePath)
         return;
     auto store = getDstStore().dynamic_pointer_cast<LocalFSStore>();
     if (!store)
-        throw Error("'--profile' is not supported for this Nix store");
+        throw Error("'--profile' is not supported for this Bsd store");
     auto profile2 = absPath(*profile);
     switchLink(profile2, createGeneration(*store, profile2, storePath));
 }

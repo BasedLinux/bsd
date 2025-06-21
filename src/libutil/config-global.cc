@@ -1,8 +1,8 @@
-#include "nix/util/config-global.hh"
+#include "bsd/util/config-global.hh"
 
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
 bool GlobalConfig::set(const std::string & name, const std::string & value)
 {

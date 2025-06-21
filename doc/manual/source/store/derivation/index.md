@@ -1,9 +1,9 @@
 # Store Derivation and Deriving Path
 
-Besides functioning as a [content-addressed store], the Nix store layer works as a [build system].
+Besides functioning as a [content-addressed store], the Bsd store layer works as a [build system].
 Other systems (like Git or IPFS) also store and transfer immutable data, but they don't concern themselves with *how* that data was created.
 
-This is where Nix distinguishes itself.
+This is where Bsd distinguishes itself.
 *Derivations* represent individual build steps, and *deriving paths* are needed to refer to the *outputs* of those build steps before they are built.
 <!-- The two concepts need to be introduced together because, as described below, each depends on the other. -->
 
@@ -98,16 +98,16 @@ The [process creation fields] will presumably include many [store paths][store p
  - The path to the executable normally starts with a store path
  - The arguments and environment variables likely contain many other store paths.
 
-But rather than somehow scanning all the other fields for inputs, Nix requires that all inputs be explicitly collected in the inputs field. It is instead the responsibility of the creator of a derivation (e.g. the evaluator) to ensure that every store object referenced in another field (e.g. referenced by store path) is included in this inputs field.
+But rather than somehow scanning all the other fields for inputs, Bsd requires that all inputs be explicitly collected in the inputs field. It is instead the responsibility of the creator of a derivation (e.g. the evaluator) to ensure that every store object referenced in another field (e.g. referenced by store path) is included in this inputs field.
 
 ### System {#system}
 
 The system type on which the [`builder`](#attr-builder) executable is meant to be run.
 
-A necessary condition for Nix to schedule a given derivation on some [Nix instance] is for the "system" of that derivation to match that instance's [`system` configuration option] or [`extra-platforms` configuration option].
+A necessary condition for Bsd to schedule a given derivation on some [Bsd instance] is for the "system" of that derivation to match that instance's [`system` configuration option] or [`extra-platforms` configuration option].
 
-By putting the `system` in each derivation, Nix allows *heterogenous* build plans, where not all steps can be run on the same machine or same sort of machine.
-Nix can schedule builds such that it automatically builds on other platforms by [forwarding build requests](@docroot@/advanced-topics/distributed-builds.md) to other Nix instances.
+By putting the `system` in each derivation, Bsd allows *heterogenous* build plans, where not all steps can be run on the same machine or same sort of machine.
+Bsd can schedule builds such that it automatically builds on other platforms by [forwarding build requests](@docroot@/advanced-topics/distributed-builds.md) to other Bsd instances.
 
 [`system` configuration option]: @docroot@/command-ref/conf-file.md#conf-system
 [`extra-platforms` configuration option]: @docroot@/command-ref/conf-file.md#conf-extra-platforms
@@ -131,7 +131,7 @@ This is the path to an executable that will perform the build and produce the [o
 Command-line arguments to be passed to the [`builder`](#builder) executable.
 
 Note that these are the arguments after the first argument.
-The first argument passed to the `builder` will be the value of `builder`, as per the usual convention on Unix.
+The first argument passed to the `builder` will be the value of `builder`, as per the usual convention on Ubsd.
 See [Wikipedia](https://en.wikipedia.org/wiki/Argv) for details.
 
 #### Environment Variables {#env}
@@ -140,19 +140,19 @@ Environment variables which will be passed to the [builder](#builder) executable
 
 #### Structured Attributes {#structured-attrs}
 
-Nix also has special support for embedding JSON in the derivations.
+Bsd also has special support for embedding JSON in the derivations.
 
-The environment variable `NIX_ATTRS_JSON_FILE` points to the exact location of that file both in a build and a [`nix-shell`](@docroot@/command-ref/nix-shell.md).
+The environment variable `NIX_ATTRS_JSON_FILE` points to the exact location of that file both in a build and a [`bsd-shell`](@docroot@/command-ref/bsd-shell.md).
 
-As a convenience to Bash builders, Nix writes a script that initialises shell variables corresponding to all attributes that are representable in Bash.
-The environment variable `NIX_ATTRS_SH_FILE` points to the exact location of the script, both in a build and a [`nix-shell`](@docroot@/command-ref/nix-shell.md).
+As a convenience to Bash builders, Bsd writes a script that initialises shell variables corresponding to all attributes that are representable in Bash.
+The environment variable `NIX_ATTRS_SH_FILE` points to the exact location of the script, both in a build and a [`bsd-shell`](@docroot@/command-ref/bsd-shell.md).
 This includes non-nested (associative) arrays.
 For example, the attribute `hardening.format = true` ends up as the Bash associative array element `${hardening[format]}`.
 
 ### Placeholders
 
 Placeholders are opaque values used within the [process creation fields] to [store objects] for which we don't yet know [store path]s.
-They are strings in the form `/<hash>` that are embedded anywhere within the strings of those fields, and we are [considering](https://github.com/NixOS/nix/issues/12361) to add store-path-like placeholders.
+They are strings in the form `/<hash>` that are embedded anywhere within the strings of those fields, and we are [considering](https://github.com/BasedLinux/bsd/issues/12361) to add store-path-like placeholders.
 
 > **Note**
 >
@@ -232,13 +232,13 @@ If those other derivations *also* abide by this common case (and likewise for tr
   > **Example**
   >
   > ```
-  > /nix/store/lxrn8v5aamkikg6agxwdqd1jz7746wz4-firefox-98.0.2.drv^out
+  > /bsd/store/lxrn8v5aamkikg6agxwdqd1jz7746wz4-firefox-98.0.2.drv^out
   > ```
   >
   > This parses like so:
   >
   > ```
-  > /nix/store/lxrn8v5aamkikg6agxwdqd1jz7746wz4-firefox-98.0.2.drv^out
+  > /bsd/store/lxrn8v5aamkikg6agxwdqd1jz7746wz4-firefox-98.0.2.drv^out
   > |------------------------------------------------------------| |-|
   > store path (usual encoding)                                    output name
   >                                                           |--|
@@ -251,12 +251,12 @@ If those other derivations *also* abide by this common case (and likewise for tr
 
 So far, we have used store paths to refer to derivations.
 That works because we've implicitly assumed that all derivations are created *statically* --- created by some mechanism out of band, and then manually inserted into the store.
-But what if derivations could also be created dynamically within Nix?
+But what if derivations could also be created dynamically within Bsd?
 In other words, what if derivations could be the outputs of other derivations?
 
 > **Note**
 >
-> In the parlance of "Build Systems à la carte", we are generalizing the Nix store layer to be a "Monadic" instead of "Applicative" build system.
+> In the parlance of "Build Systems à la carte", we are generalizing the Bsd store layer to be a "Monadic" instead of "Applicative" build system.
 
 How should we refer to such derivations?
 A deriving path works, the same as how we refer to other derivation outputs.
@@ -301,7 +301,7 @@ The result of this is that it is possible to have a chain of `^<output-name>` at
 > **Example**
 >
 > ```
-> /nix/store/lxrn8v5aamkikg6agxwdqd1jz7746wz4-firefox-98.0.2.drv^foo.drv^bar.drv^out
+> /bsd/store/lxrn8v5aamkikg6agxwdqd1jz7746wz4-firefox-98.0.2.drv^foo.drv^bar.drv^out
 > |----------------------------------------------------------------------------| |-|
 > inner deriving path (usual encoding)                                           output name
 > |--------------------------------------------------------------------| |-----|
@@ -310,4 +310,4 @@ The result of this is that it is possible to have a chain of `^<output-name>` at
 > innermost constant store path (usual encoding)                 output name
 > ```
 
-[Nix instance]: @docroot@/glossary.md#gloss-nix-instance
+[Bsd instance]: @docroot@/glossary.md#gloss-bsd-instance

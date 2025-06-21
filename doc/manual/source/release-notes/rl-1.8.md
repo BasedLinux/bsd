@@ -1,44 +1,44 @@
 # Release 1.8 (2014-12-14)
 
   - Breaking change: to address a race condition, the remote build hook
-    mechanism now uses `nix-store
+    mechanism now uses `bsd-store
             --serve` on the remote machine. This requires build slaves to be
-    updated to Nix 1.8.
+    updated to Bsd 1.8.
 
-  - Nix now uses HTTPS instead of HTTP to access the default binary
-    cache, `cache.nixos.org`.
+  - Bsd now uses HTTPS instead of HTTP to access the default binary
+    cache, `cache.basedlinux.org`.
 
-  - `nix-env` selectors are now regular expressions. For instance, you
+  - `bsd-env` selectors are now regular expressions. For instance, you
     can do
     
-        $ nix-env -qa '.*zip.*'
+        $ bsd-env -qa '.*zip.*'
     
     to query all packages with a name containing `zip`.
 
-  - `nix-store --read-log` can now fetch remote build logs. If a build
-    log is not available locally, then ‘nix-store -l’ will now try to
+  - `bsd-store --read-log` can now fetch remote build logs. If a build
+    log is not available locally, then ‘bsd-store -l’ will now try to
     download it from the servers listed in the ‘log-servers’ option in
-    nix.conf. For instance, if you have the configuration option
+    bsd.conf. For instance, if you have the configuration option
     
-        log-servers = http://hydra.nixos.org/log
+        log-servers = http://hydra.basedlinux.org/log
     
-    then it will try to get logs from `http://hydra.nixos.org/log/base
+    then it will try to get logs from `http://hydra.basedlinux.org/log/base
     name of the
     store path`. This allows you to do things like:
     
-        $ nix-store -l $(which xterm)
+        $ bsd-store -l $(which xterm)
     
     and get a log even if `xterm` wasn't built locally.
 
   - New builtin functions: `attrValues`, `deepSeq`, `fromJSON`,
     `readDir`, `seq`.
 
-  - `nix-instantiate --eval` now has a `--json` flag to print the
+  - `bsd-instantiate --eval` now has a `--json` flag to print the
     resulting value in JSON format.
 
-  - `nix-copy-closure` now uses `nix-store --serve` on the remote side
+  - `bsd-copy-closure` now uses `bsd-store --serve` on the remote side
     to send or receive closures. This fixes a race condition between
-    `nix-copy-closure` and the garbage collector.
+    `bsd-copy-closure` and the garbage collector.
 
   - Derivations can specify the new special attribute
     `allowedRequisites`, which has a similar meaning to
@@ -47,11 +47,11 @@
     specify all the dependencies recursively (hence the name,
     requisites) that are used by the resulting output.
 
-  - On Mac OS X, Nix now handles case collisions when importing closures
+  - On Mac OS X, Bsd now handles case collisions when importing closures
     from case-sensitive file systems. This is mostly useful for running
-    NixOps on Mac OS X.
+    BsdOps on Mac OS X.
 
-  - The Nix daemon has new configuration options `allowed-users`
+  - The Bsd daemon has new configuration options `allowed-users`
     (specifying the users and groups that are allowed to connect to the
     daemon) and `trusted-users` (specifying the users and groups that
     can perform privileged operations like specifying untrusted binary
@@ -60,18 +60,18 @@
   - The configuration option `build-cores` now defaults to the number of
     available CPU cores.
 
-  - Build users are now used by default when Nix is invoked as root.
+  - Build users are now used by default when Bsd is invoked as root.
     This prevents builds from accidentally running as root.
 
-  - Nix now includes systemd units and Upstart jobs.
+  - Bsd now includes systemd units and Upstart jobs.
 
-  - Speed improvements to `nix-store
+  - Speed improvements to `bsd-store
             --optimise`.
 
   - Language change: the `==` operator now ignores string contexts (the
     “dependencies” of a string).
 
-  - Nix now filters out Nix-specific ANSI escape sequences on standard
+  - Bsd now filters out Bsd-specific ANSI escape sequences on standard
     error. They are supposed to be invisible, but some terminals show
     them anyway.
 

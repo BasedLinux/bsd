@@ -3,13 +3,13 @@
 #include <nlohmann/json.hpp>
 #include <gtest/gtest.h>
 
-#include "nix/store/common-protocol.hh"
-#include "nix/store/common-protocol-impl.hh"
-#include "nix/store/build-result.hh"
-#include "nix/store/tests/protocol.hh"
-#include "nix/util/tests/characterization.hh"
+#include "bsd/store/common-protocol.hh"
+#include "bsd/store/common-protocol-impl.hh"
+#include "bsd/store/build-result.hh"
+#include "bsd/store/tests/protocol.hh"
+#include "bsd/util/tests/characterization.hh"
 
-namespace nix {
+namespace bsd {
 
 const char commonProtoDir[] = "common-protocol";
 
@@ -91,7 +91,7 @@ CHARACTERIZATION_TEST(
             .hash = hashString(HashAlgorithm::SHA1, "blob blob..."),
         },
         ContentAddress {
-            .method = ContentAddressMethod::Raw::NixArchive,
+            .method = ContentAddressMethod::Raw::BsdArchive,
             .hash = hashString(HashAlgorithm::SHA256, "(...)"),
         },
     }))

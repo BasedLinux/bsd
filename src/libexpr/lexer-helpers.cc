@@ -1,11 +1,11 @@
 #include "lexer-helpers.hh"
 
-void nix::lexer::internal::initLoc(YYLTYPE * loc)
+void bsd::lexer::internal::initLoc(YYLTYPE * loc)
 {
     loc->beginOffset = loc->endOffset = 0;
 }
 
-void nix::lexer::internal::adjustLoc(yyscan_t yyscanner, YYLTYPE * loc, const char * s, size_t len)
+void bsd::lexer::internal::adjustLoc(yyscan_t yyscanner, YYLTYPE * loc, const char * s, size_t len)
 {
     loc->stash();
 

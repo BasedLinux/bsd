@@ -1,7 +1,7 @@
 source ../common/vars.sh
 source ../common/functions.sh
 
-TODO_NixOS
+TODO_BasedLinux
 
 # The new Linux mount interface does not seem to support remounting
 # OverlayFS mount points.
@@ -34,7 +34,7 @@ requireEnvironment () {
 }
 
 addConfig () {
-    echo "$1" >> "$test_nix_conf"
+    echo "$1" >> "$test_bsd_conf"
 }
 
 setupConfig () {
@@ -56,42 +56,42 @@ setupStoreDirs () {
   storeBRoot="$storeVolume/merged-store"
   storeB="local-overlay://?root=$storeBRoot&lower-store=$storeA&upper-layer=$storeBTop"
   # Creating testing directories
-  mkdir -p "$storeVolume"/{store-a/nix/store,store-b,merged-store/nix/store,workdir}
+  mkdir -p "$storeVolume"/{store-a/bsd/store,store-b,merged-store/bsd/store,workdir}
 }
 
 # Mounting Overlay Store
 mountOverlayfs () {
   mount -t overlay overlay \
-    -o lowerdir="$storeA/nix/store" \
+    -o lowerdir="$storeA/bsd/store" \
     -o upperdir="$storeBTop" \
     -o workdir="$storeVolume/workdir" \
-    "$storeBRoot/nix/store" \
+    "$storeBRoot/bsd/store" \
     || skipTest "overlayfs is not supported"
 
   cleanupOverlay () {
-    umount -n "$storeBRoot/nix/store"
+    umount -n "$storeBRoot/bsd/store"
     rm -r $storeVolume/workdir
   }
   trap cleanupOverlay EXIT
 }
 
 remountOverlayfs () {
-  mount -o remount "$storeBRoot/nix/store"
+  mount -o remount "$storeBRoot/bsd/store"
 }
 
 toRealPath () {
   storeDir=$1; shift
   storePath=$1; shift
-  echo $storeDir$(echo $storePath | sed "s^${NIX_STORE_DIR:-/nix/store}^^")
+  echo $storeDir$(echo $storePath | sed "s^${NIX_STORE_DIR:-/bsd/store}^^")
 }
 
 initLowerStore () {
   # Init lower store with some stuff
-  nix-store --store "$storeA" --add ../dummy
+  bsd-store --store "$storeA" --add ../dummy
 
   # Build something in lower store
-  drvPath=$(nix-instantiate --store $storeA ../hermetic.nix --arg withFinalRefs true --arg busybox "$busybox" --arg seed 1)
-  pathInLowerStore=$(nix-store --store "$storeA" --realise $drvPath)
+  drvPath=$(bsd-instantiate --store $storeA ../hermetic.bsd --arg withFinalRefs true --arg busybox "$busybox" --arg seed 1)
+  pathInLowerStore=$(bsd-store --store "$storeA" --realise $drvPath)
 }
 
 addTextToStore() {
@@ -100,5 +100,5 @@ addTextToStore() {
   content=$1; shift
   filePath="$TEST_HOME/$filename"
   echo "$content" > "$filePath"
-  nix-store --store "$storeDir" --add "$filePath"
+  bsd-store --store "$storeDir" --add "$filePath"
 }

@@ -1,20 +1,20 @@
-#include "nix/util/logging.hh"
-#include "nix/util/file-descriptor.hh"
-#include "nix/util/environment-variables.hh"
-#include "nix/util/terminal.hh"
-#include "nix/util/util.hh"
-#include "nix/util/config-global.hh"
-#include "nix/util/source-path.hh"
-#include "nix/util/position.hh"
-#include "nix/util/sync.hh"
-#include "nix/util/unix-domain-socket.hh"
+#include "bsd/util/logging.hh"
+#include "bsd/util/file-descriptor.hh"
+#include "bsd/util/environment-variables.hh"
+#include "bsd/util/terminal.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/config-global.hh"
+#include "bsd/util/source-path.hh"
+#include "bsd/util/position.hh"
+#include "bsd/util/sync.hh"
+#include "bsd/util/ubsd-domain-socket.hh"
 
 #include <atomic>
 #include <sstream>
 #include <nlohmann/json.hpp>
 #include <iostream>
 
-namespace nix {
+namespace bsd {
 
 LoggerSettings loggerSettings;
 
@@ -183,11 +183,11 @@ void to_json(nlohmann::json & json, std::shared_ptr<const Pos> pos)
 
 struct JSONLogger : Logger {
     Descriptor fd;
-    bool includeNixPrefix;
+    bool includeBsdPrefix;
 
-    JSONLogger(Descriptor fd, bool includeNixPrefix)
+    JSONLogger(Descriptor fd, bool includeBsdPrefix)
         : fd(fd)
-        , includeNixPrefix(includeNixPrefix)
+        , includeBsdPrefix(includeBsdPrefix)
     { }
 
     bool isVerbose() override {
@@ -217,7 +217,7 @@ struct JSONLogger : Logger {
     void write(const nlohmann::json & json)
     {
         auto line =
-            (includeNixPrefix ? "@nix " : "") +
+            (includeBsdPrefix ? "@bsd " : "") +
             json.dump(-1, ' ', false, nlohmann::json::error_handler_t::replace);
 
         /* Acquire a lock to prevent log messages from clobbering each
@@ -305,18 +305,18 @@ struct JSONLogger : Logger {
     }
 };
 
-std::unique_ptr<Logger> makeJSONLogger(Descriptor fd, bool includeNixPrefix)
+std::unique_ptr<Logger> makeJSONLogger(Descriptor fd, bool includeBsdPrefix)
 {
-    return std::make_unique<JSONLogger>(fd, includeNixPrefix);
+    return std::make_unique<JSONLogger>(fd, includeBsdPrefix);
 }
 
-std::unique_ptr<Logger> makeJSONLogger(const std::filesystem::path & path, bool includeNixPrefix)
+std::unique_ptr<Logger> makeJSONLogger(const std::filesystem::path & path, bool includeBsdPrefix)
 {
     struct JSONFileLogger : JSONLogger {
         AutoCloseFD fd;
 
-        JSONFileLogger(AutoCloseFD && fd, bool includeNixPrefix)
-            : JSONLogger(fd.get(), includeNixPrefix)
+        JSONFileLogger(AutoCloseFD && fd, bool includeBsdPrefix)
+            : JSONLogger(fd.get(), includeBsdPrefix)
             , fd(std::move(fd))
         { }
     };
@@ -328,7 +328,7 @@ std::unique_ptr<Logger> makeJSONLogger(const std::filesystem::path & path, bool 
     if (!fd)
         throw SysError("opening log file %1%", path);
 
-    return std::make_unique<JSONFileLogger>(std::move(fd), includeNixPrefix);
+    return std::make_unique<JSONFileLogger>(std::move(fd), includeBsdPrefix);
 }
 
 void applyJSONLogger()
@@ -365,7 +365,7 @@ static Logger::Fields getFields(nlohmann::json & json)
 
 std::optional<nlohmann::json> parseJSONMessage(const std::string & msg, std::string_view source)
 {
-    if (!hasPrefix(msg, "@nix ")) return std::nullopt;
+    if (!hasPrefix(msg, "@bsd ")) return std::nullopt;
     try {
         return nlohmann::json::parse(std::string(msg, 5));
     } catch (std::exception & e) {

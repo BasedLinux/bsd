@@ -11,8 +11,8 @@ pushd "$flakeDir"
 
 # By default: Only show the packages content for the current system and no
 # legacyPackages at all
-nix flake show --json > show-output.json
-nix eval --impure --expr '
+bsd flake show --json > show-output.json
+bsd eval --impure --expr '
 let show_output = builtins.fromJSON (builtins.readFile ./show-output.json);
 in
 assert show_output.packages.someOtherSystem.default == {};
@@ -22,8 +22,8 @@ true
 '
 
 # With `--all-systems`, show the packages for all systems
-nix flake show --json --all-systems > show-output.json
-nix eval --impure --expr '
+bsd flake show --json --all-systems > show-output.json
+bsd eval --impure --expr '
 let show_output = builtins.fromJSON (builtins.readFile ./show-output.json);
 in
 assert show_output.packages.someOtherSystem.default.name == "simple";
@@ -32,8 +32,8 @@ true
 '
 
 # With `--legacy`, show the legacy packages
-nix flake show --json --legacy > show-output.json
-nix eval --impure --expr '
+bsd flake show --json --legacy > show-output.json
+bsd eval --impure --expr '
 let show_output = builtins.fromJSON (builtins.readFile ./show-output.json);
 in
 assert show_output.legacyPackages.${builtins.currentSystem}.hello.name == "simple";
@@ -41,7 +41,7 @@ true
 '
 
 # Test that attributes are only reported when they have actual content
-cat >flake.nix <<EOF
+cat >flake.bsd <<EOF
 {
   description = "Bla bla";
 
@@ -54,13 +54,13 @@ cat >flake.nix <<EOF
     packages.someOtherSystem = { };
 
     formatter = { };
-    nixosConfigurations = { };
-    nixosModules = { };
+    bsdosConfigurations = { };
+    bsdosModules = { };
   };
 }
 EOF
-nix flake show --json --all-systems > show-output.json
-nix eval --impure --expr '
+bsd flake show --json --all-systems > show-output.json
+bsd eval --impure --expr '
 let show_output = builtins.fromJSON (builtins.readFile ./show-output.json);
 in
 assert show_output == { };
@@ -68,19 +68,19 @@ true
 '
 
 # Test that attributes with errors are handled correctly.
-# nixpkgs.legacyPackages is a particularly prominent instance of this.
-cat >flake.nix <<EOF
+# bsdpkgs.legacyPackages is a particularly prominent instance of this.
+cat >flake.bsd <<EOF
 {
   outputs = inputs: {
     legacyPackages.$system = {
       AAAAAASomeThingsFailToEvaluate = throw "nooo";
-      simple = import ./simple.nix;
+      simple = import ./simple.bsd;
     };
   };
 }
 EOF
-nix flake show --json --legacy --all-systems > show-output.json
-nix eval --impure --expr '
+bsd flake show --json --legacy --all-systems > show-output.json
+bsd eval --impure --expr '
 let show_output = builtins.fromJSON (builtins.readFile ./show-output.json);
 in
 assert show_output.legacyPackages.${builtins.currentSystem}.AAAAAASomeThingsFailToEvaluate == { };
@@ -88,15 +88,15 @@ assert show_output.legacyPackages.${builtins.currentSystem}.simple.name == "simp
 true
 '
 
-# Test that nix flake show doesn't fail if one of the outputs contains
+# Test that bsd flake show doesn't fail if one of the outputs contains
 # an IFD
 popd
 writeIfdFlake $flakeDir
 pushd $flakeDir
 
 
-nix flake show --json > show-output.json
-nix eval --impure --expr '
+bsd flake show --json > show-output.json
+bsd eval --impure --expr '
 let show_output = builtins.fromJSON (builtins.readFile ./show-output.json);
 in
 assert show_output.packages.${builtins.currentSystem}.default == { };

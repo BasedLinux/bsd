@@ -18,7 +18,7 @@ Such a construct is called *interpolated string*, and the expression inside is a
 
 Rather than writing
 
-```nix
+```bsd
 "--with-freetype2-library=" + freetype + "/lib"
 ```
 
@@ -26,15 +26,15 @@ Rather than writing
 
 [derivation expression]: @docroot@/glossary.md#gloss-derivation-expression
 
-```nix
+```bsd
 "--with-freetype2-library=${freetype}/lib"
 ```
 
 The latter is automatically translated to the former.
 
-A more complicated example (from the Nix expression for [Qt](http://www.trolltech.com/products/qt)):
+A more complicated example (from the Bsd expression for [Qt](http://www.trolltech.com/products/qt)):
 
-```nix
+```bsd
 configureFlags = "
   -system-zlib -system-libpng -system-libjpeg
   ${if openglSupport then "-dlopen-opengl
@@ -44,14 +44,14 @@ configureFlags = "
 ";
 ```
 
-Note that Nix expressions and strings can be arbitrarily nested;
+Note that Bsd expressions and strings can be arbitrarily nested;
 in this case the outer string contains various interpolated expressions that themselves contain strings (e.g., `"-thread"`), some of which in turn contain interpolated expressions (e.g., `${mesa}`).
 
 To write a literal `${` in an regular string, escape it with a backslash (`\`).
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > "echo \${PATH}"
 > ```
 >
@@ -61,7 +61,7 @@ To write a literal `${` in an indented string, escape it with two single quotes 
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > ''
 >   echo ''${PATH}
 > ''
@@ -74,9 +74,9 @@ To write a literal `${` in an indented string, escape it with two single quotes 
 > **Example**
 >
 > In Make, `$` in file names or recipes is represented as `$$`, see [GNU `make`: Basics of Variable Reference](https://www.gnu.org/software/make/manual/html_node/Reference.html#Basics-of-Variable-References).
-> This can be expressed directly in the Nix language strings:
+> This can be expressed directly in the Bsd language strings:
 >
-> ```nix
+> ```bsd
 > ''
 >   MAKEVAR = Hello
 >   all:
@@ -92,20 +92,20 @@ See the [documentation on strings][string] for details.
 
 Rather than writing
 
-```nix
-./. + "/" + foo + "-" + bar + ".nix"
+```bsd
+./. + "/" + foo + "-" + bar + ".bsd"
 ```
 
 or
 
-```nix
-./. + "/${foo}-${bar}.nix"
+```bsd
+./. + "/${foo}-${bar}.bsd"
 ```
 
 you can instead write
 
-```nix
-./${foo}-${bar}.nix
+```bsd
+./${foo}-${bar}.bsd
 ```
 
 ### Attribute name
@@ -119,7 +119,7 @@ Attribute names can be interpolated strings.
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > let name = "foo"; in
 > { ${name} = 123; }
 > ```
@@ -130,7 +130,7 @@ Attributes can be selected with interpolated strings.
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > let name = "foo"; in
 > { foo = 123; }.${name}
 > ```
@@ -148,11 +148,11 @@ An expression that is interpolated must evaluate to one of the following:
   - `__toString` must be a function that takes the attribute set itself and returns a string
   - `outPath` must be a string
 
-  This includes [derivation expressions](./derivations.md) or [flake inputs](@docroot@/command-ref/new-cli/nix3-flake.md#flake-inputs) (experimental).
+  This includes [derivation expressions](./derivations.md) or [flake inputs](@docroot@/command-ref/new-cli/bsd3-flake.md#flake-inputs) (experimental).
 
 A string interpolates to itself.
 
-A path in an interpolated expression is first copied into the Nix store, and the resulting string is the [store path] of the newly created [store object](@docroot@/store/store-object.md).
+A path in an interpolated expression is first copied into the Bsd store, and the resulting string is the [store path] of the newly created [store object](@docroot@/store/store-object.md).
 
 [store path]: @docroot@/store/store-path.md
 
@@ -164,30 +164,30 @@ A path in an interpolated expression is first copied into the Nix store, and the
 >
 > Reference the empty directory in an interpolated expression:
 >
-> ```nix
+> ```bsd
 > "${./foo}"
 > ```
 >
->     "/nix/store/2hhl2nz5v0khbn06ys82nrk99aa1xxdw-foo"
+>     "/bsd/store/2hhl2nz5v0khbn06ys82nrk99aa1xxdw-foo"
 
 A derivation interpolates to the [store path] of its first [output](./derivations.md#attr-outputs).
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > let
->   pkgs = import <nixpkgs> {};
+>   pkgs = import <bsdpkgs> {};
 > in
 > "${pkgs.hello}"
 > ```
 >
->     "/nix/store/4xpfqf29z4m8vbhrqcz064wfmb46w5r7-hello-2.12.1"
+>     "/bsd/store/4xpfqf29z4m8vbhrqcz064wfmb46w5r7-hello-2.12.1"
 
 An attribute set interpolates to the return value of the function in the `__toString` applied to the attribute set itself.
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > let
 >   a = {
 >     value = 1;
@@ -203,7 +203,7 @@ An attribute set also interpolates to the value of its `outPath` attribute.
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > let
 >   a = { outPath = "foo"; };
 > in
@@ -216,7 +216,7 @@ If both `__toString` and `outPath` are present in an attribute set, `__toString`
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > let
 >   a = { __toString = _: "yes"; outPath = throw "no"; };
 > in
@@ -229,7 +229,7 @@ If neither is present, an error is thrown.
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > let
 >   a = {};
 > in

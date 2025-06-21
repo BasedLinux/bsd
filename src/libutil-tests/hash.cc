@@ -2,9 +2,9 @@
 
 #include <gtest/gtest.h>
 
-#include "nix/util/hash.hh"
+#include "bsd/util/hash.hh"
 
-namespace nix {
+namespace bsd {
 
 class BLAKE3HashTest : public virtual ::testing::Test
 {
@@ -122,7 +122,7 @@ private:
      * --------------------------------------------------------------------------*/
 
     TEST(hashFormat, testRoundTripPrintParse) {
-        for (const HashFormat hashFormat: { HashFormat::Base64, HashFormat::Nix32, HashFormat::Base16, HashFormat::SRI}) {
+        for (const HashFormat hashFormat: { HashFormat::Base64, HashFormat::Bsd32, HashFormat::Base16, HashFormat::SRI}) {
             ASSERT_EQ(parseHashFormat(printHashFormat(hashFormat)), hashFormat);
             ASSERT_EQ(*parseHashFormatOpt(printHashFormat(hashFormat)), hashFormat);
         }

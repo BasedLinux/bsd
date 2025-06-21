@@ -1,6 +1,6 @@
-#include "nix/util/logging.hh"
+#include "bsd/util/logging.hh"
 
-namespace nix {
+namespace bsd {
 
 struct TeeLogger : Logger
 {

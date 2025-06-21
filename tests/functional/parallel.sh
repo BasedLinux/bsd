@@ -2,15 +2,15 @@ source common.sh
 
 
 # First, test that -jN performs builds in parallel.
-echo "testing nix-build -j..."
+echo "testing bsd-build -j..."
 
-TODO_NixOS
+TODO_BasedLinux
 
 clearStore
 
 rm -f $_NIX_TEST_SHARED.cur $_NIX_TEST_SHARED.max
 
-outPath=$(nix-build -j10000 parallel.nix --no-out-link)
+outPath=$(bsd-build -j10000 parallel.bsd --no-out-link)
 
 echo "output path is $outPath"
 
@@ -21,17 +21,17 @@ if test "$(cat $_NIX_TEST_SHARED.cur)" != 0; then fail "wrong current process co
 if test "$(cat $_NIX_TEST_SHARED.max)" != 3; then fail "not enough parallelism"; fi
 
 
-# Second, test that parallel invocations of nix-build perform builds
+# Second, test that parallel invocations of bsd-build perform builds
 # in parallel, and don't block waiting on locks held by the others.
-echo "testing multiple nix-build -j1..."
+echo "testing multiple bsd-build -j1..."
 
 clearStore
 
 rm -f $_NIX_TEST_SHARED.cur $_NIX_TEST_SHARED.max
 
-drvPath=$(nix-instantiate parallel.nix --argstr sleepTime 15)
+drvPath=$(bsd-instantiate parallel.bsd --argstr sleepTime 15)
 
-cmd="nix-store -j1 -r $drvPath"
+cmd="bsd-store -j1 -r $drvPath"
 
 $cmd &
 pid1=$!

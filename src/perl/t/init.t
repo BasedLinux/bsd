@@ -2,11 +2,11 @@ use strict;
 use warnings;
 use Test2::V0;
 
-use Nix::Store;
+use Bsd::Store;
 
-my $s = new Nix::Store("dummy://");
+my $s = new Bsd::Store("dummy://");
 
-my $res = $s->isValidPath("/nix/store/g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-bar");
+my $res = $s->isValidPath("/bsd/store/g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-bar");
 
 ok(!$res, "should not have path");
 

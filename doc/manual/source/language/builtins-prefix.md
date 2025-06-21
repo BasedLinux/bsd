@@ -1,6 +1,6 @@
 # Built-ins
 
-This section lists the values and functions built into the Nix language evaluator.
+This section lists the values and functions built into the Bsd language evaluator.
 All built-ins are available through the global [`builtins`](#builtins-builtins) constant.
 
 Some built-ins are also exposed directly in the global scope:

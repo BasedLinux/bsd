@@ -1,14 +1,14 @@
-#include "nix/expr/tests/libexpr.hh"
-#include "nix/expr/value-to-json.hh"
+#include "bsd/expr/tests/libexpr.hh"
+#include "bsd/expr/value-to-json.hh"
 
-namespace nix {
+namespace bsd {
 // Testing the conversion to JSON
 
     class JSONValueTest : public LibExprTest {
         protected:
             std::string getJSONValue(Value& value) {
                 std::stringstream ss;
-                NixStringContext ps;
+                BsdStringContext ps;
                 printValueAsJSON(state, true, value, noPos, ss, ps);
                 return ss.str();
             }
@@ -63,6 +63,6 @@ namespace nix {
     TEST_F(JSONValueTest, DISABLED_Path) {
         Value v;
         v.mkPath(state.rootPath(CanonPath("/test")));
-        ASSERT_EQ(getJSONValue(v), "\"/nix/store/g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x\"");
+        ASSERT_EQ(getJSONValue(v), "\"/bsd/store/g1w7hy3qg1w7hy3qg1w7hy3qg1w7hy3q-x\"");
     }
-} /* namespace nix */
+} /* namespace bsd */

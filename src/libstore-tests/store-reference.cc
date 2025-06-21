@@ -1,13 +1,13 @@
 #include <nlohmann/json.hpp>
 #include <gtest/gtest.h>
 
-#include "nix/util/file-system.hh"
-#include "nix/store/store-reference.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/store/store-reference.hh"
 
-#include "nix/util/tests/characterization.hh"
-#include "nix/store/tests/libstore.hh"
+#include "bsd/util/tests/characterization.hh"
+#include "bsd/store/tests/libstore.hh"
 
-namespace nix {
+namespace bsd {
 
 using nlohmann::json;
 
@@ -93,10 +93,10 @@ URI_TEST_READ(local_shorthand_1, localExample_1)
 
 URI_TEST_READ(local_shorthand_2, localExample_2)
 
-static StoreReference unixExample{
+static StoreReference ubsdExample{
     .variant =
         StoreReference::Specified{
-            .scheme = "unix",
+            .scheme = "ubsd",
         },
     .params =
         {
@@ -105,9 +105,9 @@ static StoreReference unixExample{
         },
 };
 
-URI_TEST(unix, unixExample)
+URI_TEST(ubsd, ubsdExample)
 
-URI_TEST_READ(unix_shorthand, unixExample)
+URI_TEST_READ(ubsd_shorthand, ubsdExample)
 
 URI_TEST(
     ssh,

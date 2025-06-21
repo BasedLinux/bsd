@@ -1,55 +1,55 @@
-# Debugging Nix
+# Debugging Bsd
 
-This section shows how to build and debug Nix with debug symbols enabled.
+This section shows how to build and debug Bsd with debug symbols enabled.
 
-Additionally, see [Testing Nix](./testing.md) for further instructions on how to debug Nix in the context of a unit test or functional test.
+Additionally, see [Testing Bsd](./testing.md) for further instructions on how to debug Bsd in the context of a unit test or functional test.
 
-## Building Nix with Debug Symbols
+## Building Bsd with Debug Symbols
 
 In the development shell, set the `mesonBuildType` environment variable to `debug` before configuring the build:
 
 ```console
-[nix-shell]$ export mesonBuildType=debugoptimized
+[bsd-shell]$ export mesonBuildType=debugoptimized
 ```
 
-Then, proceed to build Nix as described in [Building Nix](./building.md).
-This will build Nix with debug symbols, which are essential for effective debugging.
+Then, proceed to build Bsd as described in [Building Bsd](./building.md).
+This will build Bsd with debug symbols, which are essential for effective debugging.
 
 It is also possible to build without debugging for faster build:
 
 ```console
-[nix-shell]$ NIX_HARDENING_ENABLE=$(printLines $NIX_HARDENING_ENABLE | grep -v fortify)
-[nix-shell]$ export mesonBuildType=debug
+[bsd-shell]$ NIX_HARDENING_ENABLE=$(printLines $NIX_HARDENING_ENABLE | grep -v fortify)
+[bsd-shell]$ export mesonBuildType=debug
 ```
 
 (The first line is needed because `fortify` hardening requires at least some optimization.)
 
-## Debugging the Nix Binary
+## Debugging the Bsd Binary
 
 Obtain your preferred debugger within the development shell:
 
 ```console
-[nix-shell]$ nix-shell -p gdb
+[bsd-shell]$ bsd-shell -p gdb
 ```
 
 On macOS, use `lldb`:
 
 ```console
-[nix-shell]$ nix-shell -p lldb
+[bsd-shell]$ bsd-shell -p lldb
 ```
 
 ### Launching the Debugger
 
-To debug the Nix binary, run:
+To debug the Bsd binary, run:
 
 ```console
-[nix-shell]$ gdb --args ../outputs/out/bin/nix
+[bsd-shell]$ gdb --args ../outputs/out/bin/bsd
 ```
 
 On macOS, use `lldb`:
 
 ```console
-[nix-shell]$ lldb -- ../outputs/out/bin/nix
+[bsd-shell]$ lldb -- ../outputs/out/bin/bsd
 ```
 
 ### Using the Debugger

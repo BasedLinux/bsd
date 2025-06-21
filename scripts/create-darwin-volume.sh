@@ -30,7 +30,7 @@ else
     #   routine, replace this script w/ deprecation notice and a note
     #   on the remove-after date)
     #
-    readonly NIX_ROOT="${NIX_ROOT:-/nix}"
+    readonly NIX_ROOT="${NIX_ROOT:-/bsd}"
 
     _sudo() {
         shift # throw away the 'explanation'
@@ -63,13 +63,13 @@ root_disk_identifier() {
 
 # make it easy to play w/ 'Case-sensitive APFS'
 readonly NIX_VOLUME_FS="${NIX_VOLUME_FS:-APFS}"
-readonly NIX_VOLUME_LABEL="${NIX_VOLUME_LABEL:-Nix Store}"
+readonly NIX_VOLUME_LABEL="${NIX_VOLUME_LABEL:-Bsd Store}"
 # Strongly assuming we'll make a volume on the device / is on
 # But you can override NIX_VOLUME_USE_DISK to create it on some other device
 readonly NIX_VOLUME_USE_DISK="${NIX_VOLUME_USE_DISK:-$(root_disk_identifier)}"
 NIX_VOLUME_USE_SPECIAL="${NIX_VOLUME_USE_SPECIAL:-}"
 NIX_VOLUME_USE_UUID="${NIX_VOLUME_USE_UUID:-}"
-readonly NIX_VOLUME_MOUNTD_DEST="${NIX_VOLUME_MOUNTD_DEST:-/Library/LaunchDaemons/org.nixos.darwin-store.plist}"
+readonly NIX_VOLUME_MOUNTD_DEST="${NIX_VOLUME_MOUNTD_DEST:-/Library/LaunchDaemons/org.bsdos.darwin-store.plist}"
 
 if /usr/bin/fdesetup isactive >/dev/null; then
     test_filevault_in_use() { return 0; }
@@ -162,7 +162,7 @@ cure_volumes() {
         #
         # If you change this, a human needs to test a very
         # specific scenario: you already have an encrypted
-        # Nix Store volume, and have deleted its credential
+        # Bsd Store volume, and have deleted its credential
         # from keychain. Ensure the script asks you if it can
         # delete the volume, and then prompts for your sudo
         # password to confirm.
@@ -209,7 +209,7 @@ test_fstab() {
     /usr/bin/grep -q "$NIX_ROOT apfs rw" /etc/fstab 2>/dev/null
 }
 
-test_nix_root_is_symlink() {
+test_bsd_root_is_symlink() {
     [ -L "$NIX_ROOT" ]
 }
 
@@ -225,7 +225,7 @@ test_synthetic_conf_symlinked() {
     /usr/bin/grep -qE "^${NIX_ROOT:1}\t.{3,}$" /etc/synthetic.conf 2>/dev/null
 }
 
-test_nix_volume_mountd_installed() {
+test_bsd_volume_mountd_installed() {
     test -e "$NIX_VOLUME_MOUNTD_DEST"
 }
 
@@ -270,7 +270,7 @@ create_synthetic_objects() {
     } >/dev/null 2>&1
 }
 
-test_nix() {
+test_bsd() {
     test -d "$NIX_ROOT"
 }
 
@@ -307,7 +307,7 @@ generate_mount_daemon() {
   <key>RunAtLoad</key>
   <true/>
   <key>Label</key>
-  <string>org.nixos.darwin-store</string>
+  <string>org.bsdos.darwin-store</string>
   <key>ProgramArguments</key>
   <array>
 $(generate_mount_command "$cmd_type" "$volume_uuid")
@@ -323,7 +323,7 @@ _eat_bootout_err() {
 
 # TODO: remove with --uninstall?
 uninstall_launch_daemon_directions() {
-    local daemon_label="$1" # i.e., org.nixos.blah-blah
+    local daemon_label="$1" # i.e., org.bsdos.blah-blah
     local daemon_plist="$2" # abspath
     substep "Uninstall LaunchDaemon $daemon_label" \
       "  sudo launchctl bootout system/$daemon_label" \
@@ -331,7 +331,7 @@ uninstall_launch_daemon_directions() {
 }
 
 uninstall_launch_daemon_prompt() {
-    local daemon_label="$1" # i.e., org.nixos.blah-blah
+    local daemon_label="$1" # i.e., org.bsdos.blah-blah
     local daemon_plist="$2" # abspath
     local reason_for_daemon="$3"
     cat <<EOF
@@ -347,27 +347,27 @@ EOF
     fi
 }
 
-nix_volume_mountd_uninstall_directions() {
-    uninstall_launch_daemon_directions "org.nixos.darwin-store" \
+bsd_volume_mountd_uninstall_directions() {
+    uninstall_launch_daemon_directions "org.bsdos.darwin-store" \
         "$NIX_VOLUME_MOUNTD_DEST"
 }
 
-nix_volume_mountd_uninstall_prompt() {
-    uninstall_launch_daemon_prompt "org.nixos.darwin-store" \
+bsd_volume_mountd_uninstall_prompt() {
+    uninstall_launch_daemon_prompt "org.bsdos.darwin-store" \
         "$NIX_VOLUME_MOUNTD_DEST" \
-        "mount your Nix volume"
+        "mount your Bsd volume"
 }
 
-# TODO: move nix_daemon to install-darwin-multi-user if/when uninstall_launch_daemon_prompt moves up to install-multi-user
-nix_daemon_uninstall_prompt() {
-    uninstall_launch_daemon_prompt "org.nixos.nix-daemon" \
+# TODO: move bsd_daemon to install-darwin-multi-user if/when uninstall_launch_daemon_prompt moves up to install-multi-user
+bsd_daemon_uninstall_prompt() {
+    uninstall_launch_daemon_prompt "org.bsdos.bsd-daemon" \
         "$NIX_DAEMON_DEST" \
-        "run the nix-daemon"
+        "run the bsd-daemon"
 }
 
 # TODO: remove with --uninstall?
-nix_daemon_uninstall_directions() {
-    uninstall_launch_daemon_directions "org.nixos.nix-daemon" \
+bsd_daemon_uninstall_directions() {
+    uninstall_launch_daemon_directions "org.bsdos.bsd-daemon" \
         "$NIX_DAEMON_DEST"
 }
 
@@ -376,7 +376,7 @@ nix_daemon_uninstall_directions() {
 synthetic_conf_uninstall_directions() {
     # :1 to strip leading slash
     substep "Remove ${NIX_ROOT:1} from /etc/synthetic.conf" \
-        "  If nix is the only entry: sudo rm /etc/synthetic.conf" \
+        "  If bsd is the only entry: sudo rm /etc/synthetic.conf" \
         "  Otherwise: sudo /usr/bin/sed -i '' -e '/^${NIX_ROOT:1}$/d' /etc/synthetic.conf"
 }
 
@@ -384,7 +384,7 @@ synthetic_conf_uninstall_prompt() {
     cat <<EOF
 
 During install, I add '${NIX_ROOT:1}' to /etc/synthetic.conf, which instructs
-macOS to create an empty root directory for mounting the Nix volume.
+macOS to create an empty root directory for mounting the Bsd volume.
 EOF
     # make the edit to a copy
     /usr/bin/grep -vE "^${NIX_ROOT:1}($|\t.{3,}$)" /etc/synthetic.conf > "$SCRATCH/synthetic.conf.edit"
@@ -396,7 +396,7 @@ EOF
 to make '${NIX_ROOT}' as a symlink:
     $(/usr/bin/grep -nE "^${NIX_ROOT:1}\t.{3,}$" /etc/synthetic.conf)
 
-This may mean your system has/had a non-standard Nix install.
+This may mean your system has/had a non-standard Bsd install.
 
 The volume-creation process in this installer is *not* compatible
 with a symlinked store, so I'll have to remove this instruction to
@@ -410,7 +410,7 @@ EOF
     # ask to rm if this left the file empty aside from comments, else edit
     if /usr/bin/diff -q <(:) <(/usr/bin/grep -v "^#" "$SCRATCH/synthetic.conf.edit") &>/dev/null; then
         if confirm_rm "/etc/synthetic.conf"; then
-            if test_nix_root_is_symlink; then
+            if test_bsd_root_is_symlink; then
                 failure >&2 <<EOF
 I removed /etc/synthetic.conf, but $NIX_ROOT is already a symlink
 (-> $(readlink "$NIX_ROOT")). The system should remove it when you reboot.
@@ -421,9 +421,9 @@ EOF
         fi
     else
         if confirm_edit "$SCRATCH/synthetic.conf.edit" "/etc/synthetic.conf"; then
-            if test_nix_root_is_symlink; then
+            if test_bsd_root_is_symlink; then
                 failure >&2 <<EOF
-I edited Nix out of /etc/synthetic.conf, but $NIX_ROOT is already a symlink
+I edited Bsd out of /etc/synthetic.conf, but $NIX_ROOT is already a symlink
 (-> $(readlink "$NIX_ROOT")). The system should remove it when you reboot.
 Once you've rebooted, run the installer again.
 EOF
@@ -432,21 +432,21 @@ EOF
         fi
     fi
     # fallback instructions
-    echo "Manually remove nix from /etc/synthetic.conf"
+    echo "Manually remove bsd from /etc/synthetic.conf"
     return 1
 }
 
-add_nix_vol_fstab_line() {
+add_bsd_vol_fstab_line() {
     local uuid="$1"
     # shellcheck disable=SC1003,SC2026
     local escaped_mountpoint="${NIX_ROOT/ /'\\\'040}"
     shift
 
     # wrap `ex` to work around problems w/ vim features breaking exit codes
-    # - plugins (see github.com/NixOS/nix/issues/5468): -u NONE
+    # - plugins (see github.com/BasedLinux/bsd/issues/5468): -u NONE
     # - swap file: -n
     #
-    # the first draft used `--noplugin`, but github.com/NixOS/nix/issues/6462
+    # the first draft used `--noplugin`, but github.com/BasedLinux/bsd/issues/6462
     # suggests we need the less-semantic `-u NONE`
     #
     # we'd prefer EDITOR="/usr/bin/ex -u NONE" but vifs doesn't word-split
@@ -461,14 +461,14 @@ add_nix_vol_fstab_line() {
 EOF
     chmod 755 "$SCRATCH/ex_cleanroom_wrapper"
 
-    EDITOR="$SCRATCH/ex_cleanroom_wrapper" _sudo "to add nix to fstab" "$@" <<EOF
+    EDITOR="$SCRATCH/ex_cleanroom_wrapper" _sudo "to add bsd to fstab" "$@" <<EOF
 :a
 UUID=$uuid $escaped_mountpoint apfs rw,noauto,nobrowse,nosuid,noatime,owners
 .
 :x
 EOF
     # TODO: preserving my notes on suid,owners above until resolved
-    # There *may* be some issue regarding volume ownership, see nix#3156
+    # There *may* be some issue regarding volume ownership, see bsd#3156
     #
     # It seems like the cheapest fix is adding "suid,owners" to fstab, but:
     # - We don't have much info on this condition yet
@@ -498,31 +498,31 @@ EOF
     # and confirming this fix?
 }
 
-delete_nix_vol_fstab_line() {
-    # TODO: I'm scaffolding this to handle the new nix volumes
+delete_bsd_vol_fstab_line() {
+    # TODO: I'm scaffolding this to handle the new bsd volumes
     # but it might be nice to generalize a smidge further to
     # go ahead and set up a pattern for curing "old" things
     # we no longer do?
-    EDITOR="/usr/bin/patch" _sudo "to cut nix from fstab" "$@" < <(/usr/bin/diff /etc/fstab <(/usr/bin/grep -v "$NIX_ROOT apfs rw" /etc/fstab))
+    EDITOR="/usr/bin/patch" _sudo "to cut bsd from fstab" "$@" < <(/usr/bin/diff /etc/fstab <(/usr/bin/grep -v "$NIX_ROOT apfs rw" /etc/fstab))
     # leaving some parts out of the grep; people may fiddle this a little?
 }
 
 # TODO: hope to remove with --uninstall
 fstab_uninstall_directions() {
     substep "Remove ${NIX_ROOT} from /etc/fstab" \
-      "  If nix is the only entry: sudo rm /etc/fstab" \
-      "  Otherwise, run 'sudo /usr/sbin/vifs' to remove the nix line"
+      "  If bsd is the only entry: sudo rm /etc/fstab" \
+      "  Otherwise, run 'sudo /usr/sbin/vifs' to remove the bsd line"
 }
 
 fstab_uninstall_prompt() {
     cat <<EOF
 During install, I add '${NIX_ROOT}' to /etc/fstab so that macOS knows what
-mount options to use for the Nix volume.
+mount options to use for the Bsd volume.
 EOF
     cp /etc/fstab "$SCRATCH/fstab.edit"
     # technically doesn't need the _sudo path, but throwing away the
     # output is probably better than mostly-duplicating the code...
-    delete_nix_vol_fstab_line patch "$SCRATCH/fstab.edit" &>/dev/null
+    delete_bsd_vol_fstab_line patch "$SCRATCH/fstab.edit" &>/dev/null
 
     # if the patch test edit, minus comment lines, is equal to empty (:)
     if /usr/bin/diff -q <(:) <(/usr/bin/grep -v "^#" "$SCRATCH/fstab.edit") &>/dev/null; then
@@ -530,23 +530,23 @@ EOF
         if confirm_rm "/etc/fstab"; then
             return 0
         else
-            echo "Remove nix from /etc/fstab (or remove the file)"
+            echo "Remove bsd from /etc/fstab (or remove the file)"
         fi
     else
         echo "I might be able to help you make this edit. Here's the diff:"
         if ! _diff "/etc/fstab" "$SCRATCH/fstab.edit" && ui_confirm "Does the change above look right?"; then
-            delete_nix_vol_fstab_line /usr/sbin/vifs
+            delete_bsd_vol_fstab_line /usr/sbin/vifs
         else
-            echo "Remove nix from /etc/fstab (or remove the file)"
+            echo "Remove bsd from /etc/fstab (or remove the file)"
         fi
     fi
 }
 
 remove_volume() {
     local volume_special="$1" # (i.e., disk1s7)
-    _sudo "to unmount the Nix volume" \
+    _sudo "to unmount the Bsd volume" \
         /usr/sbin/diskutil unmount force "$volume_special" || true # might not be mounted
-    _sudo "to delete the Nix volume" \
+    _sudo "to delete the Bsd volume" \
         /usr/sbin/diskutil apfs deleteVolume "$volume_special"
 }
 
@@ -555,7 +555,7 @@ remove_volume() {
 cure_volume() {
     local volume_special="$1" # (i.e., disk1s7)
     local volume_uuid="$2"
-    header "Found existing Nix volume"
+    header "Found existing Bsd volume"
     row "  special" "$volume_special"
     row "     uuid" "$volume_uuid"
 
@@ -590,7 +590,7 @@ EOF
                 # TODO: this is a good design case for a warn-and
                 # remind idiom...
                 failure <<EOF
-Your Nix volume is encrypted, but I couldn't find its password. Either:
+Your Bsd volume is encrypted, but I couldn't find its password. Either:
 - Delete or rename the volume out of the way
 - Ensure its decryption password is in the system keychain with a
   "Where" (service) field set to this volume's UUID:
@@ -633,26 +633,26 @@ remove_volume_artifacts() {
         fstab_uninstall_prompt
     fi
 
-    if test_nix_volume_mountd_installed; then
-        nix_volume_mountd_uninstall_prompt
+    if test_bsd_volume_mountd_installed; then
+        bsd_volume_mountd_uninstall_prompt
     fi
 }
 
 setup_synthetic_conf() {
-    if test_nix_root_is_symlink; then
+    if test_bsd_root_is_symlink; then
         if ! test_synthetic_conf_symlinked; then
             failure >&2 <<EOF
 error: $NIX_ROOT is a symlink (-> $(readlink "$NIX_ROOT")).
-Please remove it. If nix is in /etc/synthetic.conf, remove it and reboot.
+Please remove it. If bsd is in /etc/synthetic.conf, remove it and reboot.
 EOF
         fi
     fi
     if ! test_synthetic_conf_mountable; then
         task "Configuring /etc/synthetic.conf to make a mount-point at $NIX_ROOT" >&2
-        # technically /etc/synthetic.d/nix is supported in Big Sur+
+        # technically /etc/synthetic.d/bsd is supported in Big Sur+
         # but handling both takes even more code...
         # See earlier note; `-u NONE` disables vim plugins/rc, `-n` skips swapfile
-        _sudo "to add Nix to /etc/synthetic.conf" \
+        _sudo "to add Bsd to /etc/synthetic.conf" \
             /usr/bin/ex -u NONE -n /etc/synthetic.conf <<EOF
 :a
 ${NIX_ROOT:1}
@@ -663,7 +663,7 @@ EOF
             failure "error: failed to configure synthetic.conf" >&2
         fi
         create_synthetic_objects
-        if ! test_nix; then
+        if ! test_bsd; then
             failure >&2 <<EOF
 error: failed to bootstrap $NIX_ROOT
 If you enabled FileVault after booting, this is likely a known issue
@@ -684,7 +684,7 @@ setup_fstab() {
     # consistent across versions/subcommands).
     if ! test_fstab; then
         task "Configuring /etc/fstab to specify volume mount options" >&2
-        add_nix_vol_fstab_line "$volume_uuid" /usr/sbin/vifs
+        add_bsd_vol_fstab_line "$volume_uuid" /usr/sbin/vifs
     fi
 }
 
@@ -693,22 +693,22 @@ encrypt_volume() {
     local volume_label="$2"
     local password
 
-    task "Encrypt the Nix volume" >&2
+    task "Encrypt the Bsd volume" >&2
 
     # Note: mount/unmount are late additions to support the right order
     # of operations for creating the volume and then baking its uuid into
     # other artifacts; not as well-trod wrt to potential errors, race
     # conditions, etc.
 
-    _sudo "to mount your Nix volume for encrypting" \
+    _sudo "to mount your Bsd volume for encrypting" \
         /usr/sbin/diskutil mount "$volume_label"
 
     password="$(/usr/bin/xxd -l 32 -p -c 256 /dev/random)"
-    _sudo "to add your Nix volume's password to Keychain" \
+    _sudo "to add your Bsd volume's password to Keychain" \
         /usr/bin/security -i <<EOF
-add-generic-password -a "$volume_label" -s "$volume_uuid" -l "$volume_label encryption password" -D "Encrypted volume password" -j "Added automatically by the Nix installer for use by $NIX_VOLUME_MOUNTD_DEST" -w "$password" -T /System/Library/CoreServices/APFSUserAgent -T /System/Library/CoreServices/CSUserAgent -T /usr/bin/security "/Library/Keychains/System.keychain"
+add-generic-password -a "$volume_label" -s "$volume_uuid" -l "$volume_label encryption password" -D "Encrypted volume password" -j "Added automatically by the Bsd installer for use by $NIX_VOLUME_MOUNTD_DEST" -w "$password" -T /System/Library/CoreServices/APFSUserAgent -T /System/Library/CoreServices/CSUserAgent -T /usr/bin/security "/Library/Keychains/System.keychain"
 EOF
-    builtin printf "%s" "$password" | _sudo "to actually encrypt your Nix volume" \
+    builtin printf "%s" "$password" | _sudo "to actually encrypt your Bsd volume" \
         /usr/sbin/diskutil apfs encryptVolume "$volume_label" -user disk -stdinpassphrase
 
     _sudo "to unmount the encrypted volume" \
@@ -736,7 +736,7 @@ create_volume() {
     # rather than failing over into subtle race-condition problems.
     #
     # 5) If we ever get users griping about not having space to do
-    # anything useful with Nix, it is possibly to specify
+    # anything useful with Bsd, it is possibly to specify
     # `-reserve 10g` or something, which will fail w/o that much
     #
     # 6) getting special w/ awk may be fragile, but doing it to:
@@ -765,11 +765,11 @@ await_volume() {
 
 setup_volume() {
     local use_special use_uuid profile_packages
-    task "Creating a Nix volume" >&2
+    task "Creating a Bsd volume" >&2
 
     use_special="${NIX_VOLUME_USE_SPECIAL:-$(create_volume)}"
 
-    _sudo "to ensure the Nix volume is not mounted" \
+    _sudo "to ensure the Bsd volume is not mounted" \
         /usr/sbin/diskutil unmount force "$use_special" || true # might not be mounted
 
     use_uuid=${NIX_VOLUME_USE_UUID:-$(volume_uuid_from_special "$use_special")}
@@ -798,16 +798,16 @@ setup_volume() {
     # what if any safe action there is to take here. Also, the
     # reminder isn't very helpful.
     # I'm less sure where this belongs, but it also wants mounted, pre-install
-    if type -p nix-env; then
-        profile_packages="$(nix-env --query --installed)"
+    if type -p bsd-env; then
+        profile_packages="$(bsd-env --query --installed)"
         # TODO: can probably do below faster w/ read
         # intentionally unquoted string to eat whitespace in wc output
         # shellcheck disable=SC2046,SC2059
         if ! [ $(printf "$profile_packages" | /usr/bin/wc -l) = "0" ]; then
             reminder <<EOF
-Nix now supports only multi-user installs on Darwin/macOS, and your user's
-Nix profile has some packages in it. These packages may obscure those in the
-default profile, including the Nix this installer will add. You should
+Bsd now supports only multi-user installs on Darwin/macOS, and your user's
+Bsd profile has some packages in it. These packages may obscure those in the
+default profile, including the Bsd this installer will add. You should
 review these packages:
 $profile_packages
 EOF
@@ -822,7 +822,7 @@ setup_volume_daemon() {
     if ! test_voldaemon; then
         task "Configuring LaunchDaemon to mount '$NIX_VOLUME_LABEL'" >&2
         # See earlier note; `-u NONE` disables vim plugins/rc, `-n` skips swapfile
-        _sudo "to install the Nix volume mounter" /usr/bin/ex -u NONE -n "$NIX_VOLUME_MOUNTD_DEST" <<EOF
+        _sudo "to install the Bsd volume mounter" /usr/bin/ex -u NONE -n "$NIX_VOLUME_MOUNTD_DEST" <<EOF
 :a
 $(generate_mount_daemon "$cmd_type" "$volume_uuid")
 .
@@ -830,14 +830,14 @@ $(generate_mount_daemon "$cmd_type" "$volume_uuid")
 EOF
 
         # TODO: should probably alert the user if this is disabled?
-        _sudo "to launch the Nix volume mounter" \
+        _sudo "to launch the Bsd volume mounter" \
             launchctl bootstrap system "$NIX_VOLUME_MOUNTD_DEST" || true
         # TODO: confirm whether kickstart is necessesary?
         # I feel a little superstitous, but it can guard
         # against multiple problems (doesn't start, old
         # version still running for some reason...)
-        _sudo "to launch the Nix volume mounter" \
-            launchctl kickstart -k system/org.nixos.darwin-store
+        _sudo "to launch the Bsd volume mounter" \
+            launchctl kickstart -k system/org.bsdos.darwin-store
     fi
 }
 
@@ -856,15 +856,15 @@ else
         {
             echo ""
             echo "     ------------------------------------------------------------------ "
-            echo "    | This installer will create a volume for the nix store and        |"
+            echo "    | This installer will create a volume for the bsd store and        |"
             echo "    | configure it to mount at $NIX_ROOT.  Follow these steps to uninstall. |"
             echo "     ------------------------------------------------------------------ "
             echo ""
             echo "  1. Remove the entry from fstab using 'sudo /usr/sbin/vifs'"
-            echo "  2. Run 'sudo launchctl bootout system/org.nixos.darwin-store'"
+            echo "  2. Run 'sudo launchctl bootout system/org.bsdos.darwin-store'"
             echo "  3. Remove $NIX_VOLUME_MOUNTD_DEST"
             echo "  4. Destroy the data volume using '/usr/sbin/diskutil apfs deleteVolume'"
-            echo "  5. Remove the 'nix' line from /etc/synthetic.conf (or the file)"
+            echo "  5. Remove the 'bsd' line from /etc/synthetic.conf (or the file)"
             echo ""
         } >&2
 

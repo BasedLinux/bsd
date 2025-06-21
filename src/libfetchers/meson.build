@@ -1,4 +1,4 @@
-project('nix-fetchers', 'cpp',
+project('bsd-fetchers', 'cpp',
   version : files('.version'),
   default_options : [
     'cpp_std=c++2a',
@@ -12,17 +12,17 @@ project('nix-fetchers', 'cpp',
 
 cxx = meson.get_compiler('cpp')
 
-subdir('nix-meson-build-support/deps-lists')
+subdir('bsd-meson-build-support/deps-lists')
 
 configuration_data()
 
 deps_private_maybe_subproject = [
 ]
 deps_public_maybe_subproject = [
-  dependency('nix-util'),
-  dependency('nix-store'),
+  dependency('bsd-util'),
+  dependency('bsd-store'),
 ]
-subdir('nix-meson-build-support/subprojects')
+subdir('bsd-meson-build-support/subprojects')
 
 nlohmann_json = dependency('nlohmann_json', version : '>= 3.9')
 deps_public += nlohmann_json
@@ -30,7 +30,7 @@ deps_public += nlohmann_json
 libgit2 = dependency('libgit2')
 deps_private += libgit2
 
-subdir('nix-meson-build-support/common')
+subdir('bsd-meson-build-support/common')
 
 sources = files(
   'attrs.cc',
@@ -52,13 +52,13 @@ sources = files(
   'tarball.cc',
 )
 
-subdir('include/nix/fetchers')
+subdir('include/bsd/fetchers')
 
-subdir('nix-meson-build-support/export-all-symbols')
-subdir('nix-meson-build-support/windows-version')
+subdir('bsd-meson-build-support/export-all-symbols')
+subdir('bsd-meson-build-support/windows-version')
 
 this_library = library(
-  'nixfetchers',
+  'bsdfetchers',
   sources,
   dependencies : deps_public + deps_private + deps_other,
   include_directories : include_dirs,
@@ -67,8 +67,8 @@ this_library = library(
   install : true,
 )
 
-install_headers(headers, subdir : 'nix/fetchers', preserve_path : true)
+install_headers(headers, subdir : 'bsd/fetchers', preserve_path : true)
 
 libraries_private = []
 
-subdir('nix-meson-build-support/export')
+subdir('bsd-meson-build-support/export')

@@ -2,13 +2,13 @@
 
 source common.sh
 
-drvPath=$(nix-instantiate simple.nix)
+drvPath=$(bsd-instantiate simple.bsd)
 
-nix derivation show "$drvPath" | jq .[] > "$TEST_HOME"/simple.json
+bsd derivation show "$drvPath" | jq .[] > "$TEST_HOME"/simple.json
 
-drvPath2=$(nix derivation add < "$TEST_HOME"/simple.json)
+drvPath2=$(bsd derivation add < "$TEST_HOME"/simple.json)
 
 [[ "$drvPath" = "$drvPath2" ]]
 
 # Input addressed derivations cannot be renamed.
-jq '.name = "foo"' < "$TEST_HOME"/simple.json | expectStderr 1 nix derivation add | grepQuiet "has incorrect output"
+jq '.name = "foo"' < "$TEST_HOME"/simple.json | expectStderr 1 bsd derivation add | grepQuiet "has incorrect output"

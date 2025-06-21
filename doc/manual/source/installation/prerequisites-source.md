@@ -52,7 +52,7 @@
     <https://libsodium.org>.
 
   - Recent versions of Bison and Flex to build the parser. (This is
-    because Nix needs GLR support in Bison and reentrancy support in
+    because Bsd needs GLR support in Bison and reentrancy support in
     Flex.) For Bison, you need version 2.6, which can be obtained from
     the [GNU FTP server](ftp://alpha.gnu.org/pub/gnu/bison). For Flex,
     you need version 2.5.35, which is available on

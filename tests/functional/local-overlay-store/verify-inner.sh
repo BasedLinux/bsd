@@ -20,28 +20,28 @@ mountOverlayfs
 ## Initialise stores for test
 
 # Realise a derivation from the lower store to propagate paths to overlay DB
-nix-store --store "$storeB" --realise $drvPath
+bsd-store --store "$storeB" --realise $drvPath
 
 # Also ensure dummy file exists in overlay DB
-dummyPath=$(nix-store --store "$storeB" --add ../dummy)
+dummyPath=$(bsd-store --store "$storeB" --add ../dummy)
 
 # Add something to the lower store that will not be propagated to overlay DB
 lowerOnlyPath=$(addTextToStore "$storeA" lower-only "Only in lower store")
 
 # Verify should be successful at this point
-nix-store --store "$storeB" --verify --check-contents
+bsd-store --store "$storeB" --verify --check-contents
 
 # Make a backup so we can repair later
 backupStore="$storeVolume/backup"
 mkdir "$backupStore"
-cp -ar "$storeBRoot/nix" "$backupStore"
+cp -ar "$storeBRoot/bsd" "$backupStore"
 
 
 ## Deliberately corrupt store paths
 
 # Delete one of the derivation inputs in the lower store
 inputDrvFullPath=$(find "$storeA" -name "*-hermetic-input-1.drv")
-inputDrvPath=${inputDrvFullPath/*\/nix\/store\///nix/store/}
+inputDrvPath=${inputDrvFullPath/*\/bsd\/store\///bsd/store/}
 rm -v "$inputDrvFullPath"
 
 # Truncate the contents of dummy file in lower store
@@ -57,13 +57,13 @@ remountOverlayfs
 ## Now test that verify and repair work as expected
 
 # Verify overlay store without attempting to repair it
-verifyOutput=$(expectStderr 1 nix-store --store "$storeB" --verify --check-contents)
+verifyOutput=$(expectStderr 1 bsd-store --store "$storeB" --verify --check-contents)
 <<<"$verifyOutput" grepQuiet "path '$inputDrvPath' disappeared, but it still has valid referrers!"
 <<<"$verifyOutput" grepQuiet "path '$dummyPath' was modified! expected hash"
 <<<"$verifyOutput" expectStderr 1 grepQuiet "$lowerOnlyPath"  # Expect no error for corrupted lower-only path
 
 # Attempt to repair using backup
 addConfig "substituters = $backupStore"
-repairOutput=$(nix-store --store "$storeB" --verify --check-contents --repair 2>&1)
+repairOutput=$(bsd-store --store "$storeB" --verify --check-contents --repair 2>&1)
 <<<"$repairOutput" grepQuiet "copying path '$inputDrvPath'"
 <<<"$repairOutput" grepQuiet "copying path '$dummyPath'"

@@ -9,21 +9,21 @@
 #include <sys/time.h>
 #endif
 
-#include "nix/store/machines.hh"
-#include "nix/main/shared.hh"
-#include "nix/main/plugin.hh"
-#include "nix/store/pathlocks.hh"
-#include "nix/store/globals.hh"
-#include "nix/util/serialise.hh"
-#include "nix/store/build-result.hh"
-#include "nix/store/store-open.hh"
-#include "nix/util/strings.hh"
-#include "nix/store/derivations.hh"
-#include "nix/store/local-store.hh"
-#include "nix/cmd/legacy.hh"
-#include "nix/util/experimental-features.hh"
+#include "bsd/store/machines.hh"
+#include "bsd/main/shared.hh"
+#include "bsd/main/plugin.hh"
+#include "bsd/store/pathlocks.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/util/serialise.hh"
+#include "bsd/store/build-result.hh"
+#include "bsd/store/store-open.hh"
+#include "bsd/util/strings.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/local-store.hh"
+#include "bsd/cmd/legacy.hh"
+#include "bsd/util/experimental-features.hh"
 
-using namespace nix;
+using namespace bsd;
 using std::cin;
 
 static void handleAlarm(int sig) {
@@ -87,7 +87,7 @@ static int main_build_remote(int argc, char * * argv)
         if (auto localStore = store.dynamic_pointer_cast<LocalFSStore>())
             currentLoad = std::string { localStore->config.stateDir } + currentLoadName;
         else
-            currentLoad = settings.nixStateDir + currentLoadName;
+            currentLoad = settings.bsdStateDir + currentLoadName;
 
         std::shared_ptr<Store> sshStore;
         AutoCloseFD bestSlotLock;

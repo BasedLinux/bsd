@@ -1,6 +1,6 @@
-#include "nix/expr/search-path.hh"
+#include "bsd/expr/search-path.hh"
 
-namespace nix {
+namespace bsd {
 
 std::optional<std::string_view> LookupPath::Prefix::suffixIfPotentialMatch(
     std::string_view path) const

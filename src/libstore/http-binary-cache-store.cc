@@ -1,11 +1,11 @@
-#include "nix/store/http-binary-cache-store.hh"
-#include "nix/store/filetransfer.hh"
-#include "nix/store/globals.hh"
-#include "nix/store/nar-info-disk-cache.hh"
-#include "nix/util/callback.hh"
-#include "nix/store/store-registration.hh"
+#include "bsd/store/http-binary-cache-store.hh"
+#include "bsd/store/filetransfer.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/nar-info-disk-cache.hh"
+#include "bsd/util/callback.hh"
+#include "bsd/store/store-registration.hh"
 
-namespace nix {
+namespace bsd {
 
 MakeError(UploadToHTTP, Error);
 
@@ -203,7 +203,7 @@ protected:
         }
     }
 
-    std::optional<std::string> getNixCacheInfo() override
+    std::optional<std::string> getBsdCacheInfo() override
     {
         try {
             auto result = getFileTransfer()->download(makeRequest(cacheInfoFile));

@@ -3,9 +3,9 @@
 #if 0
 #  include <gtest/gtest.h>
 
-#  include "nix/store/local-overlay-store.hh"
+#  include "bsd/store/local-overlay-store.hh"
 
-namespace nix {
+namespace bsd {
 
 TEST(LocalOverlayStore, constructConfig_rootQueryParam)
 {
@@ -30,5 +30,5 @@ TEST(LocalOverlayStore, constructConfig_rootPath)
     EXPECT_EQ(config.rootDir.get(), std::optional{"/foo/bar"});
 }
 
-} // namespace nix
+} // namespace bsd
 #endif

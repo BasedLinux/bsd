@@ -1,29 +1,29 @@
-#include "nix/store/globals.hh"
-#include "nix/cmd/installable-flake.hh"
-#include "nix/cmd/installable-derived-path.hh"
-#include "nix/store/outputs-spec.hh"
-#include "nix/util/util.hh"
-#include "nix/cmd/command.hh"
-#include "nix/expr/attr-path.hh"
-#include "nix/cmd/common-eval-args.hh"
-#include "nix/store/derivations.hh"
-#include "nix/expr/eval-inline.hh"
-#include "nix/expr/eval.hh"
-#include "nix/expr/get-drvs.hh"
-#include "nix/store/store-api.hh"
-#include "nix/main/shared.hh"
-#include "nix/flake/flake.hh"
-#include "nix/expr/eval-cache.hh"
-#include "nix/util/url.hh"
-#include "nix/fetchers/registry.hh"
-#include "nix/store/build-result.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/cmd/installable-flake.hh"
+#include "bsd/cmd/installable-derived-path.hh"
+#include "bsd/store/outputs-spec.hh"
+#include "bsd/util/util.hh"
+#include "bsd/cmd/command.hh"
+#include "bsd/expr/attr-path.hh"
+#include "bsd/cmd/common-eval-args.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/expr/eval-inline.hh"
+#include "bsd/expr/eval.hh"
+#include "bsd/expr/get-drvs.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/main/shared.hh"
+#include "bsd/flake/flake.hh"
+#include "bsd/expr/eval-cache.hh"
+#include "bsd/util/url.hh"
+#include "bsd/fetchers/registry.hh"
+#include "bsd/store/build-result.hh"
 
 #include <regex>
 #include <queue>
 
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
 std::vector<std::string> InstallableFlake::getActualAttrPaths()
 {
@@ -104,7 +104,7 @@ DerivedPathsWithInfo InstallableFlake::toDerivedPaths()
 
     auto drvPath = attr->forceDerivation();
 
-    std::optional<NixInt::Inner> priority;
+    std::optional<BsdInt::Inner> priority;
 
     if (attr->maybeGetAttr(state->sOutputSpecified)) {
     } else if (auto aMeta = attr->maybeGetAttr(state->sMeta)) {
@@ -195,25 +195,25 @@ std::shared_ptr<flake::LockedFlake> InstallableFlake::getLockedFlake() const
     if (!_lockedFlake) {
         flake::LockFlags lockFlagsApplyConfig = lockFlags;
         // FIXME why this side effect?
-        lockFlagsApplyConfig.applyNixConfig = true;
+        lockFlagsApplyConfig.applyBsdConfig = true;
         _lockedFlake = std::make_shared<flake::LockedFlake>(lockFlake(
             flakeSettings, *state, flakeRef, lockFlagsApplyConfig));
     }
     return _lockedFlake;
 }
 
-FlakeRef InstallableFlake::nixpkgsFlakeRef() const
+FlakeRef InstallableFlake::bsdpkgsFlakeRef() const
 {
     auto lockedFlake = getLockedFlake();
 
-    if (auto nixpkgsInput = lockedFlake->lockFile.findInput({"nixpkgs"})) {
-        if (auto lockedNode = std::dynamic_pointer_cast<const flake::LockedNode>(nixpkgsInput)) {
-            debug("using nixpkgs flake '%s'", lockedNode->lockedRef);
+    if (auto bsdpkgsInput = lockedFlake->lockFile.findInput({"bsdpkgs"})) {
+        if (auto lockedNode = std::dynamic_pointer_cast<const flake::LockedNode>(bsdpkgsInput)) {
+            debug("using bsdpkgs flake '%s'", lockedNode->lockedRef);
             return std::move(lockedNode->lockedRef);
         }
     }
 
-    return defaultNixpkgsFlakeRef();
+    return defaultBsdpkgsFlakeRef();
 }
 
 }

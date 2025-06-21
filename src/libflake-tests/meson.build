@@ -1,4 +1,4 @@
-project('nix-flake-tests', 'cpp',
+project('bsd-flake-tests', 'cpp',
   version : files('.version'),
   default_options : [
     'cpp_std=c++2a',
@@ -12,19 +12,19 @@ project('nix-flake-tests', 'cpp',
 
 cxx = meson.get_compiler('cpp')
 
-subdir('nix-meson-build-support/deps-lists')
+subdir('bsd-meson-build-support/deps-lists')
 
 deps_private_maybe_subproject = [
-  dependency('nix-expr-test-support'),
-  dependency('nix-flake'),
-  dependency('nix-flake-c'),
+  dependency('bsd-expr-test-support'),
+  dependency('bsd-flake'),
+  dependency('bsd-flake-c'),
 ]
 deps_public_maybe_subproject = [
 ]
-subdir('nix-meson-build-support/subprojects')
+subdir('bsd-meson-build-support/subprojects')
 
-subdir('nix-meson-build-support/export-all-symbols')
-subdir('nix-meson-build-support/windows-version')
+subdir('bsd-meson-build-support/export-all-symbols')
+subdir('bsd-meson-build-support/windows-version')
 
 rapidcheck = dependency('rapidcheck')
 deps_private += rapidcheck
@@ -32,11 +32,11 @@ deps_private += rapidcheck
 gtest = dependency('gtest', main : true)
 deps_private += gtest
 
-subdir('nix-meson-build-support/common')
+subdir('bsd-meson-build-support/common')
 
 sources = files(
   'flakeref.cc',
-  'nix_api_flake.cc',
+  'bsd_api_flake.cc',
   'url-name.cc',
 )
 

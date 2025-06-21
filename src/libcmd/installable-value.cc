@@ -1,14 +1,14 @@
-#include "nix/cmd/installable-value.hh"
-#include "nix/expr/eval-cache.hh"
-#include "nix/fetchers/fetch-to-store.hh"
+#include "bsd/cmd/installable-value.hh"
+#include "bsd/expr/eval-cache.hh"
+#include "bsd/fetchers/fetch-to-store.hh"
 
-namespace nix {
+namespace bsd {
 
 std::vector<ref<eval_cache::AttrCursor>>
 InstallableValue::getCursors(EvalState & state)
 {
     auto evalCache =
-        std::make_shared<nix::eval_cache::EvalCache>(std::nullopt, state,
+        std::make_shared<bsd::eval_cache::EvalCache>(std::nullopt, state,
             [&]() { return toValue(state).first; });
     return {evalCache->getRoot()};
 }
@@ -23,7 +23,7 @@ InstallableValue::getCursor(EvalState & state)
 
 static UsageError nonValueInstallable(Installable & installable)
 {
-    return UsageError("installable '%s' does not correspond to a Nix language value", installable.what());
+    return UsageError("installable '%s' does not correspond to a Bsd language value", installable.what());
 }
 
 InstallableValue & InstallableValue::require(Installable & installable)

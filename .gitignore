@@ -6,7 +6,7 @@
 /tests/functional/restricted-innocent
 /tests/functional/debugger-test-out
 /tests/functional/test-libstoreconsumer/test-libstoreconsumer
-/tests/functional/nix-shell
+/tests/functional/bsd-shell
 
 # /tests/functional/lang/
 /tests/functional/lang/*.out

@@ -4,7 +4,7 @@
 # parallel with it.
 source common.sh
 
-TODO_NixOS
+TODO_BasedLinux
 
 needLocalStore "the GC test needs a synchronisation point"
 
@@ -20,13 +20,13 @@ mkfifo "$fifo1"
 fifo2=$TEST_ROOT/test.fifo
 mkfifo "$fifo2"
 
-dummy=$(nix store add-path ./simple.nix)
+dummy=$(bsd store add-path ./simple.bsd)
 
 running=$TEST_ROOT/running
 touch $running
 
 # Start GC.
-(_NIX_TEST_GC_SYNC_1=$fifo1 _NIX_TEST_GC_SYNC_2=$fifo2 nix-store --gc -vvvvv; rm $running) &
+(_NIX_TEST_GC_SYNC_1=$fifo1 _NIX_TEST_GC_SYNC_2=$fifo2 bsd-store --gc -vvvvv; rm $running) &
 pid=$!
 
 sleep 2
@@ -37,8 +37,8 @@ sleep 2
 pid2=$!
 
 # Start a build. This should not be blocked by the GC in progress.
-outPath=$(nix-build --max-silent-time 60 -o "$TEST_ROOT/result" -E "
-  with import ${config_nix};
+outPath=$(bsd-build --max-silent-time 60 -o "$TEST_ROOT/result" -E "
+  with import ${config_bsd};
   mkDerivation {
     name = \"non-blocking\";
     buildCommand = \"set -x; test -e $running; mkdir \$out; echo > $fifo2\";

@@ -1,17 +1,17 @@
-#include "nix/flake/flake-primops.hh"
-#include "nix/expr/eval.hh"
-#include "nix/flake/flake.hh"
-#include "nix/flake/flakeref.hh"
-#include "nix/flake/settings.hh"
+#include "bsd/flake/flake-primops.hh"
+#include "bsd/expr/eval.hh"
+#include "bsd/flake/flake.hh"
+#include "bsd/flake/flakeref.hh"
+#include "bsd/flake/settings.hh"
 
-namespace nix::flake::primops {
+namespace bsd::flake::primops {
 
 PrimOp getFlake(const Settings & settings)
 {
     auto prim_getFlake = [&settings](EvalState & state, const PosIdx pos, Value ** args, Value & v) {
         std::string flakeRefS(
             state.forceStringNoCtx(*args[0], pos, "while evaluating the argument passed to builtins.getFlake"));
-        auto flakeRef = nix::parseFlakeRef(state.fetchSettings, flakeRefS, {}, true);
+        auto flakeRef = bsd::parseFlakeRef(state.fetchSettings, flakeRefS, {}, true);
         if (state.settings.pureEval && !flakeRef.input.isLocked())
             throw Error(
                 "cannot call 'getFlake' on unlocked flake reference '%s', at %s (use --impure to override)",
@@ -39,15 +39,15 @@ PrimOp getFlake(const Settings & settings)
         .doc = R"(
           Fetch a flake from a flake reference, and return its output attributes and some metadata. For example:
 
-          ```nix
-          (builtins.getFlake "nix/55bc52401966fbffa525c574c14f67b00bc4fb3a").packages.x86_64-linux.nix
+          ```bsd
+          (builtins.getFlake "bsd/55bc52401966fbffa525c574c14f67b00bc4fb3a").packages.x86_64-linux.bsd
           ```
 
           Unless impure evaluation is allowed (`--impure`), the flake reference
           must be "locked", e.g. contain a Git revision or content hash. An
           example of an unlocked usage is:
 
-          ```nix
+          ```bsd
           (builtins.getFlake "github:edolstra/dwarffs").rev
           ```
         )",
@@ -60,7 +60,7 @@ static void prim_parseFlakeRef(EvalState & state, const PosIdx pos, Value ** arg
 {
     std::string flakeRefS(
         state.forceStringNoCtx(*args[0], pos, "while evaluating the argument passed to builtins.parseFlakeRef"));
-    auto attrs = nix::parseFlakeRef(state.fetchSettings, flakeRefS, {}, true).toAttrs();
+    auto attrs = bsd::parseFlakeRef(state.fetchSettings, flakeRefS, {}, true).toAttrs();
     auto binds = state.buildBindings(attrs.size());
     for (const auto & [key, value] : attrs) {
         auto s = state.symbols.create(key);
@@ -75,7 +75,7 @@ static void prim_parseFlakeRef(EvalState & state, const PosIdx pos, Value ** arg
     v.mkAttrs(binds);
 }
 
-nix::PrimOp parseFlakeRef({
+bsd::PrimOp parseFlakeRef({
     .name = "__parseFlakeRef",
     .args = {"flake-ref"},
     .doc = R"(
@@ -83,14 +83,14 @@ nix::PrimOp parseFlakeRef({
 
       For example:
 
-      ```nix
-      builtins.parseFlakeRef "github:NixOS/nixpkgs/23.05?dir=lib"
+      ```bsd
+      builtins.parseFlakeRef "github:BasedLinux/bsdpkgs/23.05?dir=lib"
       ```
 
       evaluates to:
 
-      ```nix
-      { dir = "lib"; owner = "NixOS"; ref = "23.05"; repo = "nixpkgs"; type = "github"; }
+      ```bsd
+      { dir = "lib"; owner = "BasedLinux"; ref = "23.05"; repo = "bsdpkgs"; type = "github"; }
       ```
     )",
     .fun = prim_parseFlakeRef,
@@ -133,7 +133,7 @@ static void prim_flakeRefToString(EvalState & state, const PosIdx pos, Value ** 
     v.mkString(flakeRef.to_string());
 }
 
-nix::PrimOp flakeRefToString({
+bsd::PrimOp flakeRefToString({
     .name = "__flakeRefToString",
     .args = {"attrs"},
     .doc = R"(
@@ -141,20 +141,20 @@ nix::PrimOp flakeRefToString({
 
       For example:
 
-      ```nix
+      ```bsd
       builtins.flakeRefToString {
-        dir = "lib"; owner = "NixOS"; ref = "23.05"; repo = "nixpkgs"; type = "github";
+        dir = "lib"; owner = "BasedLinux"; ref = "23.05"; repo = "bsdpkgs"; type = "github";
       }
       ```
 
       evaluates to
 
-      ```nix
-      "github:NixOS/nixpkgs/23.05?dir=lib"
+      ```bsd
+      "github:BasedLinux/bsdpkgs/23.05?dir=lib"
       ```
     )",
     .fun = prim_flakeRefToString,
     .experimentalFeature = Xp::Flakes,
 });
 
-} // namespace nix::flake::primops
+} // namespace bsd::flake::primops

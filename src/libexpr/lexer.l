@@ -6,7 +6,7 @@
 %option stack
 %option nodefault
 %option nounput noyy_top_state
-%option extra-type="::nix::LexerState *"
+%option extra-type="::bsd::LexerState *"
 
 %s DEFAULT
 %x STRING
@@ -17,7 +17,7 @@
 
 %top {
 #include "parser-tab.hh" // YYSTYPE
-#include "nix/expr/parser-state.hh"
+#include "bsd/expr/parser-state.hh"
 }
 
 %{
@@ -25,17 +25,17 @@
 #pragma clang diagnostic ignored "-Wunneeded-internal-declaration"
 #endif
 
-#include "nix/expr/nixexpr.hh"
+#include "bsd/expr/bsdexpr.hh"
 #include "lexer-helpers.hh"
 
-namespace nix {
+namespace bsd {
   struct LexerState;
 }
 
-using namespace nix;
-using namespace nix::lexer::internal;
+using namespace bsd;
+using namespace bsd::lexer::internal;
 
-namespace nix {
+namespace bsd {
 
 #define CUR_POS state->at(*yylloc)
 
@@ -75,7 +75,7 @@ static void requireExperimentalFeature(const ExperimentalFeature & feature, cons
 {
     if (!experimentalFeatureSettings.isEnabled(feature))
         throw ParseError(ErrorInfo{
-            .msg = HintFmt("experimental Nix feature '%1%' is disabled; add '--extra-experimental-features %1%' to enable it", showExperimentalFeature(feature)),
+            .msg = HintFmt("experimental Bsd feature '%1%' is disabled; add '--extra-experimental-features %1%' to enable it", showExperimentalFeature(feature)),
             .pos = pos,
         });
 }
@@ -142,7 +142,7 @@ or          { return OR_KW; }
 {INT}       { errno = 0;
               std::optional<int64_t> numMay = string2Int<int64_t>(yytext);
               if (numMay.has_value()) {
-                  yylval->n = NixInt{*numMay};
+                  yylval->n = BsdInt{*numMay};
               } else {
                   throw ParseError(ErrorInfo{
                       .msg = HintFmt("invalid integer '%1%'", yytext),

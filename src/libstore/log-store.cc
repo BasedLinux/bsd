@@ -1,6 +1,6 @@
-#include "nix/store/log-store.hh"
+#include "bsd/store/log-store.hh"
 
-namespace nix {
+namespace bsd {
 
 std::optional<std::string> LogStore::getBuildLog(const StorePath & path) {
     auto maybePath = getBuildDerivationPath(path);

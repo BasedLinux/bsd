@@ -6,8 +6,8 @@ if [[ -z "${COMMON_FUNCTIONS_SH_SOURCED-}" ]]; then
 
 COMMON_FUNCTIONS_SH_SOURCED=1
 
-isTestOnNixOS() {
-  [[ "${isTestOnNixOS:-}" == 1 ]]
+isTestOnBasedLinux() {
+  [[ "${isTestOnBasedLinux:-}" == 1 ]]
 }
 
 die() {
@@ -22,24 +22,24 @@ readLink() {
 }
 
 clearProfiles() {
-    profiles="$HOME/.local/state/nix/profiles"
+    profiles="$HOME/.local/state/bsd/profiles"
     rm -rf "$profiles"
 }
 
 # Clear the store, but do not fail if we're in an environment where we can't.
-# This allows the test to run in a NixOS test environment, where we use the system store.
-# See doc/manual/source/contributing/testing.md / Running functional tests on NixOS.
+# This allows the test to run in a BasedLinux test environment, where we use the system store.
+# See doc/manual/source/contributing/testing.md / Running functional tests on BasedLinux.
 clearStoreIfPossible() {
-    if isTestOnNixOS; then
-        echo "clearStoreIfPossible: Not clearing store, because we're on NixOS. Moving on."
+    if isTestOnBasedLinux; then
+        echo "clearStoreIfPossible: Not clearing store, because we're on BasedLinux. Moving on."
     else
         doClearStore
     fi
 }
 
 clearStore() {
-    if isTestOnNixOS; then
-      die "clearStore: not supported when testing on NixOS. If not essential, call clearStoreIfPossible. If really needed, add conditionals; e.g. if ! isTestOnNixOS; then ..."
+    if isTestOnBasedLinux; then
+      die "clearStore: not supported when testing on BasedLinux. If not essential, call clearStoreIfPossible. If really needed, add conditionals; e.g. if ! isTestOnBasedLinux; then ..."
     fi
     doClearStore
 }
@@ -59,12 +59,12 @@ clearCache() {
 }
 
 clearCacheCache() {
-    rm -f "$TEST_HOME/.cache/nix/binary-cache"*
+    rm -f "$TEST_HOME/.cache/bsd/binary-cache"*
 }
 
 startDaemon() {
-    if isTestOnNixOS; then
-      die "startDaemon: not supported when testing on NixOS. Is it really needed? If so add conditionals; e.g. if ! isTestOnNixOS; then ..."
+    if isTestOnBasedLinux; then
+      die "startDaemon: not supported when testing on BasedLinux. Is it really needed? If so add conditionals; e.g. if ! isTestOnBasedLinux; then ..."
     fi
 
     # Don't start the daemon twice, as this would just make it loop indefinitely.
@@ -73,7 +73,7 @@ startDaemon() {
     fi
     # Start the daemon, wait for the socket to appear.
     rm -f "$NIX_DAEMON_SOCKET_PATH"
-    PATH=$DAEMON_PATH nix --extra-experimental-features 'nix-command' daemon &
+    PATH=$DAEMON_PATH bsd --extra-experimental-features 'bsd-command' daemon &
     _NIX_TEST_DAEMON_PID=$!
     export _NIX_TEST_DAEMON_PID
     for ((i = 0; i < 60; i++)); do
@@ -97,8 +97,8 @@ startDaemon() {
 }
 
 killDaemon() {
-    if isTestOnNixOS; then
-      die "killDaemon: not supported when testing on NixOS. Is it really needed? If so add conditionals; e.g. if ! isTestOnNixOS; then ..."
+    if isTestOnBasedLinux; then
+      die "killDaemon: not supported when testing on BasedLinux. Is it really needed? If so add conditionals; e.g. if ! isTestOnBasedLinux; then ..."
     fi
 
     # Don't fail trying to stop a non-existant daemon twice.
@@ -115,14 +115,14 @@ killDaemon() {
     rm -f "$NIX_DAEMON_SOCKET_PATH"
     # Indicate daemon is stopped
     unset _NIX_TEST_DAEMON_PID
-    # Restore old nix remote
+    # Restore old bsd remote
     NIX_REMOTE=$NIX_REMOTE_OLD
     trap "" EXIT
 }
 
 restartDaemon() {
-    if isTestOnNixOS; then
-      die "restartDaemon: not supported when testing on NixOS. Is it really needed? If so add conditionals; e.g. if ! isTestOnNixOS; then ..."
+    if isTestOnBasedLinux; then
+      die "restartDaemon: not supported when testing on BasedLinux. Is it really needed? If so add conditionals; e.g. if ! isTestOnBasedLinux; then ..."
     fi
 
     [[ -z "${_NIX_TEST_DAEMON_PID:-}" ]] && return 0
@@ -135,8 +135,8 @@ isDaemonNewer () {
   [[ -n "${NIX_DAEMON_PACKAGE:-}" ]] || return 0
   local requiredVersion="$1"
   local daemonVersion
-  daemonVersion=$("$NIX_DAEMON_PACKAGE/bin/nix" daemon --version | cut -d' ' -f3)
-  [[ $(nix eval --expr "builtins.compareVersions ''$daemonVersion'' ''$requiredVersion''") -ge 0 ]]
+  daemonVersion=$("$NIX_DAEMON_PACKAGE/bin/bsd" daemon --version | cut -d' ' -f3)
+  [[ $(bsd eval --expr "builtins.compareVersions ''$daemonVersion'' ''$requiredVersion''") -ge 0 ]]
 }
 
 skipTest () {
@@ -144,9 +144,9 @@ skipTest () {
     exit 77
 }
 
-TODO_NixOS() {
-    if isTestOnNixOS; then
-        skipTest "This test has not been adapted for NixOS yet"
+TODO_BasedLinux() {
+    if isTestOnBasedLinux; then
+        skipTest "This test has not been adapted for BasedLinux yet"
     fi
 }
 
@@ -180,7 +180,7 @@ fail() {
 #
 # 2. `!` unexpectedly negates `set -e`, and cannot be used on individual
 # pipeline stages with `set -o pipefail`. It only works on the entire
-# pipeline, which is useless if we want, say, `nix ...` invocation to
+# pipeline, which is useless if we want, say, `bsd ...` invocation to
 # *fail*, but a grep on the error message it outputs to *succeed*.
 expect() {
     local expected res
@@ -214,7 +214,7 @@ expectStderr() {
 # Show a diff when output does not match.
 # Usage:
 #
-#   assertStderr nix profile remove nothing << EOF
+#   assertStderr bsd profile remove nothing << EOF
 #   error: This error is expected
 #   EOF
 assertStderr() {
@@ -234,7 +234,7 @@ buggyNeedLocalStore() {
 
 enableFeatures() {
     local features="$1"
-    sed -i 's/experimental-features .*/& '"$features"'/' "${test_nix_conf?}"
+    sed -i 's/experimental-features .*/& '"$features"'/' "${test_bsd_conf?}"
 }
 
 onError() {
@@ -249,7 +249,7 @@ onError() {
 # Prints an error message prefix referring to the last call into this file.
 # Ignores `expect` and `expectStderr` calls.
 # Set a special exit code when test suite functions are misused, so that
-# functions like expectStderr won't mistake them for expected Nix CLI errors.
+# functions like expectStderr won't mistake them for expected Bsd CLI errors.
 # Suggestion: -101 (negative to indicate very abnormal, and beyond the normal
 #             range of signals)
 # Example (showns as string): 'repl.sh:123: in call to grepQuiet: '

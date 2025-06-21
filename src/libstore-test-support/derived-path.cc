@@ -2,10 +2,10 @@
 
 #include <rapidcheck.h>
 
-#include "nix/store/tests/derived-path.hh"
+#include "bsd/store/tests/derived-path.hh"
 
 namespace rc {
-using namespace nix;
+using namespace bsd;
 
 Gen<SingleDerivedPath::Opaque> Arbitrary<SingleDerivedPath::Opaque>::arbitrary()
 {

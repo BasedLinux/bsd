@@ -13,20 +13,20 @@ test_subdir_self_path() {
     writeSimpleFlake "$flakeDir"
 
     echo all good > "$flakeDir/message"
-    cat > "$flakeDir"/flake.nix <<EOF
+    cat > "$flakeDir"/flake.bsd <<EOF
 {
   outputs = inputs: rec {
     packages.$system = rec {
       default =
         assert builtins.readFile ./message == "all good\n";
         assert builtins.readFile (inputs.self + "/message") == "all good\n";
-        import ./simple.nix;
+        import ./simple.bsd;
     };
   };
 }
 EOF
     (
-        nix build "$baseDir"?dir=b-low --no-link
+        bsd build "$baseDir"?dir=b-low --no-link
     )
 }
 test_subdir_self_path
@@ -41,7 +41,7 @@ test_git_subdir_self_path() {
     writeSimpleFlake "$flakeDir"
 
     echo all good > "$flakeDir/message"
-    cat > "$flakeDir"/flake.nix <<EOF
+    cat > "$flakeDir"/flake.bsd <<EOF
 {
   outputs = inputs: rec {
     packages.$system = rec {
@@ -49,7 +49,7 @@ test_git_subdir_self_path() {
         assert builtins.readFile ./message == "all good\n";
         assert builtins.readFile (inputs.self + "/message") == "all good\n";
         assert inputs.self.outPath == inputs.self.sourceInfo.outPath + "/b-low";
-        import ./simple.nix;
+        import ./simple.bsd;
     };
   };
 }
@@ -58,12 +58,12 @@ EOF
         cd "$flakeDir"
         git add .
         git commit -m init
-        # nix build
+        # bsd build
     )
 
     clientDir=$TEST_ROOT/client-$RANDOM
     mkdir -p "$clientDir"
-    cat > "$clientDir"/flake.nix <<EOF
+    cat > "$clientDir"/flake.bsd <<EOF
 {
   inputs.inp = {
     type = "git";
@@ -76,7 +76,7 @@ EOF
   };
 }
 EOF
-    nix build "$clientDir" --no-link
+    bsd build "$clientDir" --no-link
 
 }
 test_git_subdir_self_path

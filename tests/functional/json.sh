@@ -33,10 +33,10 @@ shellEscapeArray() {
   echo "$result"
 }
 
-nix eval --json --expr '{ a.b.c = true; }' > "$TEST_HOME/actual.json"
+bsd eval --json --expr '{ a.b.c = true; }' > "$TEST_HOME/actual.json"
 diff -U3 "$TEST_HOME/expected-machine.json" "$TEST_HOME/actual.json"
 
-nix eval --json --pretty --expr \
+bsd eval --json --pretty --expr \
   '{ a.b.c = true; }' > "$TEST_HOME/actual.json"
 diff -U3 "$TEST_HOME/expected-pretty.json" "$TEST_HOME/actual.json"
 
@@ -54,17 +54,17 @@ if type script &>/dev/null; then
       script -e -q /dev/null -c "$(shellEscapeArray "$@")"
     fi
   }
-  runScript nix eval --json --expr "{ a.b.c = true; }" > "$TEST_HOME/actual.json"
+  runScript bsd eval --json --expr "{ a.b.c = true; }" > "$TEST_HOME/actual.json"
   cat "$TEST_HOME/actual.json"
   # script isn't perfectly accurate? Let's grep for a pretty good indication, as the pretty output has a space between the key and the value.
   # diff -U3 "$TEST_HOME/expected-pretty.json" "$TEST_HOME/actual.json"
   grep -F '"a": {' "$TEST_HOME/actual.json"
 
-  runScript nix eval --json --pretty --expr "{ a.b.c = true; }" > "$TEST_HOME/actual.json"
+  runScript bsd eval --json --pretty --expr "{ a.b.c = true; }" > "$TEST_HOME/actual.json"
   cat "$TEST_HOME/actual.json"
   grep -F '"a": {' "$TEST_HOME/actual.json"
 
-  runScript nix eval --json --no-pretty --expr "{ a.b.c = true; }" > "$TEST_HOME/actual.json"
+  runScript bsd eval --json --no-pretty --expr "{ a.b.c = true; }" > "$TEST_HOME/actual.json"
   cat "$TEST_HOME/actual.json"
   grep -F '"a":{' "$TEST_HOME/actual.json"
 

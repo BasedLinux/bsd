@@ -2,7 +2,7 @@
 
 set -eu -o pipefail
 
-export TEST_ROOT=$(realpath ${TMPDIR:-/tmp}/nix-test)/git-hashing/check-data
+export TEST_ROOT=$(realpath ${TMPDIR:-/tmp}/bsd-test)/git-hashing/check-data
 mkdir -p $TEST_ROOT
 
 repo="$TEST_ROOT/scratch"

@@ -1,6 +1,6 @@
 # Import From Derivation
 
-The value of a Nix expression can depend on the contents of a [store object].
+The value of a Bsd expression can depend on the contents of a [store object].
 
 [store object]: @docroot@/store/store-object.md
 
@@ -22,18 +22,18 @@ When the store path needs to be accessed, evaluation will be paused, the corresp
 
 This has performance implications:
 Evaluation can only finish when all required store objects are realised.
-Since the Nix language evaluator is sequential, it only finds store paths to read from one at a time.
+Since the Bsd language evaluator is sequential, it only finds store paths to read from one at a time.
 While realisation is always parallel, in this case it cannot be done for all required store paths at once, and is therefore much slower than otherwise.
 
 Realising store objects during evaluation can be disabled by setting [`allow-import-from-derivation`](../command-ref/conf-file.md#conf-allow-import-from-derivation) to `false`.
-Without IFD it is ensured that evaluation is complete and Nix can produce a build plan before starting any realisation.
+Without IFD it is ensured that evaluation is complete and Bsd can produce a build plan before starting any realisation.
 
 ## Example
 
-In the following Nix expression, the inner derivation `drv` produces a file with contents `hello`.
+In the following Bsd expression, the inner derivation `drv` produces a file with contents `hello`.
 
-```nix
-# IFD.nix
+```bsd
+# IFD.bsd
 let
   drv = derivation {
     name = "hello";
@@ -45,11 +45,11 @@ in "${builtins.readFile drv} world"
 ```
 
 ```shellSession
-nix-instantiate IFD.nix --eval --read-write-mode
+bsd-instantiate IFD.bsd --eval --read-write-mode
 ```
 
 ```
-building '/nix/store/348q1cal6sdgfxs8zqi9v8llrsn4kqkq-hello.drv'...
+building '/bsd/store/348q1cal6sdgfxs8zqi9v8llrsn4kqkq-hello.drv'...
 "hello world"
 ```
 
@@ -58,14 +58,14 @@ Only then evaluation can continue to produce the final result.
 
 ## Illustration
 
-As a first approximation, the following data flow graph shows how evaluation and building are interleaved, if the value of a Nix expression depends on realising a [store object].
+As a first approximation, the following data flow graph shows how evaluation and building are interleaved, if the value of a Bsd expression depends on realising a [store object].
 Boxes are data structures, arrow labels are transformations.
 
 ```
 +----------------------+             +------------------------+
-| Nix evaluator        |             | Nix store              |
+| Bsd evaluator        |             | Bsd store              |
 |  .----------------.  |             |                        |
-|  | Nix expression |  |             |                        |
+|  | Bsd expression |  |             |                        |
 |  '----------------'  |             |                        |
 |          |           |             |                        |
 |       evaluate       |             |                        |
@@ -80,7 +80,7 @@ Boxes are data structures, arrow labels are transformations.
 |                      |             |           |            |
 |                      |             |           V            |
 |  .----------------.  |             |    .--------------.    |
-|  | Nix expression |<-|----read-----|----| store object |    |
+|  | Bsd expression |<-|----read-----|----| store object |    |
 |  '----------------'  |             |    '--------------'    |
 |          |           |             |                        |
 |       evaluate       |             |                        |
@@ -96,10 +96,10 @@ In more detail, the following sequence diagram shows how the expression is evalu
 
 ```
 .-------.     .-------------.                        .---------.
-|Nix CLI|     |Nix evaluator|                        |Nix store|
+|Bsd CLI|     |Bsd evaluator|                        |Bsd store|
 '-------'     '-------------'                        '---------'
     |                |                                    |
-    |evaluate IFD.nix|                                    |
+    |evaluate IFD.bsd|                                    |
     |--------------->|                                    |
     |                |                                    |
     |  evaluate `"${readFile drv} world"`                 |
@@ -108,10 +108,10 @@ In more detail, the following sequence diagram shows how the expression is evalu
     |                |                                    |
     |   evaluate `drv` as string                          |
     |                |                                    |
-    |                |instantiate /nix/store/...-hello.drv|
+    |                |instantiate /bsd/store/...-hello.drv|
     |                |----------------------------------->|
     |                :                                    |
-    |                :  realise /nix/store/...-hello.drv  |
+    |                :  realise /bsd/store/...-hello.drv  |
     |                :----------------------------------->|
     |                :                                    |
     |                                                     |--------.
@@ -119,12 +119,12 @@ In more detail, the following sequence diagram shows how the expression is evalu
     |      (evaluation blocked)                           |  echo hello > $out
     |                :                                    |        |
     |                                                     |<-------'
-    |                :        /nix/store/...-hello        |
+    |                :        /bsd/store/...-hello        |
     |                |<-----------------------------------|
     |                |                                    |
-    |  resume `readFile /nix/store/...-hello`             |
+    |  resume `readFile /bsd/store/...-hello`             |
     |                |                                    |
-    |                |   readFile /nix/store/...-hello    |
+    |                |   readFile /bsd/store/...-hello    |
     |                |----------------------------------->|
     |                |                                    |
     |                |               hello                |
@@ -137,6 +137,6 @@ In more detail, the following sequence diagram shows how the expression is evalu
     | "hello world"  |                                    |
     |<---------------|                                    |
 .-------.     .-------------.                        .---------.
-|Nix CLI|     |Nix evaluator|                        |Nix store|
+|Bsd CLI|     |Bsd evaluator|                        |Bsd store|
 '-------'     '-------------'                        '---------'
 ```

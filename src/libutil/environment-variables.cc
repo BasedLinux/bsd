@@ -1,9 +1,9 @@
-#include "nix/util/util.hh"
-#include "nix/util/environment-variables.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/environment-variables.hh"
 
 extern char ** environ __attribute__((weak));
 
-namespace nix {
+namespace bsd {
 
 std::optional<std::string> getEnv(const std::string & key)
 {

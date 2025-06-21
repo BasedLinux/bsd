@@ -1,10 +1,10 @@
-#include "nix/store/globals.hh"
-#include "nix/store/nar-info.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/strings.hh"
-#include "nix/util/json-utils.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/nar-info.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/strings.hh"
+#include "bsd/util/json-utils.hh"
 
-namespace nix {
+namespace bsd {
 
 NarInfo::NarInfo(const Store & store, const std::string & s, const std::string & whence)
     : ValidPathInfo(StorePath(StorePath::dummy), Hash(Hash::dummy)) // FIXME: hack
@@ -107,10 +107,10 @@ std::string NarInfo::to_string(const Store & store) const
     assert(compression != "");
     res += "Compression: " + compression + "\n";
     assert(fileHash && fileHash->algo == HashAlgorithm::SHA256);
-    res += "FileHash: " + fileHash->to_string(HashFormat::Nix32, true) + "\n";
+    res += "FileHash: " + fileHash->to_string(HashFormat::Bsd32, true) + "\n";
     res += "FileSize: " + std::to_string(fileSize) + "\n";
     assert(narHash.algo == HashAlgorithm::SHA256);
-    res += "NarHash: " + narHash.to_string(HashFormat::Nix32, true) + "\n";
+    res += "NarHash: " + narHash.to_string(HashFormat::Bsd32, true) + "\n";
     res += "NarSize: " + std::to_string(narSize) + "\n";
 
     res += "References: " + concatStringsSep(" ", shortRefs()) + "\n";

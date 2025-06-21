@@ -1,17 +1,17 @@
-#include "nix/store/build/derivation-building-goal.hh"
-#include "nix/store/build/derivation-goal.hh"
+#include "bsd/store/build/derivation-building-goal.hh"
+#include "bsd/store/build/derivation-goal.hh"
 #ifndef _WIN32 // TODO enable build hook on Windows
-#  include "nix/store/build/hook-instance.hh"
-#  include "nix/store/build/derivation-builder.hh"
+#  include "bsd/store/build/hook-instance.hh"
+#  include "bsd/store/build/derivation-builder.hh"
 #endif
-#include "nix/util/processes.hh"
-#include "nix/util/config-global.hh"
-#include "nix/store/build/worker.hh"
-#include "nix/util/util.hh"
-#include "nix/util/compression.hh"
-#include "nix/store/common-protocol.hh"
-#include "nix/store/common-protocol-impl.hh"
-#include "nix/store/local-store.hh" // TODO remove, along with remaining downcasts
+#include "bsd/util/processes.hh"
+#include "bsd/util/config-global.hh"
+#include "bsd/store/build/worker.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/compression.hh"
+#include "bsd/store/common-protocol.hh"
+#include "bsd/store/common-protocol-impl.hh"
+#include "bsd/store/local-store.hh" // TODO remove, along with remaining downcasts
 
 #include <fstream>
 #include <sys/types.h>
@@ -20,9 +20,9 @@
 
 #include <nlohmann/json.hpp>
 
-#include "nix/util/strings.hh"
+#include "bsd/util/strings.hh"
 
-namespace nix {
+namespace bsd {
 
 DerivationBuildingGoal::DerivationBuildingGoal(const StorePath & drvPath, const Derivation & drv_,
     Worker & worker, BuildMode buildMode)
@@ -442,7 +442,7 @@ Goal::Co DerivationBuildingGoal::tryToBuild()
 
     /* Obtain locks on all output paths, if the paths are known a priori.
 
-       The locks are automatically released when we exit this function or Nix
+       The locks are automatically released when we exit this function or Bsd
        crashes.  If we can't acquire the lock, then continue; hopefully some
        other goal can start a build, and if not, the main loop will sleep a few
        seconds and then retry this goal. */
@@ -546,7 +546,7 @@ Goal::Co DerivationBuildingGoal::tryToBuild()
             Unable to build with a primary store that isn't a local store;
             either pass a different '--store' or enable remote builds.
 
-            For more information check 'man nix.conf' and search for '/machines'.
+            For more information check 'man bsd.conf' and search for '/machines'.
             )"
         );
     }
@@ -753,14 +753,14 @@ void DerivationBuildingGoal::appendLogTailErrorMsg(std::string & msg)
             msg += line;
             msg += "\n";
         }
-        auto nixLogCommand = experimentalFeatureSettings.isEnabled(Xp::NixCommand)
-            ? "nix log"
-            : "nix-store -l";
+        auto bsdLogCommand = experimentalFeatureSettings.isEnabled(Xp::BsdCommand)
+            ? "bsd log"
+            : "bsd-store -l";
         // The command is on a separate line for easy copying, such as with triple click.
         // This message will be indented elsewhere, so removing the indentation before the
         // command will not put it at the start of the line unfortunately.
         msg += fmt("For full logs, run:\n  " ANSI_BOLD "%s %s" ANSI_NORMAL,
-            nixLogCommand,
+            bsdLogCommand,
             worker.store.printStorePath(drvPath));
     }
 }
@@ -825,7 +825,7 @@ Goal::Co DerivationBuildingGoal::hookDone()
        being valid. */
     auto builtOutputs =
         /* When using a build hook, the build hook can register the output
-           as valid (by doing `nix-store --import').  If so we don't have
+           as valid (by doing `bsd-store --import').  If so we don't have
            to do anything here.
 
            We can only early return when the outputs are known a priori. For
@@ -981,7 +981,7 @@ Path DerivationBuildingGoal::openLogFile()
     if (auto localStore = dynamic_cast<LocalStore *>(&worker.store))
         logDir = localStore->config->logDir;
     else
-        logDir = settings.nixLogDir;
+        logDir = settings.bsdLogDir;
     Path dir = fmt("%s/%s/%s/", logDir, LocalFSStore::drvsLogDir, baseName.substr(0, 2));
     createDirs(dir);
 
@@ -1068,7 +1068,7 @@ void DerivationBuildingGoal::handleChildOutput(Descriptor fd, std::string_view d
                 if (json) {
                     auto s = handleJSONLogMessage(*json, worker.act, hook->activities, "the derivation builder", true);
                     // ensure that logs from a builder using `ssh-ng://` as protocol
-                    // are also available to `nix log`.
+                    // are also available to `bsd log`.
                     if (s && !isWrittenToLog && logSink) {
                         const auto type = (*json)["type"];
                         const auto fields = (*json)["fields"];
@@ -1077,16 +1077,16 @@ void DerivationBuildingGoal::handleChildOutput(Descriptor fd, std::string_view d
                         } else if (type == resSetPhase && ! fields.is_null()) {
                             const auto phase = fields[0];
                             if (! phase.is_null()) {
-                                // nixpkgs' stdenv produces lines in the log to signal
+                                // bsdpkgs' stdenv produces lines in the log to signal
                                 // phase changes.
                                 // We want to get the same lines in case of remote builds.
                                 // The format is:
-                                //   @nix { "action": "setPhase", "phase": "$curPhase" }
+                                //   @bsd { "action": "setPhase", "phase": "$curPhase" }
                                 const auto logLine = nlohmann::json::object({
                                     {"action", "setPhase"},
                                     {"phase", phase}
                                 });
-                                (*logSink)("@nix " + logLine.dump(-1, ' ', false, nlohmann::json::error_handler_t::replace) + "\n");
+                                (*logSink)("@bsd " + logLine.dump(-1, ' ', false, nlohmann::json::error_handler_t::replace) + "\n");
                             }
                         }
                     }

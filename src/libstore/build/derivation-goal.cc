@@ -1,17 +1,17 @@
-#include "nix/store/build/derivation-goal.hh"
-#include "nix/store/build/derivation-building-goal.hh"
+#include "bsd/store/build/derivation-goal.hh"
+#include "bsd/store/build/derivation-building-goal.hh"
 #ifndef _WIN32 // TODO enable build hook on Windows
-#  include "nix/store/build/hook-instance.hh"
-#  include "nix/store/build/derivation-builder.hh"
+#  include "bsd/store/build/hook-instance.hh"
+#  include "bsd/store/build/derivation-builder.hh"
 #endif
-#include "nix/util/processes.hh"
-#include "nix/util/config-global.hh"
-#include "nix/store/build/worker.hh"
-#include "nix/util/util.hh"
-#include "nix/util/compression.hh"
-#include "nix/store/common-protocol.hh"
-#include "nix/store/common-protocol-impl.hh" // Don't remove is actually needed
-#include "nix/store/local-store.hh" // TODO remove, along with remaining downcasts
+#include "bsd/util/processes.hh"
+#include "bsd/util/config-global.hh"
+#include "bsd/store/build/worker.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/compression.hh"
+#include "bsd/store/common-protocol.hh"
+#include "bsd/store/common-protocol-impl.hh" // Don't remove is actually needed
+#include "bsd/store/local-store.hh" // TODO remove, along with remaining downcasts
 
 #include <fstream>
 #include <sys/types.h>
@@ -20,9 +20,9 @@
 
 #include <nlohmann/json.hpp>
 
-#include "nix/util/strings.hh"
+#include "bsd/util/strings.hh"
 
-namespace nix {
+namespace bsd {
 
 DerivationGoal::DerivationGoal(ref<const SingleDerivedPath> drvReq,
     const OutputsSpec & wantedOutputs, Worker & worker, BuildMode buildMode)

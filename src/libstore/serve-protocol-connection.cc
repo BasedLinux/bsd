@@ -1,9 +1,9 @@
-#include "nix/store/serve-protocol-connection.hh"
-#include "nix/store/serve-protocol-impl.hh"
-#include "nix/store/build-result.hh"
-#include "nix/store/derivations.hh"
+#include "bsd/store/serve-protocol-connection.hh"
+#include "bsd/store/serve-protocol-impl.hh"
+#include "bsd/store/build-result.hh"
+#include "bsd/store/derivations.hh"
 
-namespace nix {
+namespace bsd {
 
 ServeProto::Version ServeProto::BasicClientConnection::handshake(
     BufferedSink & to, Source & from, ServeProto::Version localVersion, std::string_view host)
@@ -13,10 +13,10 @@ ServeProto::Version ServeProto::BasicClientConnection::handshake(
 
     unsigned int magic = readInt(from);
     if (magic != SERVE_MAGIC_2)
-        throw Error("'nix-store --serve' protocol mismatch from '%s'", host);
+        throw Error("'bsd-store --serve' protocol mismatch from '%s'", host);
     auto remoteVersion = readInt(from);
     if (GET_PROTOCOL_MAJOR(remoteVersion) != 0x200)
-        throw Error("unsupported 'nix-store --serve' protocol version on '%s'", host);
+        throw Error("unsupported 'bsd-store --serve' protocol version on '%s'", host);
     return std::min(remoteVersion, localVersion);
 }
 

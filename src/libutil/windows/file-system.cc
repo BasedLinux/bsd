@@ -1,8 +1,8 @@
-#include "nix/util/file-system.hh"
-#include "nix/util/logging.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/util/logging.hh"
 
 #ifdef _WIN32
-namespace nix {
+namespace bsd {
 
 void setWriteTime(
     const std::filesystem::path & path, time_t accessedTime, time_t modificationTime, std::optional<bool> optIsSymlink)

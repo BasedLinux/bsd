@@ -8,7 +8,7 @@ repo="$TEST_ROOT/repo"
 
 createGitRepo "$repo"
 
-cat > "$repo/flake.nix" <<EOF
+cat > "$repo/flake.bsd" <<EOF
 {
   inputs = {
     dependency.url = "git+file:///no-such-path?dir=subdir";
@@ -50,11 +50,11 @@ cat > "$repo/flake.lock" <<EOF
 }
 EOF
 
-git -C "$repo" add flake.nix flake.lock
+git -C "$repo" add flake.bsd flake.lock
 git -C "$repo" commit -a -m foo
 
 cp "$repo/flake.lock" "$repo/flake.lock.old"
 
-nix flake lock "$repo"
+bsd flake lock "$repo"
 
 cmp "$repo/flake.lock" "$repo/flake.lock.old"

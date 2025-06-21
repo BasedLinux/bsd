@@ -1,11 +1,11 @@
 #include <regex>
 
-#include "nix/store/path-with-outputs.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/strings.hh"
+#include "bsd/store/path-with-outputs.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/strings.hh"
 
 
-namespace nix {
+namespace bsd {
 
 std::string StorePathWithOutputs::to_string(const StoreDirConfig & store) const
 {

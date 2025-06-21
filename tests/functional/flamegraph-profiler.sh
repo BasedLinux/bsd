@@ -8,7 +8,7 @@ expect_trace() {
     expr="$1"
     expect="$2"
     actual=$(
-        nix-instantiate \
+        bsd-instantiate \
             --eval-profiler flamegraph \
             --eval-profiler-frequency 0 \
             --eval-profile-file /dev/stdout \

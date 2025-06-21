@@ -1,15 +1,15 @@
-#include "nix/store/ssh-store.hh"
-#include "nix/store/local-fs-store.hh"
-#include "nix/store/remote-store-connection.hh"
-#include "nix/util/source-accessor.hh"
-#include "nix/util/archive.hh"
-#include "nix/store/worker-protocol.hh"
-#include "nix/store/worker-protocol-impl.hh"
-#include "nix/util/pool.hh"
-#include "nix/store/ssh.hh"
-#include "nix/store/store-registration.hh"
+#include "bsd/store/ssh-store.hh"
+#include "bsd/store/local-fs-store.hh"
+#include "bsd/store/remote-store-connection.hh"
+#include "bsd/util/source-accessor.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/store/worker-protocol.hh"
+#include "bsd/store/worker-protocol-impl.hh"
+#include "bsd/util/pool.hh"
+#include "bsd/store/ssh.hh"
+#include "bsd/store/store-registration.hh"
 
-namespace nix {
+namespace bsd {
 
 SSHStoreConfig::SSHStoreConfig(
     std::string_view scheme,
@@ -115,12 +115,12 @@ std::string MountedSSHStoreConfig::doc()
 
 /**
  * The mounted ssh store assumes that filesystems on the remote host are
- * shared with the local host. This means that the remote nix store is
+ * shared with the local host. This means that the remote bsd store is
  * available locally and is therefore treated as a local filesystem
  * store.
  *
  * MountedSSHStore is very similar to UDSRemoteStore --- ignoring the
- * superficial difference of SSH vs Unix domain sockets, they both are
+ * superficial difference of SSH vs Ubsd domain sockets, they both are
  * accessing remote stores, and they both assume the store will be
  * mounted in the local filesystem.
  *

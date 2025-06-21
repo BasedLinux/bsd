@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "nix/fetchers/fetch-settings.hh"
-#include "nix/flake/flakeref.hh"
+#include "bsd/fetchers/fetch-settings.hh"
+#include "bsd/flake/flakeref.hh"
 
-namespace nix {
+namespace bsd {
 
 /* ----------- tests for flake/flakeref.hh --------------------------------------------------*/
 

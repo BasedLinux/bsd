@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 
-#include "nix/util/git.hh"
-#include "nix/util/memory-source-accessor.hh"
+#include "bsd/util/git.hh"
+#include "bsd/util/memory-source-accessor.hh"
 
-#include "nix/util/tests/characterization.hh"
+#include "bsd/util/tests/characterization.hh"
 
-namespace nix {
+namespace bsd {
 
 using namespace git;
 

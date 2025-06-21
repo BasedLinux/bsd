@@ -1,10 +1,10 @@
-#include "nix/cmd/network-proxy.hh"
+#include "bsd/cmd/network-proxy.hh"
 
 #include <algorithm>
 
-#include "nix/util/environment-variables.hh"
+#include "bsd/util/environment-variables.hh"
 
-namespace nix {
+namespace bsd {
 
 static const StringSet lowercaseVariables{"http_proxy", "https_proxy", "ftp_proxy", "all_proxy", "no_proxy"};
 

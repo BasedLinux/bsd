@@ -1,15 +1,15 @@
-#include "nix/util/canon-path.hh"
-#include "nix/util/util.hh"
-#include "nix/util/file-path-impl.hh"
-#include "nix/util/strings-inline.hh"
+#include "bsd/util/canon-path.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/file-path-impl.hh"
+#include "bsd/util/strings-inline.hh"
 
-namespace nix {
+namespace bsd {
 
 CanonPath CanonPath::root = CanonPath("/");
 
 static std::string absPathPure(std::string_view path)
 {
-    return canonPathInner<UnixPathTrait>(path, [](auto &, auto &){});
+    return canonPathInner<UbsdPathTrait>(path, [](auto &, auto &){});
 }
 
 CanonPath::CanonPath(std::string_view raw)

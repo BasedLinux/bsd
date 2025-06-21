@@ -1,7 +1,7 @@
 Changes
 Makefile.PL
 MANIFEST
-Nix.xs
+Bsd.xs
 README
-t/Nix.t
-lib/Nix.pm
+t/Bsd.t
+lib/Bsd.pm

@@ -1,16 +1,16 @@
-#include "nix/util/util.hh"
-#include "nix/util/users.hh"
-#include "nix/util/environment-variables.hh"
-#include "nix/util/file-system.hh"
-#include "nix/util/windows-error.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/users.hh"
+#include "bsd/util/environment-variables.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/util/windows-error.hh"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-namespace nix {
+namespace bsd {
 
-using namespace nix::windows;
+using namespace bsd::windows;
 
 std::string getUserName()
 {

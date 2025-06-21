@@ -15,7 +15,7 @@ declare -a storesBad=(
     "$storeBadRoot" "$storeBadLower" "$storeBadUpper"
 )
 
-TODO_NixOS
+TODO_BasedLinux
 
 for i in "${storesBad[@]}"; do
     echo $i
@@ -23,6 +23,6 @@ for i in "${storesBad[@]}"; do
         source common.sh
         setupStoreDirs
         mountOverlayfs
-        expectStderr 1 nix doctor --store "$i" | grepQuiet "overlay filesystem .* mounted incorrectly"
+        expectStderr 1 bsd doctor --store "$i" | grepQuiet "overlay filesystem .* mounted incorrectly"
 EOF
 done

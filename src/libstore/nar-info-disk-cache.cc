@@ -1,15 +1,15 @@
-#include "nix/store/nar-info-disk-cache.hh"
-#include "nix/util/users.hh"
-#include "nix/util/sync.hh"
-#include "nix/store/sqlite.hh"
-#include "nix/store/globals.hh"
+#include "bsd/store/nar-info-disk-cache.hh"
+#include "bsd/util/users.hh"
+#include "bsd/util/sync.hh"
+#include "bsd/store/sqlite.hh"
+#include "bsd/store/globals.hh"
 
 #include <sqlite3.h>
 #include <nlohmann/json.hpp>
 
-#include "nix/util/strings.hh"
+#include "bsd/util/strings.hh"
 
-namespace nix {
+namespace bsd {
 
 static const char * schema = R"sql(
 
@@ -65,7 +65,7 @@ public:
     /* How often to purge expired entries from the cache. */
     const int purgeInterval = 24 * 3600;
 
-    /* How long to cache binary cache info (i.e. /nix-cache-info) */
+    /* How long to cache binary cache info (i.e. /bsd-cache-info) */
     const int cacheInfoTtl = 7 * 24 * 3600;
 
     struct Cache
@@ -335,9 +335,9 @@ public:
                     (std::string(info->path.name()))
                     (narInfo ? narInfo->url : "", narInfo != 0)
                     (narInfo ? narInfo->compression : "", narInfo != 0)
-                    (narInfo && narInfo->fileHash ? narInfo->fileHash->to_string(HashFormat::Nix32, true) : "", narInfo && narInfo->fileHash)
+                    (narInfo && narInfo->fileHash ? narInfo->fileHash->to_string(HashFormat::Bsd32, true) : "", narInfo && narInfo->fileHash)
                     (narInfo ? narInfo->fileSize : 0, narInfo != 0 && narInfo->fileSize)
-                    (info->narHash.to_string(HashFormat::Nix32, true))
+                    (info->narHash.to_string(HashFormat::Bsd32, true))
                     (info->narSize)
                     (concatStringsSep(" ", info->shortRefs()))
                     (info->deriver ? std::string(info->deriver->to_string()) : "", (bool) info->deriver)

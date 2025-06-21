@@ -4,15 +4,15 @@
 #include <nlohmann/json.hpp>
 #include <gtest/gtest.h>
 
-#include "nix/store/serve-protocol.hh"
-#include "nix/store/serve-protocol-impl.hh"
-#include "nix/store/serve-protocol-connection.hh"
-#include "nix/store/build-result.hh"
-#include "nix/util/file-descriptor.hh"
-#include "nix/store/tests/protocol.hh"
-#include "nix/util/tests/characterization.hh"
+#include "bsd/store/serve-protocol.hh"
+#include "bsd/store/serve-protocol-impl.hh"
+#include "bsd/store/serve-protocol-connection.hh"
+#include "bsd/store/build-result.hh"
+#include "bsd/util/file-descriptor.hh"
+#include "bsd/store/tests/protocol.hh"
+#include "bsd/util/tests/characterization.hh"
 
-namespace nix {
+namespace bsd {
 
 const char serveProtoDir[] = "serve-protocol";
 
@@ -65,7 +65,7 @@ VERSIONED_CHARACTERIZATION_TEST(
             .hash = hashString(HashAlgorithm::SHA1, "blob blob..."),
         },
         ContentAddress {
-            .method = ContentAddressMethod::Raw::NixArchive,
+            .method = ContentAddressMethod::Raw::BsdArchive,
             .hash = hashString(HashAlgorithm::SHA256, "(...)"),
         },
     }))
@@ -284,7 +284,7 @@ VERSIONED_CHARACTERIZATION_TEST(
                 *LibStoreTest::store,
                 "foo",
                 FixedOutputInfo {
-                    .method = FileIngestionMethod::NixArchive,
+                    .method = FileIngestionMethod::BsdArchive,
                     .hash = hashString(HashAlgorithm::SHA256, "(...)"),
                     .references = {
                         .others = {

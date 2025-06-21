@@ -1,7 +1,7 @@
-#include "nix/store/builtins.hh"
-#include "nix/util/tarfile.hh"
+#include "bsd/store/builtins.hh"
+#include "bsd/util/tarfile.hh"
 
-namespace nix {
+namespace bsd {
 
 static void builtinUnpackChannel(const BuiltinBuilderContext & ctx)
 {

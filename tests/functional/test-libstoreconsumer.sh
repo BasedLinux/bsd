@@ -2,7 +2,7 @@
 
 source common.sh
 
-drv="$(nix-instantiate simple.nix)"
+drv="$(bsd-instantiate simple.bsd)"
 cat "$drv"
 out="$("${_NIX_TEST_BUILD_DIR}/test-libstoreconsumer/test-libstoreconsumer" "$drv")"
 grep -F "Hello World!" < "$out/hello"

@@ -1,12 +1,12 @@
-#include "nix/store/build/goal.hh"
-#include "nix/store/build/worker.hh"
+#include "bsd/store/build/goal.hh"
+#include "bsd/store/build/worker.hh"
 
-namespace nix {
+namespace bsd {
 
-using Co = nix::Goal::Co;
-using promise_type = nix::Goal::promise_type;
-using handle_type = nix::Goal::handle_type;
-using Suspend = nix::Goal::Suspend;
+using Co = bsd::Goal::Co;
+using promise_type = bsd::Goal::promise_type;
+using handle_type = bsd::Goal::handle_type;
+using Suspend = bsd::Goal::Suspend;
 
 Co::Co(Co&& rhs) {
     this->handle = rhs.handle;
@@ -82,7 +82,7 @@ void promise_type::return_value(Co&& next) {
     continuation->handle.promise().continuation = std::move(old_continuation);
 }
 
-std::coroutine_handle<> nix::Goal::Co::await_suspend(handle_type caller) {
+std::coroutine_handle<> bsd::Goal::Co::await_suspend(handle_type caller) {
     assert(handle); // we must be a valid coroutine
     auto& p = handle.promise();
     assert(!p.continuation); // we must have no continuation

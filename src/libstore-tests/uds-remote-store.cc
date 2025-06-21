@@ -3,13 +3,13 @@
 #if 0
 #  include <gtest/gtest.h>
 
-#  include "nix/store/uds-remote-store.hh"
+#  include "bsd/store/uds-remote-store.hh"
 
-namespace nix {
+namespace bsd {
 
 TEST(UDSRemoteStore, constructConfig)
 {
-    UDSRemoteStoreConfig config{"unix", "/tmp/socket", {}};
+    UDSRemoteStoreConfig config{"ubsd", "/tmp/socket", {}};
 
     EXPECT_EQ(config.path, "/tmp/socket");
 }
@@ -19,5 +19,5 @@ TEST(UDSRemoteStore, constructConfigWrongScheme)
     EXPECT_THROW(UDSRemoteStoreConfig("http", "/tmp/socket", {}), UsageError);
 }
 
-} // namespace nix
+} // namespace bsd
 #endif

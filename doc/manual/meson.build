@@ -1,10 +1,10 @@
-project('nix-manual',
+project('bsd-manual',
   version : files('.version'),
   meson_version : '>= 1.1',
   license : 'LGPL-2.1-or-later',
 )
 
-nix = find_program('nix', native : true)
+bsd = find_program('bsd', native : true)
 
 mdbook = find_program('mdbook', native : true)
 bash = find_program('bash', native : true)
@@ -12,7 +12,7 @@ bash = find_program('bash', native : true)
 pymod = import('python')
 python = pymod.find_installation('python3')
 
-nix_env_for_docs = {
+bsd_env_for_docs = {
   'HOME': '/dummy',
   'NIX_CONF_DIR': '/dummy',
   'NIX_SSL_CERT_FILE': '/dummy/no-ca-bundle.crt',
@@ -20,34 +20,34 @@ nix_env_for_docs = {
   'NIX_CONFIG': 'cores = 0',
 }
 
-nix_for_docs = [nix, '--experimental-features', 'nix-command']
-nix_eval_for_docs_common = nix_for_docs + [
+bsd_for_docs = [bsd, '--experimental-features', 'bsd-command']
+bsd_eval_for_docs_common = bsd_for_docs + [
   'eval',
-  '-I', 'nix=' + meson.current_source_dir(),
+  '-I', 'bsd=' + meson.current_source_dir(),
   '--store', 'dummy://',
   '--impure',
 ]
-nix_eval_for_docs = nix_eval_for_docs_common + '--raw'
+bsd_eval_for_docs = bsd_eval_for_docs_common + '--raw'
 
 conf_file_json = custom_target(
-  command : nix_for_docs + ['config', 'show', '--json'],
+  command : bsd_for_docs + ['config', 'show', '--json'],
   capture : true,
   output : 'conf-file.json',
-  env : nix_env_for_docs,
+  env : bsd_env_for_docs,
 )
 
 language_json = custom_target(
-  command: [nix, '__dump-language'],
+  command: [bsd, '__dump-language'],
   output : 'language.json',
   capture : true,
-  env : nix_env_for_docs,
+  env : bsd_env_for_docs,
 )
 
-nix3_cli_json = custom_target(
-  command : [nix, '__dump-cli'],
+bsd3_cli_json = custom_target(
+  command : [bsd, '__dump-cli'],
   capture : true,
-  output : 'nix.json',
-  env : nix_env_for_docs,
+  output : 'bsd.json',
+  env : bsd_env_for_docs,
 )
 
 generate_manual_deps = files(
@@ -66,12 +66,12 @@ subdir('source/development')
 subdir('source/release-notes')
 subdir('source')
 
-# Hacky way to figure out if `nix` is an `ExternalProgram` or
+# Hacky way to figure out if `bsd` is an `ExternalProgram` or
 # `Executable`. Only the latter can occur in custom target input lists.
-if nix.full_path().startswith(meson.build_root())
-  nix_input = nix
+if bsd.full_path().startswith(meson.build_root())
+  bsd_input = bsd
 else
-  nix_input = []
+  bsd_input = []
 endif
 
 manual = custom_target(
@@ -102,7 +102,7 @@ manual = custom_target(
     'book.toml.in',
     'anchors.jq',
     'custom.css',
-    nix3_cli_files,
+    bsd3_cli_files,
     experimental_features_shortlist_md,
     experimental_feature_descriptions_md,
     types_dir,
@@ -110,7 +110,7 @@ manual = custom_target(
     builtins_md,
     rl_next_generated,
     summary_rl_next,
-    nix_input,
+    bsd_input,
   ],
   output : [
     'manual',
@@ -127,11 +127,11 @@ manual_md = manual[1]
 
 install_subdir(
   manual_html.full_path(),
-  install_dir : get_option('datadir') / 'doc/nix',
+  install_dir : get_option('datadir') / 'doc/bsd',
 )
 
-nix_nested_manpages = [
-  [ 'nix-env',
+bsd_nested_manpages = [
+  [ 'bsd-env',
     [
       'delete-generations',
       'install',
@@ -146,7 +146,7 @@ nix_nested_manpages = [
       'upgrade',
     ],
   ],
-  [ 'nix-store',
+  [ 'bsd-store',
     [
       'add-fixed',
       'add',
@@ -172,7 +172,7 @@ nix_nested_manpages = [
   ],
 ]
 
-foreach command : nix_nested_manpages
+foreach command : bsd_nested_manpages
   foreach page : command[1]
     title = command[0] + ' --' + page
     section = '1'
@@ -188,7 +188,7 @@ foreach command : nix_nested_manpages
       ],
       input : [
         manual_md,
-        nix_input,
+        bsd_input,
       ],
       output : command[0] + '-' + page + '.1',
       install : true,
@@ -197,100 +197,100 @@ foreach command : nix_nested_manpages
   endforeach
 endforeach
 
-nix3_manpages = [
-  'nix3-build',
-  'nix3-bundle',
-  'nix3-config',
-  'nix3-config-check',
-  'nix3-config-show',
-  'nix3-copy',
-  'nix3-daemon',
-  'nix3-derivation-add',
-  'nix3-derivation',
-  'nix3-derivation-show',
-  'nix3-develop',
-  'nix3-edit',
-  'nix3-env-shell',
-  'nix3-eval',
-  'nix3-flake-archive',
-  'nix3-flake-check',
-  'nix3-flake-clone',
-  'nix3-flake-info',
-  'nix3-flake-init',
-  'nix3-flake-lock',
-  'nix3-flake',
-  'nix3-flake-metadata',
-  'nix3-flake-new',
-  'nix3-flake-prefetch',
-  'nix3-flake-show',
-  'nix3-flake-update',
-  'nix3-fmt',
-  'nix3-hash-file',
-  'nix3-hash',
-  'nix3-hash-convert',
-  'nix3-hash-path',
-  'nix3-hash-to-base16',
-  'nix3-hash-to-base32',
-  'nix3-hash-to-base64',
-  'nix3-hash-to-sri',
-  'nix3-help',
-  'nix3-help-stores',
-  'nix3-key-convert-secret-to-public',
-  'nix3-key-generate-secret',
-  'nix3-key',
-  'nix3-log',
-  'nix3-nar-cat',
-  'nix3-nar-dump-path',
-  'nix3-nar-ls',
-  'nix3-nar-pack',
-  'nix3-nar',
-  'nix3-path-info',
-  'nix3-print-dev-env',
-  'nix3-profile',
-  'nix3-profile-add',
-  'nix3-profile-diff-closures',
-  'nix3-profile-history',
-  'nix3-profile-list',
-  'nix3-profile-remove',
-  'nix3-profile-rollback',
-  'nix3-profile-upgrade',
-  'nix3-profile-wipe-history',
-  'nix3-realisation-info',
-  'nix3-realisation',
-  'nix3-registry-add',
-  'nix3-registry-list',
-  'nix3-registry',
-  'nix3-registry-pin',
-  'nix3-registry-remove',
-  'nix3-repl',
-  'nix3-run',
-  'nix3-search',
-  'nix3-store-add',
-  'nix3-store-add-file',
-  'nix3-store-add-path',
-  'nix3-store-cat',
-  'nix3-store-copy-log',
-  'nix3-store-copy-sigs',
-  'nix3-store-delete',
-  'nix3-store-diff-closures',
-  'nix3-store-dump-path',
-  'nix3-store-gc',
-  'nix3-store-info',
-  'nix3-store-ls',
-  'nix3-store-make-content-addressed',
-  'nix3-store',
-  'nix3-store-optimise',
-  'nix3-store-path-from-hash-part',
-  'nix3-store-prefetch-file',
-  'nix3-store-repair',
-  'nix3-store-sign',
-  'nix3-store-verify',
-  'nix3-upgrade-nix',
-  'nix3-why-depends',
-  'nix',
+bsd3_manpages = [
+  'bsd3-build',
+  'bsd3-bundle',
+  'bsd3-config',
+  'bsd3-config-check',
+  'bsd3-config-show',
+  'bsd3-copy',
+  'bsd3-daemon',
+  'bsd3-derivation-add',
+  'bsd3-derivation',
+  'bsd3-derivation-show',
+  'bsd3-develop',
+  'bsd3-edit',
+  'bsd3-env-shell',
+  'bsd3-eval',
+  'bsd3-flake-archive',
+  'bsd3-flake-check',
+  'bsd3-flake-clone',
+  'bsd3-flake-info',
+  'bsd3-flake-init',
+  'bsd3-flake-lock',
+  'bsd3-flake',
+  'bsd3-flake-metadata',
+  'bsd3-flake-new',
+  'bsd3-flake-prefetch',
+  'bsd3-flake-show',
+  'bsd3-flake-update',
+  'bsd3-fmt',
+  'bsd3-hash-file',
+  'bsd3-hash',
+  'bsd3-hash-convert',
+  'bsd3-hash-path',
+  'bsd3-hash-to-base16',
+  'bsd3-hash-to-base32',
+  'bsd3-hash-to-base64',
+  'bsd3-hash-to-sri',
+  'bsd3-help',
+  'bsd3-help-stores',
+  'bsd3-key-convert-secret-to-public',
+  'bsd3-key-generate-secret',
+  'bsd3-key',
+  'bsd3-log',
+  'bsd3-nar-cat',
+  'bsd3-nar-dump-path',
+  'bsd3-nar-ls',
+  'bsd3-nar-pack',
+  'bsd3-nar',
+  'bsd3-path-info',
+  'bsd3-print-dev-env',
+  'bsd3-profile',
+  'bsd3-profile-add',
+  'bsd3-profile-diff-closures',
+  'bsd3-profile-history',
+  'bsd3-profile-list',
+  'bsd3-profile-remove',
+  'bsd3-profile-rollback',
+  'bsd3-profile-upgrade',
+  'bsd3-profile-wipe-history',
+  'bsd3-realisation-info',
+  'bsd3-realisation',
+  'bsd3-registry-add',
+  'bsd3-registry-list',
+  'bsd3-registry',
+  'bsd3-registry-pin',
+  'bsd3-registry-remove',
+  'bsd3-repl',
+  'bsd3-run',
+  'bsd3-search',
+  'bsd3-store-add',
+  'bsd3-store-add-file',
+  'bsd3-store-add-path',
+  'bsd3-store-cat',
+  'bsd3-store-copy-log',
+  'bsd3-store-copy-sigs',
+  'bsd3-store-delete',
+  'bsd3-store-diff-closures',
+  'bsd3-store-dump-path',
+  'bsd3-store-gc',
+  'bsd3-store-info',
+  'bsd3-store-ls',
+  'bsd3-store-make-content-addressed',
+  'bsd3-store',
+  'bsd3-store-optimise',
+  'bsd3-store-path-from-hash-part',
+  'bsd3-store-prefetch-file',
+  'bsd3-store-repair',
+  'bsd3-store-sign',
+  'bsd3-store-verify',
+  'bsd3-upgrade-bsd',
+  'bsd3-why-depends',
+  'bsd',
 ]
 
-foreach page : nix3_manpages
+foreach page : bsd3_manpages
   section = '1'
   custom_target(
     command : [
@@ -304,7 +304,7 @@ foreach page : nix3_manpages
     input : [
       files('./render-manpage.sh'),
       manual_md,
-      nix_input,
+      bsd_input,
     ],
     output : page + '.1',
     install : true,
@@ -312,25 +312,25 @@ foreach page : nix3_manpages
   )
 endforeach
 
-nix_manpages = [
-  [ 'nix-env', 1 ],
-  [ 'nix-store', 1 ],
-  [ 'nix-build', 1 ],
-  [ 'nix-shell', 1 ],
-  [ 'nix-instantiate', 1 ],
-  [ 'nix-collect-garbage', 1 ],
-  [ 'nix-prefetch-url', 1 ],
-  [ 'nix-channel', 1 ],
-  [ 'nix-hash', 1 ],
-  [ 'nix-copy-closure', 1 ],
-  [ 'nix.conf', 5, conf_file_md.full_path() ],
-  [ 'nix-daemon', 8 ],
-  [ 'nix-profiles', 5, 'files/profiles.md' ],
+bsd_manpages = [
+  [ 'bsd-env', 1 ],
+  [ 'bsd-store', 1 ],
+  [ 'bsd-build', 1 ],
+  [ 'bsd-shell', 1 ],
+  [ 'bsd-instantiate', 1 ],
+  [ 'bsd-collect-garbage', 1 ],
+  [ 'bsd-prefetch-url', 1 ],
+  [ 'bsd-channel', 1 ],
+  [ 'bsd-hash', 1 ],
+  [ 'bsd-copy-closure', 1 ],
+  [ 'bsd.conf', 5, conf_file_md.full_path() ],
+  [ 'bsd-daemon', 8 ],
+  [ 'bsd-profiles', 5, 'files/profiles.md' ],
 ]
 
-foreach entry : nix_manpages
+foreach entry : bsd_manpages
   title = entry[0]
-  # nix.conf.5 and nix-profiles.5 are based off of conf-file.md and files/profiles.md,
+  # bsd.conf.5 and bsd-profiles.5 are based off of conf-file.md and files/profiles.md,
   # rather than a stem identical to its mdbook source.
   # Therefore we use an optional third element of this array to override the name pattern
   md_file = entry.get(2, title + '.md')
@@ -349,7 +349,7 @@ foreach entry : nix_manpages
       files('./render-manpage.sh'),
       manual_md,
       entry.get(3, []),
-      nix_input,
+      bsd_input,
     ],
     output : '@0@.@1@'.format(entry[0], entry[1]),
     install : true,

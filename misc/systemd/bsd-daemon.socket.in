@@ -1,0 +1,11 @@
+[Unit]
+Description=Bsd Daemon Socket
+Before=multi-user.target
+RequiresMountsFor=@storedir@
+ConditionPathIsReadWrite=@localstatedir@/bsd/daemon-socket
+
+[Socket]
+ListenStream=@localstatedir@/bsd/daemon-socket/socket
+
+[Install]
+WantedBy=sockets.target

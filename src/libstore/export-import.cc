@@ -1,12 +1,12 @@
-#include "nix/util/serialise.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/archive.hh"
-#include "nix/store/common-protocol.hh"
-#include "nix/store/common-protocol-impl.hh"
+#include "bsd/util/serialise.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/store/common-protocol.hh"
+#include "bsd/store/common-protocol-impl.hh"
 
 #include <algorithm>
 
-namespace nix {
+namespace bsd {
 
 void Store::exportPaths(const StorePathSet & paths, Sink & sink)
 {
@@ -36,7 +36,7 @@ void Store::exportPath(const StorePath & path, Sink & sink)
     Hash hash = hashSink.currentHash().first;
     if (hash != info->narHash && info->narHash != Hash(info->narHash.algo))
         throw Error("hash of path '%s' has changed from '%s' to '%s'!",
-                    printStorePath(path), info->narHash.to_string(HashFormat::Nix32, true), hash.to_string(HashFormat::Nix32, true));
+                    printStorePath(path), info->narHash.to_string(HashFormat::Bsd32, true), hash.to_string(HashFormat::Bsd32, true));
 
     teeSink
         << exportMagic
@@ -55,7 +55,7 @@ StorePaths Store::importPaths(Source & source, CheckSigsFlag checkSigs)
     while (true) {
         auto n = readNum<uint64_t>(source);
         if (n == 0) break;
-        if (n != 1) throw Error("input doesn't look like something created by 'nix-store --export'");
+        if (n != 1) throw Error("input doesn't look like something created by 'bsd-store --export'");
 
         /* Extract the NAR from the source. */
         StringSink saved;
@@ -65,7 +65,7 @@ StorePaths Store::importPaths(Source & source, CheckSigsFlag checkSigs)
 
         uint32_t magic = readInt(source);
         if (magic != exportMagic)
-            throw Error("Nix archive cannot be imported; wrong format");
+            throw Error("Bsd archive cannot be imported; wrong format");
 
         auto path = parseStorePath(readString(source));
 

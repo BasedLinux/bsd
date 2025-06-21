@@ -1,11 +1,11 @@
-#include "nix/expr/primops.hh"
-#include "nix/expr/eval-inline.hh"
+#include "bsd/expr/primops.hh"
+#include "bsd/expr/eval-inline.hh"
 
 #include <sstream>
 
 #include <toml.hpp>
 
-namespace nix {
+namespace bsd {
 
 static void prim_fromTOML(EvalState & state, const PosIdx pos, Value * * args, Value & val)
 {
@@ -53,7 +53,7 @@ static void prim_fromTOML(EvalState & state, const PosIdx pos, Value * * args, V
                 v.mkInt(toml::get<int64_t>(t));
                 break;;
             case toml::value_t::floating:
-                v.mkFloat(toml::get<NixFloat>(t));
+                v.mkFloat(toml::get<BsdFloat>(t));
                 break;;
             case toml::value_t::string:
                 {
@@ -99,9 +99,9 @@ static RegisterPrimOp primop_fromTOML({
     .name = "fromTOML",
     .args = {"e"},
     .doc = R"(
-      Convert a TOML string to a Nix value. For example,
+      Convert a TOML string to a Bsd value. For example,
 
-      ```nix
+      ```bsd
       builtins.fromTOML ''
         x=1
         s="a"

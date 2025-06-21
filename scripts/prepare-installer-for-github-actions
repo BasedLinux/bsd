@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-nix build -L ".#installerScriptForGHA" ".#binaryTarball"
+bsd build -L ".#installerScriptForGHA" ".#binaryTarball"
 
 mkdir -p out
 cp ./result/install "out/install"

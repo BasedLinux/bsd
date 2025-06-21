@@ -1,12 +1,12 @@
-#include "nix/fetchers/fetchers.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/archive.hh"
-#include "nix/fetchers/store-path-accessor.hh"
-#include "nix/fetchers/cache.hh"
-#include "nix/fetchers/fetch-to-store.hh"
-#include "nix/fetchers/fetch-settings.hh"
+#include "bsd/fetchers/fetchers.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/fetchers/store-path-accessor.hh"
+#include "bsd/fetchers/cache.hh"
+#include "bsd/fetchers/fetch-to-store.hh"
+#include "bsd/fetchers/fetch-settings.hh"
 
-namespace nix::fetchers {
+namespace bsd::fetchers {
 
 struct PathInputScheme : InputScheme
 {
@@ -50,7 +50,7 @@ struct PathInputScheme : InputScheme
             /* Allow the user to pass in "fake" tree info
                attributes. This is useful for making a pinned tree work
                the same as the repository from which is exported (e.g.
-               path:/nix/store/...-source?lastModified=1585388205&rev=b0c285...).
+               path:/bsd/store/...-source?lastModified=1585388205&rev=b0c285...).
              */
             "rev",
             "revCount",
@@ -145,8 +145,8 @@ struct PathInputScheme : InputScheme
             storePath = store->addToStoreFromDump(*src, "source");
         }
 
-        // To avoid copying the path again to the /nix/store, we need to add a cache entry.
-        ContentAddressMethod method = ContentAddressMethod::Raw::NixArchive;
+        // To avoid copying the path again to the /bsd/store, we need to add a cache entry.
+        ContentAddressMethod method = ContentAddressMethod::Raw::BsdArchive;
         auto fp = getFingerprint(store, input);
         if (fp) {
             auto cacheKey = makeFetchToStoreCacheKey(input.getName(), *fp, method, "/");
@@ -166,7 +166,7 @@ struct PathInputScheme : InputScheme
         if (isRelative(input))
             return std::nullopt;
 
-        /* If this path is in the Nix store, use the hash of the
+        /* If this path is in the Bsd store, use the hash of the
            store object and the subpath. */
         auto path = getAbsPath(input);
         try {

@@ -1,8 +1,8 @@
-#include "nix/util/xml-writer.hh"
+#include "bsd/util/xml-writer.hh"
 #include <gtest/gtest.h>
 #include <sstream>
 
-namespace nix {
+namespace bsd {
 
     /* ----------------------------------------------------------------------------
      * XMLWriter

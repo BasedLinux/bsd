@@ -1,15 +1,15 @@
-#include "nix/fetchers/git-utils.hh"
-#include "nix/util/file-system.hh"
+#include "bsd/fetchers/git-utils.hh"
+#include "bsd/util/file-system.hh"
 #include <gmock/gmock.h>
 #include <git2/global.h>
 #include <git2/repository.h>
 #include <git2/types.h>
 #include <gtest/gtest.h>
-#include "nix/util/fs-sink.hh"
-#include "nix/util/serialise.hh"
-#include "nix/fetchers/git-lfs-fetch.hh"
+#include "bsd/util/fs-sink.hh"
+#include "bsd/util/serialise.hh"
+#include "bsd/fetchers/git-lfs-fetch.hh"
 
-namespace nix {
+namespace bsd {
 
 class GitUtilsTest : public ::testing::Test
 {
@@ -108,11 +108,11 @@ TEST_F(GitUtilsTest, sink_hardlink)
     try {
         sink->createHardlink(CanonPath("foo-1.1/link"), CanonPath("hello"));
         FAIL() << "Expected an exception";
-    } catch (const nix::Error & e) {
+    } catch (const bsd::Error & e) {
         ASSERT_THAT(e.msg(), testing::HasSubstr("cannot find hard link target"));
         ASSERT_THAT(e.msg(), testing::HasSubstr("/hello"));
         ASSERT_THAT(e.msg(), testing::HasSubstr("foo-1.1/link"));
     }
 };
 
-} // namespace nix
+} // namespace bsd

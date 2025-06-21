@@ -1,4 +1,4 @@
-project('nix-cmd', 'cpp',
+project('bsd-cmd', 'cpp',
   version : files('.version'),
   default_options : [
     'cpp_std=c++2a',
@@ -12,21 +12,21 @@ project('nix-cmd', 'cpp',
 
 cxx = meson.get_compiler('cpp')
 
-subdir('nix-meson-build-support/deps-lists')
+subdir('bsd-meson-build-support/deps-lists')
 
 configdata = configuration_data()
 
 deps_private_maybe_subproject = [
 ]
 deps_public_maybe_subproject = [
-  dependency('nix-util'),
-  dependency('nix-store'),
-  dependency('nix-fetchers'),
-  dependency('nix-expr'),
-  dependency('nix-flake'),
-  dependency('nix-main'),
+  dependency('bsd-util'),
+  dependency('bsd-store'),
+  dependency('bsd-fetchers'),
+  dependency('bsd-expr'),
+  dependency('bsd-flake'),
+  dependency('bsd-main'),
 ]
-subdir('nix-meson-build-support/subprojects')
+subdir('bsd-meson-build-support/subprojects')
 
 nlohmann_json = dependency('nlohmann_json', version : '>= 3.9')
 deps_public += nlohmann_json
@@ -58,7 +58,7 @@ config_priv_h = configure_file(
   output : 'cmd-config-private.hh',
 )
 
-subdir('nix-meson-build-support/common')
+subdir('bsd-meson-build-support/common')
 
 sources = files(
   'built-path.cc',
@@ -78,13 +78,13 @@ sources = files(
   'repl.cc',
 )
 
-subdir('include/nix/cmd')
+subdir('include/bsd/cmd')
 
-subdir('nix-meson-build-support/export-all-symbols')
-subdir('nix-meson-build-support/windows-version')
+subdir('bsd-meson-build-support/export-all-symbols')
+subdir('bsd-meson-build-support/windows-version')
 
 this_library = library(
-  'nixcmd',
+  'bsdcmd',
   sources,
   config_priv_h,
   dependencies : deps_public + deps_private + deps_other,
@@ -94,8 +94,8 @@ this_library = library(
   install : true,
 )
 
-install_headers(headers, subdir : 'nix/cmd', preserve_path : true)
+install_headers(headers, subdir : 'bsd/cmd', preserve_path : true)
 
 libraries_private = []
 
-subdir('nix-meson-build-support/export')
+subdir('bsd-meson-build-support/export')

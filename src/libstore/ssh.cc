@@ -1,11 +1,11 @@
-#include "nix/store/ssh.hh"
-#include "nix/util/finally.hh"
-#include "nix/util/current-process.hh"
-#include "nix/util/environment-variables.hh"
-#include "nix/util/util.hh"
-#include "nix/util/exec.hh"
+#include "bsd/store/ssh.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/current-process.hh"
+#include "bsd/util/environment-variables.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/exec.hh"
 
-namespace nix {
+namespace bsd {
 
 static std::string parsePublicHostKey(std::string_view host, std::string_view sshPublicHostKey)
 {
@@ -34,7 +34,7 @@ SSHMaster::SSHMaster(
         throw Error("invalid SSH host name '%s'", host);
 
     auto state(state_.lock());
-    state->tmpDir = std::make_unique<AutoDelete>(createTempDir("", "nix", 0700));
+    state->tmpDir = std::make_unique<AutoDelete>(createTempDir("", "bsd", 0700));
 }
 
 void SSHMaster::addCommonSSHOpts(Strings & args)
@@ -90,7 +90,7 @@ Strings createSSHEnv()
     // shells, we set it to /bin/sh.
     // Technically, we don't need that, and we could reinvoke ourselves to print
     // "started". Self-reinvocation is tricky with library consumers, but mostly
-    // solved; refer to the development history of nixExePath in libstore/globals.cc.
+    // solved; refer to the development history of bsdExePath in libstore/globals.cc.
     env.insert_or_assign("SHELL", "/bin/sh");
 
     Strings r;
@@ -150,7 +150,7 @@ std::unique_ptr<SSHMaster::Connection> SSHMaster::startCommand(
 
         args.splice(args.end(), std::move(command));
         auto env = createSSHEnv();
-        nix::execvpe(args.begin()->c_str(), stringsToCharPtrs(args).data(), stringsToCharPtrs(env).data());
+        bsd::execvpe(args.begin()->c_str(), stringsToCharPtrs(args).data(), stringsToCharPtrs(env).data());
 
         // could not exec ssh/bash
         throw SysError("unable to execute '%s'", args.front());
@@ -217,7 +217,7 @@ Path SSHMaster::startMaster()
             args.push_back("-v");
         addCommonSSHOpts(args);
         auto env = createSSHEnv();
-        nix::execvpe(args.begin()->c_str(), stringsToCharPtrs(args).data(), stringsToCharPtrs(env).data());
+        bsd::execvpe(args.begin()->c_str(), stringsToCharPtrs(args).data(), stringsToCharPtrs(env).data());
 
         throw SysError("unable to execute '%s'", args.front());
     }, options);

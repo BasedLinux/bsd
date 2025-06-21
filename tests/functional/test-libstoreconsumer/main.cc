@@ -1,9 +1,9 @@
-#include "nix/store/globals.hh"
-#include "nix/store/store-open.hh"
-#include "nix/store/build-result.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/store-open.hh"
+#include "bsd/store/build-result.hh"
 #include <iostream>
 
-using namespace nix;
+using namespace bsd;
 
 int main (int argc, char **argv)
 {
@@ -17,7 +17,7 @@ int main (int argc, char **argv)
 
         initLibStore();
 
-        auto store = nix::openStore();
+        auto store = bsd::openStore();
 
         // build the derivation
 

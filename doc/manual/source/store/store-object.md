@@ -1,6 +1,6 @@
 ## Store Object
 
-A Nix store is a collection of *store objects* with *references* between them.
+A Bsd store is a collection of *store objects* with *references* between them.
 A store object consists of
 
   - A [file system object](./file-system-object.md) as data

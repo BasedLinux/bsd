@@ -1,18 +1,18 @@
-#include "nix/util/archive.hh"
-#include "nix/store/binary-cache-store.hh"
-#include "nix/util/compression.hh"
-#include "nix/store/derivations.hh"
-#include "nix/util/source-accessor.hh"
-#include "nix/store/globals.hh"
-#include "nix/store/nar-info.hh"
-#include "nix/util/sync.hh"
-#include "nix/store/remote-fs-accessor.hh"
-#include "nix/store/nar-info-disk-cache.hh"
-#include "nix/store/nar-accessor.hh"
-#include "nix/util/thread-pool.hh"
-#include "nix/util/callback.hh"
-#include "nix/util/signals.hh"
-#include "nix/util/archive.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/store/binary-cache-store.hh"
+#include "bsd/util/compression.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/util/source-accessor.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/nar-info.hh"
+#include "bsd/util/sync.hh"
+#include "bsd/store/remote-fs-accessor.hh"
+#include "bsd/store/nar-info-disk-cache.hh"
+#include "bsd/store/nar-accessor.hh"
+#include "bsd/util/thread-pool.hh"
+#include "bsd/util/callback.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/archive.hh"
 
 #include <chrono>
 #include <future>
@@ -22,7 +22,7 @@
 
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
 BinaryCacheStore::BinaryCacheStore(Config & config)
     : config{config}
@@ -47,9 +47,9 @@ BinaryCacheStore::BinaryCacheStore(Config & config)
 
 void BinaryCacheStore::init()
 {
-    auto cacheInfo = getNixCacheInfo();
+    auto cacheInfo = getBsdCacheInfo();
     if (!cacheInfo) {
-        upsertFile(cacheInfoFile, "StoreDir: " + storeDir + "\n", "text/x-nix-cache-info");
+        upsertFile(cacheInfoFile, "StoreDir: " + storeDir + "\n", "text/x-bsd-cache-info");
     } else {
         for (auto & line : tokenizeString<Strings>(*cacheInfo, "\n")) {
             size_t colon = line.find(':');
@@ -58,7 +58,7 @@ void BinaryCacheStore::init()
             auto value = trim(line.substr(colon + 1, std::string::npos));
             if (name == "StoreDir") {
                 if (value != storeDir)
-                    throw Error("binary cache '%s' is for Nix stores with prefix '%s', not '%s'",
+                    throw Error("binary cache '%s' is for Bsd stores with prefix '%s', not '%s'",
                         getUri(), value, storeDir);
             } else if (name == "WantMassQuery") {
                 config.wantMassQuery.setDefault(value == "1");
@@ -69,7 +69,7 @@ void BinaryCacheStore::init()
     }
 }
 
-std::optional<std::string> BinaryCacheStore::getNixCacheInfo()
+std::optional<std::string> BinaryCacheStore::getBsdCacheInfo()
 {
     return getFile(cacheInfoFile);
 }
@@ -123,7 +123,7 @@ void BinaryCacheStore::writeNarInfo(ref<NarInfo> narInfo)
 {
     auto narInfoFile = narInfoFileFor(narInfo->path);
 
-    upsertFile(narInfoFile, narInfo->to_string(*this), "text/x-nix-narinfo");
+    upsertFile(narInfoFile, narInfo->to_string(*this), "text/x-bsd-narinfo");
 
     {
         auto state_(state.lock());
@@ -175,7 +175,7 @@ ref<const ValidPathInfo> BinaryCacheStore::addToStoreCommon(
     auto [fileHash, fileSize] = fileHashSink.finish();
     narInfo->fileHash = fileHash;
     narInfo->fileSize = fileSize;
-    narInfo->url = "nar/" + narInfo->fileHash->to_string(HashFormat::Nix32, false) + ".nar"
+    narInfo->url = "nar/" + narInfo->fileHash->to_string(HashFormat::Bsd32, false) + ".nar"
                    + (config.compression == "xz" ? ".xz" :
            config.compression == "bzip2" ? ".bz2" :
            config.compression == "zstd" ? ".zst" :
@@ -274,7 +274,7 @@ ref<const ValidPathInfo> BinaryCacheStore::addToStoreCommon(
         stats.narWrite++;
         upsertFile(narInfo->url,
             std::make_shared<std::fstream>(fnTemp, std::ios_base::in | std::ios_base::binary),
-            "application/x-nix-nar");
+            "application/x-bsd-nar");
     } else
         stats.narWriteAverted++;
 
@@ -337,7 +337,7 @@ StorePath BinaryCacheStore::addToStoreFromDump(
         if (static_cast<FileIngestionMethod>(dumpMethod) == hashMethod.getFileIngestionMethod())
             caHash = hashString(HashAlgorithm::SHA256, dump2.s);
         switch (dumpMethod) {
-        case FileSerialisationMethod::NixArchive:
+        case FileSerialisationMethod::BsdArchive:
             // The dump is already NAR in this case, just use it.
             nar = dump2.s;
             break;
@@ -354,7 +354,7 @@ StorePath BinaryCacheStore::addToStoreFromDump(
     } else {
         // Otherwise, we have to do th same hashing as NAR so our single
         // hash will suffice for both purposes.
-        if (dumpMethod != FileSerialisationMethod::NixArchive || hashAlgo != HashAlgorithm::SHA256)
+        if (dumpMethod != FileSerialisationMethod::BsdArchive || hashAlgo != HashAlgorithm::SHA256)
             unsupported("addToStoreFromDump");
     }
     StringSource narDump { nar };

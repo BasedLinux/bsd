@@ -1,4 +1,4 @@
-#include "nix/util/types.hh"
+#include "bsd/util/types.hh"
 
 #include "util-config-private.hh"
 
@@ -7,7 +7,7 @@
 #  include <map>
 #endif
 
-namespace nix {
+namespace bsd {
 
 #if HAVE_LIBCPUID
 

@@ -1,12 +1,12 @@
-#include "nix/store/build/worker.hh"
-#include "nix/store/build/substitution-goal.hh"
+#include "bsd/store/build/worker.hh"
+#include "bsd/store/build/substitution-goal.hh"
 #ifndef _WIN32 // TODO Enable building on Windows
-#  include "nix/store/build/derivation-goal.hh"
+#  include "bsd/store/build/derivation-goal.hh"
 #endif
-#include "nix/store/local-store.hh"
-#include "nix/util/strings.hh"
+#include "bsd/store/local-store.hh"
+#include "bsd/util/strings.hh"
 
-namespace nix {
+namespace bsd {
 
 void Store::buildPaths(const std::vector<DerivedPath> & reqs, BuildMode buildMode, std::shared_ptr<Store> evalStore)
 {

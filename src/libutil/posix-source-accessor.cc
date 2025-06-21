@@ -1,11 +1,11 @@
-#include "nix/util/posix-source-accessor.hh"
-#include "nix/util/source-path.hh"
-#include "nix/util/signals.hh"
-#include "nix/util/sync.hh"
+#include "bsd/util/posix-source-accessor.hh"
+#include "bsd/util/source-path.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/util/sync.hh"
 
 #include <unordered_map>
 
-namespace nix {
+namespace bsd {
 
 PosixSourceAccessor::PosixSourceAccessor(std::filesystem::path && argRoot)
     : root(std::move(argRoot))
@@ -85,7 +85,7 @@ void PosixSourceAccessor::readFile(
 bool PosixSourceAccessor::pathExists(const CanonPath & path)
 {
     if (auto parent = path.parent()) assertNoSymlinks(*parent);
-    return nix::pathExists(makeAbsPath(path).string());
+    return bsd::pathExists(makeAbsPath(path).string());
 }
 
 std::optional<struct stat> PosixSourceAccessor::cachedLstat(const CanonPath & path)
@@ -102,7 +102,7 @@ std::optional<struct stat> PosixSourceAccessor::cachedLstat(const CanonPath & pa
         if (i != cache->end()) return i->second;
     }
 
-    auto st = nix::maybeLstat(absPath.c_str());
+    auto st = bsd::maybeLstat(absPath.c_str());
 
     auto cache(_cache.lock());
     if (cache->size() >= 16384) cache->clear();
@@ -177,7 +177,7 @@ SourceAccessor::DirEntries PosixSourceAccessor::readDirectory(const CanonPath & 
 std::string PosixSourceAccessor::readLink(const CanonPath & path)
 {
     if (auto parent = path.parent()) assertNoSymlinks(*parent);
-    return nix::readLink(makeAbsPath(path).string());
+    return bsd::readLink(makeAbsPath(path).string());
 }
 
 std::optional<std::filesystem::path> PosixSourceAccessor::getPhysicalPath(const CanonPath & path)

@@ -1,8 +1,8 @@
-#include "nix/store/profiles.hh"
-#include "nix/util/signals.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/local-fs-store.hh"
-#include "nix/util/users.hh"
+#include "bsd/store/profiles.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/local-fs-store.hh"
+#include "bsd/util/users.hh"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 
-namespace nix {
+namespace bsd {
 
 
 /**
@@ -312,28 +312,28 @@ Path profilesDir()
     auto profileRoot =
         isRootUser()
         ? rootProfilesDir()
-        : createNixStateDir() + "/profiles";
+        : createBsdStateDir() + "/profiles";
     createDirs(profileRoot);
     return profileRoot;
 }
 
 Path rootProfilesDir()
 {
-    return settings.nixStateDir + "/profiles/per-user/root";
+    return settings.bsdStateDir + "/profiles/per-user/root";
 }
 
 
 Path getDefaultProfile()
 {
-    Path profileLink = settings.useXDGBaseDirectories ? createNixStateDir() + "/profile" : getHome() + "/.nix-profile";
+    Path profileLink = settings.useXDGBaseDirectories ? createBsdStateDir() + "/profile" : getHome() + "/.bsd-profile";
     try {
         auto profile = profilesDir() + "/profile";
         if (!pathExists(profileLink)) {
             replaceSymlink(profile, profileLink);
         }
         // Backwards compatibility measure: Make root's profile available as
-        // `.../default` as it's what NixOS and most of the init scripts expect
-        Path globalProfileLink = settings.nixStateDir + "/profiles/default";
+        // `.../default` as it's what BasedLinux and most of the init scripts expect
+        Path globalProfileLink = settings.bsdStateDir + "/profiles/default";
         if (isRootUser() && !pathExists(globalProfileLink)) {
             replaceSymlink(profile, globalProfileLink);
         }

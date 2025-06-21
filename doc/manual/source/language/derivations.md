@@ -2,7 +2,7 @@
 
 The most important built-in function is `derivation`, which is used to describe a single store-layer [store derivation].
 Consult the [store chapter](@docroot@/store/derivation/index.md) for what a store derivation is;
-this section just concerns how to create one from the Nix language.
+this section just concerns how to create one from the Bsd language.
 
 This builtin function takes as input an attribute set, the attributes of which specify the inputs to the process.
 It outputs an attribute set, and produces a [store derivation] as a side effect of evaluation.
@@ -22,15 +22,15 @@ It outputs an attribute set, and produces a [store derivation] as a side effect 
 
   > **Example**
   >
-  > ```nix
+  > ```bsd
   > derivation {
   >   name = "hello";
   >   # ...
   > }
   > ```
   >
-  > The derivation's path will be `/nix/store/<hash>-hello.drv`.
-  > The [output](#attr-outputs) paths will be of the form `/nix/store/<hash>-hello[-<output>]`
+  > The derivation's path will be `/bsd/store/<hash>-hello.drv`.
+  > The [output](#attr-outputs) paths will be of the form `/bsd/store/<hash>-hello[-<output>]`
 
 - [`system`]{#attr-system} ([String](@docroot@/language/types.md#type-string))
 
@@ -40,7 +40,7 @@ It outputs an attribute set, and produces a [store derivation] as a side effect 
   >
   > Declare a derivation to be built on a specific system type:
   >
-  > ```nix
+  > ```bsd
   > derivation {
   >   # ...
   >   system = "x86_64-linux";
@@ -52,7 +52,7 @@ It outputs an attribute set, and produces a [store derivation] as a side effect 
   >
   > Declare a derivation to be built on the system type that evaluates the expression:
   >
-  > ```nix
+  > ```bsd
   > derivation {
   >   # ...
   >   system = builtins.currentSystem;
@@ -60,7 +60,7 @@ It outputs an attribute set, and produces a [store derivation] as a side effect 
   > }
   > ```
   >
-  > [`builtins.currentSystem`](@docroot@/language/builtins.md#builtins-currentSystem) has the value of the [`system` configuration option], and defaults to the system type of the current Nix installation.
+  > [`builtins.currentSystem`](@docroot@/language/builtins.md#builtins-currentSystem) has the value of the [`system` configuration option], and defaults to the system type of the current Bsd installation.
 
 - [`builder`]{#attr-builder} ([Path](@docroot@/language/types.md#type-path) | [String](@docroot@/language/types.md#type-string))
 
@@ -70,7 +70,7 @@ It outputs an attribute set, and produces a [store derivation] as a side effect 
   >
   > Use the file located at `/bin/bash` as the builder executable:
   >
-  > ```nix
+  > ```bsd
   > derivation {
   >   # ...
   >   builder = "/bin/bash";
@@ -82,9 +82,9 @@ It outputs an attribute set, and produces a [store derivation] as a side effect 
 
   > **Example**
   >
-  > Copy a local file to the Nix store for use as the builder executable:
+  > Copy a local file to the Bsd store for use as the builder executable:
   >
-  > ```nix
+  > ```bsd
   > derivation {
   >   # ...
   >   builder = ./builder.sh;
@@ -98,8 +98,8 @@ It outputs an attribute set, and produces a [store derivation] as a side effect 
   >
   > Use a file from another derivation as the builder executable:
   >
-  > ```nix
-  > let pkgs = import <nixpkgs> {}; in
+  > ```bsd
+  > let pkgs = import <bsdpkgs> {}; in
   > derivation {
   >   # ...
   >   builder = "${pkgs.python}/bin/python";
@@ -119,7 +119,7 @@ It outputs an attribute set, and produces a [store derivation] as a side effect 
   >
   > Pass arguments to Bash to interpret a shell command:
   >
-  > ```nix
+  > ```bsd
   > derivation {
   >   # ...
   >   builder = "/bin/bash";
@@ -145,7 +145,7 @@ It outputs an attribute set, and produces a [store derivation] as a side effect 
   > A program that links against such a library doesn’t need the header files and documentation at runtime, and it doesn’t need the documentation at build time.
   > Thus, the library package could specify:
   >
-  > ```nix
+  > ```bsd
   > derivation {
   >   # ...
   >   outputs = [ "lib" "dev" "doc" ];
@@ -153,7 +153,7 @@ It outputs an attribute set, and produces a [store derivation] as a side effect 
   > }
   > ```
   >
-  > This will cause Nix to pass environment variables `lib`, `dev`, and `doc` to the builder containing the intended store paths of each output.
+  > This will cause Bsd to pass environment variables `lib`, `dev`, and `doc` to the builder containing the intended store paths of each output.
   > The builder would typically do something like
   >
   > ```bash
@@ -170,7 +170,7 @@ It outputs an attribute set, and produces a [store derivation] as a side effect 
   > **Example**
   >
   >
-  > ```nix
+  > ```bsd
   > derivation {
   >   name = "example";
   >   outputs = [ "lib" "dev" "doc" "out" ];
@@ -178,12 +178,12 @@ It outputs an attribute set, and produces a [store derivation] as a side effect 
   > }
   > ```
   >
-  > The store derivation path will be `/nix/store/<hash>-example.drv`.
+  > The store derivation path will be `/bsd/store/<hash>-example.drv`.
   > The output paths will be
-  > - `/nix/store/<hash>-example-lib`
-  > - `/nix/store/<hash>-example-dev`
-  > - `/nix/store/<hash>-example-doc`
-  > - `/nix/store/<hash>-example`
+  > - `/bsd/store/<hash>-example-lib`
+  > - `/bsd/store/<hash>-example-dev`
+  > - `/bsd/store/<hash>-example-doc`
+  > - `/bsd/store/<hash>-example`
 
   You can refer to each output of a derivation by selecting it as an attribute.
   The first element of `outputs` determines the *default output* and ends up at the top-level.
@@ -192,7 +192,7 @@ It outputs an attribute set, and produces a [store derivation] as a side effect 
   >
   > Select an output by attribute name:
   >
-  > ```nix
+  > ```bsd
   > let
   >   myPackage = derivation {
   >     name = "example";
@@ -222,8 +222,8 @@ It outputs an attribute set, and produces a [store derivation] as a side effect 
     - A *path* (e.g., `../foo/sources.tar`) causes the referenced file
       to be copied to the store; its location in the store is put in
       the environment variable. The idea is that all sources should
-      reside in the Nix store, since all inputs to a derivation should
-      reside in the Nix store.
+      reside in the Bsd store, since all inputs to a derivation should
+      reside in the Bsd store.
 
     - A *derivation* causes that derivation to be built prior to the
       present derivation. The environment variable is set to the [store path] of the derivation's default [output](#attr-outputs).

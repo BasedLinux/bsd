@@ -1,7 +1,7 @@
-#include "nix/util/pool.hh"
+#include "bsd/util/pool.hh"
 #include <gtest/gtest.h>
 
-namespace nix {
+namespace bsd {
 
     struct TestResource
     {

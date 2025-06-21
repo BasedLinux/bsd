@@ -1,11 +1,11 @@
-# Nix-Perl Meson build
+# Bsd-Perl Meson build
 #============================================================================
 
 
 # init project
 #============================================================================
 project (
-  'nix-perl',
+  'bsd-perl',
   'cpp',
   version : files('.version'),
   meson_version : '>= 1.1',
@@ -16,8 +16,8 @@ project (
 #-------------------------------------------------
 fs = import('fs')
 cpp = meson.get_compiler('cpp')
-nix_perl_conf = configuration_data()
-nix_perl_conf.set('PACKAGE_VERSION', meson.project_version())
+bsd_perl_conf = configuration_data()
+bsd_perl_conf.set('PACKAGE_VERSION', meson.project_version())
 
 
 # set error arguments
@@ -75,7 +75,7 @@ endif
 curl_dep = dependency('libcurl')
 libsodium_dep = dependency('libsodium')
 
-nix_store_dep = dependency('nix-store')
+bsd_store_dep = dependency('bsd-store')
 
 
 # Finding Perl Headers is a pain. as they do not have
@@ -94,7 +94,7 @@ perl_archlibexp = run_command(
   perl, '-e', 'use Config; print $Config{archlibexp};', check: true).stdout()
 perl_site_libdir = run_command(
   perl, '-e', 'use Config; print $Config{installsitearch};', check: true).stdout()
-nix_perl_install_dir = join_paths(
+bsd_perl_install_dir = join_paths(
   libdir, 'perl5', 'site_perl', perl_version, perl_archname)
 
 
@@ -104,7 +104,7 @@ message('Perl archname: @0@'.format(perl_archname))
 message('Perl version: @0@'.format(perl_version))
 message('Perl archlibexp: @0@'.format(perl_archlibexp))
 message('Perl install site: @0@'.format(perl_site_libdir))
-message('Assumed Nix-Perl install dir: @0@'.format(nix_perl_install_dir))
+message('Assumed Bsd-Perl install dir: @0@'.format(bsd_perl_install_dir))
 
 # Now find perl modules
 #-------------------------------------------------
@@ -141,17 +141,17 @@ perl_dep = declare_dependency(
 
 # declare dependencies
 #-------------------------------------------------
-nix_perl_store_dep_list = [
+bsd_perl_store_dep_list = [
   perl_dep,
   bzip2_dep,
   curl_dep,
   libsodium_dep,
-  nix_store_dep,
+  bsd_store_dep,
 ]
 
 # # build
 # #-------------------------------------------------
-lib_dir = join_paths('lib', 'Nix')
+lib_dir = join_paths('lib', 'Bsd')
 subdir(lib_dir)
 
 if get_option('tests').enabled()
@@ -164,10 +164,10 @@ if get_option('tests').enabled()
   )
   subdir('t')
   test(
-    'nix-perl-test',
+    'bsd-perl-test',
     yath,
     args : ['test'],
     workdir : meson.current_build_dir(),
-    depends : [nix_perl_store_lib],
+    depends : [bsd_perl_store_lib],
   )
 endif

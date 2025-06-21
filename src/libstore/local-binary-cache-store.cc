@@ -1,12 +1,12 @@
-#include "nix/store/local-binary-cache-store.hh"
-#include "nix/store/globals.hh"
-#include "nix/store/nar-info-disk-cache.hh"
-#include "nix/util/signals.hh"
-#include "nix/store/store-registration.hh"
+#include "bsd/store/local-binary-cache-store.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/nar-info-disk-cache.hh"
+#include "bsd/util/signals.hh"
+#include "bsd/store/store-registration.hh"
 
 #include <atomic>
 
-namespace nix {
+namespace bsd {
 
 LocalBinaryCacheStoreConfig::LocalBinaryCacheStoreConfig(
     std::string_view scheme,

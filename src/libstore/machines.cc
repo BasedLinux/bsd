@@ -1,10 +1,10 @@
-#include "nix/store/machines.hh"
-#include "nix/store/globals.hh"
-#include "nix/store/store-open.hh"
+#include "bsd/store/machines.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/store/store-open.hh"
 
 #include <algorithm>
 
-namespace nix {
+namespace bsd {
 
 Machine::Machine(
     const std::string & storeUri,
@@ -99,7 +99,7 @@ StoreReference Machine::completeStoreReference() const
 
 ref<Store> Machine::openStore() const
 {
-    return nix::openStore(completeStoreReference());
+    return bsd::openStore(completeStoreReference());
 }
 
 static std::vector<std::string> expandBuilderLines(const std::string & builders)

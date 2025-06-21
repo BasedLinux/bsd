@@ -7,14 +7,14 @@ requireGit
 flake1Dir="$TEST_ROOT/eval-cache-flake"
 
 createGitRepo "$flake1Dir" ""
-cp ../simple.nix ../simple.builder.sh "${config_nix}" "$flake1Dir/"
-git -C "$flake1Dir" add simple.nix simple.builder.sh config.nix
-git -C "$flake1Dir" commit -m "config.nix"
+cp ../simple.bsd ../simple.builder.sh "${config_bsd}" "$flake1Dir/"
+git -C "$flake1Dir" add simple.bsd simple.builder.sh config.bsd
+git -C "$flake1Dir" commit -m "config.bsd"
 
-cat >"$flake1Dir/flake.nix" <<EOF
+cat >"$flake1Dir/flake.bsd" <<EOF
 {
   description = "Fnord";
-  outputs = { self }: let inherit (import ./config.nix) mkDerivation; in {
+  outputs = { self }: let inherit (import ./config.bsd) mkDerivation; in {
     foo.bar = throw "breaks";
     drv = mkDerivation {
       name = "build";
@@ -32,19 +32,19 @@ cat >"$flake1Dir/flake.nix" <<EOF
 }
 EOF
 
-git -C "$flake1Dir" add flake.nix
+git -C "$flake1Dir" add flake.bsd
 git -C "$flake1Dir" commit -m "Init"
 
-expect 1 nix build "$flake1Dir#foo.bar" 2>&1 | grepQuiet 'error: breaks'
-expect 1 nix build "$flake1Dir#foo.bar" 2>&1 | grepQuiet 'error: breaks'
+expect 1 bsd build "$flake1Dir#foo.bar" 2>&1 | grepQuiet 'error: breaks'
+expect 1 bsd build "$flake1Dir#foo.bar" 2>&1 | grepQuiet 'error: breaks'
 
 # Stack overflow error must not be cached
-expect 1 nix build --max-call-depth 50 "$flake1Dir#stack-depth" 2>&1 \
+expect 1 bsd build --max-call-depth 50 "$flake1Dir#stack-depth" 2>&1 \
   | grepQuiet 'error: stack overflow; max-call-depth exceeded'
 # If the SO is cached, the following invocation will produce a cached failure; we expect it to succeed
-nix build --no-link "$flake1Dir#stack-depth"
+bsd build --no-link "$flake1Dir#stack-depth"
 
 # Conditional error should not be cached
-expect 1 nix build "$flake1Dir#ifd" --option allow-import-from-derivation false 2>&1 \
+expect 1 bsd build "$flake1Dir#ifd" --option allow-import-from-derivation false 2>&1 \
   | grepQuiet 'error: cannot build .* during evaluation because the option '\''allow-import-from-derivation'\'' is disabled'
-nix build --no-link "$flake1Dir#ifd"
+bsd build --no-link "$flake1Dir#ifd"

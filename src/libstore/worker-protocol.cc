@@ -1,16 +1,16 @@
-#include "nix/util/serialise.hh"
-#include "nix/store/path-with-outputs.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/build-result.hh"
-#include "nix/store/worker-protocol.hh"
-#include "nix/store/worker-protocol-impl.hh"
-#include "nix/util/archive.hh"
-#include "nix/store/path-info.hh"
+#include "bsd/util/serialise.hh"
+#include "bsd/store/path-with-outputs.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/build-result.hh"
+#include "bsd/store/worker-protocol.hh"
+#include "bsd/store/worker-protocol-impl.hh"
+#include "bsd/util/archive.hh"
+#include "bsd/store/path-info.hh"
 
 #include <chrono>
 #include <nlohmann/json.hpp>
 
-namespace nix {
+namespace bsd {
 
 /* protocol-specific definitions */
 
@@ -128,7 +128,7 @@ void WorkerProto::Serialise<DerivedPath>::write(const StoreDirConfig & store, Wo
                     GET_PROTOCOL_MINOR(conn.version));
             },
             [&](std::monostate) {
-                throw Error("wanted to build a derivation that is itself a build product, but protocols do not support that. Try upgrading the Nix on the other end of this connection");
+                throw Error("wanted to build a derivation that is itself a build product, but protocols do not support that. Try upgrading the Bsd on the other end of this connection");
             },
         }, sOrDrvPath);
     }
@@ -256,7 +256,7 @@ WorkerProto::ClientHandshakeInfo WorkerProto::Serialise<WorkerProto::ClientHands
     WorkerProto::ClientHandshakeInfo res;
 
     if (GET_PROTOCOL_MINOR(conn.version) >= 33) {
-        res.daemonNixVersion = readString(conn.from);
+        res.daemonBsdVersion = readString(conn.from);
     }
 
     if (GET_PROTOCOL_MINOR(conn.version) >= 35) {
@@ -272,8 +272,8 @@ WorkerProto::ClientHandshakeInfo WorkerProto::Serialise<WorkerProto::ClientHands
 void WorkerProto::Serialise<WorkerProto::ClientHandshakeInfo>::write(const StoreDirConfig & store, WriteConn conn, const WorkerProto::ClientHandshakeInfo & info)
 {
     if (GET_PROTOCOL_MINOR(conn.version) >= 33) {
-        assert(info.daemonNixVersion);
-        conn.to << *info.daemonNixVersion;
+        assert(info.daemonBsdVersion);
+        conn.to << *info.daemonBsdVersion;
     }
 
     if (GET_PROTOCOL_MINOR(conn.version) >= 35) {

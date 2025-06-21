@@ -2,11 +2,11 @@
 #include <string>
 #include <sstream>
 
-#include "nix/util/strings-inline.hh"
-#include "nix/util/os-string.hh"
-#include "nix/util/error.hh"
+#include "bsd/util/strings-inline.hh"
+#include "bsd/util/os-string.hh"
+#include "bsd/util/error.hh"
 
-namespace nix {
+namespace bsd {
 
 struct view_stringbuf : public std::stringbuf
 {
@@ -155,4 +155,4 @@ std::list<std::string> shellSplitString(std::string_view s)
 
     return result;
 }
-} // namespace nix
+} // namespace bsd

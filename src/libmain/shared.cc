@@ -1,11 +1,11 @@
-#include "nix/store/globals.hh"
-#include "nix/util/current-process.hh"
-#include "nix/main/shared.hh"
-#include "nix/store/store-api.hh"
-#include "nix/store/gc-store.hh"
-#include "nix/main/loggers.hh"
-#include "nix/main/progress-bar.hh"
-#include "nix/util/signals.hh"
+#include "bsd/store/globals.hh"
+#include "bsd/util/current-process.hh"
+#include "bsd/main/shared.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/store/gc-store.hh"
+#include "bsd/main/loggers.hh"
+#include "bsd/main/progress-bar.hh"
+#include "bsd/util/signals.hh"
 
 #include <algorithm>
 #include <exception>
@@ -22,13 +22,13 @@
 
 #include <openssl/crypto.h>
 
-#include "nix/util/exit.hh"
-#include "nix/util/strings.hh"
+#include "bsd/util/exit.hh"
+#include "bsd/util/strings.hh"
 
 #include "main-config-private.hh"
-#include "nix/expr/config.hh"
+#include "bsd/expr/config.hh"
 
-namespace nix {
+namespace bsd {
 
 char * * savedArgv;
 
@@ -117,7 +117,7 @@ static void sigHandler(int signo) { }
 #endif
 
 
-void initNix(bool loadConfig)
+void initBsd(bool loadConfig)
 {
     /* Turn on buffering for cerr. */
 #if HAVE_PUBSETBUF
@@ -128,7 +128,7 @@ void initNix(bool loadConfig)
     initLibStore(loadConfig);
 
 #ifndef _WIN32
-    unix::startSignalHandlerThread();
+    ubsd::startSignalHandlerThread();
 
     /* Reset SIGCHLD to its default. */
     struct sigaction act;
@@ -153,7 +153,7 @@ void initNix(bool loadConfig)
 
     /* Disable SA_RESTART for interrupts, so that system calls on this thread
      * error with EINTR like they do on Linux.
-     * Most signals on BSD systems default to SA_RESTART on, but Nix
+     * Most signals on BSD systems default to SA_RESTART on, but Bsd
      * expects EINTR from syscalls to properly exit. */
     act.sa_handler = SIG_DFL;
     if (sigaction(SIGINT, &act, 0)) throw SysError("handling SIGINT");
@@ -172,7 +172,7 @@ void initNix(bool loadConfig)
     detectStackOverflow();
 #endif
 
-    /* There is no privacy in the Nix system ;-)  At least not for
+    /* There is no privacy in the Bsd system ;-)  At least not for
        now.  In particular, store objects should be readable by
        everybody. */
     umask(0022);
@@ -231,7 +231,7 @@ LegacyArgs::LegacyArgs(const std::string & programName,
 
     addFlag({
         .longName = "readonly-mode",
-        .description = "Do not write to the Nix store.",
+        .description = "Do not write to the Bsd store.",
         .handler = {&settings.readOnlyMode, true},
     });
 
@@ -243,7 +243,7 @@ LegacyArgs::LegacyArgs(const std::string & programName,
 
     addFlag({
         .longName = "store",
-        .description = "The URL of the Nix store to use.",
+        .description = "The URL of the Bsd store to use.",
         .labels = {"store-uri"},
         .handler = {&(std::string&) settings.storeUri},
     });
@@ -287,7 +287,7 @@ void parseCmdLine(const std::string & programName, const Strings & args,
 
 void printVersion(const std::string & programName)
 {
-    std::cout << fmt("%1% (Nix) %2%", programName, nixVersion) << std::endl;
+    std::cout << fmt("%1% (Bsd) %2%", programName, bsdVersion) << std::endl;
     if (verbosity > lvlInfo) {
         Strings cfg;
 #if NIX_USE_BOEHMGC
@@ -297,13 +297,13 @@ void printVersion(const std::string & programName)
         std::cout << "System type: " << settings.thisSystem << "\n";
         std::cout << "Additional system types: " << concatStringsSep(", ", settings.extraPlatforms.get()) << "\n";
         std::cout << "Features: " << concatStringsSep(", ", cfg) << "\n";
-        std::cout << "System configuration file: " << settings.nixConfDir + "/nix.conf" << "\n";
+        std::cout << "System configuration file: " << settings.bsdConfDir + "/bsd.conf" << "\n";
         std::cout << "User configuration files: " <<
-            concatStringsSep(":", settings.nixUserConfFiles)
+            concatStringsSep(":", settings.bsdUserConfFiles)
             << "\n";
-        std::cout << "Store directory: " << settings.nixStore << "\n";
-        std::cout << "State directory: " << settings.nixStateDir << "\n";
-        std::cout << "Data directory: " << settings.nixDataDir << "\n";
+        std::cout << "Store directory: " << settings.bsdStore << "\n";
+        std::cout << "State directory: " << settings.bsdStateDir << "\n";
+        std::cout << "Data directory: " << settings.bsdDataDir << "\n";
     }
     throw Exit();
 }

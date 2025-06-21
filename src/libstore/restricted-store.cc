@@ -1,9 +1,9 @@
-#include "nix/store/restricted-store.hh"
-#include "nix/store/build-result.hh"
-#include "nix/util/callback.hh"
-#include "nix/store/realisation.hh"
+#include "bsd/store/restricted-store.hh"
+#include "bsd/store/build-result.hh"
+#include "bsd/util/callback.hh"
+#include "bsd/store/realisation.hh"
 
-namespace nix {
+namespace bsd {
 
 static StorePath pathPartOfReq(const SingleDerivedPath & req)
 {
@@ -33,7 +33,7 @@ bool RestrictionContext::isAllowed(const DerivedPath & req)
 /**
  * A wrapper around LocalStore that only allows building/querying of
  * paths that are in the input closures of the build or were added via
- * recursive Nix calls.
+ * recursive Bsd calls.
  */
 struct RestrictedStore : public virtual IndirectRootStore, public virtual GcStore
 {
@@ -207,7 +207,7 @@ std::map<std::string, std::optional<StorePath>>
 RestrictedStore::queryPartialDerivationOutputMap(const StorePath & path, Store * evalStore)
 {
     if (!goal.isAllowed(path))
-        throw InvalidPath("cannot query output map for unknown path '%s' in recursive Nix", printStorePath(path));
+        throw InvalidPath("cannot query output map for unknown path '%s' in recursive Bsd", printStorePath(path));
     return next->queryPartialDerivationOutputMap(path, evalStore);
 }
 
@@ -235,14 +235,14 @@ StorePath RestrictedStore::addToStoreFromDump(
 void RestrictedStore::narFromPath(const StorePath & path, Sink & sink)
 {
     if (!goal.isAllowed(path))
-        throw InvalidPath("cannot dump unknown path '%s' in recursive Nix", printStorePath(path));
+        throw InvalidPath("cannot dump unknown path '%s' in recursive Bsd", printStorePath(path));
     LocalFSStore::narFromPath(path, sink);
 }
 
 void RestrictedStore::ensurePath(const StorePath & path)
 {
     if (!goal.isAllowed(path))
-        throw InvalidPath("cannot substitute unknown path '%s' in recursive Nix", printStorePath(path));
+        throw InvalidPath("cannot substitute unknown path '%s' in recursive Bsd", printStorePath(path));
     /* Nothing to be done; 'path' must already be valid. */
 }
 
@@ -284,7 +284,7 @@ std::vector<KeyedBuildResult> RestrictedStore::buildPathsWithResults(
 
     for (auto & req : paths) {
         if (!goal.isAllowed(req))
-            throw InvalidPath("cannot build '%s' in recursive Nix because path is unknown", req.to_string(*next));
+            throw InvalidPath("cannot build '%s' in recursive Bsd because path is unknown", req.to_string(*next));
     }
 
     auto results = next->buildPathsWithResults(paths, buildMode);

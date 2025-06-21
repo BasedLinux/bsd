@@ -6,18 +6,18 @@ requireGit
 
 templatesDir=$TEST_ROOT/templates
 flakeDir=$TEST_ROOT/flake
-nixpkgsDir=$TEST_ROOT/nixpkgs
+bsdpkgsDir=$TEST_ROOT/bsdpkgs
 
-nix registry add --registry "$registry" templates "git+file://$templatesDir"
-nix registry add --registry "$registry" nixpkgs "git+file://$nixpkgsDir"
+bsd registry add --registry "$registry" templates "git+file://$templatesDir"
+bsd registry add --registry "$registry" bsdpkgs "git+file://$bsdpkgsDir"
 
-createGitRepo "$nixpkgsDir"
-createSimpleGitFlake "$nixpkgsDir"
+createGitRepo "$bsdpkgsDir"
+createSimpleGitFlake "$bsdpkgsDir"
 
-# Test 'nix flake init'.
+# Test 'bsd flake init'.
 createGitRepo "$templatesDir"
 
-cat > "$templatesDir"/flake.nix <<EOF
+cat > "$templatesDir"/flake.bsd <<EOF
 {
   description = "Some templates";
 
@@ -38,13 +38,13 @@ EOF
 
 mkdir "$templatesDir/trivial"
 
-cat > "$templatesDir"/trivial/flake.nix <<EOF
+cat > "$templatesDir"/trivial/flake.bsd <<EOF
 {
   description = "A flake for building Hello World";
 
-  outputs = { self, nixpkgs }: {
+  outputs = { self, bsdpkgs }: {
     packages.$system = rec {
-      hello = nixpkgs.legacyPackages.$system.hello;
+      hello = bsdpkgs.legacyPackages.$system.hello;
       default = hello;
     };
   };
@@ -53,37 +53,37 @@ EOF
 echo a > "$templatesDir/trivial/a"
 echo b > "$templatesDir/trivial/b"
 
-git -C "$templatesDir" add flake.nix trivial/
+git -C "$templatesDir" add flake.bsd trivial/
 git -C "$templatesDir" commit -m 'Initial'
 
-nix flake check templates
-nix flake show templates
-nix flake show templates --json | jq
+bsd flake check templates
+bsd flake show templates
+bsd flake show templates --json | jq
 
 createGitRepo "$flakeDir"
-(cd "$flakeDir" && nix flake init)
-(cd "$flakeDir" && nix flake init) # check idempotence
-git -C "$flakeDir" add flake.nix
-nix flake check "$flakeDir"
-nix flake show "$flakeDir"
-nix flake show "$flakeDir" --json | jq
+(cd "$flakeDir" && bsd flake init)
+(cd "$flakeDir" && bsd flake init) # check idempotence
+git -C "$flakeDir" add flake.bsd
+bsd flake check "$flakeDir"
+bsd flake show "$flakeDir"
+bsd flake show "$flakeDir" --json | jq
 git -C "$flakeDir" commit -a -m 'Initial'
 
-# Test 'nix flake init' with benign conflicts
+# Test 'bsd flake init' with benign conflicts
 createGitRepo "$flakeDir"
 echo a > "$flakeDir/a"
-(cd "$flakeDir" && nix flake init) # check idempotence
+(cd "$flakeDir" && bsd flake init) # check idempotence
 
-# Test 'nix flake init' with conflicts
+# Test 'bsd flake init' with conflicts
 createGitRepo "$flakeDir"
 echo b > "$flakeDir/a"
 pushd "$flakeDir"
-(! nix flake init) |& grep "refusing to overwrite existing file '$flakeDir/a'"
+(! bsd flake init) |& grep "refusing to overwrite existing file '$flakeDir/a'"
 popd
 git -C "$flakeDir" commit -a -m 'Changed'
 
-# Test 'nix flake new'.
+# Test 'bsd flake new'.
 rm -rf "$flakeDir"
-nix flake new -t templates#trivial "$flakeDir"
-nix flake new -t templates#trivial "$flakeDir" # check idempotence
-nix flake check "$flakeDir"
+bsd flake new -t templates#trivial "$flakeDir"
+bsd flake new -t templates#trivial "$flakeDir" # check idempotence
+bsd flake check "$flakeDir"

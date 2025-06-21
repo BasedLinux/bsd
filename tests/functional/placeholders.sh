@@ -4,8 +4,8 @@ source common.sh
 
 clearStoreIfPossible
 
-nix-build --no-out-link -E '
-  with import '"${config_nix}"';
+bsd-build --no-out-link -E '
+  with import '"${config_bsd}"';
 
   mkDerivation {
     name = "placeholders";

@@ -1,9 +1,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "nix/expr/tests/libexpr.hh"
+#include "bsd/expr/tests/libexpr.hh"
 
-namespace nix {
+namespace bsd {
 
     using namespace testing;
 
@@ -463,7 +463,7 @@ namespace nix {
         // ASSERT_TRACE2("filterSource (_: 1) ./.",
         //               TypeError,
         //               HintFmt("attempt to call something which is not a function but %s", "an integer"),
-        //               HintFmt("while adding path '/home/layus/projects/nix'"));
+        //               HintFmt("while adding path '/home/layus/projects/bsd'"));
 
         // ASSERT_TRACE2("filterSource (_: _: 1) ./.",
         //               TypeError,
@@ -1375,4 +1375,4 @@ namespace nix {
                       HintFmt("while evaluating attribute '%s' of derivation '%s'", "FOO", "foo"));
     }
 
-} /* namespace nix */
+} /* namespace bsd */

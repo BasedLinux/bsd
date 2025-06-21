@@ -1,13 +1,13 @@
-#include "nix/store/pathlocks.hh"
-#include "nix/util/util.hh"
-#include "nix/util/sync.hh"
-#include "nix/util/signals.hh"
+#include "bsd/store/pathlocks.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/sync.hh"
+#include "bsd/util/signals.hh"
 
 #include <cerrno>
 #include <cstdlib>
 
 
-namespace nix {
+namespace bsd {
 
 PathLocks::PathLocks()
     : deletePaths(false)

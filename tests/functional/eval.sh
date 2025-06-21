@@ -4,7 +4,7 @@ source common.sh
 
 clearStoreIfPossible
 
-testStdinHeredoc=$(nix eval -f - <<EOF
+testStdinHeredoc=$(bsd eval -f - <<EOF
 {
   bar = 3 + 1;
   foo = 2 + 2;
@@ -13,56 +13,56 @@ EOF
 )
 [[ $testStdinHeredoc == '{ bar = 4; foo = 4; }' ]]
 
-nix eval --expr 'assert 1 + 2 == 3; true'
+bsd eval --expr 'assert 1 + 2 == 3; true'
 
-[[ $(nix eval int -f "./eval.nix") == 123 ]]
-[[ $(nix eval str -f "./eval.nix") == '"foo\nbar"' ]]
-[[ $(nix eval str --raw -f "./eval.nix") == $'foo\nbar' ]]
-[[ "$(nix eval attr -f "./eval.nix")" == '{ foo = "bar"; }' ]]
-[[ $(nix eval attr --json -f "./eval.nix") == '{"foo":"bar"}' ]]
-[[ $(nix eval int -f - < "./eval.nix") == 123 ]]
-[[ "$(nix eval --expr '{"assert"=1;bar=2;}')" == '{ "assert" = 1; bar = 2; }' ]]
+[[ $(bsd eval int -f "./eval.bsd") == 123 ]]
+[[ $(bsd eval str -f "./eval.bsd") == '"foo\nbar"' ]]
+[[ $(bsd eval str --raw -f "./eval.bsd") == $'foo\nbar' ]]
+[[ "$(bsd eval attr -f "./eval.bsd")" == '{ foo = "bar"; }' ]]
+[[ $(bsd eval attr --json -f "./eval.bsd") == '{"foo":"bar"}' ]]
+[[ $(bsd eval int -f - < "./eval.bsd") == 123 ]]
+[[ "$(bsd eval --expr '{"assert"=1;bar=2;}')" == '{ "assert" = 1; bar = 2; }' ]]
 
 # Check if toFile can be utilized during restricted eval
-[[ $(nix eval --restrict-eval --expr 'import (builtins.toFile "source" "42")') == 42 ]]
+[[ $(bsd eval --restrict-eval --expr 'import (builtins.toFile "source" "42")') == 42 ]]
 
-nix-instantiate --eval -E 'assert 1 + 2 == 3; true'
-[[ $(nix-instantiate -A int --eval "./eval.nix") == 123 ]]
-[[ $(nix-instantiate -A str --eval "./eval.nix") == '"foo\nbar"' ]]
-[[ $(nix-instantiate -A str --raw --eval "./eval.nix") == $'foo\nbar' ]]
-[[ "$(nix-instantiate -A attr --eval "./eval.nix")" == '{ foo = "bar"; }' ]]
-[[ $(nix-instantiate -A attr --eval --json "./eval.nix") == '{"foo":"bar"}' ]]
-[[ $(nix-instantiate -A int --eval - < "./eval.nix") == 123 ]]
-[[ "$(nix-instantiate --eval -E '{"assert"=1;bar=2;}')" == '{ "assert" = 1; bar = 2; }' ]]
+bsd-instantiate --eval -E 'assert 1 + 2 == 3; true'
+[[ $(bsd-instantiate -A int --eval "./eval.bsd") == 123 ]]
+[[ $(bsd-instantiate -A str --eval "./eval.bsd") == '"foo\nbar"' ]]
+[[ $(bsd-instantiate -A str --raw --eval "./eval.bsd") == $'foo\nbar' ]]
+[[ "$(bsd-instantiate -A attr --eval "./eval.bsd")" == '{ foo = "bar"; }' ]]
+[[ $(bsd-instantiate -A attr --eval --json "./eval.bsd") == '{"foo":"bar"}' ]]
+[[ $(bsd-instantiate -A int --eval - < "./eval.bsd") == 123 ]]
+[[ "$(bsd-instantiate --eval -E '{"assert"=1;bar=2;}')" == '{ "assert" = 1; bar = 2; }' ]]
 
 # Check that symlink cycles don't cause a hang.
-ln -sfn cycle.nix "$TEST_ROOT/cycle.nix"
-(! nix eval --file "$TEST_ROOT/cycle.nix")
+ln -sfn cycle.bsd "$TEST_ROOT/cycle.bsd"
+(! bsd eval --file "$TEST_ROOT/cycle.bsd")
 
 # --file and --pure-eval don't mix.
-expectStderr 1 nix eval --pure-eval --file "$TEST_ROOT/cycle.nix" | grepQuiet "not compatible"
+expectStderr 1 bsd eval --pure-eval --file "$TEST_ROOT/cycle.bsd" | grepQuiet "not compatible"
 
 # Check that relative symlinks are resolved correctly.
 mkdir -p "$TEST_ROOT/xyzzy" "$TEST_ROOT/foo"
 ln -sfn ../xyzzy "$TEST_ROOT/foo/bar"
-printf 123 > "$TEST_ROOT/xyzzy/default.nix"
-[[ $(nix eval --impure --expr "import $TEST_ROOT/foo/bar") = 123 ]]
+printf 123 > "$TEST_ROOT/xyzzy/default.bsd"
+[[ $(bsd eval --impure --expr "import $TEST_ROOT/foo/bar") = 123 ]]
 
 # Test --arg-from-file.
-[[ "$(nix eval --raw --arg-from-file foo "${config_nix}" --expr '{ foo }: { inherit foo; }' foo)" = "$(cat "${config_nix}")" ]]
+[[ "$(bsd eval --raw --arg-from-file foo "${config_bsd}" --expr '{ foo }: { inherit foo; }' foo)" = "$(cat "${config_bsd}")" ]]
 
 # Check that special(-ish) files are drained.
 if [[ -e /proc/version ]]; then
-    [[ "$(nix eval --raw --arg-from-file foo /proc/version --expr '{ foo }: { inherit foo; }' foo)" = "$(cat /proc/version)" ]]
+    [[ "$(bsd eval --raw --arg-from-file foo /proc/version --expr '{ foo }: { inherit foo; }' foo)" = "$(cat /proc/version)" ]]
 fi
 
 # Test --arg-from-stdin.
-[[ "$(echo bla | nix eval --raw --arg-from-stdin foo --expr '{ foo }: { inherit foo; }' foo)" = bla ]]
+[[ "$(echo bla | bsd eval --raw --arg-from-stdin foo --expr '{ foo }: { inherit foo; }' foo)" = bla ]]
 
 # Test that unknown settings are warned about
-out="$(expectStderr 0 nix eval --option foobar baz --expr '""' --raw)"
+out="$(expectStderr 0 bsd eval --option foobar baz --expr '""' --raw)"
 [[ "$(echo "$out" | grep -c foobar)" = 1 ]]
 
 # Test flag alias
-out="$(nix eval --expr '{}' --build-cores 1)"
+out="$(bsd eval --expr '{}' --build-cores 1)"
 [[ "$(echo "$out" | wc -l)" = 1 ]]

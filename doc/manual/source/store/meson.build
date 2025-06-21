@@ -4,15 +4,15 @@ types_dir = custom_target(
     '@INPUT0@',
     '@OUTPUT@',
     '--'
-  ] + nix_eval_for_docs + [
+  ] + bsd_eval_for_docs + [
     '--expr',
     'import @INPUT1@ (builtins.fromJSON (builtins.readFile ./@INPUT2@)).stores',
   ],
   input : [
     '../../remove_before_wrapper.py',
-    '../../generate-store-types.nix',
-    nix3_cli_json,
+    '../../generate-store-types.bsd',
+    bsd3_cli_json,
   ],
   output : 'types',
-  env : nix_env_for_docs,
+  env : bsd_env_for_docs,
 )

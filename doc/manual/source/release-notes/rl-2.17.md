@@ -1,15 +1,15 @@
 # Release 2.17 (2023-07-24)
 
-* [`nix-channel`](../command-ref/nix-channel.md) now supports a `--list-generations` subcommand.
+* [`bsd-channel`](../command-ref/bsd-channel.md) now supports a `--list-generations` subcommand.
 
 * The function [`builtins.fetchClosure`](../language/builtins.md#builtins-fetchClosure) can now fetch input-addressed paths in [pure evaluation mode](../command-ref/conf-file.md#conf-pure-eval), as those are not impure.
 
-* Nix now allows unprivileged/[`allowed-users`](../command-ref/conf-file.md#conf-allowed-users) to sign paths.
+* Bsd now allows unprivileged/[`allowed-users`](../command-ref/conf-file.md#conf-allowed-users) to sign paths.
   Previously, only [`trusted-users`](../command-ref/conf-file.md#conf-trusted-users) users could sign paths.
 
 * Nested dynamic attributes are now merged correctly by the parser. For example:
 
-  ```nix
+  ```bsd
   {
     nested = {
       foo = 1;
@@ -22,7 +22,7 @@
 
   This used to silently discard `nested.bar`, but now behaves as one would expect and evaluates to:
 
-  ```nix
+  ```bsd
   { nested = { bar = 2; foo = 1; }; }
   ```
 
@@ -32,7 +32,7 @@
 
   Instead, consider using the *nested attribute path* syntax:
 
-  ```nix
+  ```bsd
   {
     nested.foo = 1;
     nested.${"ba" + "r"} = 2;

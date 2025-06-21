@@ -1,7 +1,7 @@
-#include "nix/expr/function-trace.hh"
-#include "nix/util/logging.hh"
+#include "bsd/expr/function-trace.hh"
+#include "bsd/util/logging.hh"
 
-namespace nix {
+namespace bsd {
 
 void FunctionCallTrace::preFunctionCallHook(
     EvalState & state, const Value & v, std::span<Value *> args, const PosIdx pos)

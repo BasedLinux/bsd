@@ -1,6 +1,6 @@
-#include "nix/util/english.hh"
+#include "bsd/util/english.hh"
 
-namespace nix {
+namespace bsd {
 
 std::ostream & pluralize(
     std::ostream & output,

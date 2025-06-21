@@ -1,1 +1,1 @@
-{ column = 5; file = "eval-okay-getattrpos.nix"; line = 3; }
+{ column = 5; file = "eval-okay-getattrpos.bsd"; line = 3; }

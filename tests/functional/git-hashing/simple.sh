@@ -8,9 +8,9 @@ git init "$repo"
 git -C "$repo" config user.email "you@example.com"
 git -C "$repo" config user.name "Your Name"
 
-# Compare Nix's and git's implementation of git hashing
+# Compare Bsd's and git's implementation of git hashing
 try () {
-    local hash=$(nix hash path --mode git --format base16 --algo sha1 $TEST_ROOT/hash-path)
+    local hash=$(bsd hash path --mode git --format base16 --algo sha1 $TEST_ROOT/hash-path)
     [[ "$hash" == "$1" ]]
 
     git -C "$repo" rm -rf hash-path || true
@@ -35,12 +35,12 @@ echo "Run Hello World" > $TEST_ROOT/hash-path/executable
 chmod +x $TEST_ROOT/hash-path/executable
 try "e5c0a11a556801a5c9dcf330ca9d7e2c572697f4"
 
-# Check Nix added object has matching git hash
+# Check Bsd added object has matching git hash
 try2 () {
     local hashPath="$1"
     local expected="$2"
 
-    local path=$(nix store add --mode git --hash-algo sha1 "$repo/$hashPath")
+    local path=$(bsd store add --mode git --hash-algo sha1 "$repo/$hashPath")
 
     git -C "$repo" add "$hashPath"
     git -C "$repo" commit -m "x"
@@ -48,8 +48,8 @@ try2 () {
     local hashFromGit=$(git -C "$repo" rev-parse "HEAD:$hashPath")
     [[ "$hashFromGit" == "$2" ]]
 
-    local caFromNix=$(nix path-info --json "$path" | jq -r ".[] | .ca")
-    [[ "fixed:git:sha1:$(nix hash convert --to nix32 "sha1:$hashFromGit")" = "$caFromNix" ]]
+    local caFromBsd=$(bsd path-info --json "$path" | jq -r ".[] | .ca")
+    [[ "fixed:git:sha1:$(bsd hash convert --to bsd32 "sha1:$hashFromGit")" = "$caFromBsd" ]]
 }
 
 rm -rf "$repo/dummy1"

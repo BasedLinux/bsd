@@ -8,7 +8,7 @@ repo=$TEST_ROOT/repo
 
 createGitRepo "$repo"
 
-cat > "$repo/flake.nix" <<EOF
+cat > "$repo/flake.bsd" <<EOF
 {
   outputs = { ... }: {
     x = 1;
@@ -16,8 +16,8 @@ cat > "$repo/flake.nix" <<EOF
 }
 EOF
 
-expectStderr 1 nix eval "$repo#x" | grepQuiet "error: Path 'flake.nix' in the repository \"$repo\" is not tracked by Git."
+expectStderr 1 bsd eval "$repo#x" | grepQuiet "error: Path 'flake.bsd' in the repository \"$repo\" is not tracked by Git."
 
-git -C "$repo" add flake.nix
+git -C "$repo" add flake.bsd
 
-[[ $(nix eval "$repo#x") = 1 ]]
+[[ $(bsd eval "$repo#x") = 1 ]]

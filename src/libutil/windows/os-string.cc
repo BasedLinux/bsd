@@ -3,13 +3,13 @@
 #include <iostream>
 #include <locale>
 
-#include "nix/util/file-path.hh"
-#include "nix/util/file-path-impl.hh"
-#include "nix/util/util.hh"
+#include "bsd/util/file-path.hh"
+#include "bsd/util/file-path-impl.hh"
+#include "bsd/util/util.hh"
 
 #ifdef _WIN32
 
-namespace nix {
+namespace bsd {
 
 std::string os_string_to_string(PathViewNG::string_view path)
 {

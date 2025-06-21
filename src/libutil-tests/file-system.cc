@@ -1,9 +1,9 @@
-#include "nix/util/util.hh"
-#include "nix/util/types.hh"
-#include "nix/util/file-system.hh"
-#include "nix/util/processes.hh"
-#include "nix/util/terminal.hh"
-#include "nix/util/strings.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/types.hh"
+#include "bsd/util/file-system.hh"
+#include "bsd/util/processes.hh"
+#include "bsd/util/terminal.hh"
+#include "bsd/util/strings.hh"
 
 #include <limits.h>
 #include <gtest/gtest.h>
@@ -29,7 +29,7 @@
 #  define GET_CWD getcwd
 #endif
 
-namespace nix {
+namespace bsd {
 
 /* ----------- tests for file-system.hh -------------------------------------*/
 
@@ -215,7 +215,7 @@ TEST(isInDir, emptyDir)
 
 TEST(isDirOrInDir, trueForSameDirectory)
 {
-    ASSERT_EQ(isDirOrInDir("/nix", "/nix"), true);
+    ASSERT_EQ(isDirOrInDir("/bsd", "/bsd"), true);
     ASSERT_EQ(isDirOrInDir("/", "/"), true);
 }
 
@@ -278,7 +278,7 @@ TEST(makeParentCanonical, root)
 
 TEST(chmodIfNeeded, works)
 {
-    auto [autoClose_, tmpFile] = nix::createTempFile();
+    auto [autoClose_, tmpFile] = bsd::createTempFile();
     auto deleteTmpFile = AutoDelete(tmpFile);
 
     auto modes = std::vector<mode_t>{0755, 0644, 0422, 0600, 0777};
@@ -303,10 +303,10 @@ TEST(chmodIfNeeded, nonexistent)
 
 TEST(DirectoryIterator, works)
 {
-    auto tmpDir = nix::createTempDir();
-    nix::AutoDelete delTmpDir(tmpDir, true);
+    auto tmpDir = bsd::createTempDir();
+    bsd::AutoDelete delTmpDir(tmpDir, true);
 
-    nix::writeFile(tmpDir + "/somefile", "");
+    bsd::writeFile(tmpDir + "/somefile", "");
 
     for (auto path : DirectoryIterator(tmpDir)) {
         ASSERT_EQ(path.path().string(), tmpDir + "/somefile");

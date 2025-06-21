@@ -1,12 +1,12 @@
-#include "nix/store/build/worker.hh"
-#include "nix/store/store-open.hh"
-#include "nix/store/build/substitution-goal.hh"
-#include "nix/store/nar-info.hh"
-#include "nix/util/finally.hh"
-#include "nix/util/signals.hh"
+#include "bsd/store/build/worker.hh"
+#include "bsd/store/store-open.hh"
+#include "bsd/store/build/substitution-goal.hh"
+#include "bsd/store/nar-info.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/signals.hh"
 #include <coroutine>
 
-namespace nix {
+namespace bsd {
 
 PathSubstitutionGoal::PathSubstitutionGoal(const StorePath & storePath, Worker & worker, RepairFlag repair, std::optional<ContentAddress> ca)
     : Goal(worker, init())
@@ -52,7 +52,7 @@ Goal::Co PathSubstitutionGoal::init()
     }
 
     if (settings.readOnlyMode)
-        throw Error("cannot substitute path '%s' - no write access to the Nix store", worker.store.printStorePath(storePath));
+        throw Error("cannot substitute path '%s' - no write access to the Bsd store", worker.store.printStorePath(storePath));
 
     auto subs = settings.useSubstitutes ? getDefaultSubstituters() : std::list<ref<Store>>();
 
@@ -163,7 +163,7 @@ Goal::Co PathSubstitutionGoal::init()
 }
 
 
-Goal::Co PathSubstitutionGoal::tryToRun(StorePath subPath, nix::ref<Store> sub, std::shared_ptr<const ValidPathInfo> info, bool & substituterFailed)
+Goal::Co PathSubstitutionGoal::tryToRun(StorePath subPath, bsd::ref<Store> sub, std::shared_ptr<const ValidPathInfo> info, bool & substituterFailed)
 {
     trace("all references realised");
 

@@ -1,6 +1,6 @@
-#include "nix/expr/json-to-value.hh"
-#include "nix/expr/value.hh"
-#include "nix/expr/eval.hh"
+#include "bsd/expr/json-to-value.hh"
+#include "bsd/expr/value.hh"
+#include "bsd/expr/eval.hh"
 
 #include <limits>
 #include <variant>
@@ -8,7 +8,7 @@
 
 using json = nlohmann::json;
 
-namespace nix {
+namespace bsd {
 
 // for more information, refer to
 // https://github.com/nlohmann/json/blob/master/include/nlohmann/detail/input/json_sax.hpp
@@ -105,10 +105,10 @@ public:
 
     bool number_unsigned(number_unsigned_t val_) override
     {
-        if (val_ > std::numeric_limits<NixInt::Inner>::max()) {
-            throw Error("unsigned json number %1% outside of Nix integer range", val_);
+        if (val_ > std::numeric_limits<BsdInt::Inner>::max()) {
+            throw Error("unsigned json number %1% outside of Bsd integer range", val_);
         }
-        NixInt::Inner val = val_;
+        BsdInt::Inner val = val_;
         rs->value(state).mkInt(val);
         rs->add();
         return true;

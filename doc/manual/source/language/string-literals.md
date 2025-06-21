@@ -32,7 +32,7 @@ The following must be escaped to represent them within a string, by prefixing wi
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > "\""
 > ```
 >
@@ -42,7 +42,7 @@ The following must be escaped to represent them within a string, by prefixing wi
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > "\\"
 > ```
 >
@@ -52,7 +52,7 @@ The following must be escaped to represent them within a string, by prefixing wi
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > "\${"
 > ```
 >
@@ -64,18 +64,18 @@ A "double-dollar-curly" (`$${`) can be written literally.
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > "$${"
 > ```
 >
 >     "$\${"
 
-String values are output on the terminal with Nix-specific escaping.
+String values are output on the terminal with Bsd-specific escaping.
 Strings written to files will contain the characters encoded by the escaping.
 
 The second way to write string literals is as an *indented string*, which is enclosed between pairs of *double single-quotes* (`''`), like so:
 
-```nix
+```bsd
 ''
 This is the first line.
 This is the second line.
@@ -91,7 +91,7 @@ the first and second line are indented two spaces, while the third
 line is indented four spaces. Thus, two spaces are stripped from
 each line, so the resulting string is
 
-```nix
+```bsd
 "This is the first line.\nThis is the second line.\n  This is the third line.\n"
 ```
 
@@ -123,7 +123,7 @@ The following must be escaped to represent them in an indented string:
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > ''
 >   ''$
 > ''
@@ -135,7 +135,7 @@ The following must be escaped to represent them in an indented string:
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > ''
 >   '''
 > ''
@@ -153,7 +153,7 @@ These special characters are escaped as follows:
 A "dollar-curly" (`${`) can be written as follows: 
 > **Example**
 >
-> ```nix
+> ```bsd
 > ''
 >   echo ''${PATH}
 > ''
@@ -169,7 +169,7 @@ A "double-dollar-curly" (`$${`) can be written literally.
 
 > **Example**
 >
-> ```nix
+> ```bsd
 > ''
 >   $${
 > ''
@@ -178,13 +178,13 @@ A "double-dollar-curly" (`$${`) can be written literally.
 >     "$\${\n"
 
 Indented strings are primarily useful in that they allow multi-line
-string literals to follow the indentation of the enclosing Nix
+string literals to follow the indentation of the enclosing Bsd
 expression, and that less escaping is typically necessary for
 strings representing languages such as shell scripts and
 configuration files because `''` is much less common than `"`.
 Example:
 
-```nix
+```bsd
 stdenv.mkDerivation {
 ...
 postInstall =

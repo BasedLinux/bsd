@@ -1,7 +1,7 @@
-#include "nix/util/url.hh"
+#include "bsd/util/url.hh"
 #include <gtest/gtest.h>
 
-namespace nix {
+namespace bsd {
 
 /* ----------- tests for url.hh --------------------------------------------------*/
 
@@ -193,13 +193,13 @@ namespace nix {
     }
 
     TEST(parseURL, parseFTPUrl) {
-        auto s = "ftp://ftp.nixos.org/downloads/nixos.iso";
+        auto s = "ftp://ftp.basedlinux.org/downloads/bsdos.iso";
         auto parsed = parseURL(s);
 
         ParsedURL expected {
             .scheme = "ftp",
-            .authority = "ftp.nixos.org",
-            .path = "/downloads/nixos.iso",
+            .authority = "ftp.basedlinux.org",
+            .path = "/downloads/bsdos.iso",
             .query = (StringMap) { },
             .fragment = "",
         };
@@ -208,12 +208,12 @@ namespace nix {
     }
 
     TEST(parseURL, parsesAnythingInUriFormat) {
-        auto s = "whatever://github.com/NixOS/nixpkgs.git";
+        auto s = "whatever://github.com/BasedLinux/bsdpkgs.git";
         auto parsed = parseURL(s);
     }
 
     TEST(parseURL, parsesAnythingInUriFormatWithoutDoubleSlash) {
-        auto s = "whatever:github.com/NixOS/nixpkgs.git";
+        auto s = "whatever:github.com/BasedLinux/bsdpkgs.git";
         auto parsed = parseURL(s);
     }
 
@@ -311,7 +311,7 @@ namespace nix {
         ASSERT_EQ(percentDecode(e), s);
     }
 
-TEST(nix, isValidSchemeName) {
+TEST(bsd, isValidSchemeName) {
     ASSERT_TRUE(isValidSchemeName("http"));
     ASSERT_TRUE(isValidSchemeName("https"));
     ASSERT_TRUE(isValidSchemeName("file"));

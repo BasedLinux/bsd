@@ -1,20 +1,20 @@
-#include "nix/store/derivations.hh"
-#include "nix/store/downstream-placeholder.hh"
-#include "nix/expr/eval-inline.hh"
-#include "nix/expr/eval.hh"
-#include "nix/expr/eval-settings.hh"
-#include "nix/expr/gc-small-vector.hh"
-#include "nix/expr/json-to-value.hh"
-#include "nix/store/names.hh"
-#include "nix/store/path-references.hh"
-#include "nix/store/store-api.hh"
-#include "nix/util/util.hh"
-#include "nix/util/processes.hh"
-#include "nix/expr/value-to-json.hh"
-#include "nix/expr/value-to-xml.hh"
-#include "nix/expr/primops.hh"
-#include "nix/fetchers/fetch-to-store.hh"
-#include "nix/util/sort.hh"
+#include "bsd/store/derivations.hh"
+#include "bsd/store/downstream-placeholder.hh"
+#include "bsd/expr/eval-inline.hh"
+#include "bsd/expr/eval.hh"
+#include "bsd/expr/eval-settings.hh"
+#include "bsd/expr/gc-small-vector.hh"
+#include "bsd/expr/json-to-value.hh"
+#include "bsd/store/names.hh"
+#include "bsd/store/path-references.hh"
+#include "bsd/store/store-api.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/processes.hh"
+#include "bsd/expr/value-to-json.hh"
+#include "bsd/expr/value-to-xml.hh"
+#include "bsd/expr/primops.hh"
+#include "bsd/fetchers/fetch-to-store.hh"
+#include "bsd/util/sort.hh"
 
 #include <boost/container/small_vector.hpp>
 #include <nlohmann/json.hpp>
@@ -34,7 +34,7 @@
 
 #include <cmath>
 
-namespace nix {
+namespace bsd {
 
 
 /*************************************************************
@@ -50,14 +50,14 @@ static inline Value * mkString(EvalState & state, const std::csub_match & match)
 
 std::string EvalState::realiseString(Value & s, StorePathSet * storePathsOutMaybe, bool isIFD, const PosIdx pos)
 {
-    nix::NixStringContext stringContext;
+    bsd::BsdStringContext stringContext;
     auto rawStr = coerceToString(pos, s, stringContext, "while realising a string").toOwned();
     auto rewrites = realiseContext(stringContext, storePathsOutMaybe, isIFD);
 
-    return nix::rewriteStrings(rawStr, rewrites);
+    return bsd::rewriteStrings(rawStr, rewrites);
 }
 
-StringMap EvalState::realiseContext(const NixStringContext & context, StorePathSet * maybePathsOut, bool isIFD)
+StringMap EvalState::realiseContext(const BsdStringContext & context, StorePathSet * maybePathsOut, bool isIFD)
 {
     std::vector<DerivedPath::Built> drvs;
     StringMap res;
@@ -68,19 +68,19 @@ StringMap EvalState::realiseContext(const NixStringContext & context, StorePathS
                 error<InvalidPathError>(store->printStorePath(p)).debugThrow();
         };
         std::visit(overloaded {
-            [&](const NixStringContextElem::Built & b) {
+            [&](const BsdStringContextElem::Built & b) {
                 drvs.push_back(DerivedPath::Built {
                     .drvPath = b.drvPath,
                     .outputs = OutputsSpec::Names { b.output },
                 });
                 ensureValid(b.drvPath->getBaseStorePath());
             },
-            [&](const NixStringContextElem::Opaque & o) {
+            [&](const BsdStringContextElem::Opaque & o) {
                 ensureValid(o.path);
                 if (maybePathsOut)
                     maybePathsOut->emplace(o.path);
             },
-            [&](const NixStringContextElem::DrvDeep & d) {
+            [&](const BsdStringContextElem::DrvDeep & d) {
                 /* Treat same as Opaque */
                 ensureValid(d.drvPath);
                 if (maybePathsOut)
@@ -147,7 +147,7 @@ StringMap EvalState::realiseContext(const NixStringContext & context, StorePathS
 
 static SourcePath realisePath(EvalState & state, const PosIdx pos, Value & v, std::optional<SymlinkResolution> resolveSymlinks = SymlinkResolution::Full)
 {
-    NixStringContext context;
+    BsdStringContext context;
 
     auto path = state.coerceToPath(noPos, v, context, "while realising the context of a path");
 
@@ -206,7 +206,7 @@ void derivationToValue(EvalState & state, const PosIdx pos, const SourcePath & p
     Derivation drv = state.store->readDerivation(storePath);
     auto attrs = state.buildBindings(3 + drv.outputs.size());
     attrs.alloc(state.sDrvPath).mkString(path2, {
-        NixStringContextElem::DrvDeep { .drvPath = storePath },
+        BsdStringContextElem::DrvDeep { .drvPath = storePath },
     });
     attrs.alloc(state.sName).mkString(drv.env["name"]);
 
@@ -223,17 +223,17 @@ void derivationToValue(EvalState & state, const PosIdx pos, const SourcePath & p
     if (!state.vImportedDrvToDerivation) {
         state.vImportedDrvToDerivation = allocRootValue(state.allocValue());
         state.eval(state.parseExprFromString(
-            #include "imported-drv-to-derivation.nix.gen.hh"
+            #include "imported-drv-to-derivation.bsd.gen.hh"
             , state.rootPath(CanonPath::root)), **state.vImportedDrvToDerivation);
     }
 
-    state.forceFunction(**state.vImportedDrvToDerivation, pos, "while evaluating imported-drv-to-derivation.nix.gen.hh");
+    state.forceFunction(**state.vImportedDrvToDerivation, pos, "while evaluating imported-drv-to-derivation.bsd.gen.hh");
     v.mkApp(*state.vImportedDrvToDerivation, w);
-    state.forceAttrs(v, pos, "while calling imported-drv-to-derivation.nix.gen.hh");
+    state.forceAttrs(v, pos, "while calling imported-drv-to-derivation.bsd.gen.hh");
 }
 
 /**
- * Import a Nix file with an alternate base scope, as `builtins.scopedImport` does.
+ * Import a Bsd file with an alternate base scope, as `builtins.scopedImport` does.
  *
  * @param state The evaluation state.
  * @param pos The position of the import call.
@@ -306,71 +306,71 @@ static RegisterPrimOp primop_import({
     .args = {"path"},
     // TODO turn "normal path values" into link below
     .doc = R"(
-      Load, parse, and return the Nix expression in the file *path*.
+      Load, parse, and return the Bsd expression in the file *path*.
 
       > **Note**
       >
-      > Unlike some languages, `import` is a regular function in Nix.
+      > Unlike some languages, `import` is a regular function in Bsd.
 
       The *path* argument must meet the same criteria as an [interpolated expression](@docroot@/language/string-interpolation.md#interpolated-expression).
 
-      If *path* is a directory, the file `default.nix` in that directory is used if it exists.
+      If *path* is a directory, the file `default.bsd` in that directory is used if it exists.
 
       > **Example**
       >
       > ```console
-      > $ echo 123 > default.nix
+      > $ echo 123 > default.bsd
       > ```
       >
-      > Import `default.nix` from the current directory.
+      > Import `default.bsd` from the current directory.
       >
-      > ```nix
+      > ```bsd
       > import ./.
       > ```
       >
       >     123
 
-      Evaluation aborts if the file doesn’t exist or contains an invalid Nix expression.
+      Evaluation aborts if the file doesn’t exist or contains an invalid Bsd expression.
 
-      A Nix expression loaded by `import` must not contain any *free variables*, that is, identifiers that are not defined in the Nix expression itself and are not built-in.
+      A Bsd expression loaded by `import` must not contain any *free variables*, that is, identifiers that are not defined in the Bsd expression itself and are not built-in.
       Therefore, it cannot refer to variables that are in scope at the call site.
 
       > **Example**
       >
       > If you have a calling expression
       >
-      > ```nix
+      > ```bsd
       > rec {
       >   x = 123;
-      >   y = import ./foo.nix;
+      >   y = import ./foo.bsd;
       > }
       > ```
       >
-      >  then the following `foo.nix` throws an error:
+      >  then the following `foo.bsd` throws an error:
       >
-      >  ```nix
-      >  # foo.nix
+      >  ```bsd
+      >  # foo.bsd
       >  x + 456
       >  ```
       >
-      >  since `x` is not in scope in `foo.nix`.
-      > If you want `x` to be available in `foo.nix`, pass it as a function argument:
+      >  since `x` is not in scope in `foo.bsd`.
+      > If you want `x` to be available in `foo.bsd`, pass it as a function argument:
       >
-      >  ```nix
+      >  ```bsd
       >  rec {
       >    x = 123;
-      >    y = import ./foo.nix x;
+      >    y = import ./foo.bsd x;
       >  }
       >  ```
       >
       >  and
       >
-      >  ```nix
-      >  # foo.nix
+      >  ```bsd
+      >  # foo.bsd
       >  x: x + 456
       >  ```
       >
-      >  The function argument doesn’t have to be called `x` in `foo.nix`; any name would work.
+      >  The function argument doesn’t have to be called `x` in `foo.bsd`; any name would work.
     )",
     .fun = [](EvalState & state, const PosIdx pos, Value * * args, Value & v)
     {
@@ -419,7 +419,7 @@ void prim_exec(EvalState & state, const PosIdx pos, Value * * args, Value & v)
     auto count = args[0]->listSize();
     if (count == 0)
         state.error<EvalError>("at least one argument to 'exec' required").atPos(pos).debugThrow();
-    NixStringContext context;
+    BsdStringContext context;
     auto program = state.coerceToString(pos, *elems[0], context,
             "while evaluating the first element of the argument passed to builtins.exec",
             false, false).toOwned();
@@ -777,7 +777,7 @@ static RegisterPrimOp primop_genericClosure(PrimOp {
 
       > **Example**
       >
-      > ```nix
+      > ```bsd
       > builtins.genericClosure {
       >   startSet = [ {key = 5;} ];
       >   operator = item: [{
@@ -790,7 +790,7 @@ static RegisterPrimOp primop_genericClosure(PrimOp {
       >
       > evaluates to
       >
-      > ```nix
+      > ```bsd
       > [ { key = 5; } { key = 16; } { key = 8; } { key = 4; } { key = 2; } { key = 1; } ]
       > ```
       )",
@@ -802,7 +802,7 @@ static RegisterPrimOp primop_break({
     .name = "break",
     .args = {"v"},
     .doc = R"(
-      In debug mode (enabled using `--debugger`), pause Nix expression evaluation and enter the REPL.
+      In debug mode (enabled using `--debugger`), pause Bsd expression evaluation and enter the REPL.
       Otherwise, return the argument `v`.
     )",
     .fun = [](EvalState & state, const PosIdx pos, Value * * args, Value & v)
@@ -826,11 +826,11 @@ static RegisterPrimOp primop_abort({
     .name = "abort",
     .args = {"s"},
     .doc = R"(
-      Abort Nix expression evaluation and print the error message *s*.
+      Abort Bsd expression evaluation and print the error message *s*.
     )",
     .fun = [](EvalState & state, const PosIdx pos, Value * * args, Value & v)
     {
-        NixStringContext context;
+        BsdStringContext context;
         auto s = state.coerceToString(pos, *args[0], context,
                 "while evaluating the error message passed to builtins.abort").toOwned();
         state.error<Abort>("evaluation aborted with the following error message: '%1%'", s).setIsFromExpr().debugThrow();
@@ -841,15 +841,15 @@ static RegisterPrimOp primop_throw({
     .name = "throw",
     .args = {"s"},
     .doc = R"(
-      Throw an error message *s*. This usually aborts Nix expression
-      evaluation, but in `nix-env -qa` and other commands that try to
+      Throw an error message *s*. This usually aborts Bsd expression
+      evaluation, but in `bsd-env -qa` and other commands that try to
       evaluate a set of derivations to get information about those
       derivations, a derivation that throws an error is silently skipped
       (which is not the case for `abort`).
     )",
     .fun = [](EvalState & state, const PosIdx pos, Value * * args, Value & v)
     {
-      NixStringContext context;
+      BsdStringContext context;
       auto s = state.coerceToString(pos, *args[0], context,
               "while evaluating the error message passed to builtin.throw").toOwned();
       state.error<ThrownError>(s).setIsFromExpr().debugThrow();
@@ -862,7 +862,7 @@ static void prim_addErrorContext(EvalState & state, const PosIdx pos, Value * * 
         state.forceValue(*args[1], pos);
         v = *args[1];
     } catch (Error & e) {
-        NixStringContext context;
+        BsdStringContext context;
         auto message = state.coerceToString(pos, *args[0], context,
                 "while evaluating the error message passed to builtins.addErrorContext",
                 false, false).toOwned();
@@ -885,21 +885,21 @@ static void prim_ceil(EvalState & state, const PosIdx pos, Value * * args, Value
             "while evaluating the first argument passed to builtins.ceil");
     auto ceilValue = ceil(value);
     bool isInt = args[0]->type() == nInt;
-    constexpr NixFloat int_min = std::numeric_limits<NixInt::Inner>::min(); // power of 2, so that no rounding occurs
+    constexpr BsdFloat int_min = std::numeric_limits<BsdInt::Inner>::min(); // power of 2, so that no rounding occurs
     if (ceilValue >= int_min && ceilValue < -int_min) {
         v.mkInt(ceilValue);
     } else if (isInt) {
-        // a NixInt, e.g. INT64_MAX, can be rounded to -int_min due to the cast to NixFloat
-        state.error<EvalError>("Due to a bug (see https://github.com/NixOS/nix/issues/12899) the NixInt argument %1% caused undefined behavior in previous Nix versions.\n\tFuture Nix versions might implement the correct behavior.", args[0]->integer().value).atPos(pos).debugThrow();
+        // a BsdInt, e.g. INT64_MAX, can be rounded to -int_min due to the cast to BsdFloat
+        state.error<EvalError>("Due to a bug (see https://github.com/BasedLinux/bsd/issues/12899) the BsdInt argument %1% caused undefined behavior in previous Bsd versions.\n\tFuture Bsd versions might implement the correct behavior.", args[0]->integer().value).atPos(pos).debugThrow();
     } else {
-        state.error<EvalError>("NixFloat argument %1% is not in the range of NixInt", args[0]->fpoint()).atPos(pos).debugThrow();
+        state.error<EvalError>("BsdFloat argument %1% is not in the range of BsdInt", args[0]->fpoint()).atPos(pos).debugThrow();
     }
-    // `forceFloat` casts NixInt to NixFloat, but instead NixInt args shall be returned unmodified
+    // `forceFloat` casts BsdInt to BsdFloat, but instead BsdInt args shall be returned unmodified
     if (isInt) {
         auto arg = args[0]->integer();
         auto res = v.integer();
         if (arg != res) {
-            state.error<EvalError>("Due to a bug (see https://github.com/NixOS/nix/issues/12899) a loss of precision occurred in previous Nix versions because the NixInt argument %1% was rounded to %2%.\n\tFuture Nix versions might implement the correct behavior.", arg, res).atPos(pos).debugThrow();
+            state.error<EvalError>("Due to a bug (see https://github.com/BasedLinux/bsd/issues/12899) a loss of precision occurred in previous Bsd versions because the BsdInt argument %1% was rounded to %2%.\n\tFuture Bsd versions might implement the correct behavior.", arg, res).atPos(pos).debugThrow();
         }
     }
 }
@@ -908,14 +908,14 @@ static RegisterPrimOp primop_ceil({
     .name = "__ceil",
     .args = {"number"},
     .doc = R"(
-        Rounds and converts *number* to the next higher NixInt value if possible, i.e. `ceil *number* >= *number*` and
+        Rounds and converts *number* to the next higher BsdInt value if possible, i.e. `ceil *number* >= *number*` and
         `ceil *number* - *number* < 1`.
 
-        An evaluation error is thrown, if there exists no such NixInt value `ceil *number*`.
-        Due to bugs in previous Nix versions an evaluation error might be thrown, if the datatype of *number* is
-        a NixInt and if `*number* < -9007199254740992` or `*number* > 9007199254740992`.
+        An evaluation error is thrown, if there exists no such BsdInt value `ceil *number*`.
+        Due to bugs in previous Bsd versions an evaluation error might be thrown, if the datatype of *number* is
+        a BsdInt and if `*number* < -9007199254740992` or `*number* > 9007199254740992`.
 
-        If the datatype of *number* is neither a NixInt (signed 64-bit integer) nor a NixFloat
+        If the datatype of *number* is neither a BsdInt (signed 64-bit integer) nor a BsdFloat
         (IEEE-754 double-precision floating-point number), an evaluation error is thrown.
     )",
     .fun = prim_ceil,
@@ -926,21 +926,21 @@ static void prim_floor(EvalState & state, const PosIdx pos, Value * * args, Valu
     auto value = state.forceFloat(*args[0], args[0]->determinePos(pos), "while evaluating the first argument passed to builtins.floor");
     auto floorValue = floor(value);
     bool isInt = args[0]->type() == nInt;
-    constexpr NixFloat int_min = std::numeric_limits<NixInt::Inner>::min(); // power of 2, so that no rounding occurs
+    constexpr BsdFloat int_min = std::numeric_limits<BsdInt::Inner>::min(); // power of 2, so that no rounding occurs
     if (floorValue >= int_min && floorValue < -int_min) {
         v.mkInt(floorValue);
     } else if (isInt) {
-        // a NixInt, e.g. INT64_MAX, can be rounded to -int_min due to the cast to NixFloat
-        state.error<EvalError>("Due to a bug (see https://github.com/NixOS/nix/issues/12899) the NixInt argument %1% caused undefined behavior in previous Nix versions.\n\tFuture Nix versions might implement the correct behavior.", args[0]->integer().value).atPos(pos).debugThrow();
+        // a BsdInt, e.g. INT64_MAX, can be rounded to -int_min due to the cast to BsdFloat
+        state.error<EvalError>("Due to a bug (see https://github.com/BasedLinux/bsd/issues/12899) the BsdInt argument %1% caused undefined behavior in previous Bsd versions.\n\tFuture Bsd versions might implement the correct behavior.", args[0]->integer().value).atPos(pos).debugThrow();
     } else {
-        state.error<EvalError>("NixFloat argument %1% is not in the range of NixInt", args[0]->fpoint()).atPos(pos).debugThrow();
+        state.error<EvalError>("BsdFloat argument %1% is not in the range of BsdInt", args[0]->fpoint()).atPos(pos).debugThrow();
     }
-    // `forceFloat` casts NixInt to NixFloat, but instead NixInt args shall be returned unmodified
+    // `forceFloat` casts BsdInt to BsdFloat, but instead BsdInt args shall be returned unmodified
     if (isInt) {
         auto arg = args[0]->integer();
         auto res = v.integer();
         if (arg != res) {
-            state.error<EvalError>("Due to a bug (see https://github.com/NixOS/nix/issues/12899) a loss of precision occurred in previous Nix versions because the NixInt argument %1% was rounded to %2%.\n\tFuture Nix versions might implement the correct behavior.", arg, res).atPos(pos).debugThrow();
+            state.error<EvalError>("Due to a bug (see https://github.com/BasedLinux/bsd/issues/12899) a loss of precision occurred in previous Bsd versions because the BsdInt argument %1% was rounded to %2%.\n\tFuture Bsd versions might implement the correct behavior.", arg, res).atPos(pos).debugThrow();
         }
     }
 }
@@ -949,14 +949,14 @@ static RegisterPrimOp primop_floor({
     .name = "__floor",
     .args = {"number"},
     .doc = R"(
-        Rounds and converts *number* to the next lower NixInt value if possible, i.e. `floor *number* <= *number*` and
+        Rounds and converts *number* to the next lower BsdInt value if possible, i.e. `floor *number* <= *number*` and
         `*number* - floor *number* < 1`.
 
-        An evaluation error is thrown, if there exists no such NixInt value `floor *number*`.
-        Due to bugs in previous Nix versions an evaluation error might be thrown, if the datatype of *number* is
-        a NixInt and if `*number* < -9007199254740992` or `*number* > 9007199254740992`.
+        An evaluation error is thrown, if there exists no such BsdInt value `floor *number*`.
+        Due to bugs in previous Bsd versions an evaluation error might be thrown, if the datatype of *number* is
+        a BsdInt and if `*number* < -9007199254740992` or `*number* > 9007199254740992`.
 
-        If the datatype of *number* is neither a NixInt (signed 64-bit integer) nor a NixFloat
+        If the datatype of *number* is neither a BsdInt (signed 64-bit integer) nor a BsdFloat
         (IEEE-754 double-precision floating-point number), an evaluation error will be thrown.
     )",
     .fun = prim_floor,
@@ -1015,7 +1015,7 @@ static RegisterPrimOp primop_tryEval({
       `false`.
 
       `tryEval` intentionally does not return the error message, because that risks bringing non-determinism into the evaluation result, and it would become very difficult to improve error reporting without breaking existing expressions.
-      Instead, use [`builtins.addErrorContext`](@docroot@/language/builtins.md#builtins-addErrorContext) to add context to the error message, and use a Nix unit testing tool for testing.
+      Instead, use [`builtins.addErrorContext`](@docroot@/language/builtins.md#builtins-addErrorContext) to add context to the error message, and use a Bsd unit testing tool for testing.
     )",
     .fun = prim_tryEval,
 });
@@ -1034,10 +1034,10 @@ static RegisterPrimOp primop_getEnv({
       `getEnv` returns the value of the environment variable *s*, or an
       empty string if the variable doesn’t exist. This function should be
       used with care, as it can introduce all sorts of nasty environment
-      dependencies in your Nix expression.
+      dependencies in your Bsd expression.
 
-      `getEnv` is used in Nix Packages to locate the file
-      `~/.nixpkgs/config.nix`, which contains user-local settings for Nix
+      `getEnv` is used in Bsd Packages to locate the file
+      `~/.bsdpkgs/config.bsd`, which contains user-local settings for Bsd
       Packages. (That is, it does a `getEnv "HOME"` to locate the user’s
       home directory.)
     )",
@@ -1184,11 +1184,11 @@ static void derivationStrictInternal(
     const Bindings * attrs,
     Value & v);
 
-/* Construct (as a unobservable side effect) a Nix derivation
+/* Construct (as a unobservable side effect) a Bsd derivation
    expression that performs the derivation described by the argument
    set.  Returns the original set extended with the following
    attributes: `outPath' containing the primary output path of the
-   derivation; `drvPath' containing the path of the Nix expression;
+   derivation; `drvPath' containing the path of the Bsd expression;
    and `type' set to `derivation' to indicate that this is a
    derivation. */
 static void prim_derivationStrict(EvalState & state, const PosIdx pos, Value * * args, Value & v)
@@ -1225,7 +1225,7 @@ static void prim_derivationStrict(EvalState & state, const PosIdx pos, Value * *
          * trace, which is of little use for the public we target here.
          *
          * Please keep in mind that error reporting is done on a best-effort
-         * basis in nix. There is no accurate location for a derivation, as it
+         * basis in bsd. There is no accurate location for a derivation, as it
          * often results from the composition of several functions
          * (derivationStrict, derivation, mkDerivation, mkPythonModule, etc.)
          */
@@ -1251,7 +1251,7 @@ static void checkDerivationName(EvalState & state, std::string_view drvName)
         // "Please pass a different name": Users may not be aware that they can
         //     pass a different one, in functions like `fetchurl` where the name
         //     is optional.
-        // Note that Nixpkgs generally won't trigger this, because `mkDerivation`
+        // Note that Bsdpkgs generally won't trigger this, because `mkDerivation`
         // sanitizes the name.
         state.error<EvalError>("invalid derivation name: %s. Please pass a different '%s'.", Uncolored(e.message()), "name").debugThrow();
     }
@@ -1286,7 +1286,7 @@ static void derivationStrictInternal(
     Derivation drv;
     drv.name = drvName;
 
-    NixStringContext context;
+    BsdStringContext context;
 
     bool contentAddressed = false;
     bool isImpure = false;
@@ -1305,7 +1305,7 @@ static void derivationStrictInternal(
         auto handleHashMode = [&](const std::string_view s) {
             if (s == "recursive") {
                 // back compat, new name is "nar"
-                ingestionMethod = ContentAddressMethod::Raw::NixArchive;
+                ingestionMethod = ContentAddressMethod::Raw::BsdArchive;
             } else try {
                 ingestionMethod = ContentAddressMethod::parse(s);
             } catch (UsageError &) {
@@ -1429,7 +1429,7 @@ static void derivationStrictInternal(
                     else if (i->name == state.sOutputs)
                         handleOutputs(tokenizeString<Strings>(s));
                     else if (i->name == state.sJson)
-                        warn("In derivation '%s': setting structured attributes via '__json' is deprecated, and may be disallowed in future versions of Nix. Set '__structuredAttrs = true' instead.", drvName);
+                        warn("In derivation '%s': setting structured attributes via '__json' is deprecated, and may be disallowed in future versions of Bsd. Set '__structuredAttrs = true' instead.", drvName);
                 }
 
             }
@@ -1456,7 +1456,7 @@ static void derivationStrictInternal(
                all outputs), all paths in the graph must be added to
                this derivation's list of inputs to ensure that they are
                available when the builder runs. */
-            [&](const NixStringContextElem::DrvDeep & d) {
+            [&](const BsdStringContextElem::DrvDeep & d) {
                 /* !!! This doesn't work if readOnlyMode is set. */
                 StorePathSet refs;
                 state.store->computeFSClosure(d.drvPath, refs);
@@ -1467,10 +1467,10 @@ static void derivationStrictInternal(
                     }
                 }
             },
-            [&](const NixStringContextElem::Built & b) {
+            [&](const BsdStringContextElem::Built & b) {
                 drv.inputDrvs.ensureSlot(*b.drvPath).value.insert(b.output);
             },
-            [&](const NixStringContextElem::Opaque & o) {
+            [&](const BsdStringContextElem::Opaque & o) {
                 drv.inputSrcs.insert(o.path);
             },
         }, c.raw);
@@ -1530,7 +1530,7 @@ static void derivationStrictInternal(
                 .atPos(v).debugThrow();
 
         auto ha = outputHashAlgo.value_or(HashAlgorithm::SHA256);
-        auto method = ingestionMethod.value_or(ContentAddressMethod::Raw::NixArchive);
+        auto method = ingestionMethod.value_or(ContentAddressMethod::Raw::BsdArchive);
 
         for (auto & i : outputs) {
             drv.env[i] = hashPlaceholder(i);
@@ -1589,7 +1589,7 @@ static void derivationStrictInternal(
         }
     }
 
-    /* Write the resulting term into the Nix store directory. */
+    /* Write the resulting term into the Bsd store directory. */
     auto drvPath = writeDerivation(*state.store, drv, state.repair);
     auto drvPathS = state.store->printStorePath(drvPath);
 
@@ -1605,7 +1605,7 @@ static void derivationStrictInternal(
 
     auto result = state.buildBindings(1 + drv.outputs.size());
     result.alloc(state.sDrvPath).mkString(drvPathS, {
-        NixStringContextElem::DrvDeep { .drvPath = drvPath },
+        BsdStringContextElem::DrvDeep { .drvPath = drvPath },
     });
     for (auto & i : drv.outputs)
         mkOutputString(state, result, drvPath, i);
@@ -1624,7 +1624,7 @@ static RegisterPrimOp primop_derivationStrict(PrimOp {
    example, 'placeholder "out"' returns the string
    /1rz4g4znpzjwh1xymhjpm42vipw92pr73vdgl6xs1hycac8kf2n9. At build
    time, any occurrence of this string in an derivation attribute will
-   be replaced with the concrete path in the Nix store of the output
+   be replaced with the concrete path in the Bsd store of the output
    ‘out’. */
 static void prim_placeholder(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
@@ -1656,7 +1656,7 @@ static RegisterPrimOp primop_placeholder({
    eh?).  !!! obsolete? */
 static void prim_toPath(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
-    NixStringContext context;
+    BsdStringContext context;
     auto path = state.coerceToPath(pos, *args[0], context, "while evaluating the first argument passed to builtins.toPath");
     v.mkString(path.path.abs(), context);
 }
@@ -1672,11 +1672,11 @@ static RegisterPrimOp primop_toPath({
 });
 
 /* Allow a valid store path to be used in an expression.  This is
-   useful in some generated expressions such as in nix-push, which
+   useful in some generated expressions such as in bsd-push, which
    generates a call to a function with an already existing store path
    as argument.  You don't want to use `toPath' here because it copies
-   the path to the Nix store, which yields a copy like
-   /nix/store/newhash-oldhash-oldname.  In the past, `toPath' had
+   the path to the Bsd store, which yields a copy like
+   /bsd/store/newhash-oldhash-oldname.  In the past, `toPath' had
    special case behaviour for store paths, but that created weird
    corner cases. */
 static void prim_storePath(EvalState & state, const PosIdx pos, Value * * args, Value & v)
@@ -1687,20 +1687,20 @@ static void prim_storePath(EvalState & state, const PosIdx pos, Value * * args, 
             "builtins.storePath"
         ).atPos(pos).debugThrow();
 
-    NixStringContext context;
+    BsdStringContext context;
     auto path = state.coerceToPath(pos, *args[0], context, "while evaluating the first argument passed to 'builtins.storePath'").path;
     /* Resolve symlinks in ‘path’, unless ‘path’ itself is a symlink
        directly in the store.  The latter condition is necessary so
-       e.g. nix-push does the right thing. */
+       e.g. bsd-push does the right thing. */
     if (!state.store->isStorePath(path.abs()))
         path = CanonPath(canonPath(path.abs(), true));
     if (!state.store->isInStore(path.abs()))
-        state.error<EvalError>("path '%1%' is not in the Nix store", path)
+        state.error<EvalError>("path '%1%' is not in the Bsd store", path)
             .atPos(pos).debugThrow();
     auto path2 = state.store->toStorePath(path.abs()).first;
     if (!settings.readOnlyMode)
         state.store->ensurePath(path2);
-    context.insert(NixStringContextElem::Opaque { .path = path2 });
+    context.insert(BsdStringContextElem::Opaque { .path = path2 });
     v.mkString(path.abs(), context);
 }
 
@@ -1710,12 +1710,12 @@ static RegisterPrimOp primop_storePath({
     .doc = R"(
       This function allows you to define a dependency on an already
       existing store path. For example, the derivation attribute `src
-      = builtins.storePath /nix/store/f1d18v1y…-source` causes the
+      = builtins.storePath /bsd/store/f1d18v1y…-source` causes the
       derivation to depend on the specified path, which must exist or
       be substitutable. Note that this differs from a plain path
-      (e.g. `src = /nix/store/f1d18v1y…-source`) in that the latter
-      causes the path to be *copied* again to the Nix store, resulting
-      in a new path (e.g. `/nix/store/ld01dnzc…-source-source`).
+      (e.g. `src = /bsd/store/f1d18v1y…-source`) in that the latter
+      causes the path to be *copied* again to the Bsd store, resulting
+      in a new path (e.g. `/bsd/store/ld01dnzc…-source-source`).
 
       Not available in [pure evaluation mode](@docroot@/command-ref/conf-file.md#conf-pure-eval).
 
@@ -1781,7 +1781,7 @@ static std::string_view legacyBaseNameOf(std::string_view path)
    following the last slash. */
 static void prim_baseNameOf(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
-    NixStringContext context;
+    BsdStringContext context;
     v.mkString(legacyBaseNameOf(*state.coerceToString(pos, *args[0], context,
             "while evaluating the first argument passed to builtins.baseNameOf",
             false, false)), context);
@@ -1815,7 +1815,7 @@ static void prim_dirOf(EvalState & state, const PosIdx pos, Value * * args, Valu
         auto path = args[0]->path();
         v.mkPath(path.path.isRoot() ? path : path.parent());
     } else {
-        NixStringContext context;
+        BsdStringContext context;
         auto path = state.coerceToString(pos, *args[0], context,
             "while evaluating the first argument passed to 'builtins.dirOf'",
             false, false);
@@ -1842,7 +1842,7 @@ static void prim_readFile(EvalState & state, const PosIdx pos, Value * * args, V
     auto s = path.readFile();
     if (s.find((char) 0) != std::string::npos)
         state.error<EvalError>(
-            "the contents of the file '%1%' cannot be represented as a Nix string",
+            "the contents of the file '%1%' cannot be represented as a Bsd string",
             path
         ).atPos(pos).debugThrow();
     StorePathSet refs;
@@ -1856,9 +1856,9 @@ static void prim_readFile(EvalState & state, const PosIdx pos, Value * * args, V
         refsSink << s;
         refs = refsSink.getResultPaths();
     }
-    NixStringContext context;
+    BsdStringContext context;
     for (auto && p : std::move(refs)) {
-        context.insert(NixStringContextElem::Opaque {
+        context.insert(BsdStringContextElem::Opaque {
             .path = std::move((StorePath &&)p),
         });
     }
@@ -1874,8 +1874,8 @@ static RegisterPrimOp primop_readFile({
     .fun = prim_readFile,
 });
 
-/* Find a file in the Nix search path. Used to implement <x> paths,
-   which are desugared to 'findFile __nixPath "x"'. */
+/* Find a file in the Bsd search path. Used to implement <x> paths,
+   which are desugared to 'findFile __bsdPath "x"'. */
 static void prim_findFile(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
     state.forceList(*args[0], pos, "while evaluating the first argument passed to builtins.findFile");
@@ -1890,9 +1890,9 @@ static void prim_findFile(EvalState & state, const PosIdx pos, Value * * args, V
         if (i != v2->attrs()->end())
             prefix = state.forceStringNoCtx(*i->value, pos, "while evaluating the `prefix` attribute of an element of the list passed to builtins.findFile");
 
-        i = state.getAttr(state.sPath, v2->attrs(), "in an element of the __nixPath");
+        i = state.getAttr(state.sPath, v2->attrs(), "in an element of the __bsdPath");
 
-        NixStringContext context;
+        BsdStringContext context;
         auto path = state.coerceToString(pos, *i->value, context,
                 "while evaluating the `path` attribute of an element of the list passed to builtins.findFile",
                 false, false).toOwned();
@@ -1925,16 +1925,16 @@ static RegisterPrimOp primop_findFile(PrimOp {
     .doc = R"(
       Find *lookup-path* in *search-path*.
 
-      [Lookup path](@docroot@/language/constructs/lookup-path.md) expressions are [desugared](https://en.wikipedia.org/wiki/Syntactic_sugar) using this and [`builtins.nixPath`](#builtins-nixPath):
+      [Lookup path](@docroot@/language/constructs/lookup-path.md) expressions are [desugared](https://en.wikipedia.org/wiki/Syntactic_sugar) using this and [`builtins.bsdPath`](#builtins-bsdPath):
 
-      ```nix
-      <nixpkgs>
+      ```bsd
+      <bsdpkgs>
       ```
 
       is equivalent to:
 
-      ```nix
-      builtins.findFile builtins.nixPath "nixpkgs"
+      ```bsd
+      builtins.findFile builtins.bsdPath "bsdpkgs"
       ```
 
       A search path is represented as a list of [attribute sets](./types.md#attribute-set) with two attributes:
@@ -1946,25 +1946,25 @@ static RegisterPrimOp primop_findFile(PrimOp {
       - ```
         {
           prefix = "";
-          path = "/nix/var/nix/profiles/per-user/root/channels";
+          path = "/bsd/var/bsd/profiles/per-user/root/channels";
         }
         ```
       - ```
         {
-          prefix = "nixos-config";
-          path = "/etc/nixos/configuration.nix";
+          prefix = "bsdos-config";
+          path = "/etc/bsdos/configuration.bsd";
         }
         ```
       - ```
         {
-          prefix = "nixpkgs";
-          path = "https://github.com/NixOS/nixpkgs/tarballs/master";
+          prefix = "bsdpkgs";
+          path = "https://github.com/BasedLinux/bsdpkgs/tarballs/master";
         }
         ```
       - ```
         {
-          prefix = "nixpkgs";
-          path = "channel:nixpkgs-unstable";
+          prefix = "bsdpkgs";
+          path = "channel:bsdpkgs-unstable";
         }
         ```
       - ```
@@ -1993,19 +1993,19 @@ static RegisterPrimOp primop_findFile(PrimOp {
       >     path = "/home/eelco/Dev";
       >   }
       >   {
-      >     prefix = "nixos-config";
-      >     path = "/etc/nixos";
+      >     prefix = "bsdos-config";
+      >     path = "/etc/bsdos";
       >   }
       > ]
       > ```
       >
-      > and a *lookup-path* value `"nixos-config"` causes Nix to try `/home/eelco/Dev/nixos-config` and `/etc/nixos` in that order and return the first path that exists.
+      > and a *lookup-path* value `"bsdos-config"` causes Bsd to try `/home/eelco/Dev/bsdos-config` and `/etc/bsdos` in that order and return the first path that exists.
 
       If `path` starts with `http://` or `https://`, it is interpreted as the URL of a tarball to be downloaded and unpacked to a temporary location.
       The tarball must consist of a single top-level directory.
 
-      The URLs of the tarballs from the official `nixos.org` channels can be abbreviated as `channel:<channel-name>`.
-      See [documentation on `nix-channel`](@docroot@/command-ref/nix-channel.md) for details about channels.
+      The URLs of the tarballs from the official `basedlinux.org` channels can be abbreviated as `channel:<channel-name>`.
+      See [documentation on `bsd-channel`](@docroot@/command-ref/bsd-channel.md) for details about channels.
 
       > **Example**
       >
@@ -2013,18 +2013,18 @@ static RegisterPrimOp primop_findFile(PrimOp {
       >
       > - ```
       >   {
-      >     prefix = "nixpkgs";
-      >     path = "channel:nixpkgs-unstable";
+      >     prefix = "bsdpkgs";
+      >     path = "channel:bsdpkgs-unstable";
       >   }
       >   ```
       > - ```
       >   {
-      >     prefix = "nixpkgs";
-      >     path = "https://nixos.org/channels/nixos-unstable/nixexprs.tar.xz";
+      >     prefix = "bsdpkgs";
+      >     path = "https://basedlinux.org/channels/bsdos-unstable/bsdexprs.tar.xz";
       >   }
       >   ```
 
-      Search paths can also point to source trees using [flake URLs](@docroot@/command-ref/new-cli/nix3-flake.md#url-like-syntax).
+      Search paths can also point to source trees using [flake URLs](@docroot@/command-ref/new-cli/bsd3-flake.md#url-like-syntax).
 
 
       > **Example**
@@ -2033,22 +2033,22 @@ static RegisterPrimOp primop_findFile(PrimOp {
       >
       > ```
       > {
-      >   prefix = "nixpkgs";
-      >   path = "flake:nixpkgs";
+      >   prefix = "bsdpkgs";
+      >   path = "flake:bsdpkgs";
       > }
       > ```
-      > specifies that the prefix `nixpkgs` shall refer to the source tree downloaded from the `nixpkgs` entry in the flake registry.
+      > specifies that the prefix `bsdpkgs` shall refer to the source tree downloaded from the `bsdpkgs` entry in the flake registry.
       >
       > Similarly
       >
       > ```
       > {
-      >   prefix = "nixpkgs";
-      >   path = "flake:github:nixos/nixpkgs/nixos-22.05";
+      >   prefix = "bsdpkgs";
+      >   path = "flake:github:bsdos/bsdpkgs/bsdos-22.05";
       > }
       > ```
       >
-      > makes `<nixpkgs>` refer to a particular branch of the `NixOS/nixpkgs` repository on GitHub.
+      > makes `<bsdpkgs>` refer to a particular branch of the `BasedLinux/bsdpkgs` repository on GitHub.
     )",
     .fun = prim_findFile,
 });
@@ -2150,7 +2150,7 @@ static RegisterPrimOp primop_readDir({
       directory `A` contains a regular file `B` and another directory
       `C`, then `builtins.readDir ./A` returns the set
 
-      ```nix
+      ```bsd
       { B = "regular"; C = "directory"; }
       ```
 
@@ -2191,7 +2191,7 @@ static RegisterPrimOp primop_outputOf({
       This primop can be chained arbitrarily deeply.
       For instance,
 
-      ```nix
+      ```bsd
       builtins.outputOf
         (builtins.outputOf myDrv "out")
         "out"
@@ -2210,13 +2210,13 @@ static RegisterPrimOp primop_outputOf({
  *************************************************************/
 
 
-/* Convert the argument (which can be any Nix expression) to an XML
-   representation returned in a string.  Not all Nix expressions can
+/* Convert the argument (which can be any Bsd expression) to an XML
+   representation returned in a string.  Not all Bsd expressions can
    be sensibly or completely represented (e.g., functions). */
 static void prim_toXML(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
     std::ostringstream out;
-    NixStringContext context;
+    BsdStringContext context;
     printValueAsXML(state, true, false, *args[0], out, context, pos);
     v.mkString(toView(out), context);
 }
@@ -2232,7 +2232,7 @@ static RegisterPrimOp primop_toXML({
 
       Here is an example where this is the case:
 
-      ```nix
+      ```bsd
       { stdenv, fetchurl, libxslt, jira, uberwiki }:
 
       stdenv.mkDerivation (rec {
@@ -2278,7 +2278,7 @@ static RegisterPrimOp primop_toXML({
       normal method of passing information through an environment
       variable, which just concatenates everything together into a
       string (which might just work in this case, but wouldn’t work if
-      fields are optional or contain lists themselves). Instead the Nix
+      fields are optional or contain lists themselves). Instead the Bsd
       expression is converted to an XML representation with `toXML`,
       which is unambiguous and can easily be processed with the
       appropriate tools. For instance, in the example an XSLT stylesheet
@@ -2295,7 +2295,7 @@ static RegisterPrimOp primop_toXML({
               <string value="/bugtracker" />
             </attr>
             <attr name="war">
-              <path value="/nix/store/d1jh9pasa7k2...-jira/lib/atlassian-jira.war" />
+              <path value="/bsd/store/d1jh9pasa7k2...-jira/lib/atlassian-jira.war" />
             </attr>
           </attrs>
           <attrs>
@@ -2303,7 +2303,7 @@ static RegisterPrimOp primop_toXML({
               <string value="/wiki" />
             </attr>
             <attr name="war">
-              <path value="/nix/store/y6423b1yi4sx...-uberwiki/uberwiki.war" />
+              <path value="/bsd/store/y6423b1yi4sx...-uberwiki/uberwiki.war" />
             </attr>
           </attrs>
         </list>
@@ -2311,20 +2311,20 @@ static RegisterPrimOp primop_toXML({
       ```
 
       Note that we used the `toFile` built-in to write the builder and
-      the stylesheet “inline” in the Nix expression. The path of the
+      the stylesheet “inline” in the Bsd expression. The path of the
       stylesheet is spliced into the builder using the syntax `xsltproc
       ${stylesheet}`.
     )",
     .fun = prim_toXML,
 });
 
-/* Convert the argument (which can be any Nix expression) to a JSON
-   string.  Not all Nix expressions can be sensibly or completely
+/* Convert the argument (which can be any Bsd expression) to a JSON
+   string.  Not all Bsd expressions can be sensibly or completely
    represented (e.g., functions). */
 static void prim_toJSON(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
     std::ostringstream out;
-    NixStringContext context;
+    BsdStringContext context;
     printValueAsJSON(state, true, *args[0], pos, out, context);
     v.mkString(toView(out), context);
 }
@@ -2359,9 +2359,9 @@ static RegisterPrimOp primop_fromJSON({
     .name = "__fromJSON",
     .args = {"e"},
     .doc = R"(
-      Convert a JSON string to a Nix value. For example,
+      Convert a JSON string to a Bsd value. For example,
 
-      ```nix
+      ```bsd
       builtins.fromJSON ''{"x": [1, 2, 3], "y": null}''
       ```
 
@@ -2370,18 +2370,18 @@ static RegisterPrimOp primop_fromJSON({
     .fun = prim_fromJSON,
 });
 
-/* Store a string in the Nix store as a source file that can be used
+/* Store a string in the Bsd store as a source file that can be used
    as an input by derivations. */
 static void prim_toFile(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
-    NixStringContext context;
+    BsdStringContext context;
     std::string name(state.forceStringNoCtx(*args[0], pos, "while evaluating the first argument passed to builtins.toFile"));
     std::string contents(state.forceString(*args[1], context, pos, "while evaluating the second argument passed to builtins.toFile"));
 
     StorePathSet refs;
 
     for (auto c : context) {
-        if (auto p = std::get_if<NixStringContextElem::Opaque>(&c.raw))
+        if (auto p = std::get_if<BsdStringContextElem::Opaque>(&c.raw))
             refs.insert(p->path);
         else
             state.error<EvalError>(
@@ -2414,13 +2414,13 @@ static RegisterPrimOp primop_toFile({
     .name = "__toFile",
     .args = {"name", "s"},
     .doc = R"(
-      Store the string *s* in a file in the Nix store and return its
+      Store the string *s* in a file in the Bsd store and return its
       path.  The file has suffix *name*. This file can be used as an
       input to derivations. One application is to write builders
-      “inline”. For instance, the following Nix expression combines the
-      Nix expression for GNU Hello and its build script into one file:
+      “inline”. For instance, the following Bsd expression combines the
+      Bsd expression for GNU Hello and its build script into one file:
 
-      ```nix
+      ```bsd
       { stdenv, fetchurl, perl }:
 
       stdenv.mkDerivation {
@@ -2448,7 +2448,7 @@ static RegisterPrimOp primop_toFile({
 
       It is even possible for one file to refer to another, e.g.,
 
-      ```nix
+      ```bsd
       builder = let
         configFile = builtins.toFile "foo.conf" "
           # This is some dummy configuration file.
@@ -2464,13 +2464,13 @@ static RegisterPrimOp primop_toFile({
       Note that `${configFile}` is a
       [string interpolation](@docroot@/language/types.md#type-string), so the result of the
       expression `configFile`
-      (i.e., a path like `/nix/store/m7p7jfny445k...-foo.conf`) will be
+      (i.e., a path like `/bsd/store/m7p7jfny445k...-foo.conf`) will be
       spliced into the resulting string.
 
       It is however *not* allowed to have files mutually referring to each
       other, like so:
 
-      ```nix
+      ```bsd
       let
         foo = builtins.toFile "foo" "...${bar}...";
         bar = builtins.toFile "bar" "...${foo}...";
@@ -2481,7 +2481,7 @@ static RegisterPrimOp primop_toFile({
       the computation of the cryptographic hashes for `foo` and `bar`.
 
       It is also not possible to reference the result of a derivation. If
-      you are using Nixpkgs, the `writeTextFile` function is able to do
+      you are using Bsdpkgs, the `writeTextFile` function is able to do
       that.
     )",
     .fun = prim_toFile,
@@ -2516,7 +2516,7 @@ static void addPath(
     ContentAddressMethod method,
     const std::optional<Hash> expectedHash,
     Value & v,
-    const NixStringContext & context)
+    const BsdStringContext & context)
 {
     try {
         if (path.accessor == state.rootFS && state.store->isInStore(path.path.abs())) {
@@ -2567,12 +2567,12 @@ static void addPath(
 
 static void prim_filterSource(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
-    NixStringContext context;
+    BsdStringContext context;
     auto path = state.coerceToPath(pos, *args[1], context,
         "while evaluating the second argument (the path to filter) passed to 'builtins.filterSource'");
     state.forceFunction(*args[0], pos, "while evaluating the first argument passed to builtins.filterSource");
 
-    addPath(state, pos, path.baseName(), path, args[0], ContentAddressMethod::Raw::NixArchive, std::nullopt, v, context);
+    addPath(state, pos, path.baseName(), path, args[0], ContentAddressMethod::Raw::BsdArchive, std::nullopt, v, context);
 }
 
 static RegisterPrimOp primop_filterSource({
@@ -2592,11 +2592,11 @@ static RegisterPrimOp primop_filterSource({
       > file is changed. Use `builtins.path` instead, which allows
       > specifying the name of the output directory.
 
-      This function allows you to copy sources into the Nix store while
+      This function allows you to copy sources into the Bsd store while
       filtering certain files. For instance, suppose that you want to use
-      the directory `source-dir` as an input to a Nix expression, e.g.
+      the directory `source-dir` as an input to a Bsd expression, e.g.
 
-      ```nix
+      ```bsd
       stdenv.mkDerivation {
         ...
         src = ./source-dir;
@@ -2609,7 +2609,7 @@ static RegisterPrimOp primop_filterSource({
       causing lots of spurious rebuilds. With `filterSource` you can
       filter out the `.svn` directories:
 
-      ```nix
+      ```bsd
       src = builtins.filterSource
         (path: type: type != "directory" || baseNameOf path != ".svn")
         ./source-dir;
@@ -2618,12 +2618,12 @@ static RegisterPrimOp primop_filterSource({
       Thus, the first argument *e1* must be a predicate function that is
       called for each regular file, directory or symlink in the source
       tree *e2*. If the function returns `true`, the file is copied to the
-      Nix store, otherwise it is omitted. The function is called with two
+      Bsd store, otherwise it is omitted. The function is called with two
       arguments. The first is the full path of the file. The second is a
       string that identifies the type of the file, which is either
       `"regular"`, `"directory"`, `"symlink"` or `"unknown"` (for other
       kinds of files such as device nodes or fifos — but note that those
-      cannot be copied to the Nix store, so if the predicate returns
+      cannot be copied to the Bsd store, so if the predicate returns
       `true` for them, the copy fails). If you exclude a directory,
       the entire corresponding subtree of *e2* is excluded.
     )",
@@ -2635,9 +2635,9 @@ static void prim_path(EvalState & state, const PosIdx pos, Value * * args, Value
     std::optional<SourcePath> path;
     std::string name;
     Value * filterFun = nullptr;
-    auto method = ContentAddressMethod::Raw::NixArchive;
+    auto method = ContentAddressMethod::Raw::BsdArchive;
     std::optional<Hash> expectedHash;
-    NixStringContext context;
+    BsdStringContext context;
 
     state.forceAttrs(*args[0], pos, "while evaluating the argument passed to 'builtins.path'");
 
@@ -2651,7 +2651,7 @@ static void prim_path(EvalState & state, const PosIdx pos, Value * * args, Value
             state.forceFunction(*(filterFun = attr.value), attr.pos, "while evaluating the `filter` parameter passed to builtins.path");
         else if (n == "recursive")
             method = state.forceBool(*attr.value, attr.pos, "while evaluating the `recursive` attribute passed to builtins.path")
-                ? ContentAddressMethod::Raw::NixArchive
+                ? ContentAddressMethod::Raw::BsdArchive
                 : ContentAddressMethod::Raw::Flat;
         else if (n == "sha256")
             expectedHash = newHashAllowEmpty(state.forceStringNoCtx(*attr.value, attr.pos, "while evaluating the `sha256` attribute passed to builtins.path"), HashAlgorithm::SHA256);
@@ -2683,7 +2683,7 @@ static RegisterPrimOp primop_path({
 
         - name\
           The name of the path when added to the store. This can used to
-          reference paths that have nix-illegal characters in their names,
+          reference paths that have bsd-illegal characters in their names,
           like `@`.
 
         - filter\
@@ -2701,7 +2701,7 @@ static RegisterPrimOp primop_path({
           When provided, this is the expected hash of the file at the
           path. Evaluation fails if the hash is incorrect, and
           providing a hash allows `builtins.path` to be used even when the
-          `pure-eval` nix config option is on.
+          `pure-eval` bsd config option is on.
     )",
     .fun = prim_path,
 });
@@ -2820,7 +2820,7 @@ static RegisterPrimOp primop_unsafeGetAttrPos(PrimOp {
     .arity = 2,
     .doc = R"(
       `unsafeGetAttrPos` returns the position of the attribute named *s*
-      from *set*. This is used by Nixpkgs to provide location information
+      from *set*. This is used by Bsdpkgs to provide location information
       in error messages.
     )",
     .fun = prim_unsafeGetAttrPos,
@@ -2944,7 +2944,7 @@ static RegisterPrimOp primop_removeAttrs({
       Remove the attributes listed in *list* from *set*. The attributes
       don’t have to exist in *set*. For instance,
 
-      ```nix
+      ```bsd
       removeAttrs { x = 1; y = 2; z = 3; } [ "a" "x" "z" ]
       ```
 
@@ -2997,7 +2997,7 @@ static RegisterPrimOp primop_listToAttrs({
 
       Example:
 
-      ```nix
+      ```bsd
       builtins.listToAttrs
         [ { name = "foo"; value = 123; }
           { name = "bar"; value = 456; }
@@ -3007,7 +3007,7 @@ static RegisterPrimOp primop_listToAttrs({
 
       evaluates to
 
-      ```nix
+      ```bsd
       { foo = 123; bar = 456; }
       ```
     )",
@@ -3035,7 +3035,7 @@ static void prim_intersectAttrs(EvalState & state, const PosIdx pos, Value * * a
     // ===
     // std::set_intersection is not suitable, as it only performs a simultaneous
     // linear scan; not taking advantage of random access. This is O(n + m), so
-    // linear in the largest set, which is not acceptable for callPackage in Nixpkgs.
+    // linear in the largest set, which is not acceptable for callPackage in Bsdpkgs.
     //
     // Simultaneous scan, with alternating simple binary search
     // ===
@@ -3120,7 +3120,7 @@ static RegisterPrimOp primop_catAttrs({
       sets.  Attrsets that don't contain the named attribute are
       ignored. For example,
 
-      ```nix
+      ```bsd
       builtins.catAttrs "a" [{a = 1;} {b = 0;} {a = 2;}]
       ```
 
@@ -3196,7 +3196,7 @@ static RegisterPrimOp primop_mapAttrs({
     .doc = R"(
       Apply function *f* to every element of *attrset*. For example,
 
-      ```nix
+      ```bsd
       builtins.mapAttrs (name: value: value * 10) { a = 1; b = 2; }
       ```
 
@@ -3273,7 +3273,7 @@ static RegisterPrimOp primop_zipAttrsWith({
       union of the attribute names in each element of `list`. The attribute
       values are the return values of `f`.
 
-      ```nix
+      ```bsd
       builtins.zipAttrsWith
         (name: values: { inherit name values; })
         [ { a = "x"; } { a = "y"; b = "z"; } ]
@@ -3316,9 +3316,9 @@ static RegisterPrimOp primop_isList({
 /* Return the n-1'th element of a list. */
 static void prim_elemAt(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
-    NixInt::Inner n = state.forceInt(*args[1], pos, "while evaluating the second argument passed to 'builtins.elemAt'").value;
+    BsdInt::Inner n = state.forceInt(*args[1], pos, "while evaluating the second argument passed to 'builtins.elemAt'").value;
     state.forceList(*args[0], pos, "while evaluating the first argument passed to 'builtins.elemAt'");
-    if (n < 0 || std::make_unsigned_t<NixInt::Inner>(n) >= args[0]->listSize())
+    if (n < 0 || std::make_unsigned_t<BsdInt::Inner>(n) >= args[0]->listSize())
         state.error<EvalError>(
             "'builtins.elemAt' called with index %d on a list of size %d",
             n,
@@ -3418,7 +3418,7 @@ static RegisterPrimOp primop_map({
       Apply the function *f* to each element in the list *list*. For
       example,
 
-      ```nix
+      ```bsd
       map (x: "foo" + x) [ "bar" "bla" "abc" ]
       ```
 
@@ -3628,7 +3628,7 @@ static void prim_genList(EvalState & state, const PosIdx pos, Value * * args, Va
 {
     auto len_ = state.forceInt(*args[1], pos, "while evaluating the second argument passed to builtins.genList").value;
 
-    if (len_ < 0 || std::make_unsigned_t<NixInt::Inner>(len_) > std::numeric_limits<size_t>::max())
+    if (len_ < 0 || std::make_unsigned_t<BsdInt::Inner>(len_) > std::numeric_limits<size_t>::max())
         state.error<EvalError>("cannot create list of size %1%", len_).atPos(pos).debugThrow();
 
     size_t len = size_t(len_);
@@ -3653,7 +3653,7 @@ static RegisterPrimOp primop_genList({
       Generate list of size *length*, with each element *i* equal to the
       value returned by *generator* `i`. For example,
 
-      ```nix
+      ```bsd
       builtins.genList (x: x * x) 5
       ```
 
@@ -3717,7 +3717,7 @@ static RegisterPrimOp primop_sort({
       if the first element is less than the second, and `false` otherwise.
       For example,
 
-      ```nix
+      ```bsd
       builtins.sort builtins.lessThan [ 483 249 526 147 42 77 ]
       ```
 
@@ -3732,19 +3732,19 @@ static RegisterPrimOp primop_sort({
 
         1. Transitivity
 
-        ```nix
+        ```bsd
         comparator a b && comparator b c -> comparator a c
         ```
 
         1. Irreflexivity
 
-        ```nix
+        ```bsd
         comparator a a == false
         ```
 
         1. Transitivity of equivalence
 
-        ```nix
+        ```bsd
         let equiv = a: b: (!comparator a b && !comparator b a); in
         equiv a b && equiv b c -> equiv a c
         ```
@@ -3802,13 +3802,13 @@ static RegisterPrimOp primop_partition({
       `wrong`, containing the elements for which it returned
       `false`. For example,
 
-      ```nix
+      ```bsd
       builtins.partition (x: x > 10) [1 23 9 3 42]
       ```
 
       evaluates to
 
-      ```nix
+      ```bsd
       { right = [ 23 42 ]; wrong = [ 1 9 3 ]; }
       ```
     )",
@@ -3854,13 +3854,13 @@ static RegisterPrimOp primop_groupBy({
 
       For example,
 
-      ```nix
+      ```bsd
       builtins.groupBy (builtins.substring 0 1) ["foo" "bar" "baz"]
       ```
 
       evaluates to
 
-      ```nix
+      ```bsd
       { b = [ "bar" "baz" ]; f = [ "foo" ]; }
       ```
     )",
@@ -4005,15 +4005,15 @@ static void prim_div(EvalState & state, const PosIdx pos, Value * * args, Value 
     state.forceValue(*args[0], pos);
     state.forceValue(*args[1], pos);
 
-    NixFloat f2 = state.forceFloat(*args[1], pos, "while evaluating the second operand of the division");
+    BsdFloat f2 = state.forceFloat(*args[1], pos, "while evaluating the second operand of the division");
     if (f2 == 0)
         state.error<EvalError>("division by zero").atPos(pos).debugThrow();
 
     if (args[0]->type() == nFloat || args[1]->type() == nFloat) {
         v.mkFloat(state.forceFloat(*args[0], pos, "while evaluating the first operand of the division") / f2);
     } else {
-        NixInt i1 = state.forceInt(*args[0], pos, "while evaluating the first operand of the division");
-        NixInt i2 = state.forceInt(*args[1], pos, "while evaluating the second operand of the division");
+        BsdInt i1 = state.forceInt(*args[0], pos, "while evaluating the first operand of the division");
+        BsdInt i2 = state.forceInt(*args[1], pos, "while evaluating the second operand of the division");
         /* Avoid division overflow as it might raise SIGFPE. */
         auto result_ = i1 / i2;
         if (auto result = result_.valueChecked(); result.has_value()) {
@@ -4111,10 +4111,10 @@ static RegisterPrimOp primop_lessThan({
 
 /* Convert the argument to a string.  Paths are *not* copied to the
    store, so `toString /foo/bar' yields `"/foo/bar"', not
-   `"/nix/store/whatever..."'. */
+   `"/bsd/store/whatever..."'. */
 static void prim_toString(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
-    NixStringContext context;
+    BsdStringContext context;
     auto s = state.coerceToString(pos, *args[0], context,
             "while evaluating the first argument passed to builtins.toString",
             true, false);
@@ -4151,13 +4151,13 @@ static RegisterPrimOp primop_toString({
    non-negative. */
 static void prim_substring(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
-    using NixUInt = std::make_unsigned_t<NixInt::Inner>;
-    NixInt::Inner start = state.forceInt(*args[0], pos, "while evaluating the first argument (the start offset) passed to builtins.substring").value;
+    using BsdUInt = std::make_unsigned_t<BsdInt::Inner>;
+    BsdInt::Inner start = state.forceInt(*args[0], pos, "while evaluating the first argument (the start offset) passed to builtins.substring").value;
 
     if (start < 0)
         state.error<EvalError>("negative start position in 'substring'").atPos(pos).debugThrow();
 
-    NixInt::Inner len = state.forceInt(*args[1], pos, "while evaluating the second argument (the substring length) passed to builtins.substring").value;
+    BsdInt::Inner len = state.forceInt(*args[1], pos, "while evaluating the second argument (the substring length) passed to builtins.substring").value;
 
     // Negative length may be idiomatically passed to builtins.substring to get
     // the tail of the string.
@@ -4173,14 +4173,14 @@ static void prim_substring(EvalState & state, const PosIdx pos, Value * * args, 
         }
     }
 
-    if (len >= 0 && NixUInt(len) < _len) {
+    if (len >= 0 && BsdUInt(len) < _len) {
         _len = len;
     }
 
-    NixStringContext context;
+    BsdStringContext context;
     auto s = state.coerceToString(pos, *args[2], context, "while evaluating the third argument (the string) passed to builtins.substring");
 
-    v.mkString(NixUInt(start) >= s->size() ? "" : s->substr(start, _len), context);
+    v.mkString(BsdUInt(start) >= s->size() ? "" : s->substr(start, _len), context);
 }
 
 static RegisterPrimOp primop_substring({
@@ -4195,20 +4195,20 @@ static RegisterPrimOp primop_substring({
       *start* must be non-negative.
       For example,
 
-      ```nix
-      builtins.substring 0 3 "nixos"
+      ```bsd
+      builtins.substring 0 3 "bsdos"
       ```
 
-      evaluates to `"nix"`.
+      evaluates to `"bsd"`.
     )",
     .fun = prim_substring,
 });
 
 static void prim_stringLength(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
-    NixStringContext context;
+    BsdStringContext context;
     auto s = state.coerceToString(pos, *args[0], context, "while evaluating the argument passed to builtins.stringLength");
-    v.mkInt(NixInt::Inner(s->size()));
+    v.mkInt(BsdInt::Inner(s->size()));
 }
 
 static RegisterPrimOp primop_stringLength({
@@ -4229,7 +4229,7 @@ static void prim_hashString(EvalState & state, const PosIdx pos, Value * * args,
     if (!ha)
         state.error<EvalError>("unknown hash algorithm '%1%'", algo).atPos(pos).debugThrow();
 
-    NixStringContext context; // discarded
+    BsdStringContext context; // discarded
     auto s = state.forceString(*args[1], context, pos, "while evaluating the second argument passed to builtins.hashString");
 
     v.mkString(hashString(*ha, s).to_string(HashFormat::Base16, false));
@@ -4291,8 +4291,8 @@ static RegisterPrimOp primop_convertHash({
 
         The format of the resulting hash. Must be one of
         - `"base16"`
-        - `"nix32"`
-        - `"base32"` (deprecated alias for `"nix32"`)
+        - `"bsd32"`
+        - `"base32"` (deprecated alias for `"bsd32"`)
         - `"base64"`
         - `"sri"`
 
@@ -4302,7 +4302,7 @@ static RegisterPrimOp primop_convertHash({
       >
       >   Convert a SHA256 hash in Base16 to SRI:
       >
-      > ```nix
+      > ```bsd
       > builtins.convertHash {
       >   hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
       >   toHashFormat = "sri";
@@ -4316,7 +4316,7 @@ static RegisterPrimOp primop_convertHash({
       >
       >   Convert a SHA256 hash in SRI to Base16:
       >
-      > ```nix
+      > ```bsd
       > builtins.convertHash {
       >   hash = "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=";
       >   toHashFormat = "base16";
@@ -4329,7 +4329,7 @@ static RegisterPrimOp primop_convertHash({
       >
       >   Convert a hash in the form `<hashAlgo>:<hashBody>` in Base16 to SRI:
       >
-      > ```nix
+      > ```bsd
       > builtins.convertHash {
       >   hash = "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
       >   toHashFormat = "sri";
@@ -4380,7 +4380,7 @@ void prim_match(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 
         auto regex = state.regexCache->get(re);
 
-        NixStringContext context;
+        BsdStringContext context;
         const auto str = state.forceString(*args[1], context, pos, "while evaluating the second argument passed to builtins.match");
 
         std::cmatch match;
@@ -4420,25 +4420,25 @@ static RegisterPrimOp primop_match({
       *regex* matches *str* precisely, otherwise returns `null`. Each item
       in the list is a regex group.
 
-      ```nix
+      ```bsd
       builtins.match "ab" "abc"
       ```
 
       Evaluates to `null`.
 
-      ```nix
+      ```bsd
       builtins.match "abc" "abc"
       ```
 
       Evaluates to `[ ]`.
 
-      ```nix
+      ```bsd
       builtins.match "a(b)(c)" "abc"
       ```
 
       Evaluates to `[ "b" "c" ]`.
 
-      ```nix
+      ```bsd
       builtins.match "[[:space:]]+([[:upper:]]+)[[:space:]]+" "  FOO   "
       ```
 
@@ -4457,7 +4457,7 @@ void prim_split(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 
         auto regex = state.regexCache->get(re);
 
-        NixStringContext context;
+        BsdStringContext context;
         const auto str = state.forceString(*args[1], context, pos, "while evaluating the second argument passed to builtins.split");
 
         auto begin = std::cregex_iterator(str.begin(), str.end(), regex);
@@ -4527,25 +4527,25 @@ static RegisterPrimOp primop_split({
       *regex* matches of *str*. Each item in the lists of matched
       sequences is a regex group.
 
-      ```nix
+      ```bsd
       builtins.split "(a)b" "abc"
       ```
 
       Evaluates to `[ "" [ "a" ] "c" ]`.
 
-      ```nix
+      ```bsd
       builtins.split "([ac])" "abc"
       ```
 
       Evaluates to `[ "" [ "a" ] "b" [ "c" ] "" ]`.
 
-      ```nix
+      ```bsd
       builtins.split "(a)|(c)" "abc"
       ```
 
       Evaluates to `[ "" [ "a" null ] "b" [ null "c" ] "" ]`.
 
-      ```nix
+      ```bsd
       builtins.split "([[:upper:]]+)" " FOO "
       ```
 
@@ -4556,7 +4556,7 @@ static RegisterPrimOp primop_split({
 
 static void prim_concatStringsSep(EvalState & state, const PosIdx pos, Value * * args, Value & v)
 {
-    NixStringContext context;
+    BsdStringContext context;
 
     auto sep = state.forceString(*args[0], context, pos, "while evaluating the first argument (the separator string) passed to builtins.concatStringsSep");
     state.forceList(*args[1], pos, "while evaluating the second argument (the list of strings to concat) passed to builtins.concatStringsSep");
@@ -4601,7 +4601,7 @@ static void prim_replaceStrings(EvalState & state, const PosIdx pos, Value * * a
     std::unordered_map<size_t, std::string> cache;
     auto to = args[1]->listItems();
 
-    NixStringContext context;
+    BsdStringContext context;
     auto s = state.forceString(*args[2], context, pos, "while evaluating the third argument passed to builtins.replaceStrings");
 
     std::string res;
@@ -4616,7 +4616,7 @@ static void prim_replaceStrings(EvalState & state, const PosIdx pos, Value * * a
                 found = true;
                 auto v = cache.find(j_index);
                 if (v == cache.end()) {
-                    NixStringContext ctx;
+                    BsdStringContext ctx;
                     auto ts = state.forceString(**j, ctx, pos, "while evaluating one of the replacement strings passed to builtins.replaceStrings");
                     v = (cache.emplace(j_index, ts)).first;
                     for (auto& path : ctx)
@@ -4653,7 +4653,7 @@ static RegisterPrimOp primop_replaceStrings({
 
       Example:
 
-      ```nix
+      ```bsd
       builtins.replaceStrings ["oo" "a"] ["a" "i"] "foobar"
       ```
 
@@ -4686,8 +4686,8 @@ static RegisterPrimOp primop_parseDrvName({
       name is everything up to but not including the first dash not followed
       by a letter, and the version is everything following that dash. The
       result is returned in a set `{ name, version }`. Thus,
-      `builtins.parseDrvName "nix-0.12pre12876"` returns `{ name =
-      "nix"; version = "0.12pre12876"; }`.
+      `builtins.parseDrvName "bsd-0.12pre12876"` returns `{ name =
+      "bsd"; version = "0.12pre12876"; }`.
     )",
     .fun = prim_parseDrvName,
 });
@@ -4707,8 +4707,8 @@ static RegisterPrimOp primop_compareVersions({
       Compare two strings representing versions and return `-1` if
       version *s1* is older than version *s2*, `0` if they are the same,
       and `1` if *s1* is newer than *s2*. The version comparison
-      algorithm is the same as the one used by [`nix-env
-      -u`](../command-ref/nix-env.md#operation---upgrade).
+      algorithm is the same as the one used by [`bsd-env
+      -u`](../command-ref/bsd-env.md#operation---upgrade).
     )",
     .fun = prim_compareVersions,
 });
@@ -4736,7 +4736,7 @@ static RegisterPrimOp primop_splitVersion({
     .doc = R"(
       Split a string representing a version into its components, by the
       same version splitting logic underlying the version comparison in
-      [`nix-env -u`](../command-ref/nix-env.md#operation---upgrade).
+      [`bsd-env -u`](../command-ref/bsd-env.md#operation---upgrade).
     )",
     .fun = prim_splitVersion,
 });
@@ -4767,9 +4767,9 @@ void EvalState::createBaseEnv(const EvalSettings & evalSettings)
         .doc = R"(
           Contains all the built-in functions and values.
 
-          Since built-in functions were added over time, [testing for attributes](./operators.md#has-attribute) in `builtins` can be used for graceful fallback on older Nix installations:
+          Since built-in functions were added over time, [testing for attributes](./operators.md#has-attribute) in `builtins` can be used for graceful fallback on older Bsd installations:
 
-          ```nix
+          ```bsd
           # if hasContext is not available, we assume `s` has a context
           if builtins ? hasContext then builtins.hasContext s else true
           ```
@@ -4789,8 +4789,8 @@ void EvalState::createBaseEnv(const EvalSettings & evalSettings)
 
           The name `true` is not special, and can be shadowed:
 
-          ```nix-repl
-          nix-repl> let true = 1; in true
+          ```bsd-repl
+          bsd-repl> let true = 1; in true
           1
           ```
         )",
@@ -4809,8 +4809,8 @@ void EvalState::createBaseEnv(const EvalSettings & evalSettings)
 
           The name `false` is not special, and can be shadowed:
 
-          ```nix-repl
-          nix-repl> let false = 1; in false
+          ```bsd-repl
+          bsd-repl> let false = 1; in false
           1
           ```
         )",
@@ -4823,8 +4823,8 @@ void EvalState::createBaseEnv(const EvalSettings & evalSettings)
 
           The name `null` is not special, and can be shadowed:
 
-          ```nix-repl
-          nix-repl> let null = 1; in null
+          ```bsd-repl
+          bsd-repl> let null = 1; in null
           1
           ```
         )",
@@ -4836,19 +4836,19 @@ void EvalState::createBaseEnv(const EvalSettings & evalSettings)
     addConstant("__currentTime", v, {
         .type = nInt,
         .doc = R"(
-          Return the [Unix time](https://en.wikipedia.org/wiki/Unix_time) at first evaluation.
+          Return the [Ubsd time](https://en.wikipedia.org/wiki/Ubsd_time) at first evaluation.
           Repeated references to that name re-use the initially obtained value.
 
           Example:
 
           ```console
-          $ nix repl
-          Welcome to Nix 2.15.1 Type :? for help.
+          $ bsd repl
+          Welcome to Bsd 2.15.1 Type :? for help.
 
-          nix-repl> builtins.currentTime
+          bsd-repl> builtins.currentTime
           1683705525
 
-          nix-repl> builtins.currentTime
+          bsd-repl> builtins.currentTime
           1683705525
           ```
 
@@ -4868,9 +4868,9 @@ void EvalState::createBaseEnv(const EvalSettings & evalSettings)
           [`system`](@docroot@/command-ref/conf-file.md#conf-system)
           configuration option.
 
-          It can be used to set the `system` attribute for [`builtins.derivation`](@docroot@/language/derivations.md) such that the resulting derivation can be built on the same system that evaluates the Nix expression:
+          It can be used to set the `system` attribute for [`builtins.derivation`](@docroot@/language/derivations.md) such that the resulting derivation can be built on the same system that evaluates the Bsd expression:
 
-          ```nix
+          ```bsd
            builtins.derivation {
              # ...
              system = builtins.currentSystem;
@@ -4880,30 +4880,30 @@ void EvalState::createBaseEnv(const EvalSettings & evalSettings)
           It can be overridden in order to create derivations for different system than the current one:
 
           ```console
-          $ nix-instantiate --system "mips64-linux" --eval --expr 'builtins.currentSystem'
+          $ bsd-instantiate --system "mips64-linux" --eval --expr 'builtins.currentSystem'
           "mips64-linux"
           ```
         )",
         .impureOnly = true,
     });
 
-    v.mkString(nixVersion);
-    addConstant("__nixVersion", v, {
+    v.mkString(bsdVersion);
+    addConstant("__bsdVersion", v, {
         .type = nString,
         .doc = R"(
-          The version of Nix.
+          The version of Bsd.
 
-          For example, where the command line returns the current Nix version,
+          For example, where the command line returns the current Bsd version,
 
           ```shell-session
-          $ nix --version
-          nix (Nix) 2.16.0
+          $ bsd --version
+          bsd (Bsd) 2.16.0
           ```
 
-          the Nix language evaluator returns the same value:
+          the Bsd language evaluator returns the same value:
 
-          ```nix-repl
-          nix-repl> builtins.nixVersion
+          ```bsd-repl
+          bsd-repl> builtins.bsdVersion
           "2.16.0"
           ```
         )",
@@ -4913,12 +4913,12 @@ void EvalState::createBaseEnv(const EvalSettings & evalSettings)
     addConstant("__storeDir", v, {
         .type = nString,
         .doc = R"(
-          Logical file system location of the [Nix store](@docroot@/glossary.md#gloss-store) currently in use.
+          Logical file system location of the [Bsd store](@docroot@/glossary.md#gloss-store) currently in use.
 
           This value is determined by the `store` parameter in [Store URLs](@docroot@/store/types/index.md#store-url-format):
 
           ```shell-session
-          $ nix-instantiate --store 'dummy://?store=/blah' --eval --expr builtins.storeDir
+          $ bsd-instantiate --store 'dummy://?store=/blah' --eval --expr builtins.storeDir
           "/blah"
           ```
         )",
@@ -4932,7 +4932,7 @@ void EvalState::createBaseEnv(const EvalSettings & evalSettings)
     addConstant("__langVersion", v, {
         .type = nInt,
         .doc = R"(
-          The current version of the Nix language.
+          The current version of the Bsd language.
         )",
     });
 
@@ -4964,7 +4964,7 @@ void EvalState::createBaseEnv(const EvalSettings & evalSettings)
         .fun = settings.traceVerbose ? prim_trace : prim_second,
     });
 
-    /* Add a value containing the current Nix expression search path. */
+    /* Add a value containing the current Bsd expression search path. */
     auto list = buildList(lookupPath.elements.size());
     for (const auto & [n, i] : enumerate(lookupPath.elements)) {
         auto attrs = buildBindings(2);
@@ -4973,32 +4973,32 @@ void EvalState::createBaseEnv(const EvalSettings & evalSettings)
         (list[n] = allocValue())->mkAttrs(attrs);
     }
     v.mkList(list);
-    addConstant("__nixPath", v, {
+    addConstant("__bsdPath", v, {
         .type = nList,
         .doc = R"(
           A list of search path entries used to resolve [lookup paths](@docroot@/language/constructs/lookup-path.md).
-          Its value is primarily determined by the [`nix-path` configuration setting](@docroot@/command-ref/conf-file.md#conf-nix-path), which are
-          - Overridden by the [`NIX_PATH`](@docroot@/command-ref/env-common.md#env-NIX_PATH) environment variable or the `--nix-path` option
-          - Extended by the [`-I` option](@docroot@/command-ref/opt-common.md#opt-I) or `--extra-nix-path`
+          Its value is primarily determined by the [`bsd-path` configuration setting](@docroot@/command-ref/conf-file.md#conf-bsd-path), which are
+          - Overridden by the [`NIX_PATH`](@docroot@/command-ref/env-common.md#env-NIX_PATH) environment variable or the `--bsd-path` option
+          - Extended by the [`-I` option](@docroot@/command-ref/opt-common.md#opt-I) or `--extra-bsd-path`
 
           > **Example**
           >
           > ```bash
-          > $ NIX_PATH= nix-instantiate --eval --expr "builtins.nixPath" -I foo=bar --no-pure-eval
+          > $ NIX_PATH= bsd-instantiate --eval --expr "builtins.bsdPath" -I foo=bar --no-pure-eval
           > [ { path = "bar"; prefix = "foo"; } ]
           > ```
 
           Lookup path expressions are [desugared](https://en.wikipedia.org/wiki/Syntactic_sugar) using this and
           [`builtins.findFile`](./builtins.html#builtins-findFile):
 
-          ```nix
-          <nixpkgs>
+          ```bsd
+          <bsdpkgs>
           ```
 
           is equivalent to:
 
-          ```nix
-          builtins.findFile builtins.nixPath "nixpkgs"
+          ```bsd
+          builtins.findFile builtins.bsdPath "bsdpkgs"
           ```
         )",
     });

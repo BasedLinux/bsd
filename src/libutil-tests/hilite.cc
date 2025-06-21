@@ -1,8 +1,8 @@
-#include "nix/util/hilite.hh"
+#include "bsd/util/hilite.hh"
 
 #include <gtest/gtest.h>
 
-namespace nix {
+namespace bsd {
 /* ----------- tests for fmt.hh -------------------------------------------------*/
 
     TEST(hiliteMatches, noHighlight) {

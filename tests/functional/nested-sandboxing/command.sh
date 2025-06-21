@@ -1,8 +1,8 @@
 set -eu -o pipefail
 
-export NIX_BIN_DIR=$(dirname $(type -p nix))
-# TODO Get Nix and its closure more flexibly
-export EXTRA_SANDBOX="/nix/store $(dirname $NIX_BIN_DIR)"
+export NIX_BIN_DIR=$(dirname $(type -p bsd))
+# TODO Get Bsd and its closure more flexibly
+export EXTRA_SANDBOX="/bsd/store $(dirname $NIX_BIN_DIR)"
 
 badStoreUrl () {
     local altitude=$1
@@ -15,17 +15,17 @@ goodStoreUrl () {
 }
 
 # The non-standard sandbox-build-dir helps ensure that we get the same behavior
-# whether this test is being run in a derivation as part of the nix build or
+# whether this test is being run in a derivation as part of the bsd build or
 # being manually run by a developer outside a derivation
-runNixBuild () {
+runBsdBuild () {
 
     local storeFun=$1
     local altitude=$2
-    nix-build \
+    bsd-build \
         --no-substitute --no-out-link \
         --store "$("$storeFun" "$altitude")" \
         --extra-sandbox-paths "$EXTRA_SANDBOX" \
-        ./nested-sandboxing/runner.nix \
+        ./nested-sandboxing/runner.bsd \
         --arg altitude "$((altitude - 1))" \
         --argstr storeFun "$storeFun" \
         --sandbox-build-dir /build-non-standard

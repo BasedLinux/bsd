@@ -1,9 +1,9 @@
-#include "nix/util/error.hh"
-#include "nix/util/environment-variables.hh"
-#include "nix/expr/eval-settings.hh"
-#include "nix/util/config-global.hh"
-#include "nix/util/serialise.hh"
-#include "nix/expr/eval-gc.hh"
+#include "bsd/util/error.hh"
+#include "bsd/util/environment-variables.hh"
+#include "bsd/expr/eval-settings.hh"
+#include "bsd/util/config-global.hh"
+#include "bsd/util/serialise.hh"
+#include "bsd/expr/eval-gc.hh"
 
 #include "expr-config-private.hh"
 
@@ -24,7 +24,7 @@
 
 #endif
 
-namespace nix {
+namespace bsd {
 
 #if NIX_USE_BOEHMGC
 /* Called when the Boehm GC runs out of memory. */
@@ -59,7 +59,7 @@ static inline void initGCReal()
        we don't need to garbage collect at all.  (Collection has a
        fairly significant overhead.)  The heap size can be overridden
        through libgc's GC_INITIAL_HEAP_SIZE environment variable.  We
-       should probably also provide a nix.conf setting for this.  Note
+       should probably also provide a bsd.conf setting for this.  Note
        that GC_expand_hp() causes a lot of virtual, but not physical
        (resident) memory to be allocated.  This might be a problem on
        systems that don't overcommit. */
@@ -104,8 +104,8 @@ void initGC()
 
     // NIX_PATH must override the regular setting
     // See the comment in applyConfig
-    if (auto nixPathEnv = getEnv("NIX_PATH")) {
-        globalConfig.set("nix-path", concatStringsSep(" ", EvalSettings::parseNixPath(nixPathEnv.value())));
+    if (auto bsdPathEnv = getEnv("NIX_PATH")) {
+        globalConfig.set("bsd-path", concatStringsSep(" ", EvalSettings::parseBsdPath(bsdPathEnv.value())));
     }
 
     gcInitialised = true;
@@ -116,4 +116,4 @@ void assertGCInitialized()
     assert(gcInitialised);
 }
 
-} // namespace nix
+} // namespace bsd

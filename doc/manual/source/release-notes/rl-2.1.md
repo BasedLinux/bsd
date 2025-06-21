@@ -3,14 +3,14 @@
 This is primarily a bug fix release. It also reduces memory consumption
 in certain situations. In addition, it has the following new features:
 
-  - The Nix installer will no longer default to the Multi-User
+  - The Bsd installer will no longer default to the Multi-User
     installation for macOS. You can still instruct the installer to
     run in multi-user mode.
 
-  - The Nix installer now supports performing a Multi-User
+  - The Bsd installer now supports performing a Multi-User
     installation for Linux computers which are running systemd. You
     can select a Multi-User installation by passing the `--daemon`
-    flag to the installer: `sh <(curl -L https://nixos.org/nix/install)
+    flag to the installer: `sh <(curl -L https://basedlinux.org/bsd/install)
     --daemon`.
 
     The multi-user installer cannot handle systems with SELinux. If
@@ -30,9 +30,9 @@ in certain situations. In addition, it has the following new features:
   - The flag `--fallback` is no longer required to recover from
     disappeared NARs in binary caches.
 
-  - `nix-daemon` now respects `--store`.
+  - `bsd-daemon` now respects `--store`.
 
-  - `nix run` now respects `nix-support/propagated-user-env-packages`.
+  - `bsd run` now respects `bsd-support/propagated-user-env-packages`.
 
 This release has contributions from Adrien Devresse, Aleksandr Pashkov,
 Alexandre Esteves, Amine Chikhaoui, Andrew Dunham, Asad Saeeduddin,

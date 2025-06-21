@@ -1,14 +1,14 @@
 #include <regex>
 
-#include "nix/store/local-overlay-store.hh"
-#include "nix/util/callback.hh"
-#include "nix/store/realisation.hh"
-#include "nix/util/processes.hh"
-#include "nix/util/url.hh"
-#include "nix/store/store-open.hh"
-#include "nix/store/store-registration.hh"
+#include "bsd/store/local-overlay-store.hh"
+#include "bsd/util/callback.hh"
+#include "bsd/store/realisation.hh"
+#include "bsd/util/processes.hh"
+#include "bsd/util/url.hh"
+#include "bsd/store/store-open.hh"
+#include "bsd/store/store-registration.hh"
 
-namespace nix {
+namespace bsd {
 
 std::string LocalOverlayStoreConfig::doc()
 {

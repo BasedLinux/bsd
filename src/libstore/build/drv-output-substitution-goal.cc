@@ -1,11 +1,11 @@
-#include "nix/store/build/drv-output-substitution-goal.hh"
-#include "nix/util/finally.hh"
-#include "nix/store/build/worker.hh"
-#include "nix/store/build/substitution-goal.hh"
-#include "nix/util/callback.hh"
-#include "nix/store/store-open.hh"
+#include "bsd/store/build/drv-output-substitution-goal.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/store/build/worker.hh"
+#include "bsd/store/build/substitution-goal.hh"
+#include "bsd/util/callback.hh"
+#include "bsd/store/store-open.hh"
 
-namespace nix {
+namespace bsd {
 
 DrvOutputSubstitutionGoal::DrvOutputSubstitutionGoal(
     const DrvOutput & id,
@@ -130,7 +130,7 @@ Goal::Co DrvOutputSubstitutionGoal::init()
     co_return amDone(substituterFailed ? ecFailed : ecNoSubstituters);
 }
 
-Goal::Co DrvOutputSubstitutionGoal::realisationFetched(Goals waitees, std::shared_ptr<const Realisation> outputInfo, nix::ref<nix::Store> sub) {
+Goal::Co DrvOutputSubstitutionGoal::realisationFetched(Goals waitees, std::shared_ptr<const Realisation> outputInfo, bsd::ref<bsd::Store> sub) {
     waitees.insert(worker.makePathSubstitutionGoal(outputInfo->outPath));
 
     co_await await(std::move(waitees));

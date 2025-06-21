@@ -1,8 +1,8 @@
-#include "nix/cmd/editor-for.hh"
-#include "nix/util/environment-variables.hh"
-#include "nix/util/source-path.hh"
+#include "bsd/cmd/editor-for.hh"
+#include "bsd/util/environment-variables.hh"
+#include "bsd/util/source-path.hh"
 
-namespace nix {
+namespace bsd {
 
 Strings editorFor(const SourcePath & file, uint32_t line)
 {

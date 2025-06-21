@@ -1,16 +1,16 @@
-#!/usr/bin/env nix
+#!/usr/bin/env bsd
 # vim: set filetype=python:
-#!nix develop --impure --expr
-#!nix ``
-#!nix   let flake = builtins.getFlake ("git+file://" + toString ../.);
-#!nix       pkgs = flake.inputs.nixpkgs.legacyPackages.${builtins.currentSystem};
-#!nix   in pkgs.mkShell { nativeBuildInputs = [ 
-#!nix        (pkgs.python3.withPackages (ps: with ps; [ requests ]))
-#!nix   ]; }
-#!nix `` --command python3
+#!bsd develop --impure --expr
+#!bsd ``
+#!bsd   let flake = builtins.getFlake ("git+file://" + toString ../.);
+#!bsd       pkgs = flake.inputs.bsdpkgs.legacyPackages.${builtins.currentSystem};
+#!bsd   in pkgs.mkShell { nativeBuildInputs = [ 
+#!bsd        (pkgs.python3.withPackages (ps: with ps; [ requests ]))
+#!bsd   ]; }
+#!bsd `` --command python3
 
 # This script lists out the contributors for a given release.
-# It must be run from the root of the Nix repository.
+# It must be run from the root of the Bsd repository.
 
 import os
 import sys
@@ -28,7 +28,7 @@ version = os.environ.get("VERSION")
 if not version:
     version = open(".version").read().strip()
 
-print(f"Generating release credits for Nix {version}", file=sys.stderr)
+print(f"Generating release credits for Bsd {version}", file=sys.stderr)
 
 # 2. Compute previous version
 vcomponents = version.split(".")
@@ -76,7 +76,7 @@ samples = commits_to_first_commit_by_email(get_commits())
 
 # Query the GitHub API to get handle
 def get_github_commit(commit):
-    url = f"https://api.github.com/repos/NixOS/nix/commits/{commit['hash']}"
+    url = f"https://api.github.com/repos/BasedLinux/bsd/commits/{commit['hash']}"
     headers = {'Authorization': f'token {github_token}'}
     response = requests.get(url, headers=headers)
     response.raise_for_status()

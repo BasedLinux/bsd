@@ -6,16 +6,16 @@ Derivations can declare some infrequently used optional attributes.
 
   - [`exportReferencesGraph`]{#adv-attr-exportReferencesGraph}\
     This attribute allows builders access to the references graph of
-    their inputs. The attribute is a list of inputs in the Nix store
+    their inputs. The attribute is a list of inputs in the Bsd store
     whose references graph the builder needs to know. The value of
     this attribute should be a list of pairs `[ name1 path1 name2
     path2 ...  ]`. The references graph of each *pathN* will be stored
     in a text file *nameN* in the temporary build directory. The text
-    files have the format used by `nix-store --register-validity`
+    files have the format used by `bsd-store --register-validity`
     (with the deriver fields left empty). For example, when the
     following derivation is built:
 
-    ```nix
+    ```bsd
     derivation {
       ...
       exportReferencesGraph = [ "libfoo-graph" libfoo ];
@@ -27,17 +27,17 @@ Derivations can declare some infrequently used optional attributes.
 
     `exportReferencesGraph` is useful for builders that want to do
     something with the closure of a store path. Examples include the
-    builders in NixOS that generate the initial ramdisk for booting
+    builders in BasedLinux that generate the initial ramdisk for booting
     Linux (a `cpio` archive containing the closure of the boot script)
     and the ISO-9660 image for the installation CD (which is populated
-    with a Nix store containing the closure of a bootable NixOS
+    with a Bsd store containing the closure of a bootable BasedLinux
     configuration).
 
   - [`passAsFile`]{#adv-attr-passAsFile}\
     A list of names of attributes that should be passed via files rather
     than environment variables. For example, if you have
 
-    ```nix
+    ```bsd
     passAsFile = ["big"];
     big = "a very long string";
     ```
@@ -45,7 +45,7 @@ Derivations can declare some infrequently used optional attributes.
     then when the builder runs, the environment variable `bigPath`
     will contain the absolute path to a temporary file containing `a
     very long string`. That is, for any attribute *x* listed in
-    `passAsFile`, Nix will pass an environment variable `xPath`
+    `passAsFile`, Bsd will pass an environment variable `xPath`
     holding the path of the file containing the value of attribute
     *x*. This is useful when you need to pass large strings to a
     builder, since most operating systems impose a limit on the size
@@ -75,23 +75,23 @@ See the [corresponding section in the derivation output page](@docroot@/store/de
     The optional attribute `allowedReferences` specifies a list of legal
     references (dependencies) of the output of the builder. For example,
 
-    ```nix
+    ```bsd
     allowedReferences = [];
     ```
 
     enforces that the output of a derivation cannot have any runtime
     dependencies on its inputs. To allow an output to have a runtime
     dependency on itself, use `"out"` as a list item. This is used in
-    NixOS to check that generated files such as initial ramdisks for
+    BasedLinux to check that generated files such as initial ramdisks for
     booting Linux don’t have accidental dependencies on other paths in
-    the Nix store.
+    the Bsd store.
 
   - [`allowedRequisites`]{#adv-attr-allowedRequisites}\
     This attribute is similar to `allowedReferences`, but it specifies
     the legal requisites of the whole closure, so all the dependencies
     recursively. For example,
 
-    ```nix
+    ```bsd
     allowedRequisites = [ foobar ];
     ```
 
@@ -104,7 +104,7 @@ See the [corresponding section in the derivation output page](@docroot@/store/de
     illegal references (dependencies) of the output of the builder. For
     example,
 
-    ```nix
+    ```bsd
     disallowedReferences = [ foo ];
     ```
 
@@ -116,7 +116,7 @@ See the [corresponding section in the derivation output page](@docroot@/store/de
     specifies illegal requisites for the whole closure, so all the
     dependencies recursively. For example,
 
-    ```nix
+    ```bsd
     disallowedRequisites = [ foobar ];
     ```
 
@@ -140,7 +140,7 @@ See the [corresponding section in the derivation output page](@docroot@/store/de
 
     Example:
 
-    ```nix
+    ```bsd
     __structuredAttrs = true;
 
     outputChecks.out = {
@@ -167,14 +167,14 @@ See the [corresponding section in the derivation output page](@docroot@/store/de
 
     Example:
 
-    ```nix
+    ```bsd
     __structuredAttrs = true;
     unsafeDiscardReferences.out = true;
     ```
 
     This is useful, for example, when generating self-contained filesystem images with
-    their own embedded Nix store: hashes found inside such an image refer
-    to the embedded store and not to the host's Nix store.
+    their own embedded Bsd store: hashes found inside such an image refer
+    to the embedded store and not to the host's Bsd store.
 
 ## Build scheduling
 
@@ -183,7 +183,7 @@ See the [corresponding section in the derivation output page](@docroot@/store/de
     This is useful for derivations that are cheapest to build locally.
 
   - [`allowSubstitutes`]{#adv-attr-allowSubstitutes}\
-    If this attribute is set to `false`, then Nix will always build this derivation (locally or remotely); it will not try to substitute its outputs.
+    If this attribute is set to `false`, then Bsd will always build this derivation (locally or remotely); it will not try to substitute its outputs.
     This is useful for derivations that are cheaper to build than to substitute.
 
     This attribute can be ignored by setting [`always-allow-substitutes`](@docroot@/command-ref/conf-file.md#conf-always-allow-substitutes) to `true`.
@@ -196,11 +196,11 @@ See the [corresponding section in the derivation output page](@docroot@/store/de
 
 - [`requiredSystemFeatures`]{#adv-attr-requiredSystemFeatures}\
 
-  If a derivation has the `requiredSystemFeatures` attribute, then Nix will only build it on a machine that has the corresponding features set in its [`system-features` configuration](@docroot@/command-ref/conf-file.md#conf-system-features).
+  If a derivation has the `requiredSystemFeatures` attribute, then Bsd will only build it on a machine that has the corresponding features set in its [`system-features` configuration](@docroot@/command-ref/conf-file.md#conf-system-features).
 
   For example, setting
 
-  ```nix
+  ```bsd
   requiredSystemFeatures = [ "kvm" ];
   ```
 
@@ -214,9 +214,9 @@ See the [corresponding section in the derivation output page](@docroot@/store/de
     the builder. Usually, the environment is cleared completely when the
     builder is executed, but with this attribute you can allow specific
     environment variables to be passed unmodified. For example,
-    `fetchurl` in Nixpkgs has the line
+    `fetchurl` in Bsdpkgs has the line
 
-    ```nix
+    ```bsd
     impureEnvVars = [ "http_proxy" "https_proxy" ... ];
     ```
 
@@ -234,7 +234,7 @@ See the [corresponding section in the derivation output page](@docroot@/store/de
     > the current builder process. When a daemon is building its
     > environmental variables are used. Without the daemon, the
     > environmental variables come from the environment of the
-    > `nix-build`.
+    > `bsd-build`.
 
     If the [`configurable-impure-env` experimental
     feature](@docroot@/development/experimental-features.md#xp-feature-configurable-impure-env)
@@ -262,7 +262,7 @@ All other combinations are invalid.
 - [Input-addressing derivations](@docroot@/store/derivation/outputs/input-address.md)
 
   This is the default for `builtins.derivation`.
-  Nix only currently supports one kind of input-addressing, so no other information is needed.
+  Bsd only currently supports one kind of input-addressing, so no other information is needed.
 
   `__contentAddressed = false;` may also be included, but is not needed, and will trigger the experimental feature check.
 
@@ -300,14 +300,14 @@ Here is more information on the `output*` attributes, and what values they may b
 
         This is the default.
 
-      - [`"recursive"` or `"nar"`](@docroot@/store/store-object/content-address.md#method-nix-archive)
+      - [`"recursive"` or `"nar"`](@docroot@/store/store-object/content-address.md#method-bsd-archive)
 
         > **Compatibility**
         >
         > `"recursive"` is the traditional way of indicating this,
-        > and is supported since 2005 (virtually the entire history of Nix).
-        > `"nar"` is more clear, and consistent with other parts of Nix (such as the CLI),
-        > however support for it is only added in Nix version 2.21.
+        > and is supported since 2005 (virtually the entire history of Bsd).
+        > `"nar"` is more clear, and consistent with other parts of Bsd (such as the CLI),
+        > however support for it is only added in Bsd version 2.21.
 
       - [`"text"`](@docroot@/store/store-object/content-address.md#method-text)
 
@@ -339,13 +339,13 @@ Here is more information on the `output*` attributes, and what values they may b
 
     This will specify the output hash of the single output of a [fixed-output derivation].
 
-    The `outputHash` attribute must be a string containing the hash in either hexadecimal or "nix32" encoding, or following the format for integrity metadata as defined by [SRI](https://www.w3.org/TR/SRI/).
-    The "nix32" encoding is an adaptation of base-32 encoding.
+    The `outputHash` attribute must be a string containing the hash in either hexadecimal or "bsd32" encoding, or following the format for integrity metadata as defined by [SRI](https://www.w3.org/TR/SRI/).
+    The "bsd32" encoding is an adaptation of base-32 encoding.
 
     > **Note**
     >
     > The [`convertHash`](@docroot@/language/builtins.md#builtins-convertHash) function shows how to convert between different encodings.
-    > The [`nix-hash` command](../command-ref/nix-hash.md) has information about obtaining the hash for some contents, as well as converting to and from encodings.
+    > The [`bsd-hash` command](../command-ref/bsd-hash.md) has information about obtaining the hash for some contents, as well as converting to and from encodings.
 
   - [`__contentAddressed`]{#adv-attr-__contentAddressed}
 
@@ -355,7 +355,7 @@ Here is more information on the `output*` attributes, and what values they may b
     >
     > To use this attribute, you must enable the
     > [`ca-derivations`][xp-feature-ca-derivations] experimental feature.
-    > For example, in [nix.conf](../command-ref/conf-file.md) you could add:
+    > For example, in [bsd.conf](../command-ref/conf-file.md) you could add:
     >
     > ```
     > extra-experimental-features = ca-derivations

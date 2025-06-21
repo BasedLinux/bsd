@@ -1,11 +1,11 @@
-#include "nix/util/suggestions.hh"
-#include "nix/util/ansicolor.hh"
-#include "nix/util/terminal.hh"
+#include "bsd/util/suggestions.hh"
+#include "bsd/util/ansicolor.hh"
+#include "bsd/util/terminal.hh"
 
 #include <algorithm>
 #include <sstream>
 
-namespace nix {
+namespace bsd {
 
 int levenshteinDistance(std::string_view first, std::string_view second)
 {

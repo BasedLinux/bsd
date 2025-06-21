@@ -1,13 +1,13 @@
-%define api.location.type { ::nix::ParserLocation }
+%define api.location.type { ::bsd::ParserLocation }
 %define api.pure
 %locations
 %define parse.error verbose
 %defines
 /* %no-lines */
 %parse-param { void * scanner }
-%parse-param { nix::ParserState * state }
+%parse-param { bsd::ParserState * state }
 %lex-param { void * scanner }
-%lex-param { nix::ParserState * state }
+%lex-param { bsd::ParserState * state }
 %expect 0
 
 %code requires {
@@ -17,28 +17,28 @@
 
 #include <variant>
 
-#include "nix/util/finally.hh"
-#include "nix/util/util.hh"
-#include "nix/util/users.hh"
+#include "bsd/util/finally.hh"
+#include "bsd/util/util.hh"
+#include "bsd/util/users.hh"
 
-#include "nix/expr/nixexpr.hh"
-#include "nix/expr/eval.hh"
-#include "nix/expr/eval-settings.hh"
-#include "nix/expr/parser-state.hh"
+#include "bsd/expr/bsdexpr.hh"
+#include "bsd/expr/eval.hh"
+#include "bsd/expr/eval-settings.hh"
+#include "bsd/expr/parser-state.hh"
 
 // Bison seems to have difficulty growing the parser stack when using C++ with
 // a custom location type. This undocumented macro tells Bison that our
 // location type is "trivially copyable" in C++-ese, so it is safe to use the
 // same memcpy macro it uses to grow the stack that it uses with its own
 // default location type. Without this, we get "error: memory exhausted" when
-// parsing some large Nix files. Our other options are to increase the initial
+// parsing some large Bsd files. Our other options are to increase the initial
 // stack size (200 by default) to be as large as we ever want to support (so
 // that growing the stack is unnecessary), or redefine the stack-relocation
 // macro ourselves (which is also undocumented).
 #define YYLTYPE_IS_TRIVIAL 1
 
 #define YY_DECL int yylex \
-    (YYSTYPE * yylval_param, YYLTYPE * yylloc_param, yyscan_t yyscanner, nix::ParserState * state)
+    (YYSTYPE * yylval_param, YYLTYPE * yylloc_param, yyscan_t yyscanner, bsd::ParserState * state)
 
 // For efficiency, we only track offsets; not line,column coordinates
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
@@ -55,7 +55,7 @@
         }                                                               \
     while (0)
 
-namespace nix {
+namespace bsd {
 
 typedef std::unordered_map<PosIdx, DocComment> DocCommentMap;
 
@@ -84,7 +84,7 @@ Expr * parseExprFromBuf(
 
 YY_DECL;
 
-using namespace nix;
+using namespace bsd;
 
 #define CUR_POS state->at(yyloc)
 
@@ -121,21 +121,21 @@ static Expr * makeCall(PosIdx pos, Expr * fn, Expr * arg) {
 
 %union {
   // !!! We're probably leaking stuff here.
-  nix::Expr * e;
-  nix::ExprList * list;
-  nix::ExprAttrs * attrs;
-  nix::Formals * formals;
-  nix::Formal * formal;
-  nix::NixInt n;
-  nix::NixFloat nf;
-  nix::StringToken id; // !!! -> Symbol
-  nix::StringToken path;
-  nix::StringToken uri;
-  nix::StringToken str;
-  std::vector<nix::AttrName> * attrNames;
-  std::vector<std::pair<nix::AttrName, nix::PosIdx>> * inheritAttrs;
-  std::vector<std::pair<nix::PosIdx, nix::Expr *>> * string_parts;
-  std::vector<std::pair<nix::PosIdx, std::variant<nix::Expr *, nix::StringToken>>> * ind_string_parts;
+  bsd::Expr * e;
+  bsd::ExprList * list;
+  bsd::ExprAttrs * attrs;
+  bsd::Formals * formals;
+  bsd::Formal * formal;
+  bsd::BsdInt n;
+  bsd::BsdFloat nf;
+  bsd::StringToken id; // !!! -> Symbol
+  bsd::StringToken path;
+  bsd::StringToken uri;
+  bsd::StringToken str;
+  std::vector<bsd::AttrName> * attrNames;
+  std::vector<std::pair<bsd::AttrName, bsd::PosIdx>> * inheritAttrs;
+  std::vector<std::pair<bsd::PosIdx, bsd::Expr *>> * string_parts;
+  std::vector<std::pair<bsd::PosIdx, std::variant<bsd::Expr *, bsd::StringToken>>> * ind_string_parts;
 }
 
 %type <e> start expr expr_function expr_if expr_op
@@ -282,9 +282,9 @@ expr_select
     { $$ = new ExprSelect(CUR_POS, $1, std::move(*$3), nullptr); delete $3; }
   | expr_simple '.' attrpath OR_KW expr_select
     { $$ = new ExprSelect(CUR_POS, $1, std::move(*$3), $5); delete $3; $5->warnIfCursedOr(state->symbols, state->positions); }
-  | /* Backwards compatibility: because Nixpkgs has a function named ‘or’,
+  | /* Backwards compatibility: because Bsdpkgs has a function named ‘or’,
        allow stuff like ‘map or [...]’. This production is problematic (see
-       https://github.com/NixOS/nix/issues/11118) and will be refactored in the
+       https://github.com/BasedLinux/bsd/issues/11118) and will be refactored in the
        future by treating `or` as a regular identifier. The refactor will (in
        very rare cases, we think) change the meaning of expressions, so we mark
        the ExprCall with data (establishing that it is a ‘cursed or’) that can
@@ -318,7 +318,7 @@ expr_simple
       std::string path($1.p + 1, $1.l - 2);
       $$ = new ExprCall(CUR_POS,
           new ExprVar(state->s.findFile),
-          {new ExprVar(state->s.nixPath),
+          {new ExprVar(state->s.bsdPath),
            new ExprString(std::move(path))});
   }
   | URI {
@@ -372,7 +372,7 @@ path_start
     $$ =
         /* Absolute paths are always interpreted relative to the
            root filesystem accessor, rather than the accessor of the
-           current Nix expression. */
+           current Bsd expression. */
         literal.front() == '/'
         ? new ExprPath(state->rootFS, std::move(path))
         : new ExprPath(state->basePath.accessor, std::move(path));
@@ -422,7 +422,7 @@ binds1
       if (!$accum->inheritFromExprs)
           $accum->inheritFromExprs = std::make_unique<std::vector<Expr *>>();
       $accum->inheritFromExprs->push_back($expr);
-      auto from = new nix::ExprInheritFrom(state->at(@expr), $accum->inheritFromExprs->size() - 1);
+      auto from = new bsd::ExprInheritFrom(state->at(@expr), $accum->inheritFromExprs->size() - 1);
       for (auto & [i, iPos] : *$attrs) {
           if ($accum->attrs.find(i.symbol) != $accum->attrs.end())
               state->dupAttr(i.symbol, iPos, $accum->attrs[i.symbol].pos);
@@ -519,10 +519,10 @@ formal
 
 %%
 
-#include "nix/expr/eval.hh"
+#include "bsd/expr/eval.hh"
 
 
-namespace nix {
+namespace bsd {
 
 Expr * parseExprFromBuf(
     char * text,

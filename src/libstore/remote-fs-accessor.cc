@@ -1,12 +1,12 @@
 #include <nlohmann/json.hpp>
-#include "nix/store/remote-fs-accessor.hh"
-#include "nix/store/nar-accessor.hh"
+#include "bsd/store/remote-fs-accessor.hh"
+#include "bsd/store/nar-accessor.hh"
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
-namespace nix {
+namespace bsd {
 
 RemoteFSAccessor::RemoteFSAccessor(ref<Store> store, bool requireValidPath, const Path & cacheDir)
     : store(store)
@@ -63,10 +63,10 @@ std::pair<ref<SourceAccessor>, CanonPath> RemoteFSAccessor::fetch(const CanonPat
     std::string listing;
     Path cacheFile;
 
-    if (cacheDir != "" && nix::pathExists(cacheFile = makeCacheFile(storePath.hashPart(), "nar"))) {
+    if (cacheDir != "" && bsd::pathExists(cacheFile = makeCacheFile(storePath.hashPart(), "nar"))) {
 
         try {
-            listing = nix::readFile(makeCacheFile(storePath.hashPart(), "ls"));
+            listing = bsd::readFile(makeCacheFile(storePath.hashPart(), "ls"));
 
             auto narAccessor = makeLazyNarAccessor(listing,
                 [cacheFile](uint64_t offset, uint64_t length) {
@@ -94,7 +94,7 @@ std::pair<ref<SourceAccessor>, CanonPath> RemoteFSAccessor::fetch(const CanonPat
         } catch (SystemError &) { }
 
         try {
-            auto narAccessor = makeNarAccessor(nix::readFile(cacheFile));
+            auto narAccessor = makeNarAccessor(bsd::readFile(cacheFile));
             nars.emplace(storePath.hashPart(), narAccessor);
             return {narAccessor, restPath};
         } catch (SystemError &) { }
